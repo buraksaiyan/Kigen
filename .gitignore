@@ -1,0 +1,23 @@
+# Node / Expo
+node_modules
+.expo
+.expo-shared
+dist
+build
+# Typescript
+*.tsbuildinfo
+# Env
+.env
+.env.local
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# OS / Editor
+.DS_Store
+.idea
+.vscode/*
+!.vscode/settings.json
+# Sentry / Bundler
+.sourcemaps
