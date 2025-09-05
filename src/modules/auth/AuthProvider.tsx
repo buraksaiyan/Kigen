@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
+import { env } from '../../config/env';
 
 type Session = Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
 
@@ -19,9 +20,33 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data }) => {
+    // Check if we have valid Supabase config
+    if (env.supabaseUrl.includes('placeholder')) {
+      console.log('[Auth] Using mock authentication for development');
       if (mounted) {
+        setLoading(false);
+        // Mock authenticated session for development
+        setSession({ 
+          user: { 
+            id: 'mock-user-id', 
+            email: 'developer@kigen.app' 
+          } 
+        } as Session);
+      }
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (mounted) {
+        if (error) {
+          console.error('[Auth] Error getting session:', error.message);
+        }
         setSession(data.session);
+        setLoading(false);
+      }
+    }).catch((error) => {
+      console.error('[Auth] Failed to get session:', error.message);
+      if (mounted) {
         setLoading(false);
       }
     });
@@ -37,10 +62,19 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   }, []);
 
   async function signInWithOtp(email: string) {
+    if (env.supabaseUrl.includes('placeholder')) {
+      console.log('[Auth] Mock sign-in for development');
+      return;
+    }
     await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://example.com/auth' } });
   }
 
   async function signOut() {
+    if (env.supabaseUrl.includes('placeholder')) {
+      console.log('[Auth] Mock sign-out for development');
+      setSession(null);
+      return;
+    }
     await supabase.auth.signOut();
   }
 

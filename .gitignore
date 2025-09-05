@@ -19,5 +19,5 @@ pnpm-debug.log*
 .idea
 .vscode/*
 !.vscode/settings.json
-# Sentry / Bundler
+# Bundler
 .sourcemaps

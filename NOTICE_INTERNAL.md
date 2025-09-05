@@ -5,7 +5,6 @@ Do not distribute externally without authorization.
 
 Data Sources / Services:
 - Supabase (auth, database, edge functions)
-- Sentry (error & performance monitoring)
 - OneSignal (push notifications) – placeholder integration
 - LemonSqueezy (subscriptions & trials) – webhook scaffold
 - AdMob (ads) – placeholders only
