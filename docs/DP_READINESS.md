@@ -26,7 +26,7 @@ Status: DRAFT – Non-production.
 - Deletion: Manual SQL or future endpoint.
 
 ## 7. Incident Response
-- Sentry for runtime errors.
+- Add runtime error monitoring and logging.
 - Add runbook for breach assessment (TODO).
 
 ## 8. Next Steps

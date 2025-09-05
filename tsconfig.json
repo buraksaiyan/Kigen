@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "lib": ["ES2021", "DOM"],
+    "lib": [
+      "ES2021",
+      "DOM"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -9,13 +12,22 @@
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "types": ["react", "react-native"]
+    "types": [
+      "react",
+      "react-native"
+    ]
   },
-  "include": ["src", "supabase/functions", "supabase/migrations"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "extends": "expo/tsconfig.base"
 }

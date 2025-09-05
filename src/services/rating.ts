@@ -4,7 +4,8 @@ import { isFlagEnabled } from '../config/featureFlags';
 export async function maybePromptForRating(): Promise<boolean> {
   if (!isFlagEnabled('enableInAppRatingPrompt')) return false;
   if (await StoreReview.isAvailableAsync()) {
-    return StoreReview.requestReview();
+    await StoreReview.requestReview();
+    return true;
   }
   return false;
 }

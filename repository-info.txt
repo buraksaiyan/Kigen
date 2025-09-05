@@ -1,4 +1,4 @@
 Repository: Kigen
-Purpose: MVP scaffold (React Native / Expo) with Supabase backend integration, Sentry monitoring, and journaling module.
+Purpose: MVP scaffold (React Native / Expo) with Supabase backend integration and journaling module.
 Status: Internal / Proprietary (see NOTICE_INTERNAL.md)
 Next Steps: Configure secrets, finalize branding assets, implement real usage metrics & monetization.
