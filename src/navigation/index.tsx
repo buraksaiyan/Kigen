@@ -1,122 +1,108 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Modal, View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../modules/auth/AuthProvider';
 import { DashboardScreen } from '../modules/dashboard/DashboardScreen';
 import { JournalListScreen } from '../modules/journal/JournalListScreen';
 import { JournalEditScreen } from '../modules/journal/JournalEditScreen';
-import { View, Text, Button, TextInput, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { LoginScreen } from '../screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
-const AuthScreen: React.FC = () => {
-  const { signInWithOtp, loading } = useAuth();
-  const [email, setEmail] = useState('');
-  
-  return (
-    <View style={{
-      flex: 1,
-      backgroundColor: '#000000',
-      padding: 24,
-      justifyContent: 'center',
-      gap: 24,
-    }}>
-      <View style={{ alignItems: 'center', marginBottom: 40 }}>
-        <Text style={{ 
-          fontSize: 32, 
-          fontWeight: '700', 
-          color: '#FFFFFF',
-          marginBottom: 8 
-        }}>
-          Welcome to Kigen
-        </Text>
-        <Text style={{ 
-          fontSize: 16, 
-          color: '#8E8E93',
-          textAlign: 'center'
-        }}>
-          Your journey to focused living starts here
-        </Text>
-      </View>
-
-      <View style={{ gap: 16 }}>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>
-          Sign in with your email
-        </Text>
-        <TextInput
-          autoCapitalize="none"
-          keyboardType="email-address"
-          placeholder="Enter your email"
-          placeholderTextColor="#636366"
-          value={email}
-          onChangeText={setEmail}
-          style={{
-            backgroundColor: '#1C1C1E',
-            padding: 16,
-            borderRadius: 12,
-            fontSize: 16,
-            color: '#FFFFFF',
-            borderWidth: 1,
-            borderColor: '#38383A',
-          }}
-        />
-        <TouchableOpacity
-          disabled={loading || !email}
-          onPress={() => signInWithOtp(email)}
-          style={{
-            backgroundColor: loading || !email ? '#636366' : '#007AFF',
-            padding: 16,
-            borderRadius: 12,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{
-            color: '#FFFFFF',
-            fontSize: 16,
-            fontWeight: '600',
-          }}>
-            {loading ? 'Sending...' : 'Send Magic Link'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={{
-        fontSize: 14,
-        color: '#636366',
-        textAlign: 'center',
-        marginTop: 20,
-      }}>
-        We'll send you a secure link to sign in
-      </Text>
-    </View>
-  );
+// Theme configuration - matches your existing app theme
+const theme = {
+  colors: {
+    primary: '#007AFF',
+    secondary: '#5856D6', 
+    success: '#34C759',
+    danger: '#FF3B30',
+    warning: '#FF9500',
+    background: '#000000',
+    surface: '#1C1C1E',
+    surfaceSecondary: '#2C2C2E',
+    border: '#38383A',
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#8E8E93',
+      tertiary: '#636366',
+      disabled: '#48484A',
+    },
+  },
 };
 
 export const Navigation: React.FC = () => {
-  const { session, loading } = useAuth();
+  const { session, loading, isLoginScreenVisible, hideLoginScreen } = useAuth();
 
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Loading...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+        <Text style={[styles.loadingText, { color: theme.colors.text.primary }]}>
+          Loading...
+        </Text>
       </View>
     );
   }
 
   return (
-    <NavigationContainer>
-      {session ? (
-        <Stack.Navigator>
-          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="JournalList" component={JournalListScreen} options={{ title: 'Journal' }} />
-          <Stack.Screen name="JournalEdit" component={JournalEditScreen} options={{ title: 'Edit Entry' }} />
+    <>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Dashboard"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: theme.colors.surface,
+            },
+            headerTintColor: theme.colors.text.primary,
+            contentStyle: {
+              backgroundColor: theme.colors.background,
+            },
+          }}
+        >
+          <Stack.Screen 
+            name="Dashboard" 
+            component={DashboardScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="JournalList" 
+            component={JournalListScreen}
+            options={{ 
+              title: 'Journal',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="JournalEdit" 
+            component={JournalEditScreen}
+            options={{ 
+              title: 'Write Entry',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
         </Stack.Navigator>
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      )}
-    </NavigationContainer>
+      </NavigationContainer>
+
+      {/* Login Modal */}
+      <Modal
+        visible={isLoginScreenVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={hideLoginScreen}
+      >
+        <LoginScreen onClose={hideLoginScreen} theme={theme} />
+      </Modal>
+    </>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+  },
+});

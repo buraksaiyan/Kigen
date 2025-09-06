@@ -16,9 +16,10 @@ import { FocusLogsScreen } from '../../screens/FocusLogsScreen';
 import UsageDashboard from '../../components/UsageDashboard';
 import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
+import { AdminPanel } from '../../components/AdminPanel';
 
 export const DashboardScreen: React.FC = () => {
-  const { signOut } = useAuth();
+  const { signOut, session, showLoginScreen } = useAuth();
   const [disciplineScore] = useState(72); // Mock data - you'll replace this with real system
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,6 +27,7 @@ export const DashboardScreen: React.FC = () => {
   const [isFocusLogsOpen, setIsFocusLogsOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
   useEffect(() => {
     maybePromptForRating();
@@ -89,11 +91,20 @@ export const DashboardScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         {/* Header with Logo and Floating Menu */}
         <View style={styles.topHeader}>
-          <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
-            <Text style={styles.menuButtonText}>☰</Text>
-          </TouchableOpacity>
+          {/* Left Side: Menu Button */}
+          <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
+              <Text style={styles.menuButtonText}>☰</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Center: Logo - Now perfectly centered */}
           <View style={styles.logoContainer}>
             <KigenLogo size="small" />
+          </View>
+          
+          {/* Right Side: Empty for balance */}
+          <View style={styles.headerRight}>
           </View>
         </View>
         
@@ -224,6 +235,16 @@ export const DashboardScreen: React.FC = () => {
           visible={isFocusLogsOpen}
           onClose={() => setIsFocusLogsOpen(false)}
         />
+
+        {/* Admin Panel Modal */}
+        {isAdminPanelOpen && (
+          <View style={styles.fullScreenModal}>
+            <AdminPanel 
+              theme={theme} 
+              onClose={() => setIsAdminPanelOpen(false)} 
+            />
+          </View>
+        )}
       </SafeAreaView>
     </>
   );
@@ -270,15 +291,26 @@ const styles = StyleSheet.create({
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.xs, // Reduced padding for closer edge
+    paddingHorizontal: theme.spacing.sm,
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
     justifyContent: 'space-between',
   },
+  headerLeft: {
+    width: 80, // Increased for better balance
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
   logoContainer: {
     flex: 1,
     alignItems: 'center',
-    marginRight: 44, // Balance for menu button
+    justifyContent: 'center',
+  },
+  headerRight: {
+    width: 80, // Same width as headerLeft for perfect balance
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   menuButtonText: {
     fontSize: 20,
@@ -287,9 +319,6 @@ const styles = StyleSheet.create({
   headerCenter: {
     flex: 1,
     alignItems: 'center',
-  },
-  headerRight: {
-    width: 44, // Same as menu button for balance
   },
   welcomeSubtext: {
     ...theme.typography.body,
@@ -435,6 +464,29 @@ const styles = StyleSheet.create({
   closeFullScreenText: {
     ...theme.typography.body,
     color: theme.colors.text.primary,
+    fontWeight: '600',
+  },
+  authButton: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+  },
+  authButtonText: {
+    ...theme.typography.small,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  adminButton: {
+    backgroundColor: theme.colors.secondary,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginLeft: 6, // Smaller gap between buttons
+  },
+  adminButtonText: {
+    ...theme.typography.small,
+    color: '#FFFFFF',
     fontWeight: '600',
   },
 });

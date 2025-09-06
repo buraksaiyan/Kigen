@@ -18,6 +18,8 @@ import { FlowBackground } from '../components/FlowBackground';
 import { GladiatorBackground } from '../components/GladiatorBackground';
 import { MeditationBackground } from '../components/MeditationBackground';
 import { BodyFocusBackground } from '../components/BodyFocusBackground';
+import { NoTechBackground } from '../components/NoTechBackground';
+import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
 
@@ -35,7 +37,7 @@ interface Goal {
 
 interface FocusLog {
   id: string;
-  type: 'free' | 'executioner';
+  type: 'free' | 'executioner' | 'notech';
   goalId?: string;
   goalTitle?: string;
   duration: number; // in minutes
@@ -60,7 +62,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   onClose,
   onNavigateToGoals,
 }) => {
-  const [sessionType, setSessionType] = useState<'selection' | 'free' | 'executioner' | 'meditation' | 'body'>('selection');
+  const [sessionType, setSessionType] = useState<'selection' | 'free' | 'executioner' | 'notech' | 'meditation' | 'body'>('selection');
   const [goals, setGoals] = useState<Goal[]>([]);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [duration, setDuration] = useState('25');
@@ -187,6 +189,30 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
+  const startNoTechSession = async () => {
+    const durationMinutes = parseInt(duration);
+    if (!durationMinutes || durationMinutes < 1) {
+      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      return;
+    }
+
+    const sessionId = `notech_${Date.now()}`;
+    const success = await startFocusSession(sessionId, handleUsageUpdate);
+    
+    if (success) {
+      setTimeLeft(durationMinutes * 60);
+      setIsActive(true);
+      setSessionStartTime(new Date().toISOString());
+      setCurrentSessionId(sessionId);
+      setUnlocks(0);
+      setAppUsageMinutes(0);
+      setSessionType('notech');
+      setShowNotification(true);
+    } else {
+      showAlert('Error', 'Failed to start focus session. Please try again.');
+    }
+  };
+
   const startMeditationSession = async () => {
     const durationMinutes = parseInt(duration);
     if (!durationMinutes || durationMinutes < 1) {
@@ -244,6 +270,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       `Great work! You completed your ${
         sessionType === 'free' ? 'Flow' : 
         sessionType === 'executioner' ? 'Executioner' :
+        sessionType === 'notech' ? 'No Tech Focus' :
         sessionType === 'meditation' ? 'Meditation' : 'Body Focus'
       } session.`,
       [{ text: 'OK', onPress: () => resetSession() }]
@@ -286,7 +313,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       
       const focusLog: FocusLog = {
         id: Date.now().toString(),
-        type: sessionType as 'free' | 'executioner',
+        type: sessionType as 'free' | 'executioner' | 'notech',
         goalId: selectedGoal?.id,
         goalTitle: selectedGoal?.title,
         duration: originalDuration,
@@ -381,13 +408,15 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>起源 Focus</Text>
+          <View style={styles.placeholder} />
           <View style={styles.placeholder} />
         </View>
 
+        <KigenKanjiBackground />
+
         {sessionType === 'selection' && (
           <View style={styles.selectionContainer}>
-            <Text style={styles.subtitle}>Choose Your Focus Mode</Text>
+            <Text style={styles.subtitle}>Choose Your 起源 Focus Mode</Text>
             
             <TouchableOpacity
               style={[styles.modeButton, styles.freeMode]}
@@ -414,6 +443,17 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <View style={styles.modeContent}>
                 <Text style={styles.modeTitle}>Executioner Focus</Text>
                 <Text style={styles.modeDescription}>Fight with your own will to conquer your goals.</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modeButton, styles.noTechMode]}
+              onPress={() => setSessionType('notech')}
+            >
+              <NoTechBackground style={styles.modeBackgroundPreview} />
+              <View style={styles.modeContent}>
+                <Text style={styles.modeTitle}>No Tech Focus</Text>
+                <Text style={styles.modeDescription}>Life is worth more than scrolling. Drop your phone.</Text>
               </View>
             </TouchableOpacity>
 
@@ -540,6 +580,36 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
               <TouchableOpacity style={styles.startButton} onPress={startMeditationSession}>
                 <Text style={styles.startButtonText}>Start Meditation Focus</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {sessionType === 'notech' && !isActive && (
+          <View style={styles.setupContainer}>
+            <NoTechBackground style={styles.noTechBackground} />
+            <View style={styles.contentWrapper}>
+              <Text style={styles.setupTitle}>No Tech Focus Setup</Text>
+              <Text style={styles.setupDescription}>Life is worth more than scrolling. Drop your phone and reconnect with reality.</Text>
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={duration}
+                  onChangeText={setDuration}
+                  keyboardType="numeric"
+                  placeholder="25"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.startButton} onPress={startNoTechSession}>
+                <Text style={styles.startButtonText}>Start No Tech Focus</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
@@ -698,6 +768,9 @@ const styles = StyleSheet.create({
   },
   executionerMode: {
     borderColor: 'rgba(251, 146, 60, 0.8)',
+  },
+  noTechMode: {
+    borderColor: 'rgba(217, 119, 6, 0.8)',
   },
   meditationMode: {
     borderColor: 'rgba(34, 197, 94, 0.8)',
@@ -922,6 +995,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   meditationBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 1.0,
+    borderRadius: 20,
+  },
+  noTechBackground: {
     position: 'absolute',
     top: 0,
     left: 0,
