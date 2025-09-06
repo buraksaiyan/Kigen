@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
@@ -107,32 +108,36 @@ export const DashboardScreen: React.FC = () => {
             
             <View style={styles.actionGrid}>
               <Button
-                title="📝 Journal"
-                onPress={handleJournal}
+                title="Goals"
+                onPress={() => setCurrentScreen('goals')}
                 style={styles.actionButton}
               />
               <Button
-                title="📊 Track Usage"
-                onPress={() => {}}
-                variant="outline"
+                title="� Journal"
+                onPress={handleJournal}
                 style={styles.actionButton}
               />
             </View>
             
             <View style={styles.actionGrid}>
               <Button
-                title="⚡ Focus Session"
+                title="Focus Session"
                 onPress={handleTasks}
                 variant="secondary"
                 style={styles.actionButton}
               />
               <Button
-                title="� View Progress"
+                title="View Progress"
                 onPress={() => {}}
                 variant="outline"
                 style={styles.actionButton}
               />
             </View>
+          </View>
+
+          {/* Track Usage Section */}
+          <View style={styles.usageSection}>
+            <Text style={styles.usageTitle}>Track Usage</Text>
           </View>
 
           {/* Current Status */}
@@ -195,7 +200,7 @@ export const DashboardScreen: React.FC = () => {
               style={styles.closeFullScreen}
               onPress={() => setCurrentScreen('dashboard')}
             >
-              <Text style={styles.closeFullScreenText}>✕ Close</Text>
+              <Text style={styles.closeFullScreenText}>Close</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -207,7 +212,7 @@ export const DashboardScreen: React.FC = () => {
               style={styles.closeFullScreen}
               onPress={() => setCurrentScreen('dashboard')}
             >
-              <Text style={styles.closeFullScreenText}>✕ Close</Text>
+              <Text style={styles.closeFullScreenText}>Close</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -346,6 +351,15 @@ const styles = StyleSheet.create({
     ...theme.typography.small,
     color: theme.colors.text.secondary,
     marginTop: theme.spacing.xs,
+    textAlign: 'center',
+  },
+  usageSection: {
+    marginBottom: theme.spacing.md,
+  },
+  usageTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.sm,
     textAlign: 'center',
   },
   devCard: {
