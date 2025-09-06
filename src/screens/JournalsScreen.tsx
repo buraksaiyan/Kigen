@@ -5,15 +5,24 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   StatusBar,
+  Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 
-export const JournalsScreen: React.FC = () => {
+interface JournalsScreenProps {
+  visible?: boolean;
+  onClose?: () => void;
+}
+
+export const JournalsScreen: React.FC<JournalsScreenProps> = ({
+  visible = true,
+  onClose,
+}) => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0 });
@@ -112,14 +121,23 @@ export const JournalsScreen: React.FC = () => {
   }
 
   return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>起源 Journals</Text>
+          <View style={styles.placeholder} />
+        </View>
+
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>📝 Your Journals</Text>
-            <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
+          {/* Content */}
+          <View style={styles.content}>
+            <View style={styles.contentHeader}>
+              <Text style={styles.title}>Your Journals</Text>
+              <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
+            </View>
           </View>
 
           {/* Stats */}
@@ -200,7 +218,7 @@ export const JournalsScreen: React.FC = () => {
           )}
         </ScrollView>
       </SafeAreaView>
-    </>
+    </Modal>
   );
 };
 
@@ -209,9 +227,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    color: '#9CA3AF',
+    fontSize: 16,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  placeholder: {
+    width: 60,
+  },
+  content: {
+    paddingHorizontal: theme.spacing.lg,
+  },
   scrollView: {
     flex: 1,
-    paddingHorizontal: theme.spacing.lg,
   },
   loadingContainer: {
     flex: 1,
@@ -222,7 +266,7 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
   },
-  header: {
+  contentHeader: {
     paddingVertical: theme.spacing.xl,
     alignItems: 'center',
   },
