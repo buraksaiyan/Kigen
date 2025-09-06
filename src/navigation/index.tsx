@@ -108,7 +108,7 @@ export const Navigation: React.FC = () => {
     <NavigationContainer>
       {session ? (
         <Stack.Navigator>
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false }} />
           <Stack.Screen name="JournalList" component={JournalListScreen} options={{ title: 'Journal' }} />
           <Stack.Screen name="JournalEdit" component={JournalEditScreen} options={{ title: 'Edit Entry' }} />
         </Stack.Navigator>

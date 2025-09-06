@@ -11,64 +11,47 @@ export const GladiatorBackground: React.FC<GladiatorBackgroundProps> = ({ style 
     <View style={[styles.container, style]}>
       {/* Black base background */}
       <View style={styles.blackBase} />
-      <Svg width="100%" height="100%" viewBox="0 0 400 600" style={StyleSheet.absoluteFillObject}>
+      <Svg width="100%" height="100%" viewBox="0 0 800 600" style={StyleSheet.absoluteFillObject}>
         <Defs>
-          <RadialGradient id="gladiatorGradient" cx="50%" cy="40%" r="70%">
-            <Stop offset="0%" stopColor="rgba(251, 146, 60, 0.3)" stopOpacity="1" />
-            <Stop offset="50%" stopColor="rgba(217, 119, 6, 0.2)" stopOpacity="1" />
-            <Stop offset="100%" stopColor="rgba(180, 83, 9, 0.1)" stopOpacity="1" />
+          <RadialGradient id="executionerGradient" cx="50%" cy="30%" r="80%">
+            <Stop offset="0%" stopColor="rgba(239, 68, 68, 0.4)" stopOpacity="1" />
+            <Stop offset="50%" stopColor="rgba(220, 38, 38, 0.3)" stopOpacity="1" />
+            <Stop offset="100%" stopColor="rgba(153, 27, 27, 0.2)" stopOpacity="1" />
           </RadialGradient>
         </Defs>
         
-        {/* Gladiator mask outline */}
+        {/* Flowing power waves - full width coverage with red theme */}
         <Path 
-          d="M200,100 C240,100 280,130 280,180 C280,200 275,220 270,240 C265,280 250,320 200,320 C150,320 135,280 130,240 C125,220 120,200 120,180 C120,130 160,100 200,100 Z" 
-          fill="none" 
-          stroke="url(#gladiatorGradient)" 
-          strokeWidth="2" 
+          d="M0,150 Q200,100 400,150 Q600,200 800,150 L800,250 Q600,300 400,250 Q200,200 0,250 Z" 
+          fill="url(#executionerGradient)" 
+          opacity="0.6"
+        />
+        <Path 
+          d="M0,200 Q150,150 300,200 Q450,250 600,200 Q750,150 900,200 L900,300 Q750,350 600,300 Q450,250 300,300 Q150,350 0,300 Z" 
+          fill="url(#executionerGradient)" 
+          opacity="0.5"
+        />
+        <Path 
+          d="M0,300 Q100,250 200,300 Q300,350 400,300 Q500,250 600,300 Q700,350 800,300 L800,400 Q700,450 600,400 Q500,350 400,400 Q300,450 200,400 Q100,350 0,400 Z" 
+          fill="url(#executionerGradient)" 
           opacity="0.4"
         />
-        
-        {/* Eye holes */}
-        <Ellipse cx="170" cy="180" rx="15" ry="20" fill="none" stroke="url(#gladiatorGradient)" strokeWidth="2" opacity="0.3"/>
-        <Ellipse cx="230" cy="180" rx="15" ry="20" fill="none" stroke="url(#gladiatorGradient)" strokeWidth="2" opacity="0.3"/>
-        
-        {/* Nose guard */}
         <Path 
-          d="M200,190 L200,220 M195,210 L205,210" 
-          stroke="url(#gladiatorGradient)" 
-          strokeWidth="2" 
+          d="M0,400 Q250,350 500,400 Q750,450 1000,400 L1000,500 Q750,550 500,500 Q250,450 0,500 Z" 
+          fill="url(#executionerGradient)" 
           opacity="0.3"
         />
         
-        {/* Decorative elements */}
-        <Path 
-          d="M160,140 Q180,120 200,140 Q220,120 240,140" 
-          fill="none" 
-          stroke="url(#gladiatorGradient)" 
-          strokeWidth="1.5" 
-          opacity="0.2"
-        />
-        
-        {/* Fire/strength symbols */}
-        <Path 
-          d="M100,200 Q110,180 120,200 Q130,180 140,200" 
-          fill="none" 
-          stroke="rgba(251, 146, 60, 0.2)" 
-          strokeWidth="2"
-        />
-        <Path 
-          d="M260,200 Q270,180 280,200 Q290,180 300,200" 
-          fill="none" 
-          stroke="rgba(251, 146, 60, 0.2)" 
-          strokeWidth="2"
-        />
-        
-        {/* Background texture */}
-        <Circle cx="120" cy="350" r="2" fill="rgba(217, 119, 6, 0.2)"/>
-        <Circle cx="280" cy="380" r="1.5" fill="rgba(180, 83, 9, 0.2)"/>
-        <Circle cx="80" cy="450" r="2.5" fill="rgba(251, 146, 60, 0.2)"/>
-        <Circle cx="320" cy="420" r="2" fill="rgba(217, 119, 6, 0.2)"/>
+        {/* Power particles scattered across full width */}
+        <Circle cx="60" cy="180" r="3" fill="rgba(239, 68, 68, 0.5)"/>
+        <Circle cx="200" cy="160" r="2.5" fill="rgba(220, 38, 38, 0.5)"/>
+        <Circle cx="340" cy="220" r="2" fill="rgba(153, 27, 27, 0.5)"/>
+        <Circle cx="120" cy="380" r="2.5" fill="rgba(239, 68, 68, 0.4)"/>
+        <Circle cx="280" cy="320" r="2" fill="rgba(220, 38, 38, 0.5)"/>
+        <Circle cx="350" cy="180" r="3" fill="rgba(153, 27, 27, 0.4)"/>
+        <Circle cx="80" cy="450" r="2.5" fill="rgba(239, 68, 68, 0.5)"/>
+        <Circle cx="240" cy="480" r="2" fill="rgba(220, 38, 38, 0.4)"/>
+        <Circle cx="380" cy="420" r="3" fill="rgba(153, 27, 27, 0.5)"/>
       </Svg>
     </View>
   );
