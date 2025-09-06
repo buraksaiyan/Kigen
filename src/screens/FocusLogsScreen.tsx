@@ -22,6 +22,8 @@ interface FocusLog {
   status: 'completed' | 'aborted';
   startTime: string;
   endTime: string;
+  rating?: 'excellent' | 'good' | 'fair' | 'poor';
+  ratingReason?: string;
 }
 
 interface FocusLogsScreenProps {
@@ -102,6 +104,22 @@ export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
   };
 
   const getSessionRating = (log: FocusLog): { rating: string; color: string } => {
+    // Use AI rating if available
+    if (log.rating) {
+      const ratingColors = {
+        excellent: '#10B981', // Green
+        good: '#6D28D9',      // Purple  
+        fair: '#F59E0B',      // Orange
+        poor: '#EF4444',      // Red
+      };
+      
+      return { 
+        rating: log.rating.charAt(0).toUpperCase() + log.rating.slice(1), 
+        color: ratingColors[log.rating] 
+      };
+    }
+    
+    // Fallback to old algorithm for legacy logs
     const completionPercentage = (log.actualDuration / log.duration) * 100;
     const unlocksPerHour = log.actualDuration > 0 ? (log.unlocks / (log.actualDuration / 60)) : 0;
     
@@ -207,6 +225,12 @@ export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
                         <Text style={styles.logDetailValue}>{formatDate(log.startTime)}</Text>
                       </View>
                     </View>
+                    
+                    {log.ratingReason && (
+                      <View style={styles.ratingReasonContainer}>
+                        <Text style={styles.ratingReasonText}>{log.ratingReason}</Text>
+                      </View>
+                    )}
                   </View>
                 );
               })
@@ -366,5 +390,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  ratingReasonContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#374151',
+  },
+  ratingReasonText: {
+    color: '#9CA3AF',
+    fontSize: 13,
+    fontStyle: 'italic',
+    lineHeight: 18,
   },
 });
