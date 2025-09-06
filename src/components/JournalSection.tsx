@@ -8,6 +8,8 @@ import {
   ScrollView,
   Alert,
   Animated,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
@@ -42,10 +44,13 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
   const loadEntries = async () => {
     try {
+      setIsLoading(true);
       const loadedEntries = await journalStorage.getAllEntries();
-      setEntries(loadedEntries.slice(0, 10)); // Show last 10 entries
+      setEntries(loadedEntries); // Show all entries, not just 10
     } catch (error) {
       console.error('Error loading entries:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,99 +121,123 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <Card style={styles.journalCard}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.title}>📝 Journal</Text>
-            <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoid}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+      >
+        <Card style={styles.journalCard}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.title}>📝 Journal</Text>
+              <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeText}>×</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeText}>×</Text>
-          </TouchableOpacity>
-        </View>
 
-        {/* Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.streak}</Text>
-            <Text style={styles.statLabel}>Day Streak</Text>
+          {/* Stats */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.streak}</Text>
+              <Text style={styles.statLabel}>Day Streak</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.thisMonth}</Text>
+              <Text style={styles.statLabel}>This Month</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.totalEntries}</Text>
+              <Text style={styles.statLabel}>Total Entries</Text>
+            </View>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.thisMonth}</Text>
-            <Text style={styles.statLabel}>This Month</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.totalEntries}</Text>
-            <Text style={styles.statLabel}>Total Entries</Text>
-          </View>
-        </View>
 
-        {/* New Entry Input */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>How was your discipline today?</Text>
-          
-          {/* Mood Selection */}
-          <View style={styles.moodSelector}>
-            {(['terrible', 'bad', 'okay', 'good', 'great'] as const).map((mood) => (
+          {/* Recent Entries - Scrollable */}
+          <View style={styles.contentContainer}>
+            <ScrollView style={styles.entriesContainer} showsVerticalScrollIndicator={false}>
+              <Text style={styles.entriesTitle}>Recent Entries</Text>
+              {entries.length === 0 ? (
+                <Text style={styles.emptyText}>Start your discipline journal today! ✨</Text>
+              ) : (
+                entries.map((entry) => (
+                  <View key={entry.id} style={styles.entryCard}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
+                      <Text style={styles.entryMood}>{getMoodEmoji(entry.mood)}</Text>
+                    </View>
+                    <Text style={styles.entryContent}>{entry.content}</Text>
+                  </View>
+                ))
+              )}
+            </ScrollView>
+          </View>
+
+          {/* Input Section - Fixed at bottom */}
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>How was your discipline today?</Text>
+            
+            {/* Mood Selection */}
+            <View style={styles.moodSelector}>
+              {(['terrible', 'bad', 'okay', 'good', 'great'] as const).map((mood) => (
+                <TouchableOpacity
+                  key={mood}
+                  style={[
+                    styles.moodButton,
+                    selectedMood === mood && styles.moodButtonSelected,
+                  ]}
+                  onPress={() => setSelectedMood(mood)}
+                >
+                  <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TextInput
+              style={styles.textInput}
+              value={newEntry}
+              onChangeText={setNewEntry}
+              placeholder="Write about your discipline progress, challenges, wins..."
+              placeholderTextColor={theme.colors.text.tertiary}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+            
+            {/* Button Row - Side by side */}
+            <View style={styles.buttonRow}>
               <TouchableOpacity
-                key={mood}
-                style={[
-                  styles.moodButton,
-                  selectedMood === mood && styles.moodButtonSelected,
-                ]}
-                onPress={() => setSelectedMood(mood)}
+                style={styles.cancelButton}
+                onPress={() => {
+                  setNewEntry('');
+                  setSelectedMood('okay');
+                }}
               >
-                <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-            ))}
+              
+              <TouchableOpacity
+                style={[styles.addButton, (!newEntry.trim() || isLoading) && styles.addButtonDisabled]}
+                onPress={handleAddEntry}
+                disabled={!newEntry.trim() || isLoading}
+              >
+                <Text style={styles.addButtonText}>
+                  {isLoading ? 'Saving...' : 'Add Entry'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <TextInput
-            style={styles.textInput}
-            value={newEntry}
-            onChangeText={setNewEntry}
-            placeholder="Write about your discipline progress, challenges, wins..."
-            placeholderTextColor={theme.colors.text.tertiary}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
-          
-          <TouchableOpacity
-            style={[styles.addButton, (!newEntry.trim() || isLoading) && styles.addButtonDisabled]}
-            onPress={handleAddEntry}
-            disabled={!newEntry.trim() || isLoading}
-          >
-            <Text style={styles.addButtonText}>
-              {isLoading ? 'Saving...' : 'Add Entry'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Recent Entries */}
-        <ScrollView style={styles.entriesContainer} showsVerticalScrollIndicator={false}>
-          <Text style={styles.entriesTitle}>Recent Entries</Text>
-          {entries.length === 0 ? (
-            <Text style={styles.emptyText}>Start your discipline journal today! ✨</Text>
-          ) : (
-            entries.map((entry) => (
-              <View key={entry.id} style={styles.entryCard}>
-                <View style={styles.entryHeader}>
-                  <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                  <Text style={styles.entryMood}>{getMoodEmoji(entry.mood)}</Text>
-                </View>
-                <Text style={styles.entryContent}>{entry.content}</Text>
-              </View>
-            ))
-          )}
-        </ScrollView>
-      </Card>
+        </Card>
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoid: {
+    flex: 1,
+  },
   container: {
     position: 'absolute',
     top: 0,
@@ -281,7 +310,30 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   inputSection: {
-    marginBottom: theme.spacing.lg,
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: theme.colors.surfaceSecondary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.md,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
   },
   inputLabel: {
     ...theme.typography.bodyLarge,
@@ -313,12 +365,14 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.md,
-    minHeight: 100,
+    minHeight: 80,
+    maxHeight: 120,
     borderWidth: 1,
     borderColor: theme.colors.border,
     marginBottom: theme.spacing.md,
   },
   addButton: {
+    flex: 1,
     backgroundColor: theme.colors.primary,
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,

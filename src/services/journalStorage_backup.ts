@@ -3,21 +3,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface JournalEntry {
   id: string;
   content: string;
-  mood: 'terrible' | 'bad' | 'okay' | 'good' | 'great';
-  date: string; // ISO date string
+  date: string; // ISO string
+  createdAt: string; // ISO string
+  mood?: 'great' | 'good' | 'okay' | 'bad' | 'terrible';
 }
 
 const STORAGE_KEY = '@kigen_journal_entries';
 
 export const journalStorage = {
   // Get all journal entries
-  getAllEntries: async (): Promise<JournalEntry[]> => {
+  async getAllEntries(): Promise<JournalEntry[]> {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (!stored) return [];
-      
-      const entries: JournalEntry[] = JSON.parse(stored);
-      // Sort by date, newest first
+      const entriesJson = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!entriesJson) return [];
+      const entries = JSON.parse(entriesJson) as JournalEntry[];
       return entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     } catch (error) {
       console.error('Error loading journal entries:', error);
@@ -26,18 +25,22 @@ export const journalStorage = {
   },
 
   // Add new journal entry
-  addEntry: async (content: string, mood: JournalEntry['mood']): Promise<void> => {
+  async addEntry(content: string, mood?: JournalEntry['mood']): Promise<JournalEntry> {
     try {
-      const entries = await journalStorage.getAllEntries();
+      const now = new Date();
       const newEntry: JournalEntry = {
-        id: Date.now().toString(),
+        id: `entry_${now.getTime()}`,
         content: content.trim(),
+        date: now.toISOString().split('T')[0]!, // YYYY-MM-DD
+        createdAt: now.toISOString(),
         mood,
-        date: new Date().toISOString(),
       };
+
+      const existingEntries = await this.getAllEntries();
+      const updatedEntries = [newEntry, ...existingEntries];
       
-      entries.unshift(newEntry); // Add to beginning
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedEntries));
+      return newEntry;
     } catch (error) {
       console.error('Error adding journal entry:', error);
       throw error;
@@ -53,17 +56,19 @@ export const journalStorage = {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedEntries));
   },
 
-  // Delete entry
   deleteEntry: async (id: string): Promise<void> => {
     const entries = await journalStorage.getAllEntries();
     const filteredEntries = entries.filter(entry => entry.id !== id);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filteredEntries));
   },
+      throw error;
+    }
+  },
 
   // Get entries for specific date
-  getEntriesForDate: async (date: string): Promise<JournalEntry[]> => {
+  async getEntriesForDate(date: string): Promise<JournalEntry[]> {
     try {
-      const allEntries = await journalStorage.getAllEntries();
+      const allEntries = await this.getAllEntries();
       return allEntries.filter(entry => entry.date === date);
     } catch (error) {
       console.error('Error getting entries for date:', error);
@@ -72,9 +77,9 @@ export const journalStorage = {
   },
 
   // Get entry stats
-  getStats: async (): Promise<{ totalEntries: number; streak: number; thisMonth: number }> => {
+  async getStats(): Promise<{ totalEntries: number; streak: number; thisMonth: number }> {
     try {
-      const entries = await journalStorage.getAllEntries();
+      const entries = await this.getAllEntries();
       const now = new Date();
       const thisMonth = now.getMonth();
       const thisYear = now.getFullYear();

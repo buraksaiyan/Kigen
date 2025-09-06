@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
@@ -8,12 +8,17 @@ import { FocusGauge } from '../../components/FocusGauge';
 import { KigenLogo } from '../../components/KigenLogo';
 import { JournalSection } from '../../components/JournalSection';
 import { TaskSection } from '../../components/TaskSection';
+import { Sidebar } from '../../components/Sidebar';
+import { GoalsScreen } from '../../screens/GoalsScreen';
+import { JournalsScreen } from '../../screens/JournalsScreen';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
   const [disciplineScore] = useState(72); // Mock data - you'll replace this with real system
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState('dashboard');
 
   useEffect(() => {
     maybePromptForRating();
@@ -27,6 +32,29 @@ export const DashboardScreen: React.FC = () => {
     setIsTasksOpen(true);
   };
 
+  const handleSidebar = () => {
+    setIsSidebarOpen(true);
+  };
+
+  const handleSidebarNavigation = (screen: string) => {
+    setCurrentScreen(screen);
+    // Handle navigation based on screen
+    switch(screen) {
+      case 'dashboard':
+        // Already on dashboard, just close sidebar
+        break;
+      case 'journals':
+        setIsJournalOpen(true);
+        break;
+      case 'goals':
+        setIsTasksOpen(true);
+        break;
+      // Add more cases as needed
+      default:
+        console.log('Navigate to:', screen);
+    }
+  };
+
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
@@ -35,12 +63,18 @@ export const DashboardScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with Kigen Logo */}
+          {/* Header with Kigen Logo and Menu */}
           <View style={styles.header}>
-            <KigenLogo size="large" />
-            <Text style={styles.welcomeSubtext}>
-              Building discipline, one day at a time
-            </Text>
+            <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
+              <Text style={styles.menuButtonText}>☰</Text>
+            </TouchableOpacity>
+            <View style={styles.headerCenter}>
+              <KigenLogo size="large" />
+              <Text style={styles.welcomeSubtext}>
+                Building discipline, one day at a time
+              </Text>
+            </View>
+            <View style={styles.headerRight} />
           </View>
 
           {/* Main Discipline Score */}
@@ -144,6 +178,39 @@ export const DashboardScreen: React.FC = () => {
           isExpanded={isTasksOpen}
           onClose={() => setIsTasksOpen(false)}
         />
+        
+        {/* Sidebar */}
+        <Sidebar 
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onNavigate={handleSidebarNavigation}
+          currentScreen={currentScreen}
+        />
+        
+        {/* Full Screen Modals */}
+        {currentScreen === 'goals' && (
+          <View style={styles.fullScreenModal}>
+            <GoalsScreen />
+            <TouchableOpacity 
+              style={styles.closeFullScreen}
+              onPress={() => setCurrentScreen('dashboard')}
+            >
+              <Text style={styles.closeFullScreenText}>✕ Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        
+        {currentScreen === 'journals' && (
+          <View style={styles.fullScreenModal}>
+            <JournalsScreen />
+            <TouchableOpacity 
+              style={styles.closeFullScreen}
+              onPress={() => setCurrentScreen('dashboard')}
+            >
+              <Text style={styles.closeFullScreenText}>✕ Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </SafeAreaView>
     </>
   );
@@ -159,8 +226,30 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.xxl,
   },
   header: {
-    marginBottom: theme.spacing.xl,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.sm,
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.surfaceSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuButtonText: {
+    fontSize: 20,
+    color: theme.colors.text.primary,
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  headerRight: {
+    width: 44, // Same as menu button for balance
   },
   welcomeSubtext: {
     ...theme.typography.body,
@@ -267,5 +356,29 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.tertiary,
     marginBottom: theme.spacing.sm,
+  },
+  fullScreenModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.colors.background,
+    zIndex: 2000,
+  },
+  closeFullScreen: {
+    position: 'absolute',
+    top: theme.spacing.lg + 30, // Account for status bar
+    right: theme.spacing.lg,
+    backgroundColor: theme.colors.surfaceSecondary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    zIndex: 2001,
+  },
+  closeFullScreenText: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
   },
 });
