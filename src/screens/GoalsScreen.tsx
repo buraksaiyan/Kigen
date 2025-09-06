@@ -204,7 +204,7 @@ export const GoalsScreen: React.FC = () => {
                       title="✓ Complete"
                       onPress={() => markComplete(goal.id)}
                       size="small"
-                      style={[styles.actionButton, { backgroundColor: theme.colors.success }]}
+                      style={[styles.actionButton, { backgroundColor: theme.colors.success }] as any}
                     />
                     <Button
                       title="✗ Failed"
@@ -231,7 +231,7 @@ export const GoalsScreen: React.FC = () => {
             <>
               <Text style={styles.sectionTitle}>Completed Goals ({completedGoals.length})</Text>
               {completedGoals.map(goal => (
-                <Card key={goal.id} style={[styles.goalCard, styles.completedCard]}>
+                <Card key={goal.id} style={[styles.goalCard, styles.completedCard] as any}>
                   <View style={styles.goalHeader}>
                     <Text style={[styles.goalTitle, styles.completedTitle]}>
                       ✓ {goal.title}
@@ -256,7 +256,7 @@ export const GoalsScreen: React.FC = () => {
             <>
               <Text style={styles.sectionTitle}>Failed Goals ({failedGoals.length})</Text>
               {failedGoals.map(goal => (
-                <Card key={goal.id} style={[styles.goalCard, styles.failedCard]}>
+                <Card key={goal.id} style={[styles.goalCard, styles.failedCard] as any}>
                   <View style={styles.goalHeader}>
                     <Text style={[styles.goalTitle, styles.failedTitle]}>
                       ✗ {goal.title}
