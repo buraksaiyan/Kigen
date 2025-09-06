@@ -20,27 +20,48 @@ export const FlowBackground: React.FC<FlowBackgroundProps> = ({ style }) => {
           </RadialGradient>
         </Defs>
         
-        {/* Flowing water waves - full width coverage */}
+                {/* Flowing water waves - full coverage */}
         <Path 
-          d="M0,150 Q200,100 400,150 Q600,200 800,150 L800,250 Q600,300 400,250 Q200,200 0,250 Z" 
+          d="M0,0 L800,0 L800,150 Q600,100 400,150 Q200,200 0,150 Z" 
+          fill="url(#flowGradient)" 
+          opacity="0.6"
+        />
+        <Path 
+          d="M0,100 Q200,50 400,100 Q600,150 800,100 L800,250 Q600,300 400,250 Q200,200 0,250 Z" 
           fill="url(#flowGradient)" 
           opacity="0.5"
         />
         <Path 
-          d="M0,200 Q150,150 300,200 Q450,250 600,200 Q750,150 900,200 L900,300 Q750,350 600,300 Q450,250 300,300 Q150,350 0,300 Z" 
+          d="M0,200 Q150,150 300,200 Q450,250 600,200 Q750,150 800,200 L800,350 Q750,400 600,350 Q450,300 300,350 Q150,400 0,350 Z" 
           fill="url(#flowGradient)" 
           opacity="0.4"
         />
         <Path 
-          d="M0,300 Q100,250 200,300 Q300,350 400,300 Q500,250 600,300 Q700,350 800,300 L800,400 Q700,450 600,400 Q500,350 400,400 Q300,450 200,400 Q100,350 0,400 Z" 
+          d="M0,300 Q100,250 200,300 Q300,350 400,300 Q500,250 600,300 Q700,350 800,300 L800,450 Q700,500 600,450 Q500,400 400,450 Q300,500 200,450 Q100,400 0,450 Z" 
           fill="url(#flowGradient)" 
           opacity="0.3"
         />
         <Path 
-          d="M0,400 Q250,350 500,400 Q750,450 1000,400 L1000,500 Q750,550 500,500 Q250,450 0,500 Z" 
+          d="M0,400 Q200,350 400,400 Q600,450 800,400 L800,600 Q600,550 400,600 Q200,550 0,600 Z" 
           fill="url(#flowGradient)" 
           opacity="0.2"
         />
+        
+        {/* Flowing particles scattered across full area */}
+        <Circle cx="80" cy="120" r="3" fill="rgba(129, 140, 248, 0.5)"/>
+        <Circle cx="220" cy="100" r="2.5" fill="rgba(167, 139, 250, 0.5)"/>
+        <Circle cx="360" cy="180" r="2" fill="rgba(56, 178, 172, 0.5)"/>
+        <Circle cx="140" cy="280" r="2.5" fill="rgba(129, 140, 248, 0.4)"/>
+        <Circle cx="300" cy="220" r="2" fill="rgba(167, 139, 250, 0.5)"/>
+        <Circle cx="460" cy="160" r="3" fill="rgba(56, 178, 172, 0.4)"/>
+        <Circle cx="180" cy="380" r="2" fill="rgba(129, 140, 248, 0.4)"/>
+        <Circle cx="420" cy="340" r="2.5" fill="rgba(167, 139, 250, 0.4)"/>
+        <Circle cx="600" cy="300" r="2" fill="rgba(56, 178, 172, 0.4)"/>
+        <Circle cx="720" cy="220" r="2.5" fill="rgba(129, 140, 248, 0.4)"/>
+        <Circle cx="680" cy="400" r="3" fill="rgba(167, 139, 250, 0.4)"/>
+        <Circle cx="520" cy="480" r="2" fill="rgba(56, 178, 172, 0.4)"/>
+        <Circle cx="240" cy="500" r="2.5" fill="rgba(129, 140, 248, 0.3)"/>
+        <Circle cx="380" cy="520" r="2" fill="rgba(167, 139, 250, 0.3)"/>
         
         {/* Flowing particles scattered across full width */}
         <Circle cx="60" cy="180" r="3" fill="rgba(129, 140, 248, 0.4)"/>

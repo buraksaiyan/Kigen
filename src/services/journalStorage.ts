@@ -26,7 +26,7 @@ export const journalStorage = {
   },
 
   // Add new journal entry
-  addEntry: async (content: string, mood: JournalEntry['mood']): Promise<void> => {
+  addEntry: async (content: string, mood: JournalEntry['mood'] = 'okay'): Promise<void> => {
     try {
       const entries = await journalStorage.getAllEntries();
       const newEntry: JournalEntry = {

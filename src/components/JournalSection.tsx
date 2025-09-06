@@ -25,26 +25,20 @@ interface JournalSectionProps {
 export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onClose }) => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState('');
-  const [selectedMood, setSelectedMood] = useState<JournalEntry['mood']>('okay');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0 });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
       setKeyboardHeight(e.endCoordinates.height);
-      setIsKeyboardVisible(true);
-    });
-    
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardHeight(0);
-      setIsKeyboardVisible(false);
     });
 
-    return () => {
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });    return () => {
       keyboardDidShowListener?.remove();
       keyboardDidHideListener?.remove();
     };
@@ -89,9 +83,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
     setIsLoading(true);
     try {
-      await journalStorage.addEntry(newEntry, selectedMood);
+      await journalStorage.addEntry(newEntry);
       setNewEntry('');
-      setSelectedMood('okay');
       await loadEntries();
       await loadStats();
     } catch (error) {
@@ -108,17 +101,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       day: 'numeric',
       weekday: 'short'
     });
-  };
-
-  const getMoodEmoji = (mood: JournalEntry['mood'] = 'okay') => {
-    const moods = {
-      terrible: 'T',
-      bad: 'B',
-      okay: 'O',
-      good: 'G',
-      great: 'E',
-    };
-    return moods[mood];
   };
 
   const translateY = slideAnim.interpolate({
@@ -143,12 +125,13 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
       <View style={styles.journalCard}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.title}>Journal</Text>
-              <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
-            </View>
+          {/* Modal Header - matches GoalsScreen */}
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>起源 Journal</Text>
+            <View style={styles.placeholder} />
           </View>
           
           {/* Stats */}
@@ -178,7 +161,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
                 <View key={entry.id} style={styles.entryCard}>
                   <View style={styles.entryHeader}>
                     <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                    <Text style={styles.entryMood}>{getMoodEmoji(entry.mood)}</Text>
                   </View>
                   <Text style={styles.entryContent}>{entry.content}</Text>
                 </View>
@@ -202,26 +184,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             }
           ]}
         >
-          <Text style={styles.inputLabel}>How was your discipline today?</Text>
+          <Text style={styles.inputLabel}>Write about your discipline journey</Text>
           
-          {/* Mood Selection - Hide when keyboard is visible */}
-          {!isKeyboardVisible && (
-            <View style={styles.moodSelector}>
-              {(['terrible', 'bad', 'okay', 'good', 'great'] as const).map((mood) => (
-                <TouchableOpacity
-                  key={mood}
-                  style={[
-                    styles.moodButton,
-                    selectedMood === mood && styles.moodButtonSelected,
-                  ]}
-                  onPress={() => setSelectedMood(mood)}
-                >
-                  <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
           <TextInput
             style={styles.textInput}
             value={newEntry}
@@ -239,7 +203,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               style={styles.cancelButton}
               onPress={() => {
                 setNewEntry('');
-                setSelectedMood('okay');
                 onClose(); // Close the journal section
               }}
             >
@@ -295,6 +258,32 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  closeButton: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  closeButtonText: {
+    ...theme.typography.body,
+    color: theme.colors.primary,
+    fontWeight: '600',
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
+  placeholder: {
+    width: 60, // Same width as close button area
+  },
   title: {
     ...theme.typography.h3,
     color: theme.colors.text.primary,
@@ -303,19 +292,6 @@ const styles = StyleSheet.create({
   subtitle: {
     ...theme.typography.caption,
     color: theme.colors.text.secondary,
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surfaceSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeText: {
-    fontSize: 20,
-    color: theme.colors.text.secondary,
-    fontWeight: '300',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -340,7 +316,7 @@ const styles = StyleSheet.create({
   inputSection: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.md,
-    paddingBottom: theme.spacing.lg + 10, // Extra space for navigation bar
+    paddingBottom: theme.spacing.xl, // More space to avoid navigation overlap
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },
@@ -368,25 +344,6 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
-  },
-  moodSelector: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: theme.spacing.md,
-  },
-  moodButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surfaceSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moodButtonSelected: {
-    backgroundColor: theme.colors.primary,
-  },
-  moodEmoji: {
-    fontSize: 20,
   },
   textInput: {
     ...theme.typography.body,
@@ -448,9 +405,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 1,
-  },
-  entryMood: {
-    fontSize: 16,
   },
   entryContent: {
     ...theme.typography.body,
