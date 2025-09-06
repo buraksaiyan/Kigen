@@ -368,74 +368,78 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         {sessionType === 'free' && !isActive && (
           <View style={styles.setupContainer}>
             <FlowBackground style={styles.flowBackground} />
-            <Text style={styles.setupTitle}>Flow Focus Setup</Text>
-            <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
-            
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Duration (minutes)</Text>
-              <TextInput
-                style={styles.input}
-                value={duration}
-                onChangeText={setDuration}
-                keyboardType="numeric"
-                placeholder="25"
-                placeholderTextColor="#9CA3AF"
-              />
+            <View style={styles.contentWrapper}>
+              <Text style={styles.setupTitle}>Flow Focus Setup</Text>
+              <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={duration}
+                  onChangeText={setDuration}
+                  keyboardType="numeric"
+                  placeholder="25"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.startButton} onPress={startFreeSession}>
+                <Text style={styles.startButtonText}>Start Flow Focus</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={styles.startButton} onPress={startFreeSession}>
-              <Text style={styles.startButtonText}>Start Flow Focus</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
-              <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
           </View>
         )}
 
         {sessionType === 'executioner' && !isActive && (
           <View style={styles.setupContainer}>
             <GladiatorBackground style={styles.gladiatorBackground} />
-            <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
-            <Text style={styles.setupDescription}>Fight with your own will to conquer your goals.</Text>
-            
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Select Goal</Text>
-              <View style={styles.goalsList}>
-                {goals.map((goal) => (
-                  <TouchableOpacity
-                    key={goal.id}
-                    style={[
-                      styles.goalItem,
-                      selectedGoal?.id === goal.id && styles.selectedGoal,
-                    ]}
-                    onPress={() => setSelectedGoal(goal)}
-                  >
-                    <Text style={styles.goalTitle}>{goal.title}</Text>
-                  </TouchableOpacity>
-                ))}
+            <View style={styles.contentWrapper}>
+              <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
+              <Text style={styles.setupDescription}>Fight with your own will to conquer your goals.</Text>
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Select Goal</Text>
+                <View style={styles.goalsList}>
+                  {goals.map((goal) => (
+                    <TouchableOpacity
+                      key={goal.id}
+                      style={[
+                        styles.goalItem,
+                        selectedGoal?.id === goal.id && styles.selectedGoal,
+                      ]}
+                      onPress={() => setSelectedGoal(goal)}
+                    >
+                      <Text style={styles.goalTitle}>{goal.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={duration}
+                  onChangeText={setDuration}
+                  keyboardType="numeric"
+                  placeholder="25"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.startButton} onPress={startExecutionerSession}>
+                <Text style={styles.startButtonText}>Start Executioner Focus</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Duration (minutes)</Text>
-              <TextInput
-                style={styles.input}
-                value={duration}
-                onChangeText={setDuration}
-                keyboardType="numeric"
-                placeholder="25"
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-
-            <TouchableOpacity style={styles.startButton} onPress={startExecutionerSession}>
-              <Text style={styles.startButtonText}>Start Executioner Focus</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
-              <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
           </View>
         )}
 
@@ -572,8 +576,10 @@ const styles = StyleSheet.create({
   },
   setupContainer: {
     flex: 1,
-    paddingHorizontal: 20,
     paddingTop: 40,
+  },
+  contentWrapper: {
+    paddingHorizontal: 20,
   },
   setupTitle: {
     color: '#FFFFFF',
