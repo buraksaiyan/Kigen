@@ -1,0 +1,49 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gladiatorGradient" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" style="stop-color:rgba(251, 146, 60, 0.3);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(217, 119, 6, 0.2);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(180, 83, 9, 0.1);stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Gladiator mask outline -->
+  <path d="M200,100 C240,100 280,130 280,180 C280,200 275,220 270,240 C265,280 250,320 200,320 C150,320 135,280 130,240 C125,220 120,200 120,180 C120,130 160,100 200,100 Z" 
+        fill="none" 
+        stroke="url(#gladiatorGradient)" 
+        stroke-width="2" 
+        opacity="0.4"/>
+  
+  <!-- Eye holes -->
+  <ellipse cx="170" cy="180" rx="15" ry="20" fill="none" stroke="url(#gladiatorGradient)" stroke-width="2" opacity="0.3"/>
+  <ellipse cx="230" cy="180" rx="15" ry="20" fill="none" stroke="url(#gladiatorGradient)" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Nose guard -->
+  <path d="M200,190 L200,220 M195,210 L205,210" 
+        stroke="url(#gladiatorGradient)" 
+        stroke-width="2" 
+        opacity="0.3"/>
+  
+  <!-- Decorative elements -->
+  <path d="M160,140 Q180,120 200,140 Q220,120 240,140" 
+        fill="none" 
+        stroke="url(#gladiatorGradient)" 
+        stroke-width="1.5" 
+        opacity="0.2"/>
+  
+  <!-- Fire/strength symbols -->
+  <path d="M100,200 Q110,180 120,200 Q130,180 140,200" 
+        fill="none" 
+        stroke="rgba(251, 146, 60, 0.2)" 
+        stroke-width="2"/>
+  <path d="M260,200 Q270,180 280,200 Q290,180 300,200" 
+        fill="none" 
+        stroke="rgba(251, 146, 60, 0.2)" 
+        stroke-width="2"/>
+  
+  <!-- Background texture -->
+  <circle cx="120" cy="350" r="2" fill="rgba(217, 119, 6, 0.2)"/>
+  <circle cx="280" cy="380" r="1.5" fill="rgba(180, 83, 9, 0.2)"/>
+  <circle cx="80" cy="450" r="2.5" fill="rgba(251, 146, 60, 0.2)"/>
+  <circle cx="320" cy="420" r="2" fill="rgba(217, 119, 6, 0.2)"/>
+</svg>
