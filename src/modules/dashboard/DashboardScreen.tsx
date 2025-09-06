@@ -255,10 +255,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xs,
   },
   menuButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surfaceSecondary,
+    padding: theme.spacing.sm, // Just padding, no circular background
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -281,7 +278,7 @@ const styles = StyleSheet.create({
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xs, // Reduced padding for closer edge
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
     justifyContent: 'space-between',
