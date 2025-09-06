@@ -10,6 +10,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
@@ -40,8 +42,27 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
   const [focusTimer, setFocusTimer] = useState(0); // in seconds
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   
   const slideAnim = React.useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+      setIsKeyboardVisible(true);
+    });
+    
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      keyboardDidShowListener?.remove();
+      keyboardDidHideListener?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -211,7 +232,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
       <View style={styles.focusOverlay}>
         <Card style={styles.focusCard}>
           <View style={styles.focusHeader}>
-            <Text style={styles.focusTitle}>⚡ Focus Mode</Text>
+            <Text style={styles.focusTitle}>Focus Mode</Text>
             <TouchableOpacity onPress={exitFocusMode} style={styles.exitButton}>
               <Text style={styles.exitButtonText}>Exit</Text>
             </TouchableOpacity>
@@ -241,13 +262,13 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
               style={styles.completeButton}
               onPress={completeFocusTask}
             >
-              <Text style={styles.completeButtonText}>✓ Mark Complete</Text>
+              <Text style={styles.completeButtonText}>Mark Complete</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.failButton}
               onPress={failFocusTask}
             >
-              <Text style={styles.failButtonText}>✗ Mark Failed</Text>
+              <Text style={styles.failButtonText}>Mark Failed</Text>
             </TouchableOpacity>
           </View>
         </Card>
@@ -266,21 +287,13 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <Card style={styles.taskCard}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoid}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        >
+      <View style={styles.taskCard}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.title}>⚡ Discipline Tasks</Text>
+            <Text style={styles.title}>Discipline Tasks</Text>
             <Text style={styles.subtitle}>Build focus through intentional action</Text>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeText}>×</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Stats */}
@@ -301,8 +314,96 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
           </View>
         </View>
 
-        {/* Add New Task */}
-        <View style={styles.inputSection}>
+        {/* Tasks List */}
+        <View style={[styles.contentContainer, { marginBottom: keyboardHeight > 0 ? keyboardHeight + 120 : 0 }]}>
+          <ScrollView style={styles.tasksContainer} showsVerticalScrollIndicator={false}>
+            {/* Active Tasks */}
+            {activeTasks.length > 0 && (
+              <>
+                <Text style={styles.sectionTitle}>Active Tasks</Text>
+                {activeTasks.map((task) => (
+                  <View key={task.id} style={styles.taskItem}>
+                    <TouchableOpacity
+                      style={styles.taskCheckbox}
+                      onPress={() => toggleTask(task.id)}
+                    >
+                      <Text style={styles.checkboxEmpty}>[ ]</Text>
+                    </TouchableOpacity>
+                    
+                    <Text style={styles.taskTitle}>{task.title}</Text>
+                    
+                    <View style={styles.taskActions}>
+                      <TouchableOpacity
+                        style={styles.focusButton}
+                        onPress={() => startFocusMode(task)}
+                      >
+                        <Text style={styles.focusButtonText}>Focus</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={() => deleteTask(task.id)}
+                      >
+                        <Text style={styles.deleteButtonText}>×</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* Completed Tasks */}
+            {completedTasks.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: theme.spacing.lg }]}>
+                  Completed ({completedTasks.length})
+                </Text>
+                {completedTasks.slice(0, 5).map((task) => (
+                  <View key={task.id} style={[styles.taskItem, styles.completedTaskItem]}>
+                    <TouchableOpacity
+                      style={styles.taskCheckbox}
+                      onPress={() => toggleTask(task.id)}
+                    >
+                      <Text style={styles.checkboxChecked}>[X]</Text>
+                    </TouchableOpacity>
+                    
+                    <Text style={[styles.taskTitle, styles.completedTaskTitle]}>
+                      {task.title}
+                    </Text>
+                    
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => deleteTask(task.id)}
+                    >
+                      <Text style={styles.deleteButtonText}>×</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {tasks.length === 0 && (
+              <Text style={styles.emptyText}>
+                Add your first discipline task to start building focus!
+              </Text>
+            )}
+          </ScrollView>
+        </View>
+
+        {/* Add New Task - Fixed at bottom with keyboard awareness */}
+        <View 
+          style={[
+            styles.inputSection,
+            keyboardHeight > 0 && {
+              position: 'absolute',
+              bottom: keyboardHeight + 60, // Add space above navigation
+              left: 0,
+              right: 0,
+              backgroundColor: theme.colors.surface,
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border,
+            }
+          ]}
+        >
           <TextInput
             style={styles.taskInput}
             value={newTaskTitle}
@@ -314,9 +415,12 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => setNewTaskTitle('')}
+              onPress={() => {
+                setNewTaskTitle('');
+                onClose(); // Close the task section
+              }}
             >
-              <Text style={styles.cancelButtonText}>Clear</Text>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.addButton, !newTaskTitle.trim() && styles.addButtonDisabled]}
@@ -327,81 +431,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Tasks List */}
-        <ScrollView style={styles.tasksContainer} showsVerticalScrollIndicator={false}>
-          {/* Active Tasks */}
-          {activeTasks.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>Active Tasks</Text>
-              {activeTasks.map((task) => (
-                <View key={task.id} style={styles.taskItem}>
-                  <TouchableOpacity
-                    style={styles.taskCheckbox}
-                    onPress={() => toggleTask(task.id)}
-                  >
-                    <Text style={styles.checkboxEmpty}>○</Text>
-                  </TouchableOpacity>
-                  
-                  <Text style={styles.taskTitle}>{task.title}</Text>
-                  
-                  <View style={styles.taskActions}>
-                    <TouchableOpacity
-                      style={styles.focusButton}
-                      onPress={() => startFocusMode(task)}
-                    >
-                      <Text style={styles.focusButtonText}>⚡</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => deleteTask(task.id)}
-                    >
-                      <Text style={styles.deleteButtonText}>×</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-            </>
-          )}
-
-          {/* Completed Tasks */}
-          {completedTasks.length > 0 && (
-            <>
-              <Text style={[styles.sectionTitle, { marginTop: theme.spacing.lg }]}>
-                Completed ({completedTasks.length})
-              </Text>
-              {completedTasks.slice(0, 5).map((task) => (
-                <View key={task.id} style={[styles.taskItem, styles.completedTaskItem]}>
-                  <TouchableOpacity
-                    style={styles.taskCheckbox}
-                    onPress={() => toggleTask(task.id)}
-                  >
-                    <Text style={styles.checkboxChecked}>✓</Text>
-                  </TouchableOpacity>
-                  
-                  <Text style={[styles.taskTitle, styles.completedTaskTitle]}>
-                    {task.title}
-                  </Text>
-                  
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => deleteTask(task.id)}
-                  >
-                    <Text style={styles.deleteButtonText}>×</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </>
-          )}
-
-          {tasks.length === 0 && (
-            <Text style={styles.emptyText}>
-              Add your first discipline task to start building focus! ⚡
-            </Text>
-          )}
-        </ScrollView>
-        </KeyboardAvoidingView>
-      </Card>
+      </View>
     </Animated.View>
   );
 };
@@ -420,12 +450,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   taskCard: {
+    flex: 1,
     margin: 0,
     borderRadius: 0,
     borderTopLeftRadius: theme.borderRadius.lg,
     borderTopRightRadius: theme.borderRadius.lg,
-    maxHeight: '85%',
     backgroundColor: theme.colors.surface,
+  },
+  contentContainer: {
+    flex: 1,
   },
   focusCard: {
     margin: theme.spacing.lg,
@@ -498,7 +531,10 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   inputSection: {
-    marginBottom: theme.spacing.lg,
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
   },
   buttonRow: {
     flexDirection: 'row',

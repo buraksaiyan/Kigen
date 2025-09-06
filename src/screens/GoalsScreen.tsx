@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Alert,
   StatusBar,
+  TextInput,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
@@ -28,6 +29,8 @@ const GOALS_STORAGE_KEY = '@kigen_goals';
 export const GoalsScreen: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newGoalTitle, setNewGoalTitle] = useState('');
+  const [showAddGoal, setShowAddGoal] = useState(false);
 
   useEffect(() => {
     loadGoals();
@@ -52,6 +55,24 @@ export const GoalsScreen: React.FC = () => {
     } catch (error) {
       console.error('Error saving goals:', error);
     }
+  };
+
+  const addGoal = async () => {
+    if (!newGoalTitle.trim()) return;
+
+    const newGoal: Goal = {
+      id: Date.now().toString(),
+      title: newGoalTitle.trim(),
+      completed: false,
+      failed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedGoals = [newGoal, ...goals];
+    setGoals(updatedGoals);
+    await saveGoals(updatedGoals);
+    setNewGoalTitle('');
+    setShowAddGoal(false);
   };
 
   const markComplete = async (goalId: string) => {
@@ -159,7 +180,7 @@ export const GoalsScreen: React.FC = () => {
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>🎯 Your Goals</Text>
+            <Text style={styles.title}>Your Goals</Text>
             <Text style={styles.subtitle}>Track your discipline journey</Text>
           </View>
 
@@ -187,6 +208,49 @@ export const GoalsScreen: React.FC = () => {
             </View>
           </Card>
 
+          {/* Add Goal Section */}
+          {showAddGoal ? (
+            <Card style={styles.addGoalCard}>
+              <Text style={styles.addGoalTitle}>Add New Goal</Text>
+              <TextInput
+                style={styles.goalInput}
+                value={newGoalTitle}
+                onChangeText={setNewGoalTitle}
+                placeholder="What discipline goal do you want to achieve?"
+                placeholderTextColor={theme.colors.text.tertiary}
+                autoFocus
+              />
+              <View style={styles.addGoalActions}>
+                <Button
+                  title="Cancel"
+                  onPress={() => {
+                    setShowAddGoal(false);
+                    setNewGoalTitle('');
+                  }}
+                  variant="outline"
+                  size="small"
+                  style={styles.cancelButton}
+                />
+                <Button
+                  title="Add Goal"
+                  onPress={addGoal}
+                  size="small"
+                  style={styles.addButton}
+                  disabled={!newGoalTitle.trim()}
+                />
+              </View>
+            </Card>
+          ) : (
+            <Card style={styles.addGoalPrompt}>
+              <Text style={styles.promptTitle}>Ready to set a new goal?</Text>
+              <Button
+                title="Add Goal"
+                onPress={() => setShowAddGoal(true)}
+                style={styles.promptButton}
+              />
+            </Card>
+          )}
+
           {/* Active Goals */}
           {activeGoals.length > 0 && (
             <>
@@ -201,20 +265,20 @@ export const GoalsScreen: React.FC = () => {
                   </View>
                   <View style={styles.goalActions}>
                     <Button
-                      title="✓ Complete"
+                      title="Complete"
                       onPress={() => markComplete(goal.id)}
                       size="small"
                       style={[styles.actionButton, { backgroundColor: theme.colors.success }] as any}
                     />
                     <Button
-                      title="✗ Failed"
+                      title="Failed"
                       onPress={() => markFailed(goal.id)}
                       variant="outline"
                       size="small"
                       style={styles.actionButton}
                     />
                     <Button
-                      title="🗑️"
+                      title="Delete"
                       onPress={() => deleteGoal(goal.id)}
                       variant="outline"
                       size="small"
@@ -234,7 +298,7 @@ export const GoalsScreen: React.FC = () => {
                 <Card key={goal.id} style={[styles.goalCard, styles.completedCard] as any}>
                   <View style={styles.goalHeader}>
                     <Text style={[styles.goalTitle, styles.completedTitle]}>
-                      ✓ {goal.title}
+                      [COMPLETED] {goal.title}
                     </Text>
                     <Text style={styles.goalDate}>
                       Completed {goal.completedAt ? formatDate(goal.completedAt) : 'Unknown'}
@@ -244,7 +308,7 @@ export const GoalsScreen: React.FC = () => {
                     onPress={() => deleteGoal(goal.id)}
                     style={styles.smallDeleteButton}
                   >
-                    <Text style={styles.smallDeleteText}>🗑️</Text>
+                    <Text style={styles.smallDeleteText}>X</Text>
                   </TouchableOpacity>
                 </Card>
               ))}
@@ -259,7 +323,7 @@ export const GoalsScreen: React.FC = () => {
                 <Card key={goal.id} style={[styles.goalCard, styles.failedCard] as any}>
                   <View style={styles.goalHeader}>
                     <Text style={[styles.goalTitle, styles.failedTitle]}>
-                      ✗ {goal.title}
+                      [FAILED] {goal.title}
                     </Text>
                     <Text style={styles.goalDate}>
                       Failed {goal.failedAt ? formatDate(goal.failedAt) : 'Unknown'}
@@ -269,7 +333,7 @@ export const GoalsScreen: React.FC = () => {
                     onPress={() => deleteGoal(goal.id)}
                     style={styles.smallDeleteButton}
                   >
-                    <Text style={styles.smallDeleteText}>🗑️</Text>
+                    <Text style={styles.smallDeleteText}>X</Text>
                   </TouchableOpacity>
                 </Card>
               ))}
@@ -424,5 +488,46 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     textAlign: 'center',
+  },
+  addGoalCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  addGoalTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  goalInput: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: theme.spacing.md,
+  },
+  addGoalActions: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  cancelButton: {
+    flex: 1,
+  },
+  addButton: {
+    flex: 1,
+  },
+  addGoalPrompt: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.lg,
+    marginBottom: theme.spacing.lg,
+  },
+  promptTitle: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  promptButton: {
+    minWidth: 120,
   },
 });
