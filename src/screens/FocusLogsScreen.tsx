@@ -105,7 +105,7 @@ export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
 
   const getSessionRating = (log: FocusLog): { rating: string; color: string } => {
     // Use AI rating if available
-    if (log.rating) {
+    if (log.rating && typeof log.rating === 'string') {
       const ratingColors = {
         excellent: '#10B981', // Green
         good: '#6D28D9',      // Purple  
@@ -115,7 +115,7 @@ export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
       
       return { 
         rating: log.rating.charAt(0).toUpperCase() + log.rating.slice(1), 
-        color: ratingColors[log.rating] 
+        color: ratingColors[log.rating] || '#9CA3AF' // Fallback color
       };
     }
     
