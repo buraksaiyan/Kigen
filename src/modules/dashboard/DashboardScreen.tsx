@@ -12,6 +12,8 @@ import { TaskSection } from '../../components/TaskSection';
 import { Sidebar } from '../../components/Sidebar';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
+import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
+import { FocusLogsScreen } from '../../screens/FocusLogsScreen';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
@@ -19,6 +21,8 @@ export const DashboardScreen: React.FC = () => {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
+  const [isFocusLogsOpen, setIsFocusLogsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
 
   useEffect(() => {
@@ -31,6 +35,10 @@ export const DashboardScreen: React.FC = () => {
 
   const handleTasks = () => {
     setIsTasksOpen(true);
+  };
+
+  const handleFocusSession = () => {
+    setIsFocusSessionOpen(true);
   };
 
   const handleSidebar = () => {
@@ -49,6 +57,9 @@ export const DashboardScreen: React.FC = () => {
         break;
       case 'goals':
         setIsTasksOpen(true);
+        break;
+      case 'focus-logs':
+        setIsFocusLogsOpen(true);
         break;
       // Add more cases as needed
       default:
@@ -113,7 +124,7 @@ export const DashboardScreen: React.FC = () => {
                 style={styles.actionButton}
               />
               <Button
-                title="� Journal"
+                title="Journal"
                 onPress={handleJournal}
                 style={styles.actionButton}
               />
@@ -122,15 +133,23 @@ export const DashboardScreen: React.FC = () => {
             <View style={styles.actionGrid}>
               <Button
                 title="Focus Session"
-                onPress={handleTasks}
+                onPress={handleFocusSession}
                 variant="secondary"
                 style={styles.actionButton}
               />
               <Button
+                title="Focus Logs"
+                onPress={() => setIsFocusLogsOpen(true)}
+                style={styles.actionButton}
+              />
+            </View>
+            
+            <View style={styles.fullWidthButtonContainer}>
+              <Button
                 title="View Progress"
                 onPress={() => {}}
                 variant="outline"
-                style={styles.actionButton}
+                style={styles.fullWidthButton}
               />
             </View>
           </View>
@@ -192,30 +211,29 @@ export const DashboardScreen: React.FC = () => {
           currentScreen={currentScreen}
         />
         
-        {/* Full Screen Modals */}
-        {currentScreen === 'goals' && (
-          <View style={styles.fullScreenModal}>
-            <GoalsScreen />
-            <TouchableOpacity 
-              style={styles.closeFullScreen}
-              onPress={() => setCurrentScreen('dashboard')}
-            >
-              <Text style={styles.closeFullScreenText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Goals Screen */}
+        <GoalsScreen
+          visible={currentScreen === 'goals'}
+          onClose={() => setCurrentScreen('dashboard')}
+        />
         
-        {currentScreen === 'journals' && (
-          <View style={styles.fullScreenModal}>
-            <JournalsScreen />
-            <TouchableOpacity 
-              style={styles.closeFullScreen}
-              onPress={() => setCurrentScreen('dashboard')}
-            >
-              <Text style={styles.closeFullScreenText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Journals Screen */}
+        <JournalsScreen
+          visible={currentScreen === 'journals'}
+          onClose={() => setCurrentScreen('dashboard')}
+        />
+
+        {/* Focus Session Screen */}
+        <FocusSessionScreen
+          visible={isFocusSessionOpen}
+          onClose={() => setIsFocusSessionOpen(false)}
+        />
+
+        {/* Focus Logs Screen */}
+        <FocusLogsScreen
+          visible={isFocusLogsOpen}
+          onClose={() => setIsFocusLogsOpen(false)}
+        />
       </SafeAreaView>
     </>
   );
@@ -324,6 +342,13 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
+  },
+  fullWidthButtonContainer: {
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
+  fullWidthButton: {
+    width: '100%',
   },
   statusCard: {
     marginBottom: theme.spacing.lg,

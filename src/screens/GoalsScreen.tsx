@@ -5,11 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   StatusBar,
   TextInput,
+  Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { Button, Card } from '../components/UI';
@@ -26,7 +27,15 @@ interface Goal {
 
 const GOALS_STORAGE_KEY = '@kigen_goals';
 
-export const GoalsScreen: React.FC = () => {
+interface GoalsScreenProps {
+  visible?: boolean;
+  onClose?: () => void;
+}
+
+export const GoalsScreen: React.FC<GoalsScreenProps> = ({
+  visible = true,
+  onClose,
+}) => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [newGoalTitle, setNewGoalTitle] = useState('');
@@ -174,14 +183,23 @@ export const GoalsScreen: React.FC = () => {
   }
 
   return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>起源 Goals</Text>
+          <View style={styles.placeholder} />
+        </View>
+
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Your Goals</Text>
-            <Text style={styles.subtitle}>Track your discipline journey</Text>
+          {/* Goals Content */}
+          <View style={styles.content}>
+            <View style={styles.contentHeader}>
+              <Text style={styles.title}>Your Goals</Text>
+              <Text style={styles.subtitle}>Track your discipline journey</Text>
+            </View>
           </View>
 
           {/* Stats */}
@@ -351,7 +369,7 @@ export const GoalsScreen: React.FC = () => {
           )}
         </ScrollView>
       </SafeAreaView>
-    </>
+    </Modal>
   );
 };
 
@@ -360,9 +378,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+  },
+  header: {
+    paddingVertical: theme.spacing.xl,
+    alignItems: 'center',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    color: '#9CA3AF',
+    fontSize: 16,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  placeholder: {
+    width: 60,
+  },
+  content: {
+    paddingHorizontal: theme.spacing.lg,
+  },
   scrollView: {
     flex: 1,
-    paddingHorizontal: theme.spacing.lg,
   },
   loadingContainer: {
     flex: 1,
@@ -373,7 +421,7 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
   },
-  header: {
+  contentHeader: {
     paddingVertical: theme.spacing.xl,
     alignItems: 'center',
   },
