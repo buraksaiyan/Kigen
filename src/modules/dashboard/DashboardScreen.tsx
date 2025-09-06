@@ -70,24 +70,20 @@ export const DashboardScreen: React.FC = () => {
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
       <SafeAreaView style={styles.container}>
+        {/* Header with Logo and Floating Menu */}
+        <View style={styles.topHeader}>
+          <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
+            <Text style={styles.menuButtonText}>☰</Text>
+          </TouchableOpacity>
+          <View style={styles.logoContainer}>
+            <KigenLogo size="small" />
+          </View>
+        </View>
+        
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with Kigen Logo and Menu */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
-              <Text style={styles.menuButtonText}>☰</Text>
-            </TouchableOpacity>
-            <View style={styles.headerCenter}>
-              <KigenLogo size="large" />
-              <Text style={styles.welcomeSubtext}>
-                Building discipline, one day at a time
-              </Text>
-            </View>
-            <View style={styles.headerRight} />
-          </View>
-
           {/* Main Discipline Score */}
           <Card style={styles.mainScoreCard}>
             <FocusGauge rating={disciplineScore} />
@@ -228,6 +224,7 @@ export const DashboardScreen: React.FC = () => {
         <FocusSessionScreen
           visible={isFocusSessionOpen}
           onClose={() => setIsFocusSessionOpen(false)}
+          onNavigateToGoals={() => setIsGoalsOpen(true)}
         />
 
         {/* Focus Logs Screen */}
@@ -247,14 +244,15 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl,
+    paddingBottom: theme.spacing.xxl + 20, // Extra space for navigation bar
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
   },
   menuButton: {
     width: 44,
@@ -263,6 +261,35 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceSecondary,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  floatingMenuButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.surfaceSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.sm,
+    paddingBottom: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginRight: 44, // Balance for menu button
   },
   menuButtonText: {
     fontSize: 20,

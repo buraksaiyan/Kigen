@@ -17,6 +17,8 @@ export const env: EnvShape = {
 
 if (env.supabaseUrl.includes('placeholder') || env.supabaseAnonKey.includes('placeholder')) {
   // Soft warning; avoids crash during initial dev before setting .env
-  // eslint-disable-next-line no-console
-  console.warn('[env] Using placeholder Supabase credentials. Please update .env file with real values.');
+  // Development note: Using placeholder credentials for demo app
+  if (process.env.NODE_ENV !== 'development') {
+    console.warn('[env] Using placeholder Supabase credentials. Please update .env file with real values.');
+  }
 }

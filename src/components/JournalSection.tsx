@@ -149,7 +149,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               <Text style={styles.title}>Journal</Text>
               <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
             </View>
-          </View>        {/* Stats */}
+          </View>
+          
+          {/* Stats */}
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{stats.streak}</Text>
@@ -338,6 +340,7 @@ const styles = StyleSheet.create({
   inputSection: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.md,
+    paddingBottom: theme.spacing.lg + 10, // Extra space for navigation bar
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
   Dimensions,
   AppState,
 } from 'react-native';
@@ -17,6 +16,7 @@ import { Notification } from '../components/Notification';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FlowBackground } from '../components/FlowBackground';
 import { GladiatorBackground } from '../components/GladiatorBackground';
+import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
 
 const { width, height } = Dimensions.get('window');
@@ -50,11 +50,13 @@ interface FocusLog {
 interface FocusSessionScreenProps {
   visible: boolean;
   onClose: () => void;
+  onNavigateToGoals?: () => void;
 }
 
 export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   visible,
   onClose,
+  onNavigateToGoals,
 }) => {
   const [sessionType, setSessionType] = useState<'selection' | 'free' | 'executioner'>('selection');
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -67,6 +69,20 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [sessionStartTime, setSessionStartTime] = useState('');
   const [currentSessionId, setCurrentSessionId] = useState('');
   const [showNotification, setShowNotification] = useState(false);
+  
+  // Custom alert state
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertButtons, setAlertButtons] = useState<Array<{text: string, onPress?: () => void, style?: 'default' | 'cancel' | 'destructive'}>>([]);
+
+  // Helper function to show custom alerts
+  const showAlert = (title: string, message: string, buttons: Array<{text: string, onPress?: () => void, style?: 'default' | 'cancel' | 'destructive'}> = [{text: 'OK'}]) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertButtons(buttons);
+    setAlertVisible(true);
+  };
 
   useEffect(() => {
     if (visible) {
@@ -119,7 +135,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const startFreeSession = async () => {
     const durationMinutes = parseInt(duration);
     if (!durationMinutes || durationMinutes < 1) {
-      Alert.alert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
       return;
     }
 
@@ -136,19 +152,19 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setSessionType('free');
       setShowNotification(true);
     } else {
-      Alert.alert('Error', 'Failed to start focus session. Please try again.');
+      showAlert('Error', 'Failed to start focus session. Please try again.');
     }
   };
 
   const startExecutionerSession = async () => {
     if (!selectedGoal) {
-      Alert.alert('No Goal Selected', 'Please select a goal to focus on.');
+      showAlert('No Goal Selected', 'Please select a goal to focus on.');
       return;
     }
 
     const durationMinutes = parseInt(duration);
     if (!durationMinutes || durationMinutes < 1) {
-      Alert.alert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
       return;
     }
 
@@ -165,7 +181,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setSessionType('executioner');
       setShowNotification(true);
     } else {
-      Alert.alert('Error', 'Failed to start focus session. Please try again.');
+      showAlert('Error', 'Failed to start focus session. Please try again.');
     }
   };
 
@@ -173,7 +189,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     const usageData = await stopFocusSession();
     setIsActive(false);
     await saveFocusLog('completed');
-    Alert.alert(
+    showAlert(
       'Focus Session Complete!',
       `Great work! You completed your ${sessionType === 'free' ? 'Flow' : 'Executioner'} session.`,
       [{ text: 'OK', onPress: () => resetSession() }]
@@ -181,7 +197,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   };
 
   const handleAbort = () => {
-    Alert.alert(
+    showAlert(
       'Abort Session?',
       'Are you sure you want to abort this focus session?',
       [
@@ -260,7 +276,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   const handleClose = async () => {
     if (isActive) {
-      Alert.alert(
+      showAlert(
         'Session Active',
         'You have an active focus session. Closing will abort it.',
         [
@@ -285,8 +301,23 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   };
 
   const navigateToGoals = () => {
-    // This would typically navigate to goals screen
-    Alert.alert('No Goals Found', 'Please create some goals first to use Executioner Focus mode.');
+    showAlert(
+      'No Goals Found', 
+      'You need goals to use Executioner Focus mode. Would you like to create one?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Create Goal',
+          onPress: () => {
+            onClose(); // Close focus session first
+            onNavigateToGoals?.(); // Then navigate to goals
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -328,7 +359,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <GladiatorBackground style={styles.modeBackgroundPreview} />
               <View style={styles.modeContent}>
                 <Text style={styles.modeTitle}>Executioner Focus</Text>
-                <Text style={styles.modeDescription}>Glide through your goals as your timer goes.</Text>
+                <Text style={styles.modeDescription}>Fight with your own will to conquer your goals.</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -366,7 +397,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           <View style={styles.setupContainer}>
             <GladiatorBackground style={styles.gladiatorBackground} />
             <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
-            <Text style={styles.setupDescription}>Glide through your goals as your timer goes.</Text>
+            <Text style={styles.setupDescription}>Fight with your own will to conquer your goals.</Text>
             
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Select Goal</Text>
@@ -454,6 +485,15 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           message="Your phone is now in focus mode. Notifications are disabled and your usage is being tracked."
           type="info"
           onClose={() => setShowNotification(false)}
+        />
+        
+        {/* Custom Alert */}
+        <CustomAlert
+          visible={alertVisible}
+          title={alertTitle}
+          message={alertMessage}
+          buttons={alertButtons}
+          onClose={() => setAlertVisible(false)}
         />
       </SafeAreaView>
     </Modal>

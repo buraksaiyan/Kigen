@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, BackHandler, Platform } from 'react-native';
 import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
 
@@ -14,6 +14,20 @@ try {
 }
 
 export default function App() {
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      const backAction = () => {
+        // Let the app handle back button naturally
+        // This prevents the app from being minimized immediately
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+      return () => backHandler.remove();
+    }
+  }, []);
+
   return (
     <GestureHandler style={{ flex: 1 }}>
       <View style={styles.container}>
