@@ -12,6 +12,7 @@ import {
   Keyboard,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { Card } from './UI';
@@ -37,7 +38,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       setKeyboardHeight(0);
-    });    return () => {
+    });
+
+    return () => {
       keyboardDidShowListener?.remove();
       keyboardDidHideListener?.remove();
     };
@@ -123,7 +126,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <View style={styles.journalCard}>
+      <SafeAreaView style={styles.journalCard}>
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -219,7 +222,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </Animated.View>
   );
 };
@@ -350,11 +353,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.md,
-    minHeight: 80,
-    maxHeight: 120,
+    height: 100, // Fixed height instead of min/max
     borderWidth: 1,
     borderColor: theme.colors.border,
     marginBottom: theme.spacing.md,
+    textAlignVertical: 'top',
   },
   addButton: {
     flex: 1,

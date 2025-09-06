@@ -16,6 +16,8 @@ import { Notification } from '../components/Notification';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FlowBackground } from '../components/FlowBackground';
 import { GladiatorBackground } from '../components/GladiatorBackground';
+import { MeditationBackground } from '../components/MeditationBackground';
+import { BodyFocusBackground } from '../components/BodyFocusBackground';
 import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
 
@@ -58,7 +60,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   onClose,
   onNavigateToGoals,
 }) => {
-  const [sessionType, setSessionType] = useState<'selection' | 'free' | 'executioner'>('selection');
+  const [sessionType, setSessionType] = useState<'selection' | 'free' | 'executioner' | 'meditation' | 'body'>('selection');
   const [goals, setGoals] = useState<Goal[]>([]);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [duration, setDuration] = useState('25');
@@ -185,13 +187,65 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
+  const startMeditationSession = async () => {
+    const durationMinutes = parseInt(duration);
+    if (!durationMinutes || durationMinutes < 1) {
+      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      return;
+    }
+
+    const sessionId = `meditation_${Date.now()}`;
+    const success = await startFocusSession(sessionId, handleUsageUpdate);
+    
+    if (success) {
+      setTimeLeft(durationMinutes * 60);
+      setIsActive(true);
+      setSessionStartTime(new Date().toISOString());
+      setCurrentSessionId(sessionId);
+      setUnlocks(0);
+      setAppUsageMinutes(0);
+      setSessionType('meditation');
+      setShowNotification(true);
+    } else {
+      showAlert('Error', 'Failed to start meditation session. Please try again.');
+    }
+  };
+
+  const startBodySession = async () => {
+    const durationMinutes = parseInt(duration);
+    if (!durationMinutes || durationMinutes < 1) {
+      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      return;
+    }
+
+    const sessionId = `body_${Date.now()}`;
+    const success = await startFocusSession(sessionId, handleUsageUpdate);
+    
+    if (success) {
+      setTimeLeft(durationMinutes * 60);
+      setIsActive(true);
+      setSessionStartTime(new Date().toISOString());
+      setCurrentSessionId(sessionId);
+      setUnlocks(0);
+      setAppUsageMinutes(0);
+      setSessionType('body');
+      setShowNotification(true);
+    } else {
+      showAlert('Error', 'Failed to start body focus session. Please try again.');
+    }
+  };
+
   const handleSessionComplete = async () => {
     const usageData = await stopFocusSession();
     setIsActive(false);
     await saveFocusLog('completed');
     showAlert(
       'Focus Session Complete!',
-      `Great work! You completed your ${sessionType === 'free' ? 'Flow' : 'Executioner'} session.`,
+      `Great work! You completed your ${
+        sessionType === 'free' ? 'Flow' : 
+        sessionType === 'executioner' ? 'Executioner' :
+        sessionType === 'meditation' ? 'Meditation' : 'Body Focus'
+      } session.`,
       [{ text: 'OK', onPress: () => resetSession() }]
     );
   };
@@ -362,6 +416,28 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                 <Text style={styles.modeDescription}>Fight with your own will to conquer your goals.</Text>
               </View>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modeButton, styles.meditationMode]}
+              onPress={() => setSessionType('meditation')}
+            >
+              <MeditationBackground style={styles.modeBackgroundPreview} />
+              <View style={styles.modeContent}>
+                <Text style={styles.modeTitle}>Meditation Focus</Text>
+                <Text style={styles.modeDescription}>Go beyond time while meditating.</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modeButton, styles.bodyMode]}
+              onPress={() => setSessionType('body')}
+            >
+              <BodyFocusBackground style={styles.modeBackgroundPreview} />
+              <View style={styles.modeContent}>
+                <Text style={styles.modeTitle}>Body Focus</Text>
+                <Text style={styles.modeDescription}>Surpass the limits of your body.</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -443,10 +519,72 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           </View>
         )}
 
+        {sessionType === 'meditation' && !isActive && (
+          <View style={styles.setupContainer}>
+            <MeditationBackground style={styles.meditationBackground} />
+            <View style={styles.contentWrapper}>
+              <Text style={styles.setupTitle}>Meditation Focus Setup</Text>
+              <Text style={styles.setupDescription}>Go beyond time while meditating.</Text>
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={duration}
+                  onChangeText={setDuration}
+                  keyboardType="numeric"
+                  placeholder="25"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.startButton} onPress={startMeditationSession}>
+                <Text style={styles.startButtonText}>Start Meditation Focus</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {sessionType === 'body' && !isActive && (
+          <View style={styles.setupContainer}>
+            <BodyFocusBackground style={styles.bodyBackground} />
+            <View style={styles.contentWrapper}>
+              <Text style={styles.setupTitle}>Body Focus Setup</Text>
+              <Text style={styles.setupDescription}>Surpass the limits of your body.</Text>
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration (minutes)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={duration}
+                  onChangeText={setDuration}
+                  keyboardType="numeric"
+                  placeholder="25"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.startButton} onPress={startBodySession}>
+                <Text style={styles.startButtonText}>Start Body Focus</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.backButton} onPress={() => setSessionType('selection')}>
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {isActive && (
           <View style={styles.timerContainer}>
             <Text style={styles.sessionTypeText}>
-              {sessionType === 'free' ? 'Flow Focus' : 'Executioner Focus'}
+              {sessionType === 'free' ? 'Flow Focus' : 
+               sessionType === 'executioner' ? 'Executioner Focus' :
+               sessionType === 'meditation' ? 'Meditation Focus' : 'Body Focus'}
             </Text>
             
             {sessionType === 'executioner' && selectedGoal && (
@@ -560,6 +698,12 @@ const styles = StyleSheet.create({
   },
   executionerMode: {
     borderColor: 'rgba(251, 146, 60, 0.8)',
+  },
+  meditationMode: {
+    borderColor: 'rgba(34, 197, 94, 0.8)',
+  },
+  bodyMode: {
+    borderColor: 'rgba(220, 38, 127, 0.8)',
   },
   modeTitle: {
     color: '#FFFFFF',
@@ -769,6 +913,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   gladiatorBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 1.0,
+    borderRadius: 20,
+  },
+  meditationBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 1.0,
+    borderRadius: 20,
+  },
+  bodyBackground: {
     position: 'absolute',
     top: 0,
     left: 0,

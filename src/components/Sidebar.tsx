@@ -42,18 +42,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
     <>
-      {/* Backdrop */}
-      <TouchableOpacity 
-        style={styles.backdrop} 
-        activeOpacity={1} 
-        onPress={onClose}
-      />
+      {/* Backdrop - Only show when open */}
+      {isOpen && (
+        <TouchableOpacity 
+          style={styles.backdrop}
+          onPress={onClose}
+          activeOpacity={1}
+        />
+      )}
       
-      {/* Sidebar */}
+      {/* Sidebar - Always present for animation */}
       <Animated.View
         style={[
           styles.sidebar,
@@ -61,6 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
             transform: [{ translateX: slideAnim }],
           },
         ]}
+        pointerEvents={isOpen ? 'auto' : 'none'}
       >
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
