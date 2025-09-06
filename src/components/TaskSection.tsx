@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
@@ -16,7 +19,10 @@ interface Task {
   id: string;
   title: string;
   completed: boolean;
+  failed: boolean;
   createdAt: string;
+  completedAt?: string;
+  failedAt?: string;
 }
 
 interface TaskSectionProps {
@@ -24,13 +30,16 @@ interface TaskSectionProps {
   onClose: () => void;
 }
 
-const TASKS_STORAGE_KEY = '@kigen_tasks';
+const TASKS_STORAGE_KEY = '@kigen_goals';
 
 export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [focusMode, setFocusMode] = useState(false);
   const [focusTask, setFocusTask] = useState<Task | null>(null);
+  const [focusTimer, setFocusTimer] = useState(0); // in seconds
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -46,14 +55,28 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
     }
   }, [isExpanded]);
 
+  // Focus timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerActive && focusMode) {
+      interval = setInterval(() => {
+        setFocusTimer(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, focusMode]);
+
   const loadTasks = async () => {
     try {
+      setIsLoading(true);
       const storedTasks = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
       if (storedTasks) {
         setTasks(JSON.parse(storedTasks));
       }
     } catch (error) {
       console.error('Error loading tasks:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,6 +95,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       completed: false,
+      failed: false,
       createdAt: new Date().toISOString(),
     };
 
@@ -83,7 +107,28 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
 
   const toggleTask = async (taskId: string) => {
     const updatedTasks = tasks.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
+      task.id === taskId 
+        ? { 
+            ...task, 
+            completed: !task.completed,
+            completedAt: !task.completed ? new Date().toISOString() : undefined
+          } 
+        : task
+    );
+    setTasks(updatedTasks);
+    await saveTasks(updatedTasks);
+  };
+
+  const markTaskAsFailed = async (taskId: string) => {
+    const updatedTasks = tasks.map(task => 
+      task.id === taskId 
+        ? { 
+            ...task, 
+            failed: true, 
+            completed: false,
+            failedAt: new Date().toISOString()
+          } 
+        : task
     );
     setTasks(updatedTasks);
     await saveTasks(updatedTasks);
@@ -98,11 +143,15 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
   const startFocusMode = (task: Task) => {
     setFocusTask(task);
     setFocusMode(true);
+    setFocusTimer(0);
+    setIsTimerActive(true);
   };
 
   const exitFocusMode = () => {
     setFocusMode(false);
     setFocusTask(null);
+    setIsTimerActive(false);
+    setFocusTimer(0);
   };
 
   const completeFocusTask = async () => {
@@ -110,6 +159,37 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
       await toggleTask(focusTask.id);
       exitFocusMode();
     }
+  };
+
+  const failFocusTask = async () => {
+    if (focusTask) {
+      Alert.alert(
+        'Mark as Failed?',
+        'This will mark the task as failed. Are you sure?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Mark Failed', 
+            style: 'destructive',
+            onPress: async () => {
+              await markTaskAsFailed(focusTask.id);
+              exitFocusMode();
+            }
+          }
+        ]
+      );
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   const translateY = slideAnim.interpolate({
@@ -122,26 +202,30 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
     outputRange: [0, 1],
   });
 
-  const activeTasks = tasks.filter(t => !t.completed);
+  const activeTasks = tasks.filter(t => !t.completed && !t.failed);
   const completedTasks = tasks.filter(t => t.completed);
+  const failedTasks = tasks.filter(t => t.failed);
 
   if (focusMode && focusTask) {
     return (
-      <Animated.View
-        style={[
-          styles.container,
-          {
-            transform: [{ translateY }],
-            opacity,
-          },
-        ]}
-        pointerEvents={isExpanded ? 'auto' : 'none'}
-      >
+      <View style={styles.focusOverlay}>
         <Card style={styles.focusCard}>
           <View style={styles.focusHeader}>
             <Text style={styles.focusTitle}>⚡ Focus Mode</Text>
             <TouchableOpacity onPress={exitFocusMode} style={styles.exitButton}>
               <Text style={styles.exitButtonText}>Exit</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.focusTimerContainer}>
+            <Text style={styles.focusTimer}>{formatTime(focusTimer)}</Text>
+            <TouchableOpacity
+              onPress={() => setIsTimerActive(!isTimerActive)}
+              style={styles.timerButton}
+            >
+              <Text style={styles.timerButtonText}>
+                {isTimerActive ? '⏸️ Pause' : '▶️ Start'}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -159,9 +243,15 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
             >
               <Text style={styles.completeButtonText}>✓ Mark Complete</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.failButton}
+              onPress={failFocusTask}
+            >
+              <Text style={styles.failButtonText}>✗ Mark Failed</Text>
+            </TouchableOpacity>
           </View>
         </Card>
-      </Animated.View>
+      </View>
     );
   }
 
@@ -177,6 +267,11 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
       <Card style={styles.taskCard}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoid}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -216,13 +311,21 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
             placeholderTextColor={theme.colors.text.tertiary}
             onSubmitEditing={addTask}
           />
-          <TouchableOpacity
-            style={[styles.addButton, !newTaskTitle.trim() && styles.addButtonDisabled]}
-            onPress={addTask}
-            disabled={!newTaskTitle.trim()}
-          >
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setNewTaskTitle('')}
+            >
+              <Text style={styles.cancelButtonText}>Clear</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.addButton, !newTaskTitle.trim() && styles.addButtonDisabled]}
+              onPress={addTask}
+              disabled={!newTaskTitle.trim()}
+            >
+              <Text style={styles.addButtonText}>Add Task</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Tasks List */}
@@ -297,12 +400,16 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
             </Text>
           )}
         </ScrollView>
+        </KeyboardAvoidingView>
       </Card>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoid: {
+    flex: 1,
+  },
   container: {
     position: 'absolute',
     top: 0,
@@ -325,6 +432,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.primary,
     borderWidth: 2,
+  },
+  focusOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -381,12 +498,27 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   inputSection: {
-    flexDirection: 'row',
     marginBottom: theme.spacing.lg,
+  },
+  buttonRow: {
+    flexDirection: 'row',
     gap: theme.spacing.sm,
+    marginTop: theme.spacing.sm,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: theme.colors.surfaceSecondary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.md,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
   },
   taskInput: {
-    flex: 1,
     ...theme.typography.body,
     color: theme.colors.text.primary,
     backgroundColor: theme.colors.background,
@@ -396,10 +528,11 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
   },
   addButton: {
-    width: 48,
-    height: 48,
-    borderRadius: theme.borderRadius.md,
+    flex: 1,
     backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -407,9 +540,9 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   addButtonText: {
-    ...theme.typography.h4,
+    ...theme.typography.body,
     color: theme.colors.text.primary,
-    fontWeight: '300',
+    fontWeight: '600',
   },
   tasksContainer: {
     flex: 1,
@@ -537,6 +670,44 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
   },
   completeButtonText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+  },
+  // New styles for timer and failure
+  focusTimerContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: theme.borderRadius.md,
+  },
+  focusTimer: {
+    ...theme.typography.h1,
+    color: theme.colors.primary,
+    fontSize: 48,
+    fontWeight: '800',
+    marginBottom: theme.spacing.md,
+  },
+  timerButton: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+  },
+  timerButtonText: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+  },
+  failButton: {
+    backgroundColor: theme.colors.danger,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
+    borderRadius: theme.borderRadius.lg,
+    marginTop: theme.spacing.md,
+  },
+  failButtonText: {
     ...theme.typography.h4,
     color: theme.colors.text.primary,
     fontWeight: '600',
