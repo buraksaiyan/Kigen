@@ -1,0 +1,20 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="flowGradient" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:rgba(56, 178, 172, 0.3);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(129, 140, 248, 0.2);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(167, 139, 250, 0.1);stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Flowing water waves -->
+  <path d="M0,200 Q100,150 200,200 T400,200 L400,300 Q300,350 200,300 T0,300 Z" fill="url(#flowGradient)" opacity="0.4"/>
+  <path d="M0,250 Q150,200 300,250 T600,250 L600,350 Q450,400 300,350 T0,350 Z" fill="url(#flowGradient)" opacity="0.3"/>
+  <path d="M0,350 Q200,300 400,350 L400,450 Q200,400 0,450 Z" fill="url(#flowGradient)" opacity="0.2"/>
+  
+  <!-- Subtle flowing particles -->
+  <circle cx="80" cy="180" r="3" fill="rgba(129, 140, 248, 0.3)"/>
+  <circle cx="320" cy="220" r="2" fill="rgba(167, 139, 250, 0.3)"/>
+  <circle cx="150" cy="380" r="2.5" fill="rgba(56, 178, 172, 0.3)"/>
+  <circle cx="380" cy="320" r="2" fill="rgba(129, 140, 248, 0.3)"/>
+</svg>

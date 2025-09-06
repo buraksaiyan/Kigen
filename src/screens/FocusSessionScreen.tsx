@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { startFocusSession, stopFocusSession, UsageData } from '../services/focusMode';
 import { Notification } from '../components/Notification';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FlowBackground } from '../components/FlowBackground';
+import { GladiatorBackground } from '../components/GladiatorBackground';
 
 const { width, height } = Dimensions.get('window');
 
@@ -314,12 +316,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'free' && !isActive && (
           <View style={styles.setupContainer}>
-            <LinearGradient
-              colors={['rgba(56, 178, 172, 0.4)', 'rgba(129, 140, 248, 0.4)', 'rgba(167, 139, 250, 0.4)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.flowBackground}
-            />
+            <FlowBackground style={styles.flowBackground} />
             <Text style={styles.setupTitle}>Flow Focus Setup</Text>
             <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
             
@@ -347,12 +344,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'executioner' && !isActive && (
           <View style={styles.setupContainer}>
-            <LinearGradient
-              colors={['rgba(251, 146, 60, 0.4)', 'rgba(217, 119, 6, 0.4)', 'rgba(180, 83, 9, 0.4)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gladiatorBackground}
-            />
+            <GladiatorBackground style={styles.gladiatorBackground} />
             <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
             <Text style={styles.setupDescription}>Glide through your goals as your timer goes.</Text>
             
@@ -704,7 +696,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.15,
+    opacity: 1.0,
     borderRadius: 20,
   },
   gladiatorBackground: {
@@ -713,7 +705,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.2,
+    opacity: 1.0,
     borderRadius: 20,
   },
 });
