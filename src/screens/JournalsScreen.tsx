@@ -80,11 +80,11 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 
   const getMoodEmoji = (mood: JournalEntry['mood']): string => {
     const moods: Record<JournalEntry['mood'], string> = {
-      terrible: '😢',
-      bad: '😟',
-      okay: '😐',
-      good: '😊',
-      great: '😁',
+      terrible: 'Terrible',
+      bad: 'Bad',
+      okay: 'Okay',
+      good: 'Good',
+      great: 'Great',
     };
     return moods[mood];
   };
@@ -197,7 +197,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
                       onPress={() => deleteEntry(entry.id)}
                       style={styles.deleteButton}
                     >
-                      <Text style={styles.deleteText}>🗑️</Text>
+                      <Text style={styles.deleteText}>Delete</Text>
                     </TouchableOpacity>
                   </View>
                   
@@ -210,7 +210,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
           {/* Empty State */}
           {entries.length === 0 && (
             <Card style={styles.emptyCard}>
-              <Text style={styles.emptyTitle}>📝 No Journal Entries Yet</Text>
+              <Text style={styles.emptyTitle}>No Journal Entries Yet</Text>
               <Text style={styles.emptyText}>
                 Start journaling about your discipline journey from the main screen!
               </Text>

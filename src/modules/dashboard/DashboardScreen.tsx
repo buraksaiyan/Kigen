@@ -8,7 +8,6 @@ import { Button, Card } from '../../components/UI';
 import { FocusGauge } from '../../components/FocusGauge';
 import { KigenLogo } from '../../components/KigenLogo';
 import { JournalSection } from '../../components/JournalSection';
-import { TaskSection } from '../../components/TaskSection';
 import { Sidebar } from '../../components/Sidebar';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
@@ -19,10 +18,10 @@ export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
   const [disciplineScore] = useState(72); // Mock data - you'll replace this with real system
   const [isJournalOpen, setIsJournalOpen] = useState(false);
-  const [isTasksOpen, setIsTasksOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isFocusLogsOpen, setIsFocusLogsOpen] = useState(false);
+  const [isGoalsOpen, setIsGoalsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const handleTasks = () => {
-    setIsTasksOpen(true);
+    setIsGoalsOpen(true);
   };
 
   const handleFocusSession = () => {
@@ -56,7 +55,7 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(true);
         break;
       case 'goals':
-        setIsTasksOpen(true);
+        setIsGoalsOpen(true);
         break;
       case 'focus-logs':
         setIsFocusLogsOpen(true);
@@ -198,10 +197,6 @@ export const DashboardScreen: React.FC = () => {
           isExpanded={isJournalOpen}
           onClose={() => setIsJournalOpen(false)}
         />
-        <TaskSection 
-          isExpanded={isTasksOpen}
-          onClose={() => setIsTasksOpen(false)}
-        />
         
         {/* Sidebar */}
         <Sidebar 
@@ -215,6 +210,12 @@ export const DashboardScreen: React.FC = () => {
         <GoalsScreen
           visible={currentScreen === 'goals'}
           onClose={() => setCurrentScreen('dashboard')}
+        />
+        
+        {/* Goals Screen for Direct Access */}
+        <GoalsScreen
+          visible={isGoalsOpen}
+          onClose={() => setIsGoalsOpen(false)}
         />
         
         {/* Journals Screen */}

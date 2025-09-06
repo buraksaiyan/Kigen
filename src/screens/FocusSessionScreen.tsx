@@ -17,6 +17,7 @@ import { Notification } from '../components/Notification';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FlowBackground } from '../components/FlowBackground';
 import { GladiatorBackground } from '../components/GladiatorBackground';
+import { rateFocusSession } from '../services/focusRating';
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,6 +43,8 @@ interface FocusLog {
   status: 'completed' | 'aborted';
   startTime: string;
   endTime: string;
+  rating?: 'excellent' | 'good' | 'fair' | 'poor';
+  ratingReason?: string;
 }
 
 interface FocusSessionScreenProps {
@@ -202,6 +205,15 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       const originalDuration = parseInt(duration);
       const actualDuration = originalDuration - Math.floor(timeLeft / 60);
       
+      // Get AI rating for the session
+      const aiRating = await rateFocusSession(
+        originalDuration,
+        actualDuration,
+        unlocks,
+        appUsageMinutes,
+        status
+      );
+      
       const focusLog: FocusLog = {
         id: Date.now().toString(),
         type: sessionType as 'free' | 'executioner',
@@ -214,6 +226,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         status,
         startTime: sessionStartTime,
         endTime: new Date().toISOString(),
+        rating: aiRating.rating,
+        ratingReason: aiRating.reason,
       };
 
       const existingLogs = await AsyncStorage.getItem('@kigen_focus_logs');
@@ -294,8 +308,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               style={[styles.modeButton, styles.freeMode]}
               onPress={() => setSessionType('free')}
             >
-              <Text style={styles.modeTitle}>Flow Focus</Text>
-              <Text style={styles.modeDescription}>Flow as the timer goes. No distruptions, pure work.</Text>
+              <FlowBackground style={styles.modeBackgroundPreview} />
+              <View style={styles.modeContent}>
+                <Text style={styles.modeTitle}>Flow Focus</Text>
+                <Text style={styles.modeDescription}>Flow as the timer goes. No distructions, pure work.</Text>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -308,8 +325,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                 }
               }}
             >
-              <Text style={styles.modeTitle}>Executioner Focus</Text>
-              <Text style={styles.modeDescription}>Glide through your goals as your timer goes.</Text>
+              <GladiatorBackground style={styles.modeBackgroundPreview} />
+              <View style={styles.modeContent}>
+                <Text style={styles.modeTitle}>Executioner Focus</Text>
+                <Text style={styles.modeDescription}>Glide through your goals as your timer goes.</Text>
+              </View>
             </TouchableOpacity>
           </View>
         )}
@@ -482,17 +502,20 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   modeButton: {
-    backgroundColor: '#374151',
-    padding: 30,
+    backgroundColor: '#1F2937',
+    padding: 0,
     borderRadius: 15,
     marginBottom: 20,
     borderWidth: 2,
+    overflow: 'hidden',
+    minHeight: 140,
+    position: 'relative',
   },
   freeMode: {
-    borderColor: '#6d28d9',
+    borderColor: 'rgba(56, 178, 172, 0.8)',
   },
   executionerMode: {
-    borderColor: '#7C3AED',
+    borderColor: 'rgba(251, 146, 60, 0.8)',
   },
   modeTitle: {
     color: '#FFFFFF',
@@ -707,5 +730,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     opacity: 1.0,
     borderRadius: 20,
+  },
+  modeBackgroundPreview: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.6,
+    borderRadius: 12,
+  },
+  modeContent: {
+    position: 'relative',
+    zIndex: 1,
+    padding: 20,
   },
 });

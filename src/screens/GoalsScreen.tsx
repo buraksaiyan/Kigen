@@ -361,7 +361,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
           {/* Empty State */}
           {goals.length === 0 && (
             <Card style={styles.emptyCard}>
-              <Text style={styles.emptyTitle}>🎯 No Goals Yet</Text>
+              <Text style={styles.emptyTitle}>No Goals Yet</Text>
               <Text style={styles.emptyText}>
                 Start adding discipline goals from the main screen!
               </Text>
