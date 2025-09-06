@@ -189,14 +189,21 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           <Text style={styles.inputLabel}>Write about your discipline journey</Text>
           
           <TextInput
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                minHeight: 100,
+                maxHeight: 200,
+              }
+            ]}
             value={newEntry}
             onChangeText={setNewEntry}
             placeholder="Write about your discipline progress, challenges, wins..."
             placeholderTextColor={theme.colors.text.tertiary}
             multiline
-            numberOfLines={3}
             textAlignVertical="top"
+            blurOnSubmit={true}
+            returnKeyType="done"
           />
           
           {/* Button Row - Always visible */}
@@ -353,11 +360,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.md,
-    height: 100, // Fixed height instead of min/max
     borderWidth: 1,
     borderColor: theme.colors.border,
     marginBottom: theme.spacing.md,
     textAlignVertical: 'top',
+    fontSize: 16, // Prevent zoom on iOS
   },
   addButton: {
     flex: 1,

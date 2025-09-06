@@ -24,7 +24,9 @@ export default function App() {
 
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-      return () => backHandler.remove();
+      return () => {
+        backHandler.remove();
+      };
     }
   }, []);
 

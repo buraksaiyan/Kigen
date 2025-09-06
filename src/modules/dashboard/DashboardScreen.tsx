@@ -13,6 +13,9 @@ import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import { FocusLogsScreen } from '../../screens/FocusLogsScreen';
+import UsageDashboard from '../../components/UsageDashboard';
+import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
+import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
@@ -149,30 +152,8 @@ export const DashboardScreen: React.FC = () => {
             </View>
           </View>
 
-          {/* Track Usage Section */}
-          <View style={styles.usageSection}>
-            <Text style={styles.usageTitle}>Track Usage</Text>
-          </View>
-
-          {/* Current Status */}
-          <Card style={styles.statusCard}>
-            <Text style={styles.cardTitle}>Today's Usage</Text>
-            
-            <View style={styles.progressGrid}>
-              <View style={styles.progressItem}>
-                <Text style={[styles.progressNumber, { color: theme.colors.success }]}>2h</Text>
-                <Text style={styles.progressLabel}>Screen Time</Text>
-              </View>
-              <View style={styles.progressItem}>
-                <Text style={[styles.progressNumber, { color: theme.colors.primary }]}>8</Text>
-                <Text style={styles.progressLabel}>App Switches</Text>
-              </View>
-              <View style={styles.progressItem}>
-                <Text style={[styles.progressNumber, { color: theme.colors.success }]}>45m</Text>
-                <Text style={styles.progressLabel}>Focus Time</Text>
-              </View>
-            </View>
-          </Card>
+          {/* Digital Wellbeing Dashboard */}
+          <DigitalWellbeing theme={theme} />
 
           {/* Development Actions */}
           {__DEV__ && (

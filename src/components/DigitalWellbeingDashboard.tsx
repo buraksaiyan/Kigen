@@ -1,0 +1,450 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  RefreshControl,
+  Alert,
+} from 'react-native';
+import { UsageChart } from './UsageChart';
+import UsageTracker, { UsageStats, AppUsage } from '../services/usageTracker';
+
+interface DigitalWellbeingDashboardProps {
+  theme: any;
+}
+
+const APP_COLORS = [
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+  '#DDA0DD', '#FFB6C1', '#87CEEB', '#F0E68C', '#FF7F50',
+  '#98FB98', '#FFE4E1', '#E6E6FA', '#FFF8DC', '#F5DEB3'
+];
+
+const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ theme }) => {
+  const [usageStats, setUsageStats] = useState<UsageStats[]>([]);
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const usageTracker = UsageTracker.getInstance();
+
+  useEffect(() => {
+    checkPermissionAndLoadData();
+    
+    // Check permissions periodically
+    const interval = setInterval(checkPermissionAndLoadData, 3000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const checkPermissionAndLoadData = async () => {
+    setIsLoading(true);
+    try {
+      const permission = await usageTracker.hasUsageAccessPermission();
+      setHasPermission(permission);
+      
+      if (permission) {
+        const stats = await usageTracker.getUsageStats(1);
+        setUsageStats(stats);
+      } else {
+        setUsageStats([]);
+      }
+    } catch (error) {
+      console.error('Error checking permission:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const requestPermission = async () => {
+    try {
+      await usageTracker.requestUsageAccessPermission();
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+    }
+  };
+
+  const resetAndTryAgain = async () => {
+    try {
+      await usageTracker.resetPermissionStatus();
+      setHasPermission(false);
+      setUsageStats([]);
+      Alert.alert(
+        'Reset Complete',
+        'You can now try requesting permission again.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Error resetting permission:', error);
+    }
+  };
+
+  const onRefresh = async () => {
+    await checkPermissionAndLoadData();
+  };
+
+  const renderNoPermission = () => (
+    <View style={[styles.permissionContainer, { backgroundColor: theme.cardBackground }]}>
+      <View style={styles.iconContainer}>
+        <Text style={styles.iconText}>📱</Text>
+      </View>
+      
+      <Text style={[styles.permissionTitle, { color: theme.text }]}>
+        Digital Wellbeing
+      </Text>
+      
+      <Text style={[styles.permissionDescription, { color: theme.textSecondary }]}>
+        Track your app usage and screen time to understand your digital habits and build better discipline.
+      </Text>
+
+      <View style={styles.requirementsContainer}>
+        <Text style={[styles.requirementsTitle, { color: theme.text }]}>
+          To enable screen time tracking:
+        </Text>
+        <View style={styles.requirementStep}>
+          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>1</Text>
+          <Text style={[styles.stepText, { color: theme.textSecondary }]}>
+            Tap "Grant Permission" below
+          </Text>
+        </View>
+        <View style={styles.requirementStep}>
+          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>2</Text>
+          <Text style={[styles.stepText, { color: theme.textSecondary }]}>
+            Find "Kigen" in the Usage Access list
+          </Text>
+        </View>
+        <View style={styles.requirementStep}>
+          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>3</Text>
+          <Text style={[styles.stepText, { color: theme.textSecondary }]}>
+            Toggle "Allow usage access" ON
+          </Text>
+        </View>
+        <View style={styles.requirementStep}>
+          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>4</Text>
+          <Text style={[styles.stepText, { color: theme.textSecondary }]}>
+            Return to this app
+          </Text>
+        </View>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.permissionButton, { backgroundColor: '#8B5CF6' }]}
+        onPress={requestPermission}
+      >
+        <Text style={styles.permissionButtonText}>Grant Permission</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.resetButton, { borderColor: theme.textSecondary }]}
+        onPress={resetAndTryAgain}
+      >
+        <Text style={[styles.resetButtonText, { color: theme.textSecondary }]}>
+          Reset & Try Again
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderNoData = () => (
+    <View style={[styles.noDataContainer, { backgroundColor: theme.cardBackground }]}>
+      <Text style={[styles.noDataIcon, { color: theme.textSecondary }]}>📊</Text>
+      <Text style={[styles.noDataTitle, { color: theme.text }]}>
+        No Usage Data Available
+      </Text>
+      <Text style={[styles.noDataText, { color: theme.textSecondary }]}>
+        Permission is granted, but no usage data could be retrieved. This might be because:
+      </Text>
+      <Text style={[styles.noDataReason, { color: theme.textSecondary }]}>
+        • You haven't used other apps today
+      </Text>
+      <Text style={[styles.noDataReason, { color: theme.textSecondary }]}>
+        • The system needs time to collect data
+      </Text>
+      <Text style={[styles.noDataReason, { color: theme.textSecondary }]}>
+        • A native module is required for real data access
+      </Text>
+    </View>
+  );
+
+  const renderUsageData = () => {
+    if (!usageStats.length) {
+      return renderNoData();
+    }
+
+    const todayStats = usageStats[0];
+    if (!todayStats || !todayStats.apps.length) {
+      return renderNoData();
+    }
+
+    // Prepare chart data with colors and percentages
+    const chartData = todayStats.apps.slice(0, 10).map((app, index) => ({
+      app: app.appName,
+      timeInForeground: app.timeInForeground,
+      color: APP_COLORS[index % APP_COLORS.length] || '#FF6B6B',
+    }));
+
+    // Add percentages to apps
+    const appsWithPercentages = todayStats.apps.map((app, index) => ({
+      ...app,
+      percentage: todayStats.totalScreenTime > 0 
+        ? Math.round((app.timeInForeground / todayStats.totalScreenTime) * 100) 
+        : 0,
+      color: APP_COLORS[index % APP_COLORS.length],
+    }));
+
+    return (
+      <ScrollView 
+        style={styles.usageContainer}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor="#8B5CF6" />
+        }
+      >
+        {/* Chart Section */}
+        <View style={[styles.chartSection, { backgroundColor: theme.cardBackground }]}>
+          <Text style={[styles.chartTitle, { color: theme.text }]}>Today's Screen Time</Text>
+          <UsageChart 
+            data={chartData}
+            totalTime={todayStats.totalScreenTime}
+          />
+          <Text style={[styles.totalTimeText, { color: theme.textSecondary }]}>
+            Total: {usageTracker.formatTime(todayStats.totalScreenTime)}
+          </Text>
+        </View>
+
+        {/* Apps List */}
+        <View style={[styles.appsSection, { backgroundColor: theme.cardBackground }]}>
+          <Text style={[styles.appsTitle, { color: theme.text }]}>App Usage</Text>
+          
+          {appsWithPercentages.map((app, index) => (
+            <View key={app.packageName} style={styles.appItem}>
+              <View style={styles.appInfo}>
+                <View style={[styles.appColorDot, { backgroundColor: app.color }]} />
+                <View style={styles.appDetails}>
+                  <Text style={[styles.appName, { color: theme.text }]} numberOfLines={1}>
+                    {app.appName}
+                  </Text>
+                  <Text style={[styles.packageName, { color: theme.textSecondary }]} numberOfLines={1}>
+                    {app.packageName}
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={styles.appUsage}>
+                <Text style={[styles.usageTime, { color: theme.text }]}>
+                  {usageTracker.formatTime(app.timeInForeground)}
+                </Text>
+                <Text style={[styles.usagePercentage, { color: theme.textSecondary }]}>
+                  {app.percentage}%
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    );
+  };
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.headerContainer}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Digital Wellbeing</Text>
+      </View>
+      
+      {!hasPermission ? renderNoPermission() : renderUsageData()}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 20,
+    paddingHorizontal: 16,
+  },
+  headerContainer: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  
+  // Permission Request Styles
+  permissionContainer: {
+    padding: 24,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    marginBottom: 16,
+  },
+  iconText: {
+    fontSize: 48,
+  },
+  permissionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  permissionDescription: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  requirementsContainer: {
+    width: '100%',
+    marginBottom: 24,
+  },
+  requirementsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  requirementStep: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  stepNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginRight: 12,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  stepText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  permissionButton: {
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    minWidth: 200,
+  },
+  permissionButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  resetButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  resetButtonText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  
+  // Usage Data Styles
+  usageContainer: {
+    flex: 1,
+  },
+  chartSection: {
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  totalTimeText: {
+    fontSize: 14,
+    marginTop: 12,
+  },
+  appsSection: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  appsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  appItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  appInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  appColorDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 12,
+  },
+  appDetails: {
+    flex: 1,
+  },
+  appName: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  packageName: {
+    fontSize: 12,
+  },
+  appUsage: {
+    alignItems: 'flex-end',
+  },
+  usageTime: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  usagePercentage: {
+    fontSize: 12,
+  },
+  
+  // No Data Styles
+  noDataContainer: {
+    padding: 40,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  noDataIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  noDataTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  noDataText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  noDataReason: {
+    fontSize: 14,
+    textAlign: 'left',
+    marginBottom: 4,
+    alignSelf: 'stretch',
+  },
+});
+
+export default DigitalWellbeingDashboard;
