@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Animated,
   KeyboardAvoidingView,
   Platform,
@@ -88,7 +87,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       await loadEntries();
       await loadStats();
     } catch (error) {
-      Alert.alert('Error', 'Failed to save journal entry');
+      console.error('Failed to save journal entry:', error);
     } finally {
       setIsLoading(false);
     }
