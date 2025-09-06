@@ -9,15 +9,18 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { KigenLogo } from './KigenLogo';
+import { useAuth } from '../modules/auth/AuthProvider';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (screen: string) => void;
   currentScreen?: string;
+  onShowAdmin?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen, onShowAdmin }) => {
+  const { session, signOut, showLoginScreen } = useAuth();
   const slideAnim = React.useRef(new Animated.Value(-300)).current;
 
   React.useEffect(() => {
@@ -87,8 +90,42 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
 
           {/* Footer */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Version 1.0.0</Text>
-            <Text style={styles.footerText}>Build discipline daily</Text>
+            {/* Auth Section */}
+            <View style={styles.authSection}>
+              <TouchableOpacity
+                style={styles.authButton}
+                onPress={() => {
+                  if (session) {
+                    signOut();
+                  } else {
+                    showLoginScreen();
+                  }
+                  onClose();
+                }}
+              >
+                <Text style={styles.authButtonText}>
+                  {session ? 'Sign Out' : 'Sign In'}
+                </Text>
+              </TouchableOpacity>
+              
+              {/* Admin Button - Only show if signed in */}
+              {session && onShowAdmin && (
+                <TouchableOpacity
+                  style={styles.adminButton}
+                  onPress={() => {
+                    onShowAdmin();
+                    onClose();
+                  }}
+                >
+                  <Text style={styles.adminButtonText}>Admin Panel</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            
+            <View style={styles.appInfo}>
+              <Text style={styles.footerText}>Version 1.0.0</Text>
+              <Text style={styles.footerText}>Build discipline daily</Text>
+            </View>
           </View>
         </SafeAreaView>
       </Animated.View>
@@ -160,6 +197,38 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+    alignItems: 'center',
+  },
+  authSection: {
+    width: '100%',
+    marginBottom: theme.spacing.md,
+  },
+  authButton: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.sm,
+  },
+  authButtonText: {
+    ...theme.typography.body,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  adminButton: {
+    backgroundColor: theme.colors.secondary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+  },
+  adminButtonText: {
+    ...theme.typography.body,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  appInfo: {
     alignItems: 'center',
   },
   footerText: {

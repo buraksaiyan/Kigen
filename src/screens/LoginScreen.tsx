@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
+import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -189,6 +190,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <KigenKanjiBackground />
+      
       {/* Header with Close Button */}
       <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
         <TouchableOpacity

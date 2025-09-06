@@ -20,31 +20,31 @@ export const FlowBackground: React.FC<FlowBackgroundProps> = ({ style }) => {
           </RadialGradient>
         </Defs>
         
-                {/* Flowing water waves - full coverage */}
+        {/* Flowing water waves - full coverage */}
         <Path 
           d="M0,0 L800,0 L800,150 Q600,100 400,150 Q200,200 0,150 Z" 
           fill="url(#flowGradient)" 
-          opacity="0.6"
+          opacity="0.9"
         />
         <Path 
           d="M0,100 Q200,50 400,100 Q600,150 800,100 L800,250 Q600,300 400,250 Q200,200 0,250 Z" 
           fill="url(#flowGradient)" 
-          opacity="0.5"
+          opacity="0.7"
         />
         <Path 
           d="M0,200 Q150,150 300,200 Q450,250 600,200 Q750,150 800,200 L800,350 Q750,400 600,350 Q450,300 300,350 Q150,400 0,350 Z" 
           fill="url(#flowGradient)" 
-          opacity="0.4"
+          opacity="0.8"
         />
         <Path 
           d="M0,300 Q100,250 200,300 Q300,350 400,300 Q500,250 600,300 Q700,350 800,300 L800,450 Q700,500 600,450 Q500,400 400,450 Q300,500 200,450 Q100,400 0,450 Z" 
           fill="url(#flowGradient)" 
-          opacity="0.3"
+          opacity="0.6"
         />
         <Path 
-          d="M0,400 Q200,350 400,400 Q600,450 800,400 L800,600 Q600,550 400,600 Q200,550 0,600 Z" 
+          d="M0,400 Q200,350 400,400 Q600,450 800,400 L800,600 L0,600 Z" 
           fill="url(#flowGradient)" 
-          opacity="0.2"
+          opacity="0.7"
         />
         
         {/* Flowing particles scattered across full area */}

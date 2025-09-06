@@ -9,6 +9,7 @@ import { FocusGauge } from '../../components/FocusGauge';
 import { KigenLogo } from '../../components/KigenLogo';
 import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
+import { KigenKanjiBackground } from '../../components/KigenKanjiBackground';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
@@ -89,6 +90,8 @@ export const DashboardScreen: React.FC = () => {
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
       <SafeAreaView style={styles.container}>
+        <KigenKanjiBackground />
+        
         {/* Header with Logo and Floating Menu */}
         <View style={styles.topHeader}>
           {/* Left Side: Menu Button */}
@@ -206,6 +209,7 @@ export const DashboardScreen: React.FC = () => {
           onClose={() => setIsSidebarOpen(false)}
           onNavigate={handleSidebarNavigation}
           currentScreen={currentScreen}
+          onShowAdmin={() => setIsAdminPanelOpen(true)}
         />
         
         {/* Goals Screen */}

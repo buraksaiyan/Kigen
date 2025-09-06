@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { Button, Card } from '../components/UI';
+import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 interface Goal {
   id: string;
@@ -185,6 +186,8 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
+        <KigenKanjiBackground />
+        
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>

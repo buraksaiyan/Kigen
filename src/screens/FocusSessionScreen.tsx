@@ -8,6 +8,7 @@ import {
   TextInput,
   Dimensions,
   AppState,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -408,15 +409,18 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <View style={styles.placeholder} />
+          <Text style={styles.headerTitle}>Choose Your 起源 Focus Mode</Text>
           <View style={styles.placeholder} />
         </View>
 
         <KigenKanjiBackground />
 
         {sessionType === 'selection' && (
-          <View style={styles.selectionContainer}>
-            <Text style={styles.subtitle}>Choose Your 起源 Focus Mode</Text>
+          <ScrollView 
+            style={styles.selectionScrollContainer}
+            contentContainerStyle={styles.selectionContainer}
+            showsVerticalScrollIndicator={false}
+          >
             
             <TouchableOpacity
               style={[styles.modeButton, styles.freeMode]}
@@ -478,12 +482,13 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                 <Text style={styles.modeDescription}>Surpass the limits of your body.</Text>
               </View>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         )}
 
         {sessionType === 'free' && !isActive && (
           <View style={styles.setupContainer}>
             <FlowBackground style={styles.flowBackground} />
+            <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Flow Focus Setup</Text>
               <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
@@ -514,6 +519,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         {sessionType === 'executioner' && !isActive && (
           <View style={styles.setupContainer}>
             <GladiatorBackground style={styles.gladiatorBackground} />
+            <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
               <Text style={styles.setupDescription}>Fight with your own will to conquer your goals.</Text>
@@ -562,6 +568,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         {sessionType === 'meditation' && !isActive && (
           <View style={styles.setupContainer}>
             <MeditationBackground style={styles.meditationBackground} />
+            <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Meditation Focus Setup</Text>
               <Text style={styles.setupDescription}>Go beyond time while meditating.</Text>
@@ -592,6 +599,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         {sessionType === 'notech' && !isActive && (
           <View style={styles.setupContainer}>
             <NoTechBackground style={styles.noTechBackground} />
+            <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>No Tech Focus Setup</Text>
               <Text style={styles.setupDescription}>Life is worth more than scrolling. Drop your phone and reconnect with reality.</Text>
@@ -622,6 +630,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         {sessionType === 'body' && !isActive && (
           <View style={styles.setupContainer}>
             <BodyFocusBackground style={styles.bodyBackground} />
+            <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Body Focus Setup</Text>
               <Text style={styles.setupDescription}>Surpass the limits of your body.</Text>
@@ -738,13 +747,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1,
+  },
   placeholder: {
     width: 60,
   },
-  selectionContainer: {
+  selectionScrollContainer: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  selectionContainer: {
     paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   subtitle: {
     color: '#FFFFFF',
@@ -1027,8 +1045,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.6,
-    borderRadius: 12,
+    opacity: 1.0,
+    borderRadius: 15,
   },
   modeContent: {
     position: 'relative',
