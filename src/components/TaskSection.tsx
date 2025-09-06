@@ -245,7 +245,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
               style={styles.timerButton}
             >
               <Text style={styles.timerButtonText}>
-                {isTimerActive ? '⏸️ Pause' : '▶️ Start'}
+                {isTimerActive ? 'Pause' : 'Start'}
               </Text>
             </TouchableOpacity>
           </View>
