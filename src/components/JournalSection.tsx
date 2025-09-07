@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { Card } from './UI';
+import { KigenKanjiBackground } from './KigenKanjiBackground';
 
 interface JournalSectionProps {
   isExpanded: boolean;
@@ -127,8 +128,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
       <SafeAreaView style={styles.journalCard}>
-          {/* Black background like Goals page */}
-          <View style={styles.blackBackground} />
+          {/* Kanji background like Goals page */}
+          <KigenKanjiBackground />
           
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>

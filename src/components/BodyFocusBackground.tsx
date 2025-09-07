@@ -4,14 +4,18 @@ import Svg, { Defs, RadialGradient, Stop, Path, Circle } from 'react-native-svg'
 
 interface BodyFocusBackgroundProps {
   style?: any;
+  fullCoverage?: boolean;
 }
 
-export const BodyFocusBackground: React.FC<BodyFocusBackgroundProps> = ({ style }) => {
+export const BodyFocusBackground: React.FC<BodyFocusBackgroundProps> = ({ style, fullCoverage = false }) => {
+  const viewBox = fullCoverage ? "0 0 1000 800" : "0 0 800 600";
+  const svgStyle = fullCoverage ? [StyleSheet.absoluteFillObject, { transform: [{ scale: 1.2 }] }] : StyleSheet.absoluteFillObject;
+  
   return (
     <View style={[styles.container, style]}>
       {/* Black base background */}
       <View style={styles.blackBase} />
-      <Svg width="100%" height="100%" viewBox="0 0 800 600" style={StyleSheet.absoluteFillObject}>
+      <Svg width="100%" height="100%" viewBox={viewBox} style={svgStyle}>
         <Defs>
           <RadialGradient id="bodyFocusGradient" cx="50%" cy="30%" r="80%">
             <Stop offset="0%" stopColor="rgba(139, 69, 19, 0.3)" stopOpacity="1" />

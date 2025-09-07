@@ -18,8 +18,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FlowBackground } from '../components/FlowBackground';
 import { GladiatorBackground } from '../components/GladiatorBackground';
 import { MeditationBackground } from '../components/MeditationBackground';
-import { BodyFocusBackground } from '../components/BodyFocusBackground';
 import { NoTechBackground } from '../components/NoTechBackground';
+import { BodyFocusBackground } from '../components/BodyFocusBackground';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
@@ -487,7 +487,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'free' && !isActive && (
           <View style={styles.setupContainer}>
-            <FlowBackground style={styles.flowBackground} />
+            <FlowBackground style={styles.flowBackground} fullCoverage />
             <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Flow Focus Setup</Text>
@@ -598,7 +598,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'notech' && !isActive && (
           <View style={styles.setupContainer}>
-            <NoTechBackground style={styles.noTechBackground} />
+            <NoTechBackground style={styles.noTechBackground} fullCoverage />
             <KigenKanjiBackground />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>No Tech Focus Setup</Text>
@@ -660,10 +660,18 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {isActive && (
           <View style={styles.timerContainer}>
+            {/* Add themed background based on session type */}
+            {sessionType === 'free' && <FlowBackground style={StyleSheet.absoluteFillObject} fullCoverage />}
+            {sessionType === 'executioner' && <GladiatorBackground style={StyleSheet.absoluteFillObject} />}
+            {sessionType === 'meditation' && <MeditationBackground style={StyleSheet.absoluteFillObject} />}
+            {sessionType === 'body' && <BodyFocusBackground style={StyleSheet.absoluteFillObject} />}
+            {sessionType === 'notech' && <NoTechBackground style={StyleSheet.absoluteFillObject} fullCoverage />}
+            
             <Text style={styles.sessionTypeText}>
               {sessionType === 'free' ? 'Flow Focus' : 
                sessionType === 'executioner' ? 'Executioner Focus' :
-               sessionType === 'meditation' ? 'Meditation Focus' : 'Body Focus'}
+               sessionType === 'meditation' ? 'Meditation Focus' : 
+               sessionType === 'body' ? 'Body Focus' : 'No Tech Focus'}
             </Text>
             
             {sessionType === 'executioner' && selectedGoal && (
@@ -815,6 +823,10 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     paddingHorizontal: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    marginHorizontal: 20,
+    borderRadius: 15,
+    paddingVertical: 30,
   },
   setupTitle: {
     color: '#FFFFFF',
@@ -897,12 +909,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   sessionTypeText: {
-    color: '#6d28d9',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   goalDisplay: {
     backgroundColor: '#374151',
