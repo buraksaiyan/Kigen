@@ -83,7 +83,7 @@ export class UserStatsService {
 
   // Daily Activity Tracking
   static async getTodayActivity(): Promise<DailyActivity> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().substring(0, 10); // YYYY-MM-DD
     return this.getDailyActivity(today);
   }
 

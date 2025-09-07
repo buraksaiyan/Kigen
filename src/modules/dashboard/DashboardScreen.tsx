@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
@@ -19,11 +19,12 @@ import UsageDashboard from '../../components/UsageDashboard';
 import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { AdminPanel } from '../../components/AdminPanel';
-import { StatsPreview } from '../../components/StatsPreview';
+import { FlippableStatsCard } from '../../components/FlippableStatsCard';
+import { UserStatsService } from '../../services/userStatsService';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut, session, showLoginScreen } = useAuth();
-  const [disciplineScore] = useState(72); // Mock data - you'll replace this with real system
+  const [overallRating, setOverallRating] = useState(0); // Replace disciplineScore with OVR
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
@@ -32,10 +33,29 @@ export const DashboardScreen: React.FC = () => {
   const [isRatingsOpen, setIsRatingsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     maybePromptForRating();
+    loadCurrentRating();
   }, []);
+
+  const loadCurrentRating = async () => {
+    try {
+      const rating = await UserStatsService.getCurrentRating();
+      setOverallRating(rating.overallRating);
+    } catch (error) {
+      console.error('Error loading current rating:', error);
+    }
+  };
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await loadCurrentRating();
+    setRefreshTrigger(prev => prev + 1); // Trigger card refresh
+    setIsRefreshing(false);
+  };
 
   const handleJournal = () => {
     setIsJournalOpen(true);
@@ -128,10 +148,18 @@ export const DashboardScreen: React.FC = () => {
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor="#fff"
+              colors={['#8b5cf6']}
+            />
+          }
         >
           {/* Main Discipline Score */}
           <Card style={styles.mainScoreCard}>
-            <FocusGauge rating={disciplineScore} />
+            <FocusGauge rating={overallRating} />
             
             <View style={styles.scoreDetails}>
               <View style={styles.statRow}>
@@ -153,8 +181,8 @@ export const DashboardScreen: React.FC = () => {
             </View>
           </Card>
 
-          {/* Fighter Stats Preview */}
-          <StatsPreview onPress={() => setIsRatingsOpen(true)} />
+          {/* Flippable Kigen Stats Card */}
+          <FlippableStatsCard onPress={() => setIsRatingsOpen(true)} refreshTrigger={refreshTrigger} />
 
           {/* Quick Actions */}
           <View style={styles.actionsSection}>
