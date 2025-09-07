@@ -14,10 +14,12 @@ import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import FocusLogsScreen from '../../screens/FocusLogsScreen';
+import { RatingsScreen } from '../../screens/RatingsScreen';
 import UsageDashboard from '../../components/UsageDashboard';
 import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { AdminPanel } from '../../components/AdminPanel';
+import { StatsPreview } from '../../components/StatsPreview';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut, session, showLoginScreen } = useAuth();
@@ -27,6 +29,7 @@ export const DashboardScreen: React.FC = () => {
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isFocusLogsOpen, setIsFocusLogsOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
+  const [isRatingsOpen, setIsRatingsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
@@ -62,24 +65,35 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusLogsOpen(false);
         setIsFocusSessionOpen(false);
+        setIsRatingsOpen(false);
+        break;
+      case 'ratings':
+        setIsRatingsOpen(true);
+        setIsGoalsOpen(false);
+        setIsJournalOpen(false);
+        setIsFocusLogsOpen(false);
+        setIsFocusSessionOpen(false);
         break;
       case 'journals':
         // Don't set isJournalOpen, let JournalsScreen modal handle it
         setIsGoalsOpen(false);
         setIsFocusLogsOpen(false);
         setIsFocusSessionOpen(false);
+        setIsRatingsOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
         setIsJournalOpen(false);
         setIsFocusLogsOpen(false);
         setIsFocusSessionOpen(false);
+        setIsRatingsOpen(false);
         break;
       case 'focus-logs':
         setIsFocusLogsOpen(true);
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
+        setIsRatingsOpen(false);
         break;
       default:
         console.log('Navigate to:', screen);
@@ -138,6 +152,9 @@ export const DashboardScreen: React.FC = () => {
               </View>
             </View>
           </Card>
+
+          {/* Fighter Stats Preview */}
+          <StatsPreview onPress={() => setIsRatingsOpen(true)} />
 
           {/* Quick Actions */}
           <View style={styles.actionsSection}>
@@ -220,6 +237,11 @@ export const DashboardScreen: React.FC = () => {
             setCurrentScreen('dashboard');
           }}
         />
+        
+        {/* Ratings Screen */}
+        {isRatingsOpen && (
+          <RatingsScreen />
+        )}
         
         {/* Journals Screen */}
         <JournalsScreen

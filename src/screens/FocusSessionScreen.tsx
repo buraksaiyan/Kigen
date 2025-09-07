@@ -23,6 +23,7 @@ import { BodyFocusBackground } from '../components/BodyFocusBackground';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
+import { UserStatsService } from '../services/userStatsService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -110,6 +111,14 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       }, 1000);
     } else if (timeLeft === 0 && isActive) {
       setIsActive(false);
+      // Handle automatic session completion
+      const handleAutoComplete = async () => {
+        await saveFocusLog('completed');
+        // Record focus session completion in rating system
+        const sessionMinutes = parseInt(duration);
+        await UserStatsService.recordFocusSession(sessionType, sessionMinutes, true);
+      };
+      handleAutoComplete();
     }
 
     return () => {
@@ -266,6 +275,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     const usageData = await stopFocusSession();
     setIsActive(false);
     await saveFocusLog('completed');
+    
+    // Record focus session completion in rating system
+    const sessionMinutes = Math.round((parseInt(duration) * 60 - timeLeft) / 60);
+    await UserStatsService.recordFocusSession(sessionType, sessionMinutes, true);
+    
     showAlert(
       'Focus Session Complete!',
       `Great work! You completed your ${
@@ -291,6 +305,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             await stopFocusSession();
             setIsActive(false);
             await saveFocusLog('aborted');
+            
+            // Record aborted session in rating system
+            const sessionMinutes = Math.round((parseInt(duration) * 60 - timeLeft) / 60);
+            await UserStatsService.recordFocusSession(sessionType, sessionMinutes, false);
+            
             resetSession();
           },
         },
@@ -487,8 +506,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'free' && !isActive && (
           <View style={styles.setupContainer}>
-            <FlowBackground style={styles.flowBackground} fullCoverage />
-            <KigenKanjiBackground />
+            <FlowBackground style={StyleSheet.absoluteFillObject} fullCoverage />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Flow Focus Setup</Text>
               <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
@@ -518,8 +536,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'executioner' && !isActive && (
           <View style={styles.setupContainer}>
-            <GladiatorBackground style={styles.gladiatorBackground} />
-            <KigenKanjiBackground />
+            <GladiatorBackground style={StyleSheet.absoluteFillObject} />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Executioner Focus Setup</Text>
               <Text style={styles.setupDescription}>Fight with your own will to conquer your goals.</Text>
@@ -567,8 +584,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'meditation' && !isActive && (
           <View style={styles.setupContainer}>
-            <MeditationBackground style={styles.meditationBackground} />
-            <KigenKanjiBackground />
+            <MeditationBackground style={StyleSheet.absoluteFillObject} />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Meditation Focus Setup</Text>
               <Text style={styles.setupDescription}>Go beyond time while meditating.</Text>
@@ -598,8 +614,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'notech' && !isActive && (
           <View style={styles.setupContainer}>
-            <NoTechBackground style={styles.noTechBackground} fullCoverage />
-            <KigenKanjiBackground />
+            <NoTechBackground style={StyleSheet.absoluteFillObject} fullCoverage />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>No Tech Focus Setup</Text>
               <Text style={styles.setupDescription}>Life is worth more than scrolling. Drop your phone and reconnect with reality.</Text>
@@ -629,8 +644,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
         {sessionType === 'body' && !isActive && (
           <View style={styles.setupContainer}>
-            <BodyFocusBackground style={styles.bodyBackground} />
-            <KigenKanjiBackground />
+            <BodyFocusBackground style={StyleSheet.absoluteFillObject} />
             <View style={styles.contentWrapper}>
               <Text style={styles.setupTitle}>Body Focus Setup</Text>
               <Text style={styles.setupDescription}>Surpass the limits of your body.</Text>

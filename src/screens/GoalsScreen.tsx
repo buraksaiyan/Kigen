@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
+import { UserStatsService } from '../services/userStatsService';
 import { Button, Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
@@ -106,6 +107,9 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
             );
             setGoals(updated);
             await saveGoals(updated);
+            
+            // Record goal completion in rating system
+            await UserStatsService.recordGoalCompletion();
           },
         },
       ]

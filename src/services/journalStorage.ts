@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserStatsService } from './userStatsService';
 
 export interface JournalEntry {
   id: string;
@@ -38,6 +39,9 @@ export const journalStorage = {
       
       entries.unshift(newEntry); // Add to beginning
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      
+      // Record journal entry in rating system
+      await UserStatsService.recordJournalEntry();
     } catch (error) {
       console.error('Error adding journal entry:', error);
       throw error;

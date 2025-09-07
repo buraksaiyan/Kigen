@@ -1,0 +1,384 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  RefreshControl,
+  Alert
+} from 'react-native';
+import { UserCard } from '../components/UserCard';
+import { Leaderboard } from '../components/Leaderboard';
+import { UserStatsService } from '../services/userStatsService';
+import { UserRating } from '../services/ratingSystem';
+import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+
+type ViewMode = 'card' | 'leaderboard';
+type CardMode = 'monthly' | 'lifetime';
+
+export const RatingsScreen: React.FC = () => {
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const [cardMode, setCardMode] = useState<CardMode>('monthly');
+  const [userRating, setUserRating] = useState<UserRating | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Check if user profile exists, if not create one
+      let profile = await UserStatsService.getUserProfile();
+      if (!profile) {
+        profile = await createUserProfile();
+      }
+      
+      const rating = await UserStatsService.getCurrentRating();
+      
+      setUserProfile(profile);
+      setUserRating(rating);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      Alert.alert('Error', 'Failed to load user data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const createUserProfile = async () => {
+    return new Promise<any>((resolve) => {
+      Alert.prompt(
+        'Welcome to Kigen!',
+        'Enter your username to create your fighter card:',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => resolve(null)
+          },
+          {
+            text: 'Create',
+            onPress: async (username?: string) => {
+              if (username && username.trim()) {
+                try {
+                  const profile = await UserStatsService.createUserProfile(username.trim());
+                  resolve(profile);
+                } catch (error) {
+                  Alert.alert('Error', 'Failed to create profile');
+                  resolve(null);
+                }
+              } else {
+                Alert.alert('Invalid Username', 'Please enter a valid username');
+                resolve(null);
+              }
+            }
+          }
+        ],
+        'plain-text',
+        '',
+        'default'
+      );
+    });
+  };
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await loadUserData();
+    setIsRefreshing(false);
+  };
+
+  const handleImageUpdate = async (imageUri: string) => {
+    try {
+      await UserStatsService.updateUserProfile({ profileImage: imageUri });
+      setUserProfile({ ...userProfile, profileImage: imageUri });
+    } catch (error) {
+      console.error('Error updating profile image:', error);
+      Alert.alert('Error', 'Failed to update profile image');
+    }
+  };
+
+  const getLifetimeRating = (): UserRating | null => {
+    if (!userRating) return null;
+    
+    // For lifetime card, we use the same stats but with total points
+    return {
+      ...userRating,
+      monthlyPoints: userRating.totalPoints // Use total points for lifetime card
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <KigenKanjiBackground />
+        <Text style={styles.loadingText}>Loading your fighter stats...</Text>
+      </View>
+    );
+  }
+
+  if (!userProfile || !userRating) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <KigenKanjiBackground />
+        <Text style={styles.errorText}>Failed to load profile</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={loadUserData}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <KigenKanjiBackground />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Fighter Status</Text>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={[styles.headerButton, viewMode === 'card' && styles.activeHeaderButton]}
+            onPress={() => setViewMode('card')}
+          >
+            <Text style={[styles.headerButtonText, viewMode === 'card' && styles.activeHeaderButtonText]}>
+              Card
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.headerButton, viewMode === 'leaderboard' && styles.activeHeaderButton]}
+            onPress={() => setViewMode('leaderboard')}
+          >
+            <Text style={[styles.headerButtonText, viewMode === 'leaderboard' && styles.activeHeaderButtonText]}>
+              Rankings
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView
+        style={styles.content}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}
+      >
+        {viewMode === 'card' ? (
+          <View>
+            {/* Card Mode Toggle */}
+            <View style={styles.cardModeToggle}>
+              <TouchableOpacity
+                style={[styles.cardModeButton, cardMode === 'monthly' && styles.activeCardMode]}
+                onPress={() => setCardMode('monthly')}
+              >
+                <Text style={[styles.cardModeText, cardMode === 'monthly' && styles.activeCardModeText]}>
+                  Monthly Card
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.cardModeButton, cardMode === 'lifetime' && styles.activeCardMode]}
+                onPress={() => setCardMode('lifetime')}
+              >
+                <Text style={[styles.cardModeText, cardMode === 'lifetime' && styles.activeCardModeText]}>
+                  Lifetime Card
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* User Card */}
+            <UserCard
+              userRating={cardMode === 'monthly' ? userRating : (getLifetimeRating() || userRating)}
+              username={userProfile.username}
+              profileImage={userProfile.profileImage}
+              isMonthlyCard={cardMode === 'monthly'}
+              onImageUpdate={handleImageUpdate}
+            />
+
+            {/* Stats Explanation */}
+            <View style={styles.statsExplanation}>
+              <Text style={styles.explanationTitle}>How Points Work</Text>
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>DISCIPLINE (DIS)</Text>
+                <Text style={styles.explanationText}>
+                  • +5 pts per completed focus session{'\n'}
+                  • +10 pts per goal completed{'\n'}
+                  • +5 pts per journal entry (daily cap){'\n'}
+                  • +10 pts per execution/body focus hour{'\n'}
+                  • -5 pts per aborted session{'\n'}
+                  • -1 pt per 10min social media usage
+                </Text>
+              </View>
+              
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>FOCUS (FOC)</Text>
+                <Text style={styles.explanationText}>
+                  • +10 pts per focused hour{'\n'}
+                  • +10 pts additional per flow focus hour
+                </Text>
+              </View>
+
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>JOURNALING (JOU)</Text>
+                <Text style={styles.explanationText}>
+                  • +20 pts per entry (once per day cap)
+                </Text>
+              </View>
+
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>USAGE (USA)</Text>
+                <Text style={styles.explanationText}>
+                  • +20 pts if daily phone usage {'<'} 3 hours{'\n'}
+                  • +10 pts per hour below 3 hours{'\n'}
+                  • -10 pts per hour above 3 hours{'\n'}
+                  • +10 pts per no-phone focus hour
+                </Text>
+              </View>
+
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>MENTALITY (MEN)</Text>
+                <Text style={styles.explanationText}>
+                  • +2 pts per minute meditated
+                </Text>
+              </View>
+
+              <View style={styles.explanationSection}>
+                <Text style={styles.explanationHeader}>PHYSICAL (PHY)</Text>
+                <Text style={styles.explanationText}>
+                  • +20 pts per 30 minutes of body focus
+                </Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <Leaderboard />
+        )}
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 2,
+  },
+  headerButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  activeHeaderButton: {
+    backgroundColor: '#8b5cf6',
+  },
+  headerButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#888',
+  },
+  activeHeaderButtonText: {
+    color: '#fff',
+  },
+  content: {
+    flex: 1,
+  },
+  cardModeToggle: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 15,
+    padding: 4,
+  },
+  cardModeButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 12,
+  },
+  activeCardMode: {
+    backgroundColor: '#8b5cf6',
+  },
+  cardModeText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#888',
+  },
+  activeCardModeText: {
+    color: '#fff',
+  },
+  statsExplanation: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 20,
+  },
+  explanationTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  explanationSection: {
+    marginBottom: 15,
+  },
+  explanationHeader: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#8b5cf6',
+    marginBottom: 8,
+  },
+  explanationText: {
+    fontSize: 12,
+    color: '#ccc',
+    lineHeight: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#ff6b6b',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#8b5cf6',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
