@@ -32,7 +32,7 @@
             "enableSeparateBuildPerCPUArchitecture": false
           },
           "ios": {
-            "deploymentTarget": "13.0",
+            "deploymentTarget": "15.1",
             "newArchEnabled": false
           }
         }
