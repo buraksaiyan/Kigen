@@ -127,7 +127,7 @@ export const DashboardScreen: React.FC = () => {
           
           {/* Center: Logo - Now perfectly centered */}
           <View style={styles.logoContainer}>
-            <KigenLogo size="small" />
+            <KigenLogo size="medium" variant="image" />
           </View>
           
           {/* Right Side: Empty for balance */}

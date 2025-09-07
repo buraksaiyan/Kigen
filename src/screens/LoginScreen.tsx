@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import { KigenLogo } from '../components/KigenLogo';
 import { UserStatsService } from '../services/userStatsService';
 
 interface LoginScreenProps {
@@ -221,6 +222,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
         <View style={styles.form}>
           {/* Title */}
           <View style={styles.titleContainer}>
+            <KigenLogo size="large" variant="image" />
             <Text style={[styles.title, { color: theme.colors.text.primary }]}>
               {isSignUp ? 'Create your account' : 'Sign in to your account'}
             </Text>
@@ -434,6 +436,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 16,
