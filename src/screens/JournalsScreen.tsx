@@ -14,6 +14,7 @@ import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import { KigenLogo } from '../components/KigenLogo';
 
 interface JournalsScreenProps {
   visible?: boolean;
@@ -108,7 +109,9 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>起源 Journals</Text>
+          <View style={styles.logoContainer}>
+            <KigenLogo size="small" variant="image" showJapanese={false} />
+          </View>
           <View style={styles.placeholder} />
         </View>
 
@@ -338,5 +341,9 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     textAlign: 'center',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

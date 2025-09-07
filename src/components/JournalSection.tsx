@@ -17,6 +17,7 @@ import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { Card } from './UI';
 import { KigenKanjiBackground } from './KigenKanjiBackground';
+import { KigenLogo } from './KigenLogo';
 
 interface JournalSectionProps {
   isExpanded: boolean;
@@ -136,7 +137,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>起源 Journal</Text>
+            <View style={styles.logoContainer}>
+              <KigenLogo size="small" variant="image" showJapanese={false} />
+            </View>
             <View style={styles.placeholder} />
           </View>
           
@@ -427,5 +430,9 @@ const styles = StyleSheet.create({
   blackBackground: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000000',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

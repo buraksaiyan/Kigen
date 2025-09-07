@@ -16,6 +16,7 @@ import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 import { Button, Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import { KigenLogo } from '../components/KigenLogo';
 
 interface Goal {
   id: string;
@@ -196,7 +197,9 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>起源 Goals</Text>
+          <View style={styles.logoContainer}>
+            <KigenLogo size="small" variant="image" showJapanese={false} />
+          </View>
           <View style={styles.placeholder} />
         </View>
 
@@ -584,5 +587,9 @@ const styles = StyleSheet.create({
   },
   promptButton: {
     minWidth: 120,
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

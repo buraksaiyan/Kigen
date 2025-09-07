@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import { KigenLogo } from '../components/KigenLogo';
 
 interface FocusLog {
   id: string;
@@ -146,7 +147,9 @@ export default function FocusLogsScreen({ visible, onClose }: FocusLogsScreenPro
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>起源 Focus Logs</Text>
+        <View style={styles.logoContainer}>
+          <KigenLogo size="small" variant="image" showJapanese={false} />
+        </View>
         <View style={styles.placeholder} />
       </View>
       <ScrollView style={styles.content}>
@@ -420,5 +423,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

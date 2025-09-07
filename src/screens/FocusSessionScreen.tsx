@@ -24,6 +24,7 @@ import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { CustomAlert } from '../components/CustomAlert';
 import { rateFocusSession } from '../services/focusRating';
 import { UserStatsService } from '../services/userStatsService';
+import { KigenLogo } from '../components/KigenLogo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -430,7 +431,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Choose Your 起源 Focus Mode</Text>
+          <View style={styles.logoContainer}>
+            <KigenLogo size="small" variant="image" showJapanese={false} />
+          </View>
           <View style={styles.placeholder} />
         </View>
 
@@ -1125,5 +1128,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
     fontWeight: '500',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });
