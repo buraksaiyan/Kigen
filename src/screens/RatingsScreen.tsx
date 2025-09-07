@@ -117,7 +117,7 @@ export const RatingsScreen: React.FC = () => {
     return (
       <View style={[styles.container, styles.centered]}>
         <KigenKanjiBackground />
-        <Text style={styles.loadingText}>Loading your fighter stats...</Text>
+        <Text style={styles.loadingText}>Loading stats...</Text>
       </View>
     );
   }

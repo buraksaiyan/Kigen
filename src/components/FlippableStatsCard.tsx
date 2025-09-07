@@ -67,10 +67,12 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   };
 
   const handlePanGesture = (event: PanGestureHandlerGestureEvent) => {
-    const { translationX, state } = event.nativeEvent;
+    const { translationX, translationY, state } = event.nativeEvent;
     
     if (state === State.END) {
-      if (Math.abs(translationX) > 50) { // Swipe threshold
+      // Only flip if it's a clear horizontal swipe (more X than Y movement)
+      // and meets the threshold
+      if (Math.abs(translationX) > 80 && Math.abs(translationX) > Math.abs(translationY) * 2) {
         handleFlip();
       }
     }
@@ -141,14 +143,17 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   );
 
   return (
-    <PanGestureHandler
-      ref={panGestureRef}
-      onGestureEvent={handlePanGesture}
-      onHandlerStateChange={handlePanGesture}
-    >
-      <View style={styles.container}>
-        <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
-          <View style={styles.cardContainer}>
+    <View style={styles.container}>
+      <PanGestureHandler
+        ref={panGestureRef}
+        onGestureEvent={handlePanGesture}
+        onHandlerStateChange={handlePanGesture}
+        activeOffsetX={[-80, 80]} // Only activate for significant horizontal movement
+        failOffsetY={[-20, 20]} // Fail if too much vertical movement
+      >
+        <Animated.View>
+          <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
+            <View style={styles.cardContainer}>
             {/* Front Side - Monthly Stats */}
             <Animated.View style={[styles.cardSide, styles.frontSide, frontAnimatedStyle]}>
               <LinearGradient
@@ -216,8 +221,9 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
             </Animated.View>
           </View>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </PanGestureHandler>
+    </View>
   );
 };
 
@@ -228,11 +234,14 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     position: 'relative',
+    minHeight: 200, // Ensure container takes up proper space
   },
   cardSide: {
     position: 'absolute',
     width: '100%',
     backfaceVisibility: 'hidden',
+    top: 0,
+    left: 0,
   },
   frontSide: {
     zIndex: 2,
