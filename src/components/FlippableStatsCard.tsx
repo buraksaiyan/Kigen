@@ -214,10 +214,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 </View>
               </LinearGradient>
             </Animated.View>
-
-            <TouchableOpacity style={styles.tapHintOverlay} onPress={onPress}>
-              <Text style={styles.tapHint}>Tap to view full card</Text>
-            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </View>
@@ -344,19 +340,5 @@ const styles = StyleSheet.create({
   swipeHint: {
     fontSize: 10,
     color: '#888',
-  },
-  tapHintOverlay: {
-    position: 'absolute',
-    bottom: 8,
-    right: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    zIndex: 10,
-  },
-  tapHint: {
-    fontSize: 10,
-    color: '#ccc',
   },
 });

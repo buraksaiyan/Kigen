@@ -5,7 +5,6 @@ import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
 import { Button, Card } from '../../components/UI';
-import { FocusGauge } from '../../components/FocusGauge';
 import { KigenLogo } from '../../components/KigenLogo';
 import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
@@ -20,11 +19,11 @@ import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboar
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
-import { UserStatsService } from '../../services/userStatsService';
+import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut, session, showLoginScreen } = useAuth();
-  const [overallRating, setOverallRating] = useState(0); // Replace disciplineScore with OVR
+  const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard'); // New state for top nav
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
@@ -38,21 +37,10 @@ export const DashboardScreen: React.FC = () => {
 
   useEffect(() => {
     maybePromptForRating();
-    loadCurrentRating();
   }, []);
-
-  const loadCurrentRating = async () => {
-    try {
-      const rating = await UserStatsService.getCurrentRating();
-      setOverallRating(rating.overallRating);
-    } catch (error) {
-      console.error('Error loading current rating:', error);
-    }
-  };
 
   const onRefresh = async () => {
     setIsRefreshing(true);
-    await loadCurrentRating();
     setRefreshTrigger(prev => prev + 1); // Trigger card refresh
     setIsRefreshing(false);
   };
@@ -126,13 +114,15 @@ export const DashboardScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <KigenKanjiBackground />
         
-        {/* Header with Logo and Floating Menu */}
+        {/* Header with Logo and Top Navigation */}
         <View style={styles.topHeader}>
-          {/* Left Side: Menu Button */}
+          {/* Left Side: Menu Button - Only show in dashboard */}
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
-              <Text style={styles.menuButtonText}>☰</Text>
-            </TouchableOpacity>
+            {currentView === 'dashboard' && (
+              <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
+                <Text style={styles.menuButtonText}>☰</Text>
+              </TouchableOpacity>
+            )}
           </View>
           
           {/* Center: Logo - Now perfectly centered */}
@@ -144,103 +134,104 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.headerRight}>
           </View>
         </View>
-        
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              tintColor="#fff"
-              colors={['#8b5cf6']}
-            />
-          }
-        >
-          {/* Main Discipline Score */}
-          <Card style={styles.mainScoreCard}>
-            <FocusGauge rating={overallRating} />
-            
-            <View style={styles.scoreDetails}>
-              <View style={styles.statRow}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>+5</Text>
-                  <Text style={styles.statLabel}>Today</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>+12</Text>
-                  <Text style={styles.statLabel}>This Week</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>3</Text>
-                  <Text style={styles.statLabel}>Day Streak</Text>
-                </View>
+
+        {/* Top Navigation Bar - Dashboard vs Leaderboard */}
+        <View style={styles.topNavContainer}>
+          <TouchableOpacity
+            style={[styles.topNavTab, currentView === 'dashboard' && styles.activeTopNavTab]}
+            onPress={() => setCurrentView('dashboard')}
+          >
+            <Text style={[styles.topNavText, currentView === 'dashboard' && styles.activeTopNavText]}>
+              Dashboard
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.topNavTab, currentView === 'leaderboard' && styles.activeTopNavTab]}
+            onPress={() => setCurrentView('leaderboard')}
+          >
+            <Text style={[styles.topNavText, currentView === 'leaderboard' && styles.activeTopNavText]}>
+              Leaderboard
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Conditional Content Based on Current View */}
+        {currentView === 'dashboard' ? (
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={onRefresh}
+                tintColor="#fff"
+                colors={['#8b5cf6']}
+              />
+            }
+          >
+            {/* Kigen Stats Card - Now in prime position */}
+            <FlippableStatsCard onPress={() => setIsRatingsOpen(true)} refreshTrigger={refreshTrigger} />
+
+            {/* Quick Actions */}
+            <View style={styles.actionsSection}>
+              <Text style={styles.sectionTitle}>Build Discipline</Text>
+              
+              <View style={styles.actionGrid}>
+                <Button
+                  title="Goals"
+                  onPress={() => setCurrentScreen('goals')}
+                  style={styles.actionButton}
+                />
+                <Button
+                  title="Journal"
+                  onPress={handleJournal}
+                  style={styles.actionButton}
+                />
+              </View>
+              
+              <View style={styles.actionGrid}>
+                <Button
+                  title="Focus Session"
+                  onPress={handleFocusSession}
+                  variant="secondary"
+                  style={styles.actionButton}
+                />
+                <Button
+                  title="Focus Logs"
+                  onPress={() => setIsFocusLogsOpen(true)}
+                  style={styles.actionButton}
+                />
+              </View>
+              
+              <View style={styles.fullWidthButtonContainer}>
+                <Button
+                  title="View Progress"
+                  onPress={() => {}}
+                  variant="outline"
+                  style={styles.fullWidthButton}
+                />
               </View>
             </View>
-          </Card>
 
-          {/* Flippable Kigen Stats Card */}
-          <FlippableStatsCard onPress={() => setIsRatingsOpen(true)} refreshTrigger={refreshTrigger} />
+            {/* Digital Wellbeing Dashboard */}
+            <DigitalWellbeing theme={theme} />
 
-          {/* Quick Actions */}
-          <View style={styles.actionsSection}>
-            <Text style={styles.sectionTitle}>Build Discipline</Text>
-            
-            <View style={styles.actionGrid}>
-              <Button
-                title="Goals"
-                onPress={() => setCurrentScreen('goals')}
-                style={styles.actionButton}
-              />
-              <Button
-                title="Journal"
-                onPress={handleJournal}
-                style={styles.actionButton}
-              />
-            </View>
-            
-            <View style={styles.actionGrid}>
-              <Button
-                title="Focus Session"
-                onPress={handleFocusSession}
-                variant="secondary"
-                style={styles.actionButton}
-              />
-              <Button
-                title="Focus Logs"
-                onPress={() => setIsFocusLogsOpen(true)}
-                style={styles.actionButton}
-              />
-            </View>
-            
-            <View style={styles.fullWidthButtonContainer}>
-              <Button
-                title="View Progress"
-                onPress={() => {}}
-                variant="outline"
-                style={styles.fullWidthButton}
-              />
-            </View>
-          </View>
-
-          {/* Digital Wellbeing Dashboard */}
-          <DigitalWellbeing theme={theme} />
-
-          {/* Development Actions */}
-          {__DEV__ && (
-            <Card style={styles.devCard}>
-              <Text style={styles.devTitle}>Development</Text>
-              <Button
-                title="Sign Out"
-                onPress={signOut}
-                variant="outline"
-                size="small"
-              />
-            </Card>
-          )}
-        </ScrollView>
+            {/* Development Actions */}
+            {__DEV__ && (
+              <Card style={styles.devCard}>
+                <Text style={styles.devTitle}>Development</Text>
+                <Button
+                  title="Sign Out"
+                  onPress={signOut}
+                  variant="outline"
+                  size="small"
+                />
+              </Card>
+            )}
+          </ScrollView>
+        ) : (
+          <LeaderboardScreen />
+        )}
         
         {/* Sliding Sections */}
         <JournalSection 
@@ -360,6 +351,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  topNavContainer: {
+    flexDirection: 'row',
+    marginHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: 4,
+  },
+  topNavTab: {
+    flex: 1,
+    paddingVertical: theme.spacing.sm,
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+  },
+  activeTopNavTab: {
+    backgroundColor: theme.colors.primary,
+  },
+  topNavText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
+  },
+  activeTopNavText: {
+    color: '#FFFFFF',
+  },
   headerRight: {
     width: 80, // Same width as headerLeft for perfect balance
     flexDirection: 'row',
@@ -389,42 +405,6 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     textTransform: 'capitalize',
-  },
-  mainScoreCard: {
-    alignItems: 'center',
-    paddingVertical: theme.spacing.xl,
-    marginBottom: theme.spacing.lg,
-    backgroundColor: theme.colors.surface,
-  },
-  scoreDetails: {
-    marginTop: theme.spacing.lg,
-    width: '100%',
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: theme.colors.border,
-  },
-  statValue: {
-    ...theme.typography.h4,
-    color: theme.colors.primary,
-    fontWeight: '700',
-  },
-  statLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.tertiary,
-    marginTop: theme.spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
   },
   actionsSection: {
     marginBottom: theme.spacing.lg,
