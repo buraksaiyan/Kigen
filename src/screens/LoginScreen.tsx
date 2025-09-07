@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import { UserStatsService } from '../services/userStatsService';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -128,6 +129,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
     try {
       // Check if using mock auth (development mode)
       if (env.supabaseUrl.includes('placeholder')) {
+        // Create user profile in UserStatsService for development
+        await UserStatsService.createUserProfile(username.trim());
+        
         Alert.alert(
           'Success', 
           'Account created successfully! (Development Mode)\n\nIn production, you would receive a verification email.'
@@ -147,6 +151,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
       });
 
       if (error) throw error;
+
+      // Create user profile in UserStatsService
+      await UserStatsService.createUserProfile(username.trim());
 
       Alert.alert(
         'Check your email',

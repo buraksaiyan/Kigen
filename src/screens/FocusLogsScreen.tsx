@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 interface FocusLog {
   id: string;
@@ -138,8 +139,8 @@ export default function FocusLogsScreen({ visible, onClose }: FocusLogsScreenPro
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
     <SafeAreaView style={styles.container}>
-      {/* Black background like Goals page */}
-      <View style={styles.blackBackground} />
+      {/* Kigen Kanji background */}
+      <KigenKanjiBackground />
       {/* Header with same layout as Goals page */}
       <View style={styles.modalHeader}>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>

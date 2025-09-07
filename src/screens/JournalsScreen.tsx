@@ -179,15 +179,6 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
                 <Card key={entry.id} style={styles.entryCard}>
                   <View style={styles.entryHeader}>
                     <View style={styles.entryMeta}>
-                      <View style={styles.moodContainer}>
-                        <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
-                        <View
-                          style={[
-                            styles.moodIndicator,
-                            { backgroundColor: getMoodColor(entry.mood) },
-                          ]}
-                        />
-                      </View>
                       <Text style={styles.entryTime}>
                         {new Date(entry.date).toLocaleTimeString('en-US', {
                           hour: '2-digit',
@@ -200,7 +191,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
                       onPress={() => deleteEntry(entry.id)}
                       style={styles.deleteButton}
                     >
-                      <Text style={styles.deleteText}>Delete</Text>
+                      <Text style={styles.deleteText}>×</Text>
                     </TouchableOpacity>
                   </View>
                   
@@ -353,15 +344,17 @@ const styles = StyleSheet.create({
     color: theme.colors.text.tertiary,
   },
   deleteButton: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: 16,
+    backgroundColor: 'transparent',
+    borderRadius: 12,
   },
   deleteText: {
-    fontSize: 14,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
   },
   entryContent: {
     ...theme.typography.body,
