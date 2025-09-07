@@ -99,7 +99,7 @@ class DigitalWellbeingService {
         apps: appsWithIcons
       };
     } catch (error) {
-      console.error('Error getting today\'s stats:', error);
+      console.error("Error getting today's stats:", error);
       return null;
     }
   }

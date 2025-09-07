@@ -13,7 +13,7 @@ import { KigenKanjiBackground } from '../../components/KigenKanjiBackground';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
-import { FocusLogsScreen } from '../../screens/FocusLogsScreen';
+import FocusLogsScreen from '../../screens/FocusLogsScreen';
 import UsageDashboard from '../../components/UsageDashboard';
 import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';

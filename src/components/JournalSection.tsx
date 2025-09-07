@@ -127,6 +127,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
       <SafeAreaView style={styles.journalCard}>
+          {/* Black background like Goals page */}
+          <View style={styles.blackBackground} />
+          
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -419,5 +422,9 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     lineHeight: 20,
+  },
+  blackBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000000',
   },
 });

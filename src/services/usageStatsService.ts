@@ -93,7 +93,7 @@ class UsageStatsService {
     try {
       return await this.module.getTodayUsageStats();
     } catch (error) {
-      console.error('Failed to get today\'s usage stats:', error);
+      console.error("Failed to get today's usage stats:", error);
       return [];
     }
   }

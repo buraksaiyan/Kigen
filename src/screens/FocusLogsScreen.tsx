@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 interface FocusLog {
   id: string;
@@ -33,7 +32,7 @@ interface FocusLogsScreenProps {
 }
 
 export default function FocusLogsScreen({ visible, navigation }: any) {
-  const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState<FocusLog[]>([]);
   const [stats, setStats] = useState({
     totalSessions: 0,
     completedSessions: 0,
@@ -139,14 +138,16 @@ export default function FocusLogsScreen({ visible, navigation }: any) {
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
     <SafeAreaView style={styles.container}>
-      {/* Always use default Kanji background for consistency */}
-      <KigenKanjiBackground style={StyleSheet.absoluteFillObject} />
+      {/* Black background like Goals page */}
+      <View style={styles.blackBackground} />
       
-      <View style={styles.header}>
-        <Text style={styles.title}>Focus Logs</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.closeButton}>Close</Text>
+      {/* Header with same layout as Goals page */}
+      <View style={styles.modalHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>起源 Focus Logs</Text>
+        <View style={styles.placeholder} />
       </View>        <ScrollView style={styles.content}>
           {/* Stats Section */}
           <View style={styles.statsContainer}>
@@ -400,5 +401,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontStyle: 'italic',
     lineHeight: 18,
+  },
+  blackBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000000',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
