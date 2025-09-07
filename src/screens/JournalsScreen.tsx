@@ -79,28 +79,6 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
     });
   };
 
-  const getMoodEmoji = (mood: JournalEntry['mood']): string => {
-    const moods: Record<JournalEntry['mood'], string> = {
-      terrible: 'Terrible',
-      bad: 'Bad',
-      okay: 'Okay',
-      good: 'Good',
-      great: 'Great',
-    };
-    return moods[mood];
-  };
-
-  const getMoodColor = (mood: JournalEntry['mood']): string => {
-    const colors: Record<JournalEntry['mood'], string> = {
-      terrible: theme.colors.danger,
-      bad: '#ff6b35',
-      okay: theme.colors.text.secondary,
-      good: '#4ade80',
-      great: theme.colors.success,
-    };
-    return colors[mood];
-  };
-
   // Group entries by date
   const groupedEntries = entries.reduce((acc, entry) => {
     const date = new Date(entry.date).toDateString();
@@ -324,20 +302,6 @@ const styles = StyleSheet.create({
   entryMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  moodContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: theme.spacing.md,
-  },
-  moodEmoji: {
-    fontSize: 20,
-    marginRight: theme.spacing.xs,
-  },
-  moodIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
   },
   entryTime: {
     ...theme.typography.caption,
