@@ -68,6 +68,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [goals, setGoals] = useState<Goal[]>([]);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [duration, setDuration] = useState('25');
+  const [hours, setHours] = useState('0');
+  const [minutes, setMinutes] = useState('25');
   const [isActive, setIsActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [unlocks, setUnlocks] = useState(0);
@@ -115,7 +117,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       const handleAutoComplete = async () => {
         await saveFocusLog('completed');
         // Record focus session completion in rating system
-        const sessionMinutes = parseInt(duration);
+        const sessionMinutes = (parseInt(hours) * 60) + parseInt(minutes);
         await UserStatsService.recordFocusSession(sessionType, sessionMinutes, true);
       };
       handleAutoComplete();
@@ -147,9 +149,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   };
 
   const startFreeSession = async () => {
-    const durationMinutes = parseInt(duration);
+    const durationMinutes = (parseInt(hours) * 60) + parseInt(minutes);
     if (!durationMinutes || durationMinutes < 1) {
-      showAlert('Invalid Duration', 'Please enter a valid duration in minutes.');
+      showAlert('Invalid Duration', 'Please enter a valid duration.');
       return;
     }
 
@@ -512,15 +514,31 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <Text style={styles.setupDescription}>Flow as the timer goes. No distructions, pure work.</Text>
               
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>Duration (minutes)</Text>
-                <TextInput
-                  style={styles.input}
-                  value={duration}
-                  onChangeText={setDuration}
-                  keyboardType="numeric"
-                  placeholder="25"
-                  placeholderTextColor="#9CA3AF"
-                />
+                <Text style={styles.inputLabel}>Duration</Text>
+                <View style={styles.timeInputContainer}>
+                  <View style={styles.timeInputGroup}>
+                    <TextInput
+                      style={styles.timeInput}
+                      value={hours}
+                      onChangeText={setHours}
+                      keyboardType="numeric"
+                      placeholder="0"
+                      placeholderTextColor="#9CA3AF"
+                    />
+                    <Text style={styles.timeLabel}>hours</Text>
+                  </View>
+                  <View style={styles.timeInputGroup}>
+                    <TextInput
+                      style={styles.timeInput}
+                      value={minutes}
+                      onChangeText={setMinutes}
+                      keyboardType="numeric"
+                      placeholder="Enter minutes"
+                      placeholderTextColor="#9CA3AF"
+                    />
+                    <Text style={styles.timeLabel}>minutes</Text>
+                  </View>
+                </View>
               </View>
 
               <TouchableOpacity style={styles.startButton} onPress={startFreeSession}>
@@ -1082,5 +1100,30 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
     padding: 20,
+  },
+  timeInputContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+  },
+  timeInputGroup: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  timeInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: '#FFFFFF',
+    fontSize: 16,
+    textAlign: 'center',
+    minWidth: 80,
+    marginBottom: 4,
+  },
+  timeLabel: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

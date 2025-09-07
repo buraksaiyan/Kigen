@@ -136,33 +136,33 @@ export class RatingSystem {
 
   // Determine card tier based on total points
   static getCardTier(totalPoints: number): CardTier {
-    if (totalPoints >= 50000) return CardTier.Obsidian;
-    if (totalPoints >= 25000) return CardTier.Carbon;
-    if (totalPoints >= 12500) return CardTier.Diamond;
+    if (totalPoints >= 12001) return CardTier.Obsidian;
+    if (totalPoints >= 10000) return CardTier.Carbon;
+    if (totalPoints >= 8000) return CardTier.Diamond;
     if (totalPoints >= 6000) return CardTier.Platinum;
-    if (totalPoints >= 3000) return CardTier.Gold;
-    if (totalPoints >= 1000) return CardTier.Silver;
+    if (totalPoints >= 4000) return CardTier.Gold;
+    if (totalPoints >= 2000) return CardTier.Silver;
     return CardTier.Bronze;
   }
 
-  // Get card tier colors
+  // Get card tier colors with cooler gradients and semi-transparency
   static getCardTierColors(tier: CardTier): { primary: string; secondary: string; accent: string } {
     switch (tier) {
       case CardTier.Obsidian:
-        return { primary: '#1a1a1a', secondary: '#2d2d2d', accent: '#8b5cf6' };
+        return { primary: 'rgba(26, 26, 26, 0.9)', secondary: 'rgba(45, 45, 45, 0.7)', accent: '#8b5cf6' };
       case CardTier.Carbon:
-        return { primary: '#0f172a', secondary: '#334155', accent: '#06b6d4' };
+        return { primary: 'rgba(15, 23, 42, 0.9)', secondary: 'rgba(51, 65, 85, 0.7)', accent: '#06b6d4' };
       case CardTier.Diamond:
-        return { primary: '#1e3a8a', secondary: '#3730a3', accent: '#a855f7' };
+        return { primary: 'rgba(30, 58, 138, 0.9)', secondary: 'rgba(55, 48, 163, 0.7)', accent: '#a855f7' };
       case CardTier.Platinum:
-        return { primary: '#374151', secondary: '#6b7280', accent: '#e5e7eb' };
+        return { primary: 'rgba(55, 65, 81, 0.9)', secondary: 'rgba(107, 114, 128, 0.7)', accent: '#e5e7eb' };
       case CardTier.Gold:
-        return { primary: '#f59e0b', secondary: '#d97706', accent: '#fbbf24' };
+        return { primary: 'rgba(245, 158, 11, 0.9)', secondary: 'rgba(217, 119, 6, 0.7)', accent: '#fbbf24' };
       case CardTier.Silver:
-        return { primary: '#6b7280', secondary: '#9ca3af', accent: '#d1d5db' };
+        return { primary: 'rgba(107, 114, 128, 0.9)', secondary: 'rgba(156, 163, 175, 0.7)', accent: '#d1d5db' };
       case CardTier.Bronze:
       default:
-        return { primary: '#92400e', secondary: '#b45309', accent: '#f59e0b' };
+        return { primary: 'rgba(146, 64, 14, 0.9)', secondary: 'rgba(180, 83, 9, 0.7)', accent: '#f59e0b' };
     }
   }
 

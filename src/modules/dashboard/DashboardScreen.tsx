@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   actionsSection: {
-    marginTop: theme.spacing.xl, // Increased from lg to xl for more space
+    marginTop: 60, // Large fixed spacing to ensure no overlap
     marginBottom: theme.spacing.lg,
   },
   sectionTitle: {
