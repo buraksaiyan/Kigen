@@ -31,7 +31,7 @@ interface FocusLogsScreenProps {
   onClose: () => void;
 }
 
-export default function FocusLogsScreen({ visible, navigation }: any) {
+export default function FocusLogsScreen({ visible, onClose }: FocusLogsScreenProps) {
   const [logs, setLogs] = useState<FocusLog[]>([]);
   const [stats, setStats] = useState({
     totalSessions: 0,
@@ -140,15 +140,15 @@ export default function FocusLogsScreen({ visible, navigation }: any) {
     <SafeAreaView style={styles.container}>
       {/* Black background like Goals page */}
       <View style={styles.blackBackground} />
-      
       {/* Header with same layout as Goals page */}
       <View style={styles.modalHeader}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>起源 Focus Logs</Text>
         <View style={styles.placeholder} />
-      </View>        <ScrollView style={styles.content}>
+      </View>
+      <ScrollView style={styles.content}>
           {/* Stats Section */}
           <View style={styles.statsContainer}>
             <Text style={styles.statsTitle}>Focus Statistics</Text>
