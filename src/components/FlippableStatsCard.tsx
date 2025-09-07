@@ -4,6 +4,7 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
+  TouchableWithoutFeedback,
   Animated, 
   Dimensions,
   PanResponder,
@@ -35,6 +36,10 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const [userName, setUserName] = useState('Player Name');
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
+  
+  // Add refs for gesture tracking
+  const gestureStartTime = useRef(0);
+  const isSwipeGesture = useRef(false);
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -48,35 +53,40 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
         }
       }
 
-      // Use placeholder data with realistic stats for testing
-      const monthlyRating: UserRating = {
-        stats: {
-          DIS: 1900,
-          FOC: 1000,
-          JOU: 800,
-          USA: 200,
-          MEN: 900,
-          PHY: 500
-        },
-        overallRating: 85,
-        totalPoints: 5300, // This puts us in Gold tier (4000-6000)
-        monthlyPoints: 1200,
-        cardTier: 'Gold' as any
-      };
+      // Use REAL data from the actual rating system
+      const monthlyRating = await UserStatsService.getCurrentRating();
+      
+      // For lifetime, we'll aggregate all monthly records or use current as fallback
+      const monthlyRecords = await UserStatsService.getMonthlyRecords();
+      let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+      let lifetimeTotalPoints = 0;
+      
+      if (monthlyRecords.length > 0) {
+        // Sum up all historical stats
+        monthlyRecords.forEach(record => {
+          lifetimeStats.DIS += record.stats.DIS;
+          lifetimeStats.FOC += record.stats.FOC;
+          lifetimeStats.JOU += record.stats.JOU;
+          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.MEN += record.stats.MEN;
+          lifetimeStats.PHY += record.stats.PHY;
+        });
+        lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
+      } else {
+        // Use current stats as fallback
+        lifetimeStats = monthlyRating.stats;
+        lifetimeTotalPoints = monthlyRating.totalPoints;
+      }
+      
+      const lifetimeOverallRating = RatingSystem.calculateOverallRating(lifetimeStats);
+      const lifetimeCardTier = RatingSystem.getCardTier(lifetimeTotalPoints);
 
       const lifetimeRating: UserRating = {
-        stats: {
-          DIS: 2800,
-          FOC: 1500,
-          JOU: 1200,
-          USA: 500,
-          MEN: 1300,
-          PHY: 700
-        },
-        overallRating: 88,
-        totalPoints: 8000, // This puts us in Diamond tier (8000-10000)
-        monthlyPoints: 2340,
-        cardTier: 'Diamond' as any
+        stats: lifetimeStats,
+        overallRating: lifetimeOverallRating,
+        totalPoints: lifetimeTotalPoints,
+        monthlyPoints: 0, // Not applicable for lifetime
+        cardTier: lifetimeCardTier
       };
 
       setMonthlyRating(monthlyRating);
@@ -104,21 +114,46 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   };
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 10;
+      // Only respond to horizontal swipes
+      return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+    },
+    onPanResponderGrant: () => {
+      gestureStartTime.current = Date.now();
+      isSwipeGesture.current = false;
+    },
+    onPanResponderMove: (_, gestureState) => {
+      // Mark as swipe if there's significant horizontal movement
+      if (Math.abs(gestureState.dx) > 30) {
+        isSwipeGesture.current = true;
+      }
     },
     onPanResponderRelease: (_, gestureState) => {
-      if (Math.abs(gestureState.dx) > 50) {
-        handleFlip();
-      } else if (Math.abs(gestureState.dx) < 10 && Math.abs(gestureState.dy) < 10) {
-        // This is a tap
-        setIsExpanded(true);
+      const gestureDuration = Date.now() - gestureStartTime.current;
+      const isHorizontalSwipe = Math.abs(gestureState.dx) > 50 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+
+      if (isHorizontalSwipe && isSwipeGesture.current) {
+        // Flip the card
+        setIsFlipped(!isFlipped);
+        Animated.timing(flipAnimation, {
+          toValue: isFlipped ? 0 : 1,
+          duration: 600,
+          useNativeDriver: true,
+        }).start();
       }
+
+      // Reset gesture tracking
+      isSwipeGesture.current = false;
     },
   });
 
-  const pickImage = async () => {
+  // Handle tap separately
+  const handleTap = () => {
+    // Only expand if it's not during a swipe
+    if (!isSwipeGesture.current) {
+      setIsExpanded(!isExpanded);
+    }
+  };  const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
@@ -133,7 +168,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       quality: 0.8,
     });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
+    if (!result.canceled && result.assets && result.assets.length > 0 && result.assets[0]) {
       setProfileImage(result.assets[0].uri);
       // Here you would typically save this to UserStatsService
     }
@@ -179,57 +214,136 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
   return (
     <>
-      <View style={styles.card} {...panResponder.panHandlers}>
-        <LinearGradient colors={gradientColors} style={styles.cardContent}>
-          <Animated.View style={[styles.cardSide, { transform: [{ rotateY: frontRotation }] }]}>
-            
+      <TouchableWithoutFeedback onPress={handleTap}>
+        <View style={styles.card} {...panResponder.panHandlers}>
+          <LinearGradient colors={gradientColors} style={styles.cardContent}>
+            {/* Front Side */}
+            <Animated.View style={[
+              styles.cardSide, 
+              { transform: [{ rotateY: frontRotation }] },
+              { opacity: isFlipped ? 0 : 1 }
+            ]}>
             {/* Card Layout matching your sketch */}
             <View style={styles.cardLayout}>
               
-              {/* Left Side - Picture */}
-              <View style={styles.leftSection}>
-                <View style={styles.pictureContainer}>
-                  {profileImage ? (
-                    <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
-                  ) : (
-                    <View style={styles.picturePlaceholder}>
-                      <Text style={styles.picturePlaceholderText}>PICTURE</Text>
-                    </View>
-                  )}
-                </View>
-                <Text style={styles.cardPlayerName}>{userName}</Text>
+              {/* Top Section - Time Period */}
+              <View style={styles.topSection}>
+                <Text style={styles.timePeriod}>MONTHLY</Text>
               </View>
               
-              {/* Right Side - Stats and OVR */}
-              <View style={styles.rightSection}>
-                {/* OVR positioned at top right */}
-                <View style={styles.ovrSection}>
-                  <Text style={styles.ovrLabel}>OVR</Text>
-                  <Text style={styles.ovrValue}>{currentRating.overallRating}</Text>
+              {/* Middle Section */}
+              <View style={styles.middleSection}>
+                {/* Left Side - Picture */}
+                <View style={styles.leftSection}>
+                  <View style={styles.pictureContainer}>
+                    {profileImage ? (
+                      <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
+                    ) : (
+                      <View style={styles.picturePlaceholder}>
+                        <Text style={styles.picturePlaceholderText}>PICTURE</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
                 
-                {/* All 6 Stats */}
-                <View style={styles.allStatsGrid}>
-                  {Object.entries(currentRating.stats).map(([key, value]) => (
-                    <View key={key} style={styles.statRow}>
-                      <Text style={styles.statKey}>{key}</Text>
-                      <Text style={styles.statValue}>{value}</Text>
+                {/* Center Section - OVR */}
+                <View style={styles.centerSection}>
+                  <View style={styles.ovrContainer}>
+                    <Text style={styles.ovrLabel}>OVR</Text>
+                    <Text style={styles.ovrValue}>{currentRating.overallRating}</Text>
+                  </View>
+                </View>
+                
+                {/* Right Section - Stats */}
+                <View style={styles.rightSection}>
+                  <View style={styles.statsContainer}>
+                    <Text style={styles.statsLabel}>STATS</Text>
+                    <View style={styles.allStatsGrid}>
+                      {Object.entries(currentRating.stats).map(([key, value]) => (
+                        <View key={key} style={styles.statRow}>
+                          <Text style={styles.statKey}>{key}</Text>
+                          <Text style={styles.statValue}>{value}</Text>
+                        </View>
+                      ))}
                     </View>
-                  ))}
+                  </View>
                 </View>
               </View>
+              
+              {/* Bottom Section */}
+              <View style={styles.bottomSection}>
+                <Text style={styles.cardPlayerName}>{userName}</Text>
+                <Text style={styles.tierText}>{currentRating.cardTier.toUpperCase()}</Text>
+              </View>
+              
             </View>
-            
-            {/* Card Type and Tier at bottom */}
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardTypeText}>{cardTitle}</Text>
-              <Text style={styles.tierText}>{currentRating.cardTier.toUpperCase()}</Text>
-            </View>
-            
-            <Text style={styles.tapHint}>TAP TO EXPAND • SWIPE TO FLIP</Text>
-          </Animated.View>
-        </LinearGradient>
-      </View>
+            </Animated.View>
+
+            {/* Back Side */}
+            <Animated.View style={[
+              styles.cardSide, 
+              { transform: [{ rotateY: backRotation }] },
+              { opacity: isFlipped ? 1 : 0 },
+              { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: 16 }
+            ]}>
+              {/* Show flipped content */}
+              <View style={styles.cardLayout}>
+                
+                {/* Top Section - Time Period */}
+                <View style={styles.topSection}>
+                  <Text style={styles.timePeriod}>LIFETIME</Text>
+                </View>
+                
+                {/* Middle Section */}
+                <View style={styles.middleSection}>
+                  {/* Left Side - Picture */}
+                  <View style={styles.leftSection}>
+                    <View style={styles.pictureContainer}>
+                      {profileImage ? (
+                        <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
+                      ) : (
+                        <View style={styles.picturePlaceholder}>
+                          <Text style={styles.picturePlaceholderText}>PICTURE</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  
+                  {/* Center Section - OVR */}
+                  <View style={styles.centerSection}>
+                    <View style={styles.ovrContainer}>
+                      <Text style={styles.ovrLabel}>OVR</Text>
+                      <Text style={styles.ovrValue}>{currentRating.overallRating}</Text>
+                    </View>
+                  </View>
+                  
+                  {/* Right Section - Stats */}
+                  <View style={styles.rightSection}>
+                    <View style={styles.statsContainer}>
+                      <Text style={styles.statsLabel}>STATS</Text>
+                      <View style={styles.allStatsGrid}>
+                        {Object.entries(currentRating.stats).map(([key, value]) => (
+                          <View key={key} style={styles.statRow}>
+                            <Text style={styles.statKey}>{key}</Text>
+                            <Text style={styles.statValue}>{value}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                
+                {/* Bottom Section */}
+                <View style={styles.bottomSection}>
+                  <Text style={styles.cardPlayerName}>{userName}</Text>
+                  <Text style={styles.tierText}>{currentRating.cardTier.toUpperCase()}</Text>
+                </View>
+                
+              </View>
+            </Animated.View>
+          </LinearGradient>
+        </View>
+      </TouchableWithoutFeedback>
 
       {/* Expanded Modal */}
       <Modal
@@ -271,12 +385,9 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
             <Text style={styles.detailedStatsTitle}>PLAYER STATISTICS</Text>
             
             {Object.entries(currentRating.stats).map(([key, value]) => (
-              <View key={key} style={styles.detailedStatRow}>
-                <Text style={styles.detailedStatName}>{getStatName(key)}</Text>
-                <View style={styles.statBar}>
-                  <View style={[styles.statBarFill, { width: `${value}%` }]} />
-                  <Text style={styles.detailedStatValue}>{value}</Text>
-                </View>
+              <View key={key} style={styles.cleanStatRow}>
+                <Text style={styles.cleanStatName}>{getStatName(key)}</Text>
+                <Text style={styles.cleanStatValue}>{value}</Text>
               </View>
             ))}
             
@@ -329,13 +440,73 @@ const styles = StyleSheet.create({
   // New FIFA card layout matching your sketch
   cardLayout: {
     flex: 1,
+    flexDirection: 'column',
+  },
+  
+  // Top section for TIME PERIOD
+  topSection: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  timePeriod: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  
+  // Middle section with picture, OVR, and stats
+  middleSection: {
+    flex: 1,
     flexDirection: 'row',
     gap: 12,
   },
   leftSection: {
-    flex: 0.4,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+  },
+  centerSection: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  // OVR container
+  ovrContainer: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    padding: 8,
+    borderRadius: 8,
+  },
+  
+  // Stats container
+  statsContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 8,
+    borderRadius: 8,
+  },
+  statsLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  
+  // Bottom section
+  bottomSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
   },
   pictureContainer: {
     width: 80,
@@ -375,7 +546,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   ovrSection: {
-    alignItems: 'center',
+    alignItems: 'flex-end', // Move OVR to right edge
     marginBottom: 12,
   },
   ovrLabel: {
@@ -405,41 +576,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#FFFFFF',
-    flex: 1,
+    flex: 0, // Don't let it expand
   },
   statValue: {
     fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'right',
-    minWidth: 30,
+    minWidth: 40, // Ensure it's at the edge
+    marginLeft: 'auto', // Push to right edge
   },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  cardTypeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
+  
   tierText: {
     fontSize: 12,
     fontWeight: '700',
     color: '#FFFFFF',
     letterSpacing: 1,
-  },
-  tapHint: {
-    fontSize: 8,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.6)',
-    textAlign: 'center',
-    marginTop: 4,
   },
   
   // Loading state
@@ -544,6 +696,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  cleanStatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  cleanStatName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.text.primary,
+  },
+  cleanStatValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+  // Keep old styles for backwards compatibility but unused now
   detailedStatRow: {
     marginBottom: 16,
   },

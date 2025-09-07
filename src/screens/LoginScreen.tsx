@@ -44,7 +44,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -75,8 +75,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
     }
 
     if (isSignUp) {
-      if (!name.trim()) {
-        Alert.alert('Error', 'Please enter your name');
+      if (!username.trim()) {
+        Alert.alert('Error', 'Please enter your username');
         return false;
       }
 
@@ -141,7 +141,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
         password: password,
         options: {
           data: {
-            name: name.trim(),
+            name: username.trim(),
           }
         }
       });
@@ -176,7 +176,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
-    setName('');
+    setUsername('');
     setShowPassword(false);
   };
 
@@ -225,11 +225,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
             </Text>
           </View>
 
-          {/* Sign Up - Name Field */}
+          {/* Sign Up - Username Field */}
           {isSignUp && (
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: theme.colors.text.primary }]}>
-                Full Name
+                Username
               </Text>
               <TextInput
                 style={[
@@ -240,10 +240,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                     color: theme.colors.text.primary,
                   },
                 ]}
-                placeholder="Enter your full name"
+                placeholder="Enter your username"
                 placeholderTextColor={theme.colors.text.tertiary}
-                value={name}
-                onChangeText={setName}
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="words"
                 autoComplete="name"
                 editable={!loading}
