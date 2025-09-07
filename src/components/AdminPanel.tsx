@@ -128,7 +128,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Next',
-          onPress: (subject) => {
+          onPress: (subject?: string) => {
             if (subject) {
               Alert.prompt(
                 'Email Message',
@@ -137,7 +137,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
                   { text: 'Cancel', style: 'cancel' },
                   {
                     text: 'Send',
-                    onPress: async (message) => {
+                    onPress: async (message?: string) => {
                       if (message) {
                         try {
                           const result = await userManagementService.sendPromotionalEmail(subject, message);

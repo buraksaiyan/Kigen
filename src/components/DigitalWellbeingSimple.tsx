@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Alert,
   AppState,
+  AppStateStatus,
 } from 'react-native';
 import { UsageChart } from './UsageChart';
 import UsageTracker from '../services/usageTracker';
@@ -50,7 +51,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
     return () => subscription?.remove();
   }, []);
 
-  const handleAppStateChange = (nextAppState: string) => {
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
       // User returned to app, check permission again
       setTimeout(checkPermission, 500);
