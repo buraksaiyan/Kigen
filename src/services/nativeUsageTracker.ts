@@ -1,7 +1,7 @@
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform, AppState, AppStateStatus, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import UsageStatsNative from '../modules/UsageStatsNative';
+import usageStatsService from './usageStatsService';
 
 export interface AppUsage {
   packageName: string;
@@ -30,9 +30,9 @@ class NativeUsageTracker {
     
     try {
       // Try native module first (will work in standalone builds)
-      try {
-        return await UsageStatsNative.hasUsageStatsPermission();
-      } catch (error) {
+      if (usageStatsService.isAvailable()) {
+        return await usageStatsService.hasPermission();
+      } else {
         console.log('Native module not available, using fallback for Expo Go');
         // Fallback to AsyncStorage for Expo Go development
         const hasPermission = await AsyncStorage.getItem('usage_permission_granted');
@@ -59,7 +59,7 @@ class NativeUsageTracker {
         () => Linking.openURL('package:com.android.settings/.Settings$UsageAccessSettingsActivity'),
         
         // Method 2: Try native module first (for standalone builds)
-        () => UsageStatsNative.requestUsageStatsPermission(),
+        () => usageStatsService.requestPermission(),
         
         // Method 3: Try expo-intent-launcher for usage access
         () => IntentLauncher.startActivityAsync('android.settings.USAGE_ACCESS_SETTINGS'),
@@ -178,13 +178,26 @@ class NativeUsageTracker {
 
     try {
       // Try native module first (for standalone builds)
-      try {
-        const nativeStats = await UsageStatsNative.getTodaysUsageStats();
+      if (usageStatsService.isAvailable()) {
+        const nativeStats = await usageStatsService.getTodayUsageStats();
+        
+        // Convert to our expected format
+        const totalScreenTime = nativeStats.reduce((total, app) => total + app.totalTimeInForeground, 0);
+        
         return {
-          ...nativeStats,
+          totalScreenTime,
+          pickups: 0, // This would need additional implementation
+          notifications: 0, // This would need additional implementation
+          apps: nativeStats.map(app => ({
+            packageName: app.packageName,
+            appName: app.appName,
+            timeInForeground: app.totalTimeInForeground,
+            lastTimeUsed: app.lastTimeStamp,
+            launchCount: 0, // This would need additional implementation
+          })),
           lastUpdated: Date.now()
         };
-      } catch (error) {
+      } else {
         console.log('Native module not available, using development data');
         
         // For development, return sample structure that shows it's working
@@ -239,11 +252,27 @@ class NativeUsageTracker {
     }
 
     try {
-      const nativeStats = await UsageStatsNative.getUsageStats(startTime, endTime);
-      return {
-        ...nativeStats,
-        lastUpdated: Date.now()
-      };
+      if (usageStatsService.isAvailable()) {
+        const nativeStats = await usageStatsService.getUsageStats(startTime, endTime);
+        
+        // Convert to our expected format
+        const totalScreenTime = nativeStats.reduce((total, app) => total + app.totalTimeInForeground, 0);
+        
+        return {
+          totalScreenTime,
+          pickups: 0, // This would need additional implementation
+          notifications: 0, // This would need additional implementation
+          apps: nativeStats.map(app => ({
+            packageName: app.packageName,
+            appName: app.appName,
+            timeInForeground: app.totalTimeInForeground,
+            lastTimeUsed: app.lastTimeStamp,
+            launchCount: 0, // This would need additional implementation
+          })),
+          lastUpdated: Date.now()
+        };
+      }
+      return null;
     } catch (error) {
       console.error('Error getting usage stats for range:', error);
       return null;
@@ -258,7 +287,10 @@ class NativeUsageTracker {
     }
 
     try {
-      return await UsageStatsNative.getAppIcons();
+      // Note: App icons functionality would need to be implemented in the native module
+      // For now, return empty object as placeholder
+      console.warn('App icons functionality not yet implemented in the new usage stats service');
+      return {};
     } catch (error) {
       console.error('Error getting app icons:', error);
       return {};
