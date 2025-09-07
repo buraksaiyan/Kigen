@@ -32,11 +32,8 @@ interface FocusLogsScreenProps {
   onClose: () => void;
 }
 
-export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
-  visible,
-  onClose,
-}) => {
-  const [logs, setLogs] = useState<FocusLog[]>([]);
+export default function FocusLogsScreen({ visible, navigation }: any) {
+  const [logs, setLogs] = useState([]);
   const [stats, setStats] = useState({
     totalSessions: 0,
     completedSessions: 0,
@@ -141,18 +138,16 @@ export const FocusLogsScreen: React.FC<FocusLogsScreenProps> = ({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
-        
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Focus Logs</Text>
-          <View style={styles.placeholder} />
-        </View>
-
-        <ScrollView style={styles.content}>
+    <SafeAreaView style={styles.container}>
+      {/* Always use default Kanji background for consistency */}
+      <KigenKanjiBackground style={StyleSheet.absoluteFillObject} />
+      
+      <View style={styles.header}>
+        <Text style={styles.title}>Focus Logs</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.closeButton}>Close</Text>
+        </TouchableOpacity>
+      </View>        <ScrollView style={styles.content}>
           {/* Stats Section */}
           <View style={styles.statsContainer}>
             <Text style={styles.statsTitle}>Focus Statistics</Text>
