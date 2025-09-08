@@ -1,30 +1,44 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
   "extends": [
-    "eslint:recommended"
+    "eslint:recommended",
+    "@typescript-eslint/recommended",
+    "prettier"
   ],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "react-native"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
-    },
-    "ecmaVersion": "latest",
-    "sourceType": "module"
+    }
   },
-  "plugins": [
-    "react",
-    "react-hooks"
-  ],
+  "env": {
+    "react-native/react-native": true,
+    "es2022": true,
+    "node": true
+  },
+  "globals": {
+    "__DEV__": "readonly"
+  },
   "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "react-native/no-unused-styles": "warn",
+    "react-native/split-platform-components": "warn"
   },
-  "ignorePatterns": [
-    "node_modules/",
-    ".expo/",
-    "android/",
-    "ios/"
-  ]
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }
