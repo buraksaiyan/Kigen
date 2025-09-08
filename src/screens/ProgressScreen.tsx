@@ -21,21 +21,10 @@ interface ProgressScreenProps {
 export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose }) => {
   const [currentView, setCurrentView] = useState<'focus-logs' | 'kigen-stats'>('focus-logs');
 
-  // Mock data for demonstration
-  const focusLogs = [
-    { id: 1, type: 'Flow Focus', duration: 45, date: '2025-09-08', completed: true },
-    { id: 2, type: 'Executioner Focus', duration: 30, date: '2025-09-07', completed: true },
-    { id: 3, type: 'Meditation Focus', duration: 20, date: '2025-09-06', completed: false },
-    { id: 4, type: 'Body Focus', duration: 60, date: '2025-09-05', completed: true },
-  ];
+  // TODO: Replace with real data from services
+  const focusLogs: any[] = [];
 
-  const kigenStats = [
-    { id: 1, action: 'Focus Session Completed', points: '+15', date: '2025-09-08' },
-    { id: 2, action: 'Journal Entry Added', points: '+5', date: '2025-09-08' },
-    { id: 3, action: 'Goal Completed', points: '+10', date: '2025-09-07' },
-    { id: 4, action: 'Session Aborted', points: '-5', date: '2025-09-06' },
-    { id: 5, action: 'Social Media Usage', points: '-3', date: '2025-09-06' },
-  ];
+  const kigenStats: any[] = [];
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -82,23 +71,30 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                 </View>
 
                 <View style={styles.logsContainer}>
-                  {focusLogs.map((log) => (
-                    <Card key={log.id} style={styles.logCard}>
-                      <View style={styles.logHeader}>
-                        <Text style={styles.logType}>{log.type}</Text>
-                        <Text style={[
-                          styles.logStatus,
-                          { color: log.completed ? theme.colors.success : theme.colors.danger }
-                        ]}>
-                          {log.completed ? 'Completed' : 'Aborted'}
-                        </Text>
-                      </View>
-                      <View style={styles.logDetails}>
-                        <Text style={styles.logDuration}>{log.duration} minutes</Text>
-                        <Text style={styles.logDate}>{log.date}</Text>
-                      </View>
-                    </Card>
-                  ))}
+                  {focusLogs.length > 0 ? (
+                    focusLogs.map((log) => (
+                      <Card key={log.id} style={styles.logCard}>
+                        <View style={styles.logHeader}>
+                          <Text style={styles.logType}>{log.type}</Text>
+                          <Text style={[
+                            styles.logStatus,
+                            { color: log.completed ? theme.colors.success : theme.colors.danger }
+                          ]}>
+                            {log.completed ? 'Completed' : 'Aborted'}
+                          </Text>
+                        </View>
+                        <View style={styles.logDetails}>
+                          <Text style={styles.logDuration}>{log.duration} minutes</Text>
+                          <Text style={styles.logDate}>{log.date}</Text>
+                        </View>
+                      </Card>
+                    ))
+                  ) : (
+                    <View style={styles.emptyState}>
+                      <Text style={styles.emptyStateText}>No focus logs yet</Text>
+                      <Text style={styles.emptyStateSubtext}>Complete focus sessions to see your progress here</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             ) : (
@@ -109,20 +105,27 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                 </View>
 
                 <View style={styles.logsContainer}>
-                  {kigenStats.map((stat) => (
-                    <Card key={stat.id} style={styles.logCard}>
-                      <View style={styles.logHeader}>
-                        <Text style={styles.logAction}>{stat.action}</Text>
-                        <Text style={[
-                          styles.logPoints,
-                          { color: stat.points.startsWith('+') ? theme.colors.success : theme.colors.danger }
-                        ]}>
-                          {stat.points}
-                        </Text>
-                      </View>
-                      <Text style={styles.logDate}>{stat.date}</Text>
-                    </Card>
-                  ))}
+                  {kigenStats.length > 0 ? (
+                    kigenStats.map((stat) => (
+                      <Card key={stat.id} style={styles.logCard}>
+                        <View style={styles.logHeader}>
+                          <Text style={styles.logAction}>{stat.action}</Text>
+                          <Text style={[
+                            styles.logPoints,
+                            { color: stat.points.startsWith('+') ? theme.colors.success : theme.colors.danger }
+                          ]}>
+                            {stat.points}
+                          </Text>
+                        </View>
+                        <Text style={styles.logDate}>{stat.date}</Text>
+                      </Card>
+                    ))
+                  ) : (
+                    <View style={styles.emptyState}>
+                      <Text style={styles.emptyStateText}>No stats activity yet</Text>
+                      <Text style={styles.emptyStateSubtext}>Your point gains and losses will appear here</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             )}
@@ -253,5 +256,19 @@ const styles = StyleSheet.create({
   logDate: {
     ...theme.typography.caption,
     color: theme.colors.text.tertiary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xl,
+  },
+  emptyStateText: {
+    ...theme.typography.h3,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.sm,
+  },
+  emptyStateSubtext: {
+    ...theme.typography.body,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
   },
 });

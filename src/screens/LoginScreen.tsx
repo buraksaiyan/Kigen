@@ -96,10 +96,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
 
     setLoading(true);
     try {
-      // Check if using mock auth (development mode)
+      // Check if Supabase is configured
       if (env.supabaseUrl.includes('placeholder')) {
-        Alert.alert('Success', 'Signed in successfully! (Development Mode)');
-        onClose();
+        Alert.alert('Error', 'Authentication not available - Supabase not configured');
+        setLoading(false);
         return;
       }
 
@@ -128,16 +128,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
 
     setLoading(true);
     try {
-      // Check if using mock auth (development mode)
+      // Check if Supabase is configured
       if (env.supabaseUrl.includes('placeholder')) {
-        // Create user profile in UserStatsService for development
-        await UserStatsService.createUserProfile(username.trim());
-        
-        Alert.alert(
-          'Success', 
-          'Account created successfully! (Development Mode)\n\nIn production, you would receive a verification email.'
-        );
-        onClose();
+        Alert.alert('Error', 'Authentication not available - Supabase not configured');
+        setLoading(false);
         return;
       }
 

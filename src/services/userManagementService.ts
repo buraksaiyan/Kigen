@@ -46,25 +46,8 @@ class UserManagementService {
    */
   async getAllUsers(): Promise<User[]> {
     if (!this.isUsingRealSupabase()) {
-      // Return mock users for development
-      return [
-        {
-          id: 'mock-user-1',
-          email: 'developer@kigen.app',
-          name: 'Development User',
-          created_at: new Date().toISOString(),
-          last_sign_in_at: new Date().toISOString(),
-          email_confirmed_at: new Date().toISOString(),
-          user_metadata: { name: 'Development User' }
-        },
-        {
-          id: 'mock-user-2', 
-          email: 'test@example.com',
-          name: 'Test User',
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          user_metadata: { name: 'Test User' }
-        }
-      ];
+      console.log('Supabase not configured - no user data available');
+      return [];
     }
 
     try {
@@ -93,14 +76,14 @@ class UserManagementService {
    */
   async getUserStats(): Promise<UserStats> {
     if (!this.isUsingRealSupabase()) {
-      // Return mock stats for development
+      console.log('Supabase not configured - returning empty stats');
       return {
-        totalUsers: 2,
-        newUsersToday: 1,
-        newUsersThisWeek: 2,
-        newUsersThisMonth: 2,
-        activeUsersToday: 1,
-        emailConfirmedCount: 1
+        totalUsers: 0,
+        newUsersToday: 0,
+        newUsersThisWeek: 0,
+        newUsersThisMonth: 0,
+        activeUsersToday: 0,
+        emailConfirmedCount: 0
       };
     }
 

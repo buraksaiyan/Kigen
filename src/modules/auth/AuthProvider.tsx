@@ -28,16 +28,10 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
     // Check if we have valid Supabase config
     if (env.supabaseUrl.includes('placeholder')) {
-      console.log('[Auth] Using mock authentication for development');
+      console.log('[Auth] Supabase not configured - no authentication available');
       if (mounted) {
         setLoading(false);
-        // Mock authenticated session for development
-        setSession({ 
-          user: { 
-            id: 'mock-user-id', 
-            email: 'developer@kigen.app' 
-          } 
-        } as Session);
+        setSession(null);
       }
       return;
     }
@@ -69,23 +63,16 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
   async function signInWithOtp(email: string) {
     if (env.supabaseUrl.includes('placeholder')) {
-      console.log('[Auth] Mock sign-in for development');
-      return;
+      console.log('[Auth] Supabase not configured - cannot sign in');
+      throw new Error('Authentication not available - Supabase not configured');
     }
     await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://example.com/auth' } });
   }
 
   async function signInWithPassword(email: string, password: string) {
     if (env.supabaseUrl.includes('placeholder')) {
-      console.log('[Auth] Mock password sign-in for development');
-      // Mock successful authentication
-      setSession({ 
-        user: { 
-          id: 'mock-user-id', 
-          email: email 
-        } 
-      } as Session);
-      return;
+      console.log('[Auth] Supabase not configured - cannot sign in');
+      throw new Error('Authentication not available - Supabase not configured');
     }
     
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -94,20 +81,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
   async function signUp(email: string, password: string, name?: string) {
     if (env.supabaseUrl.includes('placeholder')) {
-      console.log('[Auth] Mock sign-up for development');
-      // Mock successful registration
-      setSession({ 
-        user: { 
-          id: 'mock-user-id', 
-          email: email,
-          user_metadata: { name }
-        },
-        access_token: 'mock-token',
-        refresh_token: 'mock-refresh-token',
-        expires_in: 3600,
-        token_type: 'bearer'
-      } as unknown as Session);
-      return;
+      console.log('[Auth] Supabase not configured - cannot sign up');
+      throw new Error('Authentication not available - Supabase not configured');
     }
     
     const { error } = await supabase.auth.signUp({
@@ -122,7 +97,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
   async function signOut() {
     if (env.supabaseUrl.includes('placeholder')) {
-      console.log('[Auth] Mock sign-out for development');
+      console.log('[Auth] Supabase not configured - cannot sign out');
       setSession(null);
       return;
     }

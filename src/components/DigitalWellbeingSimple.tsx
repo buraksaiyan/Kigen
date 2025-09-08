@@ -26,19 +26,11 @@ const APP_COLORS = [
   '#FB8C00', // Orange (YouTube)
 ];
 
-const MOCK_USAGE_DATA = [
-  { appName: 'Expo Go', time: 6720000, color: '#1E88E5' },
-  { appName: 'Instagram', time: 4860000, color: '#E53935' },
-  { appName: 'TikTok', time: 4740000, color: '#FFB300' },
-  { appName: 'Firefox', time: 2880000, color: '#43A047' },
-  { appName: 'WhatsApp', time: 2280000, color: '#8E24AA' },
-  { appName: 'YouTube', time: 1200000, color: '#FB8C00' },
-];
-
 const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }) => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [appState, setAppState] = useState(AppState.currentState);
+  const [usageData, setUsageData] = useState<any[]>([]);
   
   const usageTracker = UsageTracker.getInstance();
 
@@ -50,6 +42,30 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
     
     return () => subscription?.remove();
   }, []);
+
+  useEffect(() => {
+    if (hasPermission) {
+      loadUsageData();
+    }
+  }, [hasPermission]);
+
+  const loadUsageData = async () => {
+    try {
+      setIsLoading(true);
+      // TODO: Replace with real usage data from UsageTracker
+      const realUsageData = await usageTracker.getUsageStats(1);
+      if (realUsageData && realUsageData.length > 0 && realUsageData[0]) {
+        setUsageData(realUsageData[0].apps || []);
+      } else {
+        setUsageData([]);
+      }
+    } catch (error) {
+      console.error('Error loading usage data:', error);
+      setUsageData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
@@ -108,9 +124,9 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
     }
   };
 
-  const totalTime = MOCK_USAGE_DATA.reduce((sum, app) => sum + app.time, 0);
-  
-  const chartData = MOCK_USAGE_DATA.map(app => ({
+  const totalTime = usageData.reduce((sum: number, app: any) => sum + app.time, 0);
+
+  const chartData = usageData.map((app: any) => ({
     app: app.appName,
     timeInForeground: app.time,
     color: app.color,
@@ -190,21 +206,29 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
           
           {/* Circular Chart */}
           <View style={styles.chartContainer}>
-            <UsageChart 
-              data={chartData}
-              totalTime={totalTime}
-              size={180}
-            />
+            {usageData.length > 0 ? (
+              <UsageChart 
+                data={chartData}
+                totalTime={totalTime}
+                size={180}
+              />
+            ) : (
+              <View style={styles.emptyChartContainer}>
+                <Text style={[styles.emptyChartText, { color: theme.textSecondary }]}>
+                  {hasPermission ? 'No usage data available' : 'Usage access required'}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Stats Row - Unlocks and Notifications */}
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: theme.text }]}>96</Text>
+              <Text style={[styles.statNumber, { color: theme.text }]}>—</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Unlocks</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: theme.text }]}>90</Text>
+              <Text style={[styles.statNumber, { color: theme.text }]}>—</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Notifications</Text>
             </View>
           </View>
@@ -214,7 +238,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
         <View style={[styles.appListCard, { backgroundColor: theme.cardBackground }]}>
           <Text style={[styles.appListTitle, { color: theme.text }]}>App activity</Text>
           
-          {MOCK_USAGE_DATA.map((app, index) => {
+          {usageData.map((app: any, index: number) => {
             const percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
             
             return (
@@ -389,6 +413,15 @@ const styles = StyleSheet.create({
   appTime: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  emptyChartContainer: {
+    height: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyChartText: {
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
