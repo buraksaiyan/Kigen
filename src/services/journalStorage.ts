@@ -4,7 +4,6 @@ import { UserStatsService } from './userStatsService';
 export interface JournalEntry {
   id: string;
   content: string;
-  mood: 'terrible' | 'bad' | 'okay' | 'good' | 'great';
   date: string; // ISO date string
 }
 
@@ -27,13 +26,12 @@ export const journalStorage = {
   },
 
   // Add new journal entry
-  addEntry: async (content: string, mood: JournalEntry['mood'] = 'okay'): Promise<void> => {
+  addEntry: async (content: string): Promise<void> => {
     try {
       const entries = await journalStorage.getAllEntries();
       const newEntry: JournalEntry = {
         id: Date.now().toString(),
         content: content.trim(),
-        mood,
         date: new Date().toISOString(),
       };
       
@@ -49,10 +47,10 @@ export const journalStorage = {
   },
 
   // Update existing entry
-  updateEntry: async (id: string, content: string, mood: JournalEntry['mood']): Promise<void> => {
+  updateEntry: async (id: string, content: string): Promise<void> => {
     const entries = await journalStorage.getAllEntries();
     const updatedEntries = entries.map(entry => 
-      entry.id === id ? { ...entry, content, mood } : entry
+      entry.id === id ? { ...entry, content} : entry
     );
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedEntries));
   },

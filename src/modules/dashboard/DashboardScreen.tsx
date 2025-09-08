@@ -12,16 +12,14 @@ import { KigenKanjiBackground } from '../../components/KigenKanjiBackground';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { RatingsScreen } from '../../screens/RatingsScreen';
-import UsageDashboard from '../../components/UsageDashboard';
-import DigitalWellbeingDashboard from '../../components/DigitalWellbeingDashboard';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 
 export const DashboardScreen: React.FC = () => {
-  const { signOut, session, showLoginScreen } = useAuth();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard'); // New state for top nav
+  const { signOut } = useAuth();
+  const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard');
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
@@ -37,19 +35,12 @@ export const DashboardScreen: React.FC = () => {
 
   const onRefresh = async () => {
     setIsRefreshing(true);
-    setRefreshTrigger(prev => prev + 1); // Trigger card refresh
+    setRefreshTrigger(prev => prev + 1);
     setIsRefreshing(false);
   };
 
   const handleJournal = () => {
     setIsJournalOpen(true);
-  };
-
-  const handleTasks = () => {
-    setIsGoalsOpen(true);
-  };
-
-    setIsFocusSessionOpen(true);
   };
 
   const handleSidebar = () => {
@@ -58,43 +49,26 @@ export const DashboardScreen: React.FC = () => {
 
   const handleSidebarNavigation = (screen: string) => {
     setCurrentScreen(screen);
-    setIsSidebarOpen(false); // Close sidebar when navigating
+    setIsSidebarOpen(false);
     
-    // Handle navigation based on screen
     switch(screen) {
       case 'dashboard':
-        // Close all modals and return to dashboard
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
-        setIsFocusLogsOpen(false);
-        setIsFocusSessionOpen(false);
         setIsRatingsOpen(false);
         break;
       case 'ratings':
         setIsRatingsOpen(true);
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
-        setIsFocusLogsOpen(false);
-        setIsFocusSessionOpen(false);
         break;
       case 'journals':
-        // Don't set isJournalOpen, let JournalsScreen modal handle it
         setIsGoalsOpen(false);
-        setIsFocusLogsOpen(false);
-        setIsFocusSessionOpen(false);
         setIsRatingsOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
         setIsJournalOpen(false);
-        setIsFocusLogsOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsRatingsOpen(false);
-        break;
-        setIsFocusLogsOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
         setIsRatingsOpen(false);
         break;
       default:
@@ -108,9 +82,7 @@ export const DashboardScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <KigenKanjiBackground />
         
-        {/* Header with Logo and Top Navigation */}
         <View style={styles.topHeader}>
-          {/* Left Side: Menu Button - Only show in dashboard */}
           <View style={styles.headerLeft}>
             {currentView === 'dashboard' && (
               <TouchableOpacity onPress={handleSidebar} style={styles.menuButton}>
@@ -119,17 +91,13 @@ export const DashboardScreen: React.FC = () => {
             )}
           </View>
           
-          {/* Center: Logo - Now perfectly centered */}
           <View style={styles.logoContainer}>
             <KigenLogo size="medium" variant="image" />
           </View>
           
-          {/* Right Side: Empty for balance */}
-          <View style={styles.headerRight}>
-          </View>
+          <View style={styles.headerRight}></View>
         </View>
 
-        {/* Top Navigation Bar - Dashboard vs Leaderboard */}
         <View style={styles.topNavContainer}>
           <TouchableOpacity
             style={[styles.topNavTab, currentView === 'dashboard' && styles.activeTopNavTab]}
@@ -149,7 +117,6 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Conditional Content Based on Current View */}
         {currentView === 'dashboard' ? (
           <ScrollView 
             contentContainerStyle={styles.scrollContent}
@@ -163,10 +130,8 @@ export const DashboardScreen: React.FC = () => {
               />
             }
           >
-            {/* Kigen Stats Card - Now in prime position */}
             <FlippableStatsCard onPress={() => setIsRatingsOpen(true)} refreshTrigger={refreshTrigger} />
 
-            {/* Quick Actions */}
             <View style={styles.actionsSection}>
               <Text style={styles.sectionTitle}>Build Discipline</Text>
               
@@ -183,19 +148,6 @@ export const DashboardScreen: React.FC = () => {
                 />
               </View>
               
-              <View style={styles.actionGrid}>
-                <Button
-                  title="Focus Session"
-                  variant="secondary"
-                  style={styles.actionButton}
-                />
-                <Button
-                  title="Focus Logs"
-                  onPress={() => setIsFocusLogsOpen(true)}
-                  style={styles.actionButton}
-                />
-              </View>
-              
               <View style={styles.fullWidthButtonContainer}>
                 <Button
                   title="View Progress"
@@ -206,10 +158,8 @@ export const DashboardScreen: React.FC = () => {
               </View>
             </View>
 
-            {/* Digital Wellbeing Dashboard */}
             <DigitalWellbeing theme={theme} />
 
-            {/* Development Actions */}
             {__DEV__ && (
               <Card style={styles.devCard}>
                 <Text style={styles.devTitle}>Development</Text>
@@ -226,13 +176,11 @@ export const DashboardScreen: React.FC = () => {
           <LeaderboardScreen />
         )}
         
-        {/* Sliding Sections */}
         <JournalSection 
           isExpanded={isJournalOpen}
           onClose={() => setIsJournalOpen(false)}
         />
         
-        {/* Sidebar */}
         <Sidebar 
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
@@ -241,7 +189,6 @@ export const DashboardScreen: React.FC = () => {
           onShowAdmin={() => setIsAdminPanelOpen(true)}
         />
         
-        {/* Goals Screen */}
         <GoalsScreen
           visible={isGoalsOpen || currentScreen === 'goals'}
           onClose={() => {
@@ -250,19 +197,15 @@ export const DashboardScreen: React.FC = () => {
           }}
         />
         
-        {/* Ratings Screen */}
         {isRatingsOpen && (
           <RatingsScreen />
         )}
         
-        {/* Journals Screen */}
         <JournalsScreen
           visible={currentScreen === 'journals' && !isJournalOpen}
           onClose={() => setCurrentScreen('dashboard')}
         />
 
-
-        {/* Admin Panel Modal */}
         {isAdminPanelOpen && (
           <View style={styles.fullScreenModal}>
             <AdminPanel 
@@ -283,36 +226,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl + 20, // Extra space for navigation bar
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.md,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingBottom: theme.spacing.xxl + 20,
   },
   menuButton: {
-    padding: theme.spacing.sm, // Just padding, no circular background
+    padding: theme.spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  floatingMenuButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surfaceSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   topHeader: {
     flexDirection: 'row',
@@ -323,7 +242,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerLeft: {
-    width: 80, // Increased for better balance
+    width: 80,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
@@ -358,7 +277,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   headerRight: {
-    width: 80, // Same width as headerLeft for perfect balance
+    width: 80,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -367,28 +286,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: theme.colors.text.primary,
   },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  welcomeSubtext: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    marginTop: theme.spacing.sm,
-    textAlign: 'center',
-  },
-  welcomeText: {
-    ...theme.typography.h2,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  emailText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textTransform: 'capitalize',
-  },
   actionsSection: {
-    marginTop: 60, // Large fixed spacing to ensure no overlap
+    marginTop: 60,
     marginBottom: theme.spacing.lg,
   },
   sectionTitle: {
@@ -412,43 +311,6 @@ const styles = StyleSheet.create({
   fullWidthButton: {
     width: '100%',
   },
-  statusCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  cardTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-    fontWeight: '600',
-  },
-  progressGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  progressItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  progressNumber: {
-    ...theme.typography.h3,
-    color: theme.colors.primary,
-    fontWeight: '700',
-  },
-  progressLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-    marginTop: theme.spacing.xs,
-    textAlign: 'center',
-  },
-  usageSection: {
-    marginBottom: theme.spacing.md,
-  },
-  usageTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
-    textAlign: 'center',
-  },
   devCard: {
     backgroundColor: theme.colors.border,
     marginBottom: theme.spacing.lg,
@@ -466,43 +328,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: theme.colors.background,
     zIndex: 2000,
-  },
-  closeFullScreen: {
-    position: 'absolute',
-    top: theme.spacing.lg + 30, // Account for status bar
-    right: theme.spacing.lg,
-    backgroundColor: theme.colors.surfaceSecondary,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.md,
-    zIndex: 2001,
-  },
-  closeFullScreenText: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-  },
-  authButton: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
-  },
-  authButtonText: {
-    ...theme.typography.small,
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  adminButton: {
-    backgroundColor: theme.colors.secondary,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginLeft: 6, // Smaller gap between buttons
-  },
-  adminButtonText: {
-    ...theme.typography.small,
-    color: '#FFFFFF',
-    fontWeight: '600',
   },
 });
