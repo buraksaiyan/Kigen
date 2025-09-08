@@ -47,7 +47,14 @@
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS",
         "android.permission.SYSTEM_ALERT_WINDOW"
-      ]
+      ],
+      "navigationBar": {
+        "backgroundColor": "#000000"
+      },
+      "statusBar": {
+        "backgroundColor": "#000000",
+        "barStyle": "light-content"
+      }
     },
     "extra": {
       "eas": {
