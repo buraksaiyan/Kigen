@@ -33,7 +33,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
 
   const menuItems = [
     { id: 'dashboard', title: 'Dashboard', icon: '' },
-    { id: 'ratings', title: 'Kigen Stats', icon: '' },
     { id: 'journals', title: 'Past Journals', icon: '' },
     { id: 'goals', title: 'Past Goals', icon: '' },
     { id: 'progress', title: 'Progress', icon: '' },

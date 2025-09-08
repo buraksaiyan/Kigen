@@ -16,6 +16,8 @@ import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
+import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
+import { ProgressScreen } from '../../screens/ProgressScreen';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
@@ -23,7 +25,8 @@ export const DashboardScreen: React.FC = () => {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
-  const [isRatingsOpen, setIsRatingsOpen] = useState(false);
+  const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
+  const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -55,21 +58,25 @@ export const DashboardScreen: React.FC = () => {
       case 'dashboard':
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
-        setIsRatingsOpen(false);
-        break;
-      case 'ratings':
-        setIsRatingsOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
         break;
       case 'journals':
         setIsGoalsOpen(false);
-        setIsRatingsOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
         setIsJournalOpen(false);
-        setIsRatingsOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
+        break;
+      case 'progress':
+        setIsProgressOpen(true);
+        setIsGoalsOpen(false);
+        setIsJournalOpen(false);
+        setIsFocusSessionOpen(false);
         break;
       default:
         console.log('Navigate to:', screen);
@@ -130,7 +137,7 @@ export const DashboardScreen: React.FC = () => {
               />
             }
           >
-            <FlippableStatsCard onPress={() => setIsRatingsOpen(true)} refreshTrigger={refreshTrigger} />
+            <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} />
 
             <View style={styles.actionsSection}>
               <Text style={styles.sectionTitle}>Build Discipline</Text>
@@ -148,12 +155,16 @@ export const DashboardScreen: React.FC = () => {
                 />
               </View>
               
-              <View style={styles.fullWidthButtonContainer}>
+              <View style={styles.actionGrid}>
+                <Button
+                  title="Focus Session"
+                  onPress={() => setIsFocusSessionOpen(true)}
+                  style={styles.actionButton}
+                />
                 <Button
                   title="View Progress"
-                  onPress={() => {}}
-                  variant="outline"
-                  style={styles.fullWidthButton}
+                  onPress={() => setIsProgressOpen(true)}
+                  style={styles.actionButton}
                 />
               </View>
             </View>
@@ -197,13 +208,19 @@ export const DashboardScreen: React.FC = () => {
           }}
         />
         
-        {isRatingsOpen && (
-          <RatingsScreen />
-        )}
-        
         <JournalsScreen
           visible={currentScreen === 'journals' && !isJournalOpen}
           onClose={() => setCurrentScreen('dashboard')}
+        />
+
+        <FocusSessionScreen
+          visible={isFocusSessionOpen}
+          onClose={() => setIsFocusSessionOpen(false)}
+        />
+
+        <ProgressScreen
+          visible={isProgressOpen}
+          onClose={() => setIsProgressOpen(false)}
         />
 
         {isAdminPanelOpen && (
