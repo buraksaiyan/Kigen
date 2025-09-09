@@ -7,6 +7,7 @@ import {
   Dimensions,
   StatusBar,
   AppState,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
@@ -441,7 +442,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   // Meditation sound selection state
   const [selectedMeditationSound, setSelectedMeditationSound] = useState<MeditationSound | null>(null);
-  const [isSoundSelectorExpanded, setIsSoundSelectorExpanded] = useState(false);
 
   // Settings for sounds
   const { settings } = useSettings();
@@ -706,92 +706,92 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           {/* Meditation Sound Selector - only show for meditation mode */}
           {mode.id === 'meditation' && (
             <View style={styles.meditationSoundContainer}>
-              <TouchableOpacity 
-                style={styles.soundSelectorHeader}
-                onPress={() => setIsSoundSelectorExpanded(!isSoundSelectorExpanded)}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.soundSelectorLabel, { color: mode.color }]}>
-                  MEDITATION SOUND
-                </Text>
-                <Text style={[styles.soundSelectorCurrent, { color: '#FFFFFF' }]}>
-                  {selectedMeditationSound ? selectedMeditationSound.name : 'None Selected'}
-                </Text>
-                <Text style={[styles.soundSelectorArrow, { color: mode.color }]}>
-                  {isSoundSelectorExpanded ? '▲' : '▼'}
-                </Text>
-              </TouchableOpacity>
+              <Text style={[styles.soundSelectorLabel, { color: mode.color }]}>
+                MEDITATION SOUND
+              </Text>
               
-              {isSoundSelectorExpanded && (
-                <View style={styles.soundSelectorList}>
-                  <TouchableOpacity 
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={styles.soundScrollView}
+                contentContainerStyle={styles.soundScrollContent}
+              >
+                {/* None Option */}
+                <TouchableOpacity 
+                  style={[
+                    styles.soundCard,
+                    !selectedMeditationSound && [styles.soundCardActive, { borderColor: mode.color }]
+                  ]}
+                  onPress={() => {
+                    setSelectedMeditationSound(null);
+                    MeditationSoundService.stopSound();
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[
+                    styles.soundCardTitle, 
+                    !selectedMeditationSound && { color: mode.color }
+                  ]}>
+                    None
+                  </Text>
+                  <Text style={styles.soundCardDescription}>
+                    Silent meditation
+                  </Text>
+                </TouchableOpacity>
+                
+                {/* Preset Sounds */}
+                {PRESET_MEDITATION_SOUNDS.map((sound) => (
+                  <TouchableOpacity
+                    key={sound.id}
                     style={[
-                      styles.soundOption,
-                      !selectedMeditationSound && { backgroundColor: 'rgba(255,255,255,0.1)' }
+                      styles.soundCard,
+                      selectedMeditationSound?.id === sound.id && [styles.soundCardActive, { borderColor: mode.color }]
                     ]}
                     onPress={() => {
-                      setSelectedMeditationSound(null);
-                      MeditationSoundService.stopSound();
-                      setIsSoundSelectorExpanded(false);
+                      setSelectedMeditationSound(sound);
+                      MeditationSoundService.playSound(sound, 0.3);
                     }}
                     activeOpacity={0.8}
                   >
-                    <Text style={[styles.soundOptionText, { color: '#FFFFFF' }]}>
-                      None
+                    <Text style={[
+                      styles.soundCardTitle,
+                      selectedMeditationSound?.id === sound.id && { color: mode.color }
+                    ]}>
+                      {sound.name}
+                    </Text>
+                    <Text style={styles.soundCardDescription}>
+                      {sound.description}
                     </Text>
                   </TouchableOpacity>
-                  
-                  {PRESET_MEDITATION_SOUNDS.map((sound) => (
-                    <TouchableOpacity
-                      key={sound.id}
-                      style={[
-                        styles.soundOption,
-                        selectedMeditationSound?.id === sound.id && { backgroundColor: 'rgba(255,255,255,0.1)' }
-                      ]}
-                      onPress={() => {
-                        setSelectedMeditationSound(sound);
-                        MeditationSoundService.playSound(sound, 0.3);
-                        setIsSoundSelectorExpanded(false);
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.soundOptionText, { color: '#FFFFFF' }]}>
-                        {sound.name}
-                      </Text>
-                      <Text style={styles.soundOptionDescription}>
-                        {sound.description}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
+                ))}
+              </ScrollView>
             </View>
           )}
 
           {/* Progress Circle */}
           <View style={styles.progressCircle}>
-            <Svg width={300} height={300} style={styles.progressSvg}>
+            <Svg width={340} height={340} style={styles.progressSvg}>
               {/* Background circle - gray */}
               <Circle
-                cx={150}
-                cy={150}
-                r={135}
+                cx={170}
+                cy={170}
+                r={155}
                 stroke="#333333"
                 strokeWidth={8}
                 fill="transparent"
               />
               {/* Progress circle - colored based on mode */}
               <Circle
-                cx={150}
-                cy={150}
-                r={135}
+                cx={170}
+                cy={170}
+                r={155}
                 stroke={mode.color}
                 strokeWidth={8}
                 fill="transparent"
-                strokeDasharray={`${2 * Math.PI * 135}`}
-                strokeDashoffset={`${2 * Math.PI * 135 * (1 - progressPercentage / 100)}`}
+                strokeDasharray={`${2 * Math.PI * 155}`}
+                strokeDashoffset={`${2 * Math.PI * 155 * (1 - progressPercentage / 100)}`}
                 strokeLinecap="round"
-                transform="rotate(-90 150 150)"
+                transform="rotate(-90 170 170)"
               />
             </Svg>
             
@@ -1051,11 +1051,12 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xl,
   },
   progressCircle: {
-    width: 380,
-    height: 380,
+    width: 420,
+    height: 420,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    marginTop: -30, // Move circle up slightly
   },
   progressRing: {
     position: 'absolute',
@@ -1190,59 +1191,58 @@ const styles = StyleSheet.create({
   // Meditation sound selector styles
   meditationSoundContainer: {
     width: '90%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
     marginBottom: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  soundSelectorHeader: {
-    alignItems: 'center',
   },
   soundSelectorLabel: {
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: theme.spacing.xs,
+    textAlign: 'center',
+    marginBottom: theme.spacing.md,
   },
-  soundSelectorCurrent: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: theme.spacing.xs,
+  soundScrollView: {
+    flexGrow: 0,
   },
-  soundSelectorArrow: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  soundSelectorList: {
-    marginTop: theme.spacing.md,
-    maxHeight: 200,
-  },
-  soundOption: {
-    padding: theme.spacing.sm,
-    borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.xs,
+  soundScrollContent: {
+    paddingHorizontal: theme.spacing.sm,
     alignItems: 'center',
   },
-  soundOptionText: {
-    fontSize: 15,
+  soundCard: {
+    width: 120,
+    height: 80,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.1)',
+    marginHorizontal: theme.spacing.xs,
+    padding: theme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  soundCardActive: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 2,
+  },
+  soundCardTitle: {
+    fontSize: 13,
     fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
     marginBottom: 2,
   },
-  soundOptionDescription: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.7)',
+  soundCardDescription: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.6)',
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 12,
   },
   // SVG progress circle styles
   progressSvg: {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    marginTop: -150, // Half of SVG height (300/2)
-    marginLeft: -150, // Half of SVG width (300/2)
+    marginTop: -170, // Half of SVG height (340/2)
+    marginLeft: -170, // Half of SVG width (340/2)
   },
 });

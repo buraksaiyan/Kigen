@@ -235,7 +235,10 @@ export const DashboardScreen: React.FC = () => {
           }}
           onSessionComplete={() => {
             // Force refresh of stats card when a session completes
-            setRefreshTrigger(prev => prev + 1);
+            // Add slight delay to ensure data is saved before refreshing
+            setTimeout(() => {
+              setRefreshTrigger(prev => prev + 1);
+            }, 500);
           }}
         />
 

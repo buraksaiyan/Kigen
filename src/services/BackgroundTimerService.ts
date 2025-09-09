@@ -133,10 +133,18 @@ class BackgroundTimerService {
     try {
       await AsyncStorage.removeItem(this.STORAGE_KEY);
       await this.cancelNotifications();
-      await BackgroundFetch.unregisterTaskAsync(BACKGROUND_TIMER_TASK);
+      
+      // Check if task is registered before trying to unregister
+      const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TIMER_TASK);
+      if (isRegistered) {
+        await BackgroundFetch.unregisterTaskAsync(BACKGROUND_TIMER_TASK);
+      }
+      
       console.log('Background timer stopped');
     } catch (error) {
-      console.error('Failed to stop background timer:', error);
+      // In Expo Go, background tasks have limitations - this is expected
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.log('Background timer stop (Expo Go limitation - non-critical):', errorMessage);
     }
   }
 
