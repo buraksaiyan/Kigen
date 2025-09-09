@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
+import { focusSessionService, type FocusSession, type SessionStats } from '../services/FocusSessionService';
 
 interface ProgressScreenProps {
   visible: boolean;
@@ -20,9 +21,65 @@ interface ProgressScreenProps {
 
 export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose }) => {
   const [currentView, setCurrentView] = useState<'focus-logs' | 'kigen-stats'>('focus-logs');
+  const [focusLogs, setFocusLogs] = useState<FocusSession[]>([]);
+  const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
+  const [todaysSummary, setTodaysSummary] = useState<{
+    sessions: number;
+    minutes: number;
+    points: number;
+    completedSessions: number;
+  }>({ sessions: 0, minutes: 0, points: 0, completedSessions: 0 });
+  const [loading, setLoading] = useState(false);
 
-  // TODO: Replace with real data from services
-  const focusLogs: any[] = [];
+  // Load data when modal becomes visible
+  useEffect(() => {
+    if (visible) {
+      loadData();
+    }
+  }, [visible]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [logs, stats, summary] = await Promise.all([
+        focusSessionService.getFocusSessions(20), // Get last 20 sessions
+        focusSessionService.getSessionStats(),
+        focusSessionService.getTodaysSummary(),
+      ]);
+
+      setFocusLogs(logs);
+      setSessionStats(stats);
+      setTodaysSummary(summary);
+    } catch (error) {
+      console.error('Error loading progress data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDuration = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
 
   const kigenStats: any[] = [];
 
@@ -70,22 +127,61 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                   <Text style={styles.subtitle}>Your focus session history</Text>
                 </View>
 
+                {/* Today's Summary */}
+                <Card style={styles.summaryCard}>
+                  <Text style={styles.summaryTitle}>Today's Summary</Text>
+                  <View style={styles.summaryGrid}>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryNumber}>{todaysSummary.sessions}</Text>
+                      <Text style={styles.summaryLabel}>Sessions</Text>
+                    </View>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryNumber}>{formatDuration(todaysSummary.minutes)}</Text>
+                      <Text style={styles.summaryLabel}>Focus Time</Text>
+                    </View>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryNumber}>{todaysSummary.points}</Text>
+                      <Text style={styles.summaryLabel}>Points Earned</Text>
+                    </View>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryNumber}>
+                        {todaysSummary.sessions > 0 
+                          ? Math.round((todaysSummary.completedSessions / todaysSummary.sessions) * 100)
+                          : 0}%
+                      </Text>
+                      <Text style={styles.summaryLabel}>Completion</Text>
+                    </View>
+                  </View>
+                </Card>
+
                 <View style={styles.logsContainer}>
-                  {focusLogs.length > 0 ? (
+                  {loading ? (
+                    <View style={styles.emptyState}>
+                      <Text style={styles.emptyStateText}>Loading focus logs...</Text>
+                    </View>
+                  ) : focusLogs.length > 0 ? (
                     focusLogs.map((log) => (
                       <Card key={log.id} style={styles.logCard}>
                         <View style={styles.logHeader}>
-                          <Text style={styles.logType}>{log.type}</Text>
+                          <View style={styles.logTitleContainer}>
+                            <Text style={[styles.logType, { color: log.mode.color }]}>
+                              {log.mode.title}
+                            </Text>
+                            {log.goal && (
+                              <Text style={styles.logGoal}>Goal: {log.goal.title}</Text>
+                            )}
+                          </View>
                           <Text style={[
                             styles.logStatus,
                             { color: log.completed ? theme.colors.success : theme.colors.danger }
                           ]}>
-                            {log.completed ? 'Completed' : 'Aborted'}
+                            {log.completed ? 'Completed' : 'Stopped'}
                           </Text>
                         </View>
                         <View style={styles.logDetails}>
-                          <Text style={styles.logDuration}>{log.duration} minutes</Text>
-                          <Text style={styles.logDate}>{log.date}</Text>
+                          <Text style={styles.logDuration}>{formatDuration(log.duration)}</Text>
+                          <Text style={styles.logPoints}>+{log.pointsEarned} points</Text>
+                          <Text style={styles.logDate}>{formatDate(log.startTime)}</Text>
                         </View>
                       </Card>
                     ))
@@ -240,10 +336,6 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     fontWeight: '600',
   },
-  logPoints: {
-    ...theme.typography.bodyLarge,
-    fontWeight: '700',
-  },
   logDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -270,5 +362,49 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.tertiary,
     textAlign: 'center',
+  },
+  // Summary card styles
+  summaryCard: {
+    marginBottom: theme.spacing.lg,
+    backgroundColor: theme.colors.surface,
+  },
+  summaryTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  summaryGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  summaryItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  summaryNumber: {
+    ...theme.typography.h2,
+    color: theme.colors.primary,
+    fontWeight: '700',
+  },
+  summaryLabel: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+  },
+  // Enhanced log styles
+  logTitleContainer: {
+    flex: 1,
+  },
+  logGoal: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    marginTop: 2,
+  },
+  logPoints: {
+    ...theme.typography.body,
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
 });
