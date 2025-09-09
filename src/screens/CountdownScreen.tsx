@@ -16,6 +16,7 @@ import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
+import MeditationSoundService, { MeditationSound, PRESET_MEDITATION_SOUNDS } from '../services/MeditationSoundService';
 import { useSettings } from '../hooks/useSettings';
 
 const { width, height } = Dimensions.get('window');
@@ -438,6 +439,10 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // Set counter state for Body Focus mode
   const [setCount, setSetCount] = useState(0);
 
+  // Meditation sound selection state
+  const [selectedMeditationSound, setSelectedMeditationSound] = useState<MeditationSound | null>(null);
+  const [isSoundSelectorExpanded, setIsSoundSelectorExpanded] = useState(false);
+
   // Settings for sounds
   const { settings } = useSettings();
 
@@ -588,6 +593,28 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     };
   }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume]);
 
+  // Meditation sound control effect
+  useEffect(() => {
+    if (mode.id === 'meditation' && selectedMeditationSound) {
+      if (isRunning && !isPaused) {
+        // Resume meditation sound when timer is running
+        MeditationSoundService.resumeSound();
+      } else {
+        // Pause meditation sound when timer is paused
+        MeditationSoundService.pauseSound();
+      }
+    }
+  }, [isRunning, isPaused, mode.id, selectedMeditationSound]);
+
+  // Cleanup meditation sound when component unmounts or timer completes
+  useEffect(() => {
+    return () => {
+      if (mode.id === 'meditation') {
+        MeditationSoundService.cleanup();
+      }
+    };
+  }, [mode.id]);
+
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -676,30 +703,95 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             </View>
           )}
 
+          {/* Meditation Sound Selector - only show for meditation mode */}
+          {mode.id === 'meditation' && (
+            <View style={styles.meditationSoundContainer}>
+              <TouchableOpacity 
+                style={styles.soundSelectorHeader}
+                onPress={() => setIsSoundSelectorExpanded(!isSoundSelectorExpanded)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.soundSelectorLabel, { color: mode.color }]}>
+                  MEDITATION SOUND
+                </Text>
+                <Text style={[styles.soundSelectorCurrent, { color: '#FFFFFF' }]}>
+                  {selectedMeditationSound ? selectedMeditationSound.name : 'None Selected'}
+                </Text>
+                <Text style={[styles.soundSelectorArrow, { color: mode.color }]}>
+                  {isSoundSelectorExpanded ? '▲' : '▼'}
+                </Text>
+              </TouchableOpacity>
+              
+              {isSoundSelectorExpanded && (
+                <View style={styles.soundSelectorList}>
+                  <TouchableOpacity 
+                    style={[
+                      styles.soundOption,
+                      !selectedMeditationSound && { backgroundColor: 'rgba(255,255,255,0.1)' }
+                    ]}
+                    onPress={() => {
+                      setSelectedMeditationSound(null);
+                      MeditationSoundService.stopSound();
+                      setIsSoundSelectorExpanded(false);
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.soundOptionText, { color: '#FFFFFF' }]}>
+                      None
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  {PRESET_MEDITATION_SOUNDS.map((sound) => (
+                    <TouchableOpacity
+                      key={sound.id}
+                      style={[
+                        styles.soundOption,
+                        selectedMeditationSound?.id === sound.id && { backgroundColor: 'rgba(255,255,255,0.1)' }
+                      ]}
+                      onPress={() => {
+                        setSelectedMeditationSound(sound);
+                        MeditationSoundService.playSound(sound, 0.3);
+                        setIsSoundSelectorExpanded(false);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.soundOptionText, { color: '#FFFFFF' }]}>
+                        {sound.name}
+                      </Text>
+                      <Text style={styles.soundOptionDescription}>
+                        {sound.description}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
+
           {/* Progress Circle */}
           <View style={styles.progressCircle}>
-            <Svg width={240} height={240} style={styles.progressSvg}>
+            <Svg width={300} height={300} style={styles.progressSvg}>
               {/* Background circle - gray */}
               <Circle
-                cx={120}
-                cy={120}
-                r={110}
+                cx={150}
+                cy={150}
+                r={135}
                 stroke="#333333"
                 strokeWidth={8}
                 fill="transparent"
               />
               {/* Progress circle - colored based on mode */}
               <Circle
-                cx={120}
-                cy={120}
-                r={110}
+                cx={150}
+                cy={150}
+                r={135}
                 stroke={mode.color}
                 strokeWidth={8}
                 fill="transparent"
-                strokeDasharray={`${2 * Math.PI * 110}`}
-                strokeDashoffset={`${2 * Math.PI * 110 * (1 - progressPercentage / 100)}`}
+                strokeDasharray={`${2 * Math.PI * 135}`}
+                strokeDashoffset={`${2 * Math.PI * 135 * (1 - progressPercentage / 100)}`}
                 strokeLinecap="round"
-                transform="rotate(-90 120 120)"
+                transform="rotate(-90 150 150)"
               />
             </Svg>
             
@@ -959,8 +1051,8 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xl,
   },
   progressCircle: {
-    width: 350,
-    height: 350,
+    width: 380,
+    height: 380,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -1095,12 +1187,62 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
+  // Meditation sound selector styles
+  meditationSoundContainer: {
+    width: '90%',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  soundSelectorHeader: {
+    alignItems: 'center',
+  },
+  soundSelectorLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: theme.spacing.xs,
+  },
+  soundSelectorCurrent: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: theme.spacing.xs,
+  },
+  soundSelectorArrow: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  soundSelectorList: {
+    marginTop: theme.spacing.md,
+    maxHeight: 200,
+  },
+  soundOption: {
+    padding: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
+    marginBottom: theme.spacing.xs,
+    alignItems: 'center',
+  },
+  soundOptionText: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  soundOptionDescription: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.7)',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
   // SVG progress circle styles
   progressSvg: {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    marginTop: -120, // Half of SVG height (240/2)
-    marginLeft: -120, // Half of SVG width (240/2)
+    marginTop: -150, // Half of SVG height (300/2)
+    marginLeft: -150, // Half of SVG width (300/2)
   },
 });
