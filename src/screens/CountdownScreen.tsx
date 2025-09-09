@@ -37,7 +37,6 @@ interface CountdownScreenProps {
   totalMinutes: number;
   onComplete: () => void;
   onPause: () => void;
-  onStop: () => void;
   onEarlyFinish: () => void;
   onAbort: () => void;
 }
@@ -427,7 +426,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   totalMinutes,
   onComplete,
   onPause,
-  onStop,
   onEarlyFinish,
   onAbort,
 }) => {
@@ -648,13 +646,34 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     onPause();
   };
 
-  const handleStop = () => {
-    setIsRunning(false);
-    
-    // Stop background timer
-    BackgroundTimerService.stopTimer();
-    
-    onStop();
+  const handleEarlyFinish = async () => {
+    try {
+      // Stop background timer and cancel any scheduled notifications
+      await BackgroundTimerService.stopTimer();
+      setIsRunning(false);
+      
+      // Call the original early finish handler
+      onEarlyFinish();
+    } catch (error) {
+      console.error('Error stopping timer on early finish:', error);
+      // Still call early finish even if stopping timer fails
+      onEarlyFinish();
+    }
+  };
+
+  const handleAbort = async () => {
+    try {
+      // Stop background timer and cancel any scheduled notifications
+      await BackgroundTimerService.stopTimer();
+      setIsRunning(false);
+      
+      // Call the original abort handler
+      onAbort();
+    } catch (error) {
+      console.error('Error stopping timer on abort:', error);
+      // Still call abort even if stopping timer fails
+      onAbort();
+    }
   };
 
   if (!visible) return null;
@@ -825,19 +844,10 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
         {/* Controls */}
         <View style={styles.controls}>
-          {/* Small Emergency Stop/Pause Button */}
-          <TouchableOpacity
-            style={[styles.smallControlButton, { borderColor: mode.color }]}
-            onPress={onStop}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.smallButtonText, { color: mode.color }]}>Stop</Text>
-          </TouchableOpacity>
-
           {/* Abort Button */}
           <TouchableOpacity
             style={[styles.controlButton, styles.abortButton]}
-            onPress={onAbort}
+            onPress={handleAbort}
             activeOpacity={0.8}
           >
             <Text style={[styles.secondaryButtonText, { color: '#FF4444' }]}>Abort</Text>
@@ -857,10 +867,10 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           {/* Early Finish Button */}
           <TouchableOpacity
             style={[styles.controlButton, styles.earlyFinishButton]}
-            onPress={onEarlyFinish}
+            onPress={handleEarlyFinish}
             activeOpacity={0.8}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#22C55E' }]}>Early Finish</Text>
+            <Text style={[styles.secondaryButtonText, { color: '#22C55E' }]} numberOfLines={1}>Early Finish</Text>
           </TouchableOpacity>
         </View>
 
@@ -1035,6 +1045,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(34,197,94,0.1)',
     borderWidth: 1,
     borderColor: '#22C55E',
+    minWidth: 130, // Wider to fit "Early Finish" on one line
+    maxWidth: 140,
   },
   primaryButton: {
     shadowColor: '#000',

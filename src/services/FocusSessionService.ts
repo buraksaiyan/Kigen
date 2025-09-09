@@ -46,7 +46,15 @@ const STORAGE_KEYS = {
 class FocusSessionService {
   // Calculate points based on session duration and completion
   private calculatePoints(actualMinutes: number, completed: boolean, mode: string): number {
-    // Minimum threshold - must focus for at least 5 minutes to get any points
+    // Exception for meditation: every minute counts (no minimum threshold)
+    if (mode === 'meditation') {
+      // For meditation, use +2 points per minute (like ratingSystem.ts)
+      const basePoints = actualMinutes * 2;
+      const completionBonus = completed ? basePoints * 0.2 : 0;
+      return Math.ceil(basePoints + completionBonus);
+    }
+    
+    // Minimum threshold for other modes - must focus for at least 5 minutes to get any points
     if (actualMinutes < 5) {
       return 0;
     }
@@ -122,8 +130,8 @@ class FocusSessionService {
       session.actualDuration = actualMinutes; // Set actual time spent
       session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
 
-      // Only save to history if minimum time threshold is met
-      if (actualMinutes >= 5) {
+      // Save session if it meets minimum threshold (5 min) OR if it's meditation (every minute counts)
+      if (actualMinutes >= 5 || session.mode.id === 'meditation') {
         await this.saveFocusSession(session);
         await this.updateDailyPoints(session.pointsEarned);
         await this.updateSessionStats(session);

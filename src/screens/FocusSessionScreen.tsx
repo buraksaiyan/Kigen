@@ -241,7 +241,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             totalMinutes={sessionMinutes}
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}
-            onStop={handleCountdownStop}
             onEarlyFinish={handleEarlyFinish}
             onAbort={handleAbort}
           />
