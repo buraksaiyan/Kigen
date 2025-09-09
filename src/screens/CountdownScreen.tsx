@@ -296,32 +296,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     // Keep screen awake during focus session
     activateKeepAwake();
     
-    // Initialize background timer and notifications
-    const initializeBackgroundTimer = async () => {
-      await BackgroundTimerService.requestPermissions();
-      
-      const timerState = {
-        id: `timer_${startTime}`,
-        startTime,
-        duration: totalHours * 3600 + totalMinutes * 60,
-        isPaused: false,
-        isRunning: true,
-        mode: {
-          title: mode.title,
-          color: mode.color,
-        },
-      };
-      
-      await BackgroundTimerService.startTimer(timerState);
-    };
-    
-    initializeBackgroundTimer();
+    // Request notification permissions for future use
+    BackgroundTimerService.requestPermissions();
     
     return () => {
       StatusBar.setHidden(false);
       deactivateKeepAwake();
     };
-  }, [startTime, totalHours, totalMinutes, mode]);
+  }, []);
 
   useEffect(() => {
     const pulse = () => {
@@ -341,32 +323,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     pulse();
   }, [pulseAnimation]);
 
-  // Handle app state changes for background timer sync
-  useEffect(() => {
-    const handleAppStateChange = async (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        // App came to foreground - sync with background timer
-        const remaining = await BackgroundTimerService.getRemainingTime();
-        if (remaining > 0) {
-          setTimeLeft(remaining);
-        } else if (remaining === 0 && isRunning) {
-          // Timer completed in background
-          setIsRunning(false);
-          setTimeLeft(0);
-          onComplete();
-        }
-      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // App went to background - update background timer
-        await BackgroundTimerService.updateTimer({
-          isPaused,
-          isRunning,
-        });
-      }
-    };
-
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => subscription?.remove();
-  }, [isPaused, isRunning, onComplete]);
+  // TODO: Re-implement background timer sync after fixing the issues
+  // useEffect(() => {
+  //   const handleAppStateChange = async (nextAppState: string) => {
+  //     // Background sync logic will be added back after fixes
+  //   };
+  //   const subscription = AppState.addEventListener('change', handleAppStateChange);
+  //   return () => subscription?.remove();
+  // }, [onComplete]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -374,18 +338,23 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     if (isRunning && !isPaused && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft(prevTime => {
-          if (prevTime <= 1) {
+          const newTime = prevTime - 1;
+          if (newTime <= 0) {
             setIsRunning(false);
             onComplete();
             return 0;
           }
-          return prevTime - 1;
+          return newTime;
         });
       }, 1000);
     }
 
-    return () => clearInterval(interval);
-  }, [isRunning, isPaused, timeLeft, onComplete]);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isRunning, isPaused, onComplete]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -424,22 +393,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     }, 600);
   }, [timeLeft]);
 
-  const handlePause = async () => {
+  const handlePause = () => {
     const newPausedState = !isPaused;
     setIsPaused(newPausedState);
-    
-    // Update background timer
-    await BackgroundTimerService.updateTimer({ isPaused: newPausedState });
-    
     onPause();
   };
 
-  const handleStop = async () => {
+  const handleStop = () => {
     setIsRunning(false);
-    
-    // Stop background timer
-    await BackgroundTimerService.stopTimer();
-    
     onStop();
   };
 

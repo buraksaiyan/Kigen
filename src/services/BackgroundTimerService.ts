@@ -34,6 +34,10 @@ class BackgroundTimerService {
   // Register background task
   static async registerBackgroundTask() {
     try {
+      // Temporarily disabled to fix immediate completion issue
+      console.log('Background task registration temporarily disabled');
+      return;
+      
       await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data, error, executionInfo }) => {
         if (error) {
           console.error('Background task error:', error);
@@ -108,12 +112,13 @@ class BackgroundTimerService {
     try {
       const timer = await this.getTimer();
       if (!timer || !timer.isRunning || timer.isPaused) {
-        return 0;
+        return timer ? timer.duration : 0;
       }
 
       const elapsed = Math.floor((Date.now() - timer.startTime) / 1000);
       const remaining = Math.max(0, timer.duration - elapsed);
       
+      console.log(`Timer check: elapsed=${elapsed}s, remaining=${remaining}s, duration=${timer.duration}s`);
       return remaining;
     } catch (error) {
       console.error('Failed to calculate remaining time:', error);
@@ -177,10 +182,13 @@ class BackgroundTimerService {
   // Show immediate completion notification
   private static async showCompletionNotification(timer: TimerState) {
     try {
-      await Notifications.presentNotificationAsync({
-        title: '🎯 Focus Session Complete!',
-        body: `Your ${timer.mode.title} session has finished. Great work!`,
-        data: { timerId: timer.id },
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: '🎯 Focus Session Complete!',
+          body: `Your ${timer.mode.title} session has finished. Great work!`,
+          data: { timerId: timer.id },
+        },
+        trigger: null, // Immediate notification
       });
     } catch (error) {
       console.error('Failed to show completion notification:', error);
