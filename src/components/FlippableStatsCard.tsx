@@ -12,6 +12,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { UserStatsService } from '../services/userStatsService';
@@ -217,13 +218,18 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   }
 
   const tierColors = RatingSystem.getCardTierColors(currentRating.cardTier);
-  // Get card colors - using golden color like in the sketch for now
-  const gradientColors: [string, string] = ['#FFD700', '#FFA500'];
+  const backgroundImage = RatingSystem.getCardBackgroundImage(currentRating.cardTier);
+  const textColor = RatingSystem.getCardTextColor(currentRating.cardTier);
 
   return (
     <>
       <View style={styles.card} {...panResponder.panHandlers}>
-          <LinearGradient colors={gradientColors} style={styles.cardContent}>
+          <ImageBackground 
+            source={backgroundImage}
+            style={styles.cardContent}
+            imageStyle={{ borderRadius: 20 }}
+            resizeMode="cover"
+          >
             {/* Front Side */}
             <Animated.View style={[
               styles.cardSide, 
@@ -235,7 +241,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={styles.timePeriod}>MONTHLY</Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>MONTHLY</Text>
               </View>
               
               {/* Main Content Section */}
@@ -248,17 +254,17 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                       <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
                     ) : (
                       <View style={styles.picturePlaceholder}>
-                        <Text style={styles.picturePlaceholderText}>picture</Text>
+                        <Text style={[styles.picturePlaceholderText, { color: textColor }]}>picture</Text>
                       </View>
                     )}
                   </TouchableOpacity>
-                  <Text style={styles.cardPlayerName}>{userName || 'username'}</Text>
+                  <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
                 </View>
                 
                 {/* Middle Column - OVR (moved up, X removed) */}
                 <View style={styles.middleColumn}>
-                  <Text style={styles.ovrValue}>{currentRating.overallRating}</Text>
-                  <Text style={styles.ovrLabel}>OVR</Text>
+                  <Text style={[styles.ovrValue, { color: textColor }]}>{currentRating.overallRating}</Text>
+                  <Text style={[styles.ovrLabel, { color: textColor }]}>OVR</Text>
                 </View>
                 
                 {/* Right Column - Stats with values */}
@@ -266,7 +272,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                   <View style={styles.statsContainer}>
                     {Object.entries(currentRating.stats).map(([key, value]) => (
                       <View key={key} style={styles.statRow}>
-                        <Text style={styles.statKey}>{key} - {value}</Text>
+                        <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
                       </View>
                     ))}
                   </View>
@@ -275,7 +281,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Bottom Section - Rank (moved down) */}
               <View style={styles.bottomSection}>
-                <Text style={styles.rankText}>{currentRating.cardTier.toUpperCase()}</Text>
+                <Text style={[styles.rankText, { color: textColor }]}>{currentRating.cardTier.toUpperCase()}</Text>
               </View>
               
             </View>
@@ -293,7 +299,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Top Section - Time Period (moved higher) */}
                 <View style={styles.topSection}>
-                  <Text style={styles.timePeriod}>ALL TIME</Text>
+                  <Text style={[styles.timePeriod, { color: textColor }]}>ALL TIME</Text>
                 </View>
                 
                 {/* Main Content Section */}
@@ -306,17 +312,17 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                         <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
                       ) : (
                         <View style={styles.picturePlaceholder}>
-                          <Text style={styles.picturePlaceholderText}>picture</Text>
+                          <Text style={[styles.picturePlaceholderText, { color: textColor }]}>picture</Text>
                         </View>
                       )}
                     </TouchableOpacity>
-                    <Text style={styles.cardPlayerName}>{userName || 'username'}</Text>
+                    <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
                   </View>
                   
                   {/* Middle Column - OVR (moved up, X removed) */}
                   <View style={styles.middleColumn}>
-                    <Text style={styles.ovrValue}>{currentRating.overallRating}</Text>
-                    <Text style={styles.ovrLabel}>OVR</Text>
+                    <Text style={[styles.ovrValue, { color: textColor }]}>{currentRating.overallRating}</Text>
+                    <Text style={[styles.ovrLabel, { color: textColor }]}>OVR</Text>
                   </View>
                   
                   {/* Right Column - Stats with values */}
@@ -324,7 +330,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                     <View style={styles.statsContainer}>
                       {Object.entries(currentRating.stats).map(([key, value]) => (
                         <View key={key} style={styles.statRow}>
-                          <Text style={styles.statKey}>{key} - {value}</Text>
+                          <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
                         </View>
                       ))}
                     </View>
@@ -333,12 +339,12 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Bottom Section - Rank (moved down) */}
                 <View style={styles.bottomSection}>
-                  <Text style={styles.rankText}>{currentRating.cardTier.toUpperCase()}</Text>
+                  <Text style={[styles.rankText, { color: textColor }]}>{currentRating.cardTier.toUpperCase()}</Text>
                 </View>
                 
               </View>
             </Animated.View>
-          </LinearGradient>
+          </ImageBackground>
         </View>
 
       {/* Expanded Modal */}
@@ -348,9 +354,14 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
         presentationStyle="pageSheet"
       >
         <ScrollView style={styles.expandedCard} contentContainerStyle={styles.expandedContent}>
-          <LinearGradient colors={gradientColors} style={styles.expandedHeader}>
+          <ImageBackground 
+            source={backgroundImage}
+            style={styles.expandedHeader}
+            imageStyle={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+            resizeMode="cover"
+          >
             <TouchableOpacity style={styles.closeButton} onPress={() => setIsExpanded(false)}>
-              <Text style={styles.closeButtonText}>×</Text>
+              <Text style={[styles.closeButtonText, { color: textColor }]}>×</Text>
             </TouchableOpacity>
             
             {/* Profile Picture Section */}
@@ -360,21 +371,21 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                   <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 ) : (
                   <View style={styles.profilePlaceholder}>
-                    <Text style={styles.profilePlaceholderText}>+</Text>
-                    <Text style={styles.addPhotoText}>Add Photo</Text>
+                    <Text style={[styles.profilePlaceholderText, { color: textColor }]}>+</Text>
+                    <Text style={[styles.addPhotoText, { color: textColor }]}>Add Photo</Text>
                   </View>
                 )}
               </TouchableOpacity>
               
-              <Text style={styles.playerName}>{userName}</Text>
+              <Text style={[styles.playerName, { color: textColor }]}>{userName}</Text>
             </View>
             
             {/* OVR */}
             <View style={styles.expandedOvrContainer}>
-              <Text style={styles.expandedOvrLabel}>OVERALL</Text>
-              <Text style={styles.expandedOvrNumber}>{currentRating.overallRating}</Text>
+              <Text style={[styles.expandedOvrLabel, { color: textColor }]}>OVERALL</Text>
+              <Text style={[styles.expandedOvrNumber, { color: textColor }]}>{currentRating.overallRating}</Text>
             </View>
-          </LinearGradient>
+          </ImageBackground>
           
           {/* Detailed Stats */}
           <View style={styles.detailedStatsContainer}>
