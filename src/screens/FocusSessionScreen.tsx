@@ -141,7 +141,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const handleCountdownComplete = async () => {
     try {
       if (currentSessionId) {
-        await focusSessionService.completeSession(currentSessionId, true);
+        await focusSessionService.completeSession(currentSessionId, true, 'completed');
         console.log('Focus session completed successfully!', { 
           mode: selectedMode?.title, 
           goal: selectedGoal?.title 

@@ -178,9 +178,20 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                           </View>
                           <Text style={[
                             styles.logStatus,
-                            { color: log.completed ? theme.colors.success : theme.colors.danger }
+                            { 
+                              color: log.completionType === 'completed' 
+                                ? theme.colors.success 
+                                : log.completionType === 'early-finish' 
+                                  ? '#FFA500' // Orange for early finish
+                                  : theme.colors.danger // Red for aborted
+                            }
                           ]}>
-                            {log.completed ? 'Completed' : 'Stopped'}
+                            {log.completionType === 'completed' 
+                              ? 'Completed' 
+                              : log.completionType === 'early-finish' 
+                                ? 'Early Finish' 
+                                : 'Aborted'
+                            }
                           </Text>
                         </View>
                         <View style={styles.logDetails}>

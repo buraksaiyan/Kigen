@@ -17,6 +17,7 @@ interface FocusSession {
   duration: number; // planned duration in minutes
   actualDuration: number; // actual time spent in minutes
   completed: boolean;
+  completionType: 'completed' | 'early-finish' | 'aborted'; // Track how session ended
   pointsEarned: number;
   date: string; // YYYY-MM-DD format
 }
@@ -94,6 +95,7 @@ class FocusSessionService {
         duration,
         actualDuration: 0, // Will be updated when session completes
         completed: false,
+        completionType: 'aborted', // Default to aborted, will be updated on completion
         pointsEarned: 0,
         date,
       };
@@ -110,7 +112,7 @@ class FocusSessionService {
   }
 
   // Complete a focus session
-  async completeSession(sessionId: string, completed: boolean = true): Promise<void> {
+  async completeSession(sessionId: string, completed: boolean = true, completionType: 'completed' | 'early-finish' | 'aborted' = 'completed'): Promise<void> {
     try {
       const currentSessionData = await AsyncStorage.getItem('@kigen_current_session');
       if (!currentSessionData) {
@@ -127,6 +129,7 @@ class FocusSessionService {
       // Update session with actual time spent
       session.endTime = endTime;
       session.completed = completed;
+      session.completionType = completionType; // Set completion type for display
       session.actualDuration = actualMinutes; // Set actual time spent
       session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
 
@@ -154,7 +157,7 @@ class FocusSessionService {
 
   // Early finish session (awards points based on time completed)
   async earlyFinishSession(sessionId: string): Promise<void> {
-    await this.completeSession(sessionId, false); // Mark as not fully completed but award points
+    await this.completeSession(sessionId, false, 'early-finish'); // Mark as early finish with points
   }
 
   // Abort session (no points awarded)
@@ -175,6 +178,7 @@ class FocusSessionService {
       // Update session with actual time spent but no points
       session.endTime = endTime;
       session.completed = false;
+      session.completionType = 'aborted'; // Mark as aborted
       session.actualDuration = actualMinutes;
       session.pointsEarned = 0; // No points for aborted sessions
 
