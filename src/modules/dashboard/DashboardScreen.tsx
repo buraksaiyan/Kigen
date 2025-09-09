@@ -19,6 +19,8 @@ import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import { ProgressScreen } from '../../screens/ProgressScreen';
 import { SettingsScreen } from '../../screens/SettingsScreen';
+import { SupabaseTest } from '../../../debug/SupabaseTest';
+import { env } from '../../config/env';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
@@ -33,6 +35,7 @@ export const DashboardScreen: React.FC = () => {
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showSupabaseDebug, setShowSupabaseDebug] = useState(false);
 
   useEffect(() => {
     maybePromptForRating();
@@ -187,6 +190,15 @@ export const DashboardScreen: React.FC = () => {
             {__DEV__ && (
               <Card style={styles.devCard}>
                 <Text style={styles.devTitle}>Development</Text>
+                {env.isDevelopment && (
+                  <Button
+                    title="🔍 Debug Supabase"
+                    onPress={() => setShowSupabaseDebug(true)}
+                    variant="outline"
+                    size="small"
+                    style={{ marginBottom: 8 }}
+                  />
+                )}
                 <Button
                   title="Sign Out"
                   onPress={signOut}
@@ -251,6 +263,18 @@ export const DashboardScreen: React.FC = () => {
           visible={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
         />
+
+        {showSupabaseDebug && (
+          <View style={styles.fullScreenModal}>
+            <SupabaseTest />
+            <TouchableOpacity 
+              style={styles.closeDebugButton}
+              onPress={() => setShowSupabaseDebug(false)}
+            >
+              <Text style={styles.closeDebugText}>✕ Close Debug</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {isAdminPanelOpen && (
           <View style={styles.fullScreenModal}>
@@ -374,5 +398,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: theme.colors.background,
     zIndex: 2000,
+  },
+  closeDebugButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    backgroundColor: theme.colors.danger,
+    padding: 12,
+    borderRadius: 8,
+    zIndex: 2001,
+  },
+  closeDebugText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
