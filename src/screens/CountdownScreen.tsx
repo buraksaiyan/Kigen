@@ -32,6 +32,124 @@ interface CountdownScreenProps {
   onStop: () => void;
 }
 
+// Mode-specific quote databases
+const FOCUS_QUOTES = {
+  flow: [
+    {
+      text: "Flow state is being completely involved in an activity for its own sake. The ego falls away.",
+      author: "Mihaly Csikszentmihalyi"
+    },
+    {
+      text: "In the zone, there is no time, no thought, no self - only pure action.",
+      author: "Ancient Zen Saying"
+    },
+    {
+      text: "The deepest experience of the creator arises out of a state of intensified attention.",
+      author: "Dag Hammarskjöld"
+    },
+    {
+      text: "Concentration is the secret of strength in politics, in war, in trade, in short in all management.",
+      author: "Ralph Waldo Emerson"
+    },
+    {
+      text: "The ability to concentrate and to use your time well is everything if you want to succeed.",
+      author: "Lee Iacocca"
+    }
+  ],
+  executioner: [
+    {
+      text: "Excellence is never an accident. It is always the result of high intention and intelligent execution.",
+      author: "Aristotle"
+    },
+    {
+      text: "The way to get started is to quit talking and begin doing.",
+      author: "Walt Disney"
+    },
+    {
+      text: "Success is where preparation and opportunity meet.",
+      author: "Bobby Unser"
+    },
+    {
+      text: "Do something today that your future self will thank you for.",
+      author: "Sean Patrick Flanery"
+    },
+    {
+      text: "The expert in anything was once a beginner who refused to give up.",
+      author: "Helen Hayes"
+    },
+    {
+      text: "Discipline is choosing between what you want now and what you want most.",
+      author: "Abraham Lincoln"
+    }
+  ],
+  meditation: [
+    {
+      text: "Focus on the present moment. It is the only time over which we have dominion.",
+      author: "Thích Nhất Hạnh"
+    },
+    {
+      text: "Meditation is not about stopping thoughts, but recognizing that we are more than our thoughts.",
+      author: "Arianna Huffington"
+    },
+    {
+      text: "Peace comes from within. Do not seek it without.",
+      author: "Buddha"
+    },
+    {
+      text: "Wherever you are, be there totally. If you find your here and now intolerable, you have options: remove yourself, change it, or accept it totally.",
+      author: "Eckhart Tolle"
+    },
+    {
+      text: "The present moment is the only time over which we have dominion.",
+      author: "Thích Nhất Hạnh"
+    }
+  ],
+  body: [
+    {
+      text: "The body achieves what the mind believes.",
+      author: "Napoleon Hill"
+    },
+    {
+      text: "Strength does not come from physical capacity. It comes from an indomitable will.",
+      author: "Mahatma Gandhi"
+    },
+    {
+      text: "The groundwork for all happiness is good health.",
+      author: "Leigh Hunt"
+    },
+    {
+      text: "Take care of your body. It's the only place you have to live.",
+      author: "Jim Rohn"
+    },
+    {
+      text: "Physical fitness is not only one of the most important keys to a healthy body, it is the basis of dynamic and creative intellectual activity.",
+      author: "John F. Kennedy"
+    }
+  ],
+  notech: [
+    {
+      text: "Almost everything will work again if you unplug it for a few minutes, including you.",
+      author: "Anne Lamott"
+    },
+    {
+      text: "The real question is not whether machines think but whether men do.",
+      author: "B.F. Skinner"
+    },
+    {
+      text: "We are not going to be able to operate our Spaceship Earth successfully nor for much longer unless we see it as a whole spaceship and our fate as common.",
+      author: "Buckminster Fuller"
+    },
+    {
+      text: "Sometimes you need to disconnect to stay connected. Sometimes you need to go offline to get your life online.",
+      author: "Anonymous"
+    },
+    {
+      text: "Technology is a useful servant but a dangerous master.",
+      author: "Christian Lous Lange"
+    }
+  ]
+};
+
 interface FlipDigitProps {
   digit: string;
   nextDigit: string;
@@ -132,6 +250,11 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [prevTime, setPrevTime] = useState({ h1: '0', h2: '0', m1: '0', m2: '0', s1: '0', s2: '0' });
   const [isFlipping, setIsFlipping] = useState({ h1: false, h2: false, m1: false, m2: false, s1: false, s2: false });
+  const [selectedQuote] = useState(() => {
+    // Select random quote based on mode
+    const quotes = FOCUS_QUOTES[mode.id as keyof typeof FOCUS_QUOTES] || FOCUS_QUOTES.meditation;
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  });
 
   const pulseAnimation = useRef(new Animated.Value(1)).current;
 
@@ -333,9 +456,9 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         {/* Zen Quote */}
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>
-            "Focus on the present moment. It is the only time over which we have dominion."
+            "{selectedQuote?.text || 'Focus on the present moment.'}"
           </Text>
-          <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
+          <Text style={styles.quoteAuthor}>— {selectedQuote?.author || 'Anonymous'}</Text>
         </View>
       </SafeAreaView>
     </View>

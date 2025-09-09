@@ -216,6 +216,10 @@ export const DashboardScreen: React.FC = () => {
         <FocusSessionScreen
           visible={isFocusSessionOpen}
           onClose={() => setIsFocusSessionOpen(false)}
+          onOpenGoals={() => {
+            setIsFocusSessionOpen(false);
+            setIsGoalsOpen(true);
+          }}
         />
 
         <ProgressScreen

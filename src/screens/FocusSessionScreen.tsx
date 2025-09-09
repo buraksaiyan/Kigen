@@ -36,6 +36,7 @@ interface Goal {
 interface FocusSessionScreenProps {
   visible: boolean;
   onClose: () => void;
+  onOpenGoals?: () => void;
 }
 
 const focusModes: FocusMode[] = [
@@ -76,7 +77,7 @@ const focusModes: FocusMode[] = [
   },
 ];
 
-export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible, onClose }) => {
+export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible, onClose, onOpenGoals }) => {
   const [selectedMode, setSelectedMode] = useState<FocusMode | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -104,11 +105,13 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible,
   };
 
   const handleCreateGoal = () => {
-    // TODO: Navigate to goal creation screen
-    console.log('Navigate to goal creation');
-    // For now, close all modals and return to main screen
+    // Navigate to goal creation screen
     setShowGoalSelection(false);
     setSelectedMode(null);
+    onClose(); // Close focus session screen
+    if (onOpenGoals) {
+      onOpenGoals(); // Open goals screen
+    }
   };
 
   const handleStartSession = async (mode: FocusMode, hours: number, minutes: number) => {

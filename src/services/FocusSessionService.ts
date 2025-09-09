@@ -13,7 +13,8 @@ interface FocusSession {
   };
   startTime: string;
   endTime?: string;
-  duration: number; // in minutes
+  duration: number; // planned duration in minutes
+  actualDuration: number; // actual time spent in minutes
   completed: boolean;
   pointsEarned: number;
   date: string; // YYYY-MM-DD format
@@ -43,9 +44,14 @@ const STORAGE_KEYS = {
 
 class FocusSessionService {
   // Calculate points based on session duration and completion
-  private calculatePoints(duration: number, completed: boolean, mode: string): number {
-    const basePoints = Math.floor(duration / 5); // 1 point per 5 minutes
-    const completionBonus = completed ? Math.floor(duration * 0.2) : 0;
+  private calculatePoints(actualMinutes: number, completed: boolean, mode: string): number {
+    // Minimum threshold - must focus for at least 6 minutes to get any points
+    if (actualMinutes < 6) {
+      return 0;
+    }
+
+    const basePoints = Math.floor(actualMinutes / 5); // 1 point per 5 minutes
+    const completionBonus = completed ? Math.floor(actualMinutes * 0.2) : 0;
     
     // Mode-specific multipliers
     const modeMultipliers = {
@@ -57,7 +63,10 @@ class FocusSessionService {
     };
     
     const multiplier = modeMultipliers[mode as keyof typeof modeMultipliers] || 1.0;
-    return Math.floor((basePoints + completionBonus) * multiplier);
+    const totalPoints = (basePoints + completionBonus) * multiplier;
+    
+    // Round up to keep number as integer
+    return Math.ceil(totalPoints);
   }
 
   // Start a new focus session
@@ -80,6 +89,7 @@ class FocusSessionService {
         } : undefined,
         startTime,
         duration,
+        actualDuration: 0, // Will be updated when session completes
         completed: false,
         pointsEarned: 0,
         date,
@@ -107,28 +117,29 @@ class FocusSessionService {
 
       const session: FocusSession = JSON.parse(currentSessionData);
       const endTime = new Date().toISOString();
-      const actualDuration = Math.floor(
+      const actualMinutes = Math.floor(
         (new Date(endTime).getTime() - new Date(session.startTime).getTime()) / (1000 * 60)
       );
 
-      // Update session
+      // Update session with actual time spent
       session.endTime = endTime;
       session.completed = completed;
-      session.pointsEarned = this.calculatePoints(actualDuration, completed, session.mode.id);
+      session.actualDuration = actualMinutes; // Set actual time spent
+      session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
 
-      // Save to sessions history
-      await this.saveFocusSession(session);
-
-      // Update daily points
-      await this.updateDailyPoints(session.pointsEarned);
-
-      // Update stats
-      await this.updateSessionStats(session);
+      // Only save to history if minimum time threshold is met
+      if (actualMinutes >= 6) {
+        await this.saveFocusSession(session);
+        await this.updateDailyPoints(session.pointsEarned);
+        await this.updateSessionStats(session);
+        
+        console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned`);
+      } else {
+        console.log(`Session too short (${actualMinutes} minutes), no points awarded`);
+      }
 
       // Clear current session
       await AsyncStorage.removeItem('@kigen_current_session');
-
-      console.log('Focus session completed:', session);
     } catch (error) {
       console.error('Error completing focus session:', error);
       throw error;
@@ -234,7 +245,7 @@ class FocusSessionService {
 
       // Update totals
       stats.totalSessions += 1;
-      stats.totalMinutes += session.duration;
+      stats.totalMinutes += session.actualDuration || session.duration;
       stats.totalPoints += session.pointsEarned;
 
       // Update mode stats
@@ -243,7 +254,7 @@ class FocusSessionService {
         stats.modeStats[modeId] = { sessions: 0, minutes: 0, points: 0 };
       }
       stats.modeStats[modeId].sessions += 1;
-      stats.modeStats[modeId].minutes += session.duration;
+      stats.modeStats[modeId].minutes += session.actualDuration || session.duration;
       stats.modeStats[modeId].points += session.pointsEarned;
 
       // Update streak
@@ -326,7 +337,59 @@ class FocusSessionService {
     }
   }
 
-  // Get today's sessions summary
+  // Get focus session logs formatted for Kigen Stats display
+  async getKigenStatsLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    action: string;
+    points: string;
+    date: string;
+    type: 'gain' | 'loss';
+  }>> {
+    try {
+      const sessions = await this.getFocusSessions(limit);
+      
+      return sessions.map(session => {
+        const action = session.completed 
+          ? `${session.mode.title} session completed${session.goal ? ` (${session.goal.title})` : ''}`
+          : `${session.mode.title} session stopped${session.goal ? ` (${session.goal.title})` : ''}`;
+        
+        const points = session.pointsEarned > 0 ? `+${session.pointsEarned}` : '0';
+        const type: 'gain' | 'loss' = session.pointsEarned > 0 ? 'gain' : 'loss';
+        
+        return {
+          id: session.id,
+          action,
+          points,
+          date: this.formatDate(session.startTime),
+          type
+        };
+      }).filter(log => log.points !== '0'); // Only show logs where points were earned
+    } catch (error) {
+      console.error('Error getting Kigen stats logs:', error);
+      return [];
+    }
+  }
+
+  // Helper method to format dates consistently
+  private formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return `Today at ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+  }
   async getTodaysSummary(): Promise<{
     sessions: number;
     minutes: number;
@@ -342,7 +405,7 @@ class FocusSessionService {
       
       const summary = {
         sessions: todaySessions.length,
-        minutes: todaySessions.reduce((sum, session) => sum + session.duration, 0),
+        minutes: todaySessions.reduce((sum, session) => sum + (session.actualDuration || session.duration), 0),
         points: todaySessions.reduce((sum, session) => sum + session.pointsEarned, 0),
         completedSessions: completedSessions.length,
       };

@@ -23,6 +23,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
   const [currentView, setCurrentView] = useState<'focus-logs' | 'kigen-stats'>('focus-logs');
   const [focusLogs, setFocusLogs] = useState<FocusSession[]>([]);
   const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
+  const [kigenStats, setKigenStats] = useState<any[]>([]);
   const [todaysSummary, setTodaysSummary] = useState<{
     sessions: number;
     minutes: number;
@@ -41,15 +42,17 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
   const loadData = async () => {
     setLoading(true);
     try {
-      const [logs, stats, summary] = await Promise.all([
+      const [logs, stats, summary, kigenLogs] = await Promise.all([
         focusSessionService.getFocusSessions(20), // Get last 20 sessions
         focusSessionService.getSessionStats(),
         focusSessionService.getTodaysSummary(),
+        focusSessionService.getKigenStatsLogs(20), // Get last 20 Kigen stats logs
       ]);
 
       setFocusLogs(logs);
       setSessionStats(stats);
       setTodaysSummary(summary);
+      setKigenStats(kigenLogs);
     } catch (error) {
       console.error('Error loading progress data:', error);
     } finally {
@@ -80,8 +83,6 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
       return date.toLocaleDateString();
     }
   };
-
-  const kigenStats: any[] = [];
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -131,25 +132,29 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                 <Card style={styles.summaryCard}>
                   <Text style={styles.summaryTitle}>Today's Summary</Text>
                   <View style={styles.summaryGrid}>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryNumber}>{todaysSummary.sessions}</Text>
-                      <Text style={styles.summaryLabel}>Sessions</Text>
+                    <View style={styles.summaryRow}>
+                      <View style={styles.summaryItem}>
+                        <Text style={styles.summaryNumber}>{todaysSummary.sessions}</Text>
+                        <Text style={styles.summaryLabel}>Sessions</Text>
+                      </View>
+                      <View style={styles.summaryItem}>
+                        <Text style={styles.summaryNumber}>{formatDuration(todaysSummary.minutes)}</Text>
+                        <Text style={styles.summaryLabel}>Focus Time</Text>
+                      </View>
                     </View>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryNumber}>{formatDuration(todaysSummary.minutes)}</Text>
-                      <Text style={styles.summaryLabel}>Focus Time</Text>
-                    </View>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryNumber}>{todaysSummary.points}</Text>
-                      <Text style={styles.summaryLabel}>Points Earned</Text>
-                    </View>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryNumber}>
-                        {todaysSummary.sessions > 0 
-                          ? Math.round((todaysSummary.completedSessions / todaysSummary.sessions) * 100)
-                          : 0}%
-                      </Text>
-                      <Text style={styles.summaryLabel}>Completion</Text>
+                    <View style={styles.summaryRow}>
+                      <View style={styles.summaryItem}>
+                        <Text style={styles.summaryNumber}>{todaysSummary.points}</Text>
+                        <Text style={styles.summaryLabel}>Points Earned</Text>
+                      </View>
+                      <View style={styles.summaryItem}>
+                        <Text style={styles.summaryNumber}>
+                          {todaysSummary.sessions > 0 
+                            ? Math.round((todaysSummary.completedSessions / todaysSummary.sessions) * 100)
+                            : 0}%
+                        </Text>
+                        <Text style={styles.summaryLabel}>Completion</Text>
+                      </View>
                     </View>
                   </View>
                 </Card>
@@ -179,7 +184,9 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                           </Text>
                         </View>
                         <View style={styles.logDetails}>
-                          <Text style={styles.logDuration}>{formatDuration(log.duration)}</Text>
+                          <Text style={styles.logDuration}>
+                            {formatDuration(log.actualDuration)}/{formatDuration(log.duration)}
+                          </Text>
                           <Text style={styles.logPoints}>+{log.pointsEarned} points</Text>
                           <Text style={styles.logDate}>{formatDate(log.startTime)}</Text>
                         </View>
@@ -376,6 +383,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   summaryGrid: {
+    gap: theme.spacing.md,
+  },
+  summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
