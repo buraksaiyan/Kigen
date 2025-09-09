@@ -43,7 +43,9 @@
     "react-native-screens": "~4.16.0",
     "react-native-svg": "15.12.1",
     "react-native-web": "^0.21.0",
-    "zustand": "^4.5.7"
+    "zustand": "^4.5.7",
+    "expo-av": "~16.0.6",
+    "expo-haptics": "~15.0.6"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",

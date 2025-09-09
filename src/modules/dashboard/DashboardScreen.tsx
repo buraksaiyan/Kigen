@@ -18,6 +18,7 @@ import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import { ProgressScreen } from '../../screens/ProgressScreen';
+import { SettingsScreen } from '../../screens/SettingsScreen';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
@@ -27,6 +28,7 @@ export const DashboardScreen: React.FC = () => {
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -60,23 +62,34 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
+        setIsSettingsOpen(false);
         break;
       case 'journals':
         setIsGoalsOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
+        setIsSettingsOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
+        setIsSettingsOpen(false);
         break;
       case 'progress':
         setIsProgressOpen(true);
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
+        setIsSettingsOpen(false);
+        break;
+      case 'settings':
+        setIsSettingsOpen(true);
+        setIsGoalsOpen(false);
+        setIsJournalOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
         break;
       default:
         console.log('Navigate to:', screen);
@@ -225,6 +238,11 @@ export const DashboardScreen: React.FC = () => {
         <ProgressScreen
           visible={isProgressOpen}
           onClose={() => setIsProgressOpen(false)}
+        />
+
+        <SettingsScreen
+          visible={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
         />
 
         {isAdminPanelOpen && (

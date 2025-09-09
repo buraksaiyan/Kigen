@@ -166,6 +166,7 @@ class BackgroundTimerService {
       const remaining = await this.getRemainingTime();
       
       if (remaining > 0) {
+        // Schedule notification for when timer completes
         await Notifications.scheduleNotificationAsync({
           content: {
             title: '🎯 Focus Session Complete!',
@@ -173,8 +174,14 @@ class BackgroundTimerService {
             data: { timerId: timer.id },
             priority: Notifications.AndroidNotificationPriority.HIGH,
           },
-          trigger: null, // Immediate notification
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: remaining, // Schedule for when timer ends
+            repeats: false,
+          },
         });
+        
+        console.log(`Completion notification scheduled for ${remaining} seconds`);
       }
     } catch (error) {
       console.error('Failed to schedule completion notification:', error);

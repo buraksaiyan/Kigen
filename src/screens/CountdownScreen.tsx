@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Animated,
   Dimensions,
   StatusBar,
   AppState,
@@ -12,9 +11,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import * as Notifications from 'expo-notifications';
+import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
+import TimerSoundService from '../services/TimerSoundService';
+import { useSettings } from '../hooks/useSettings';
 
 const { width, height } = Dimensions.get('window');
 
@@ -433,9 +435,15 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     return quotes[Math.floor(Math.random() * quotes.length)];
   });
 
-  // Animated progress value for smooth circle animation
-  const progressAnimation = useRef(new Animated.Value(0)).current;
-  const pulseAnimation = useRef(new Animated.Value(1)).current;
+  // Set counter state for Body Focus mode
+  const [setCount, setSetCount] = useState(0);
+
+  // Settings for sounds
+  const { settings } = useSettings();
+
+  // Calculate progress percentage based on timeLeft
+  const totalSeconds = totalHours * 3600 + totalMinutes * 60;
+  const progressPercentage = totalSeconds > 0 ? ((totalSeconds - timeLeft) / totalSeconds) * 100 : 0;
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -443,19 +451,35 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     // Keep screen awake during focus session
     activateKeepAwake();
     
+    // Initialize timer sound service
+    TimerSoundService.initialize();
+    
     // Register background task and request permissions
     BackgroundTimerService.requestPermissions();
     BackgroundTimerService.registerBackgroundTask();
+
+    // Start meditation sounds if enabled
+    if (mode.id === 'meditation' && settings.meditationSoundsEnabled) {
+      // TODO: Start meditation ambient sounds
+      console.log('Starting meditation sounds...');
+    }
     
     return () => {
       StatusBar.setHidden(false);
       deactivateKeepAwake();
+      
+      // Stop meditation sounds if they were playing
+      if (mode.id === 'meditation') {
+        // TODO: Stop meditation ambient sounds
+        console.log('Stopping meditation sounds...');
+      }
+      
       // Clean up background timer on unmount
       if (!isRunning) {
         BackgroundTimerService.stopTimer();
       }
     };
-  }, [isRunning]);
+  }, [isRunning, mode.id, settings.meditationSoundsEnabled]);
 
   // Show notification when timer starts
   useEffect(() => {
@@ -464,18 +488,9 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         try {
           const totalTimeFormatted = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:00`;
           
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: `${mode.title} Focus Mode Active`,
-              body: `Your ${totalTimeFormatted} focus session has started. Stay focused!`,
-              data: { 
-                sessionId: startTime,
-                mode: mode.title,
-                duration: totalHours * 3600 + totalMinutes * 60 
-              },
-            },
-            trigger: null, // Show immediately
-          });
+          // Only show start notification, don't show completion notification immediately
+          console.log(`Starting ${mode.title} focus session for ${totalTimeFormatted}`);
+          
         } catch (error) {
           console.log('Failed to show start notification:', error);
         }
@@ -523,36 +538,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   }, []);
 
   // Animate progress circle smoothly
-  useEffect(() => {
-    const progressPercent = getProgressPercentage();
-    Animated.timing(progressAnimation, {
-      toValue: progressPercent,
-      duration: 800,
-      useNativeDriver: false,
-    }).start();
-  }, [timeLeft]);
+  // Handle set counter for Body Focus mode
+  const handleSetIncrement = () => {
+    setSetCount(prev => prev + 1);
+  };
 
-  // Subtle pulse animation for the progress arc
-  useEffect(() => {
-    const createPulse = () => {
-      Animated.sequence([
-        Animated.timing(pulseAnimation, {
-          toValue: 1.05,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnimation, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ]).start(() => createPulse());
-    };
-    
-    if (isRunning && !isPaused) {
-      createPulse();
-    }
-  }, [isRunning, isPaused]);
+  const handleSetReset = () => {
+    setSetCount(0);
+  };
 
   // TODO: Re-implement background timer sync after fixing the issues
   // useEffect(() => {
@@ -567,9 +560,17 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     let interval: NodeJS.Timeout;
     
     if (isRunning && !isPaused && timeLeft > 0) {
-      interval = setInterval(() => {
+      interval = setInterval(async () => {
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
+          
+          // Play tick sound if enabled in settings
+          if (settings.timerSoundsEnabled && newTime > 0) {
+            TimerSoundService.playTick(settings.soundVolume, false).catch(err => 
+              console.log('Timer tick sound error:', err)
+            );
+          }
+          
           if (newTime <= 0) {
             setIsRunning(false);
             onComplete();
@@ -585,7 +586,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         clearInterval(interval);
       }
     };
-  }, [isRunning, isPaused, onComplete]);
+  }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -625,11 +626,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     onStop();
   };
 
-  const getProgressPercentage = () => {
-    const totalSeconds = totalHours * 3600 + totalMinutes * 60;
-    return ((totalSeconds - timeLeft) / totalSeconds) * 100;
-  };
-
   if (!visible) return null;
 
   return (
@@ -648,7 +644,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                 styles.progressFill, 
                 { 
                   backgroundColor: mode.color,
-                  width: `${getProgressPercentage()}%` 
+                  width: `${progressPercentage}%` 
                 }
               ]} 
             />
@@ -657,35 +653,55 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
         {/* Circular Timer Display */}
         <View style={styles.circularTimerContainer}>
+          {/* Body Focus Set Counter - only show for body mode */}
+          {mode.id === 'body' && (
+            <View style={styles.setCounterContainer}>
+              <Text style={[styles.setCounterLabel, { color: mode.color }]}>SETS</Text>
+              <View style={styles.setCounterRow}>
+                <TouchableOpacity 
+                  style={[styles.setCounterButton, { borderColor: mode.color }]}
+                  onPress={handleSetIncrement}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.setCounterValue, { color: mode.color }]}>{setCount}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.setResetButton, { backgroundColor: mode.color }]}
+                  onPress={handleSetReset}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.setResetButtonText}>RESET</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
           {/* Progress Circle */}
           <View style={styles.progressCircle}>
-            <View style={[styles.progressRing, { borderColor: `${mode.color}40` }]}>
-              {/* Progress arc - animated implementation */}
-              <Animated.View 
-                style={[
-                  styles.progressArc,
-                  { 
-                    borderColor: mode.color,
-                    borderWidth: 6,
-                    shadowColor: mode.color,
-                    shadowOpacity: 0.5,
-                    shadowRadius: 10,
-                    elevation: 8,
-                    transform: [
-                      {
-                        rotate: progressAnimation.interpolate({
-                          inputRange: [0, 100],
-                          outputRange: ['-90deg', '270deg'],
-                        })
-                      },
-                      {
-                        scale: pulseAnimation
-                      }
-                    ]
-                  }
-                ]}
+            <Svg width={240} height={240} style={styles.progressSvg}>
+              {/* Background circle - gray */}
+              <Circle
+                cx={120}
+                cy={120}
+                r={110}
+                stroke="#333333"
+                strokeWidth={8}
+                fill="transparent"
               />
-            </View>
+              {/* Progress circle - colored based on mode */}
+              <Circle
+                cx={120}
+                cy={120}
+                r={110}
+                stroke={mode.color}
+                strokeWidth={8}
+                fill="transparent"
+                strokeDasharray={`${2 * Math.PI * 110}`}
+                strokeDashoffset={`${2 * Math.PI * 110 * (1 - progressPercentage / 100)}`}
+                strokeLinecap="round"
+                transform="rotate(-90 120 120)"
+              />
+            </Svg>
             
             {/* Time Display */}
             <View style={styles.timeDisplayContainer}>
@@ -1033,5 +1049,56 @@ const styles = StyleSheet.create({
   },
   simpleDigitTextSmall: {
     fontSize: 28,
+  },
+  // Set counter styles for Body Focus mode
+  setCounterContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+  },
+  setCounterLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: theme.spacing.xs,
+    textTransform: 'uppercase',
+  },
+  setCounterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+  },
+  setCounterButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  setCounterValue: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    fontFamily: 'monospace',
+  },
+  setResetButton: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  setResetButtonText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  // SVG progress circle styles
+  progressSvg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
 });
