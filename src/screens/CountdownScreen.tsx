@@ -7,10 +7,13 @@ import {
   Animated,
   Dimensions,
   StatusBar,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
+import BackgroundTimerService from '../services/BackgroundTimerService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -159,70 +162,66 @@ interface FlipDigitProps {
 
 const FlipDigit: React.FC<FlipDigitProps> = ({ digit, nextDigit, color, isFlipping }) => {
   const flipAnimation = useRef(new Animated.Value(0)).current;
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (isFlipping) {
       flipAnimation.setValue(0);
-      Animated.timing(flipAnimation, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }).start();
+      scaleAnimation.setValue(1);
+      
+      Animated.parallel([
+        Animated.timing(flipAnimation, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.sequence([
+          Animated.timing(scaleAnimation, {
+            toValue: 1.1,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnimation, {
+            toValue: 1,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
     }
-  }, [isFlipping, flipAnimation]);
+  }, [isFlipping, flipAnimation, scaleAnimation]);
 
   const topRotation = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: ['0deg', '-90deg', '-90deg'],
+    extrapolate: 'clamp',
   });
 
   const bottomRotation = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: ['90deg', '90deg', '0deg'],
+    extrapolate: 'clamp',
   });
 
   const topOpacity = flipAnimation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 0, 0],
+    inputRange: [0, 0.4, 0.6, 1],
+    outputRange: [1, 1, 0, 0],
+    extrapolate: 'clamp',
   });
 
   const bottomOpacity = flipAnimation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 0, 1],
+    inputRange: [0, 0.4, 0.6, 1],
+    outputRange: [0, 0, 1, 1],
+    extrapolate: 'clamp',
   });
 
   return (
-    <View style={styles.digitContainer}>
-      {/* Top half - current digit */}
-      <Animated.View 
-        style={[
-          styles.digitHalf,
-          styles.digitTop,
-          { backgroundColor: color },
-          {
-            transform: [{ rotateX: topRotation }],
-            opacity: topOpacity,
-          },
-        ]}
-      >
-        <Text style={styles.digitText}>{digit}</Text>
-      </Animated.View>
-
-      {/* Bottom half - next digit */}
-      <Animated.View 
-        style={[
-          styles.digitHalf,
-          styles.digitBottom,
-          { backgroundColor: color },
-          {
-            transform: [{ rotateX: bottomRotation }],
-            opacity: bottomOpacity,
-          },
-        ]}
-      >
-        <Text style={styles.digitText}>{nextDigit}</Text>
-      </Animated.View>
-
+    <Animated.View 
+      style={[
+        styles.digitContainer,
+        { transform: [{ scale: scaleAnimation }] }
+      ]}
+    >
       {/* Static bottom half - current digit */}
       <View style={[styles.digitHalf, styles.digitBottom, { backgroundColor: color }]}>
         <Text style={styles.digitText}>{digit}</Text>
@@ -232,7 +231,39 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, nextDigit, color, isFlippi
       <View style={[styles.digitHalf, styles.digitTop, { backgroundColor: color }]}>
         <Text style={styles.digitText}>{nextDigit}</Text>
       </View>
-    </View>
+
+      {/* Animated top half - current digit flipping down */}
+      <Animated.View 
+        style={[
+          styles.digitHalf,
+          styles.digitTop,
+          { backgroundColor: color },
+          {
+            transform: [{ rotateX: topRotation }],
+            opacity: topOpacity,
+            zIndex: 2,
+          },
+        ]}
+      >
+        <Text style={styles.digitText}>{digit}</Text>
+      </Animated.View>
+
+      {/* Animated bottom half - next digit flipping up */}
+      <Animated.View 
+        style={[
+          styles.digitHalf,
+          styles.digitBottom,
+          { backgroundColor: color },
+          {
+            transform: [{ rotateX: bottomRotation }],
+            opacity: bottomOpacity,
+            zIndex: 2,
+          },
+        ]}
+      >
+        <Text style={styles.digitText}>{nextDigit}</Text>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
@@ -250,6 +281,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [prevTime, setPrevTime] = useState({ h1: '0', h2: '0', m1: '0', m2: '0', s1: '0', s2: '0' });
   const [isFlipping, setIsFlipping] = useState({ h1: false, h2: false, m1: false, m2: false, s1: false, s2: false });
+  const [startTime] = useState(Date.now());
   const [selectedQuote] = useState(() => {
     // Select random quote based on mode
     const quotes = FOCUS_QUOTES[mode.id as keyof typeof FOCUS_QUOTES] || FOCUS_QUOTES.meditation;
@@ -260,8 +292,36 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   useEffect(() => {
     StatusBar.setHidden(true);
-    return () => StatusBar.setHidden(false);
-  }, []);
+    
+    // Keep screen awake during focus session
+    activateKeepAwake();
+    
+    // Initialize background timer and notifications
+    const initializeBackgroundTimer = async () => {
+      await BackgroundTimerService.requestPermissions();
+      
+      const timerState = {
+        id: `timer_${startTime}`,
+        startTime,
+        duration: totalHours * 3600 + totalMinutes * 60,
+        isPaused: false,
+        isRunning: true,
+        mode: {
+          title: mode.title,
+          color: mode.color,
+        },
+      };
+      
+      await BackgroundTimerService.startTimer(timerState);
+    };
+    
+    initializeBackgroundTimer();
+    
+    return () => {
+      StatusBar.setHidden(false);
+      deactivateKeepAwake();
+    };
+  }, [startTime, totalHours, totalMinutes, mode]);
 
   useEffect(() => {
     const pulse = () => {
@@ -280,6 +340,33 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     };
     pulse();
   }, [pulseAnimation]);
+
+  // Handle app state changes for background timer sync
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        // App came to foreground - sync with background timer
+        const remaining = await BackgroundTimerService.getRemainingTime();
+        if (remaining > 0) {
+          setTimeLeft(remaining);
+        } else if (remaining === 0 && isRunning) {
+          // Timer completed in background
+          setIsRunning(false);
+          setTimeLeft(0);
+          onComplete();
+        }
+      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
+        // App went to background - update background timer
+        await BackgroundTimerService.updateTimer({
+          isPaused,
+          isRunning,
+        });
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription?.remove();
+  }, [isPaused, isRunning, onComplete]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -337,13 +424,22 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     }, 600);
   }, [timeLeft]);
 
-  const handlePause = () => {
-    setIsPaused(!isPaused);
+  const handlePause = async () => {
+    const newPausedState = !isPaused;
+    setIsPaused(newPausedState);
+    
+    // Update background timer
+    await BackgroundTimerService.updateTimer({ isPaused: newPausedState });
+    
     onPause();
   };
 
-  const handleStop = () => {
+  const handleStop = async () => {
     setIsRunning(false);
+    
+    // Stop background timer
+    await BackgroundTimerService.stopTimer();
+    
     onStop();
   };
 

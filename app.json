@@ -36,17 +36,27 @@
             "newArchEnabled": false
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#14B8A6"
+        }
       ]
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kigen.app"
+      "bundleIdentifier": "com.kigen.app",
+      "backgroundModes": ["background-processing", "background-fetch"]
     },
     "android": {
       "package": "com.kigen.app",
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS",
-        "android.permission.SYSTEM_ALERT_WINDOW"
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.WAKE_LOCK"
       ]
     },
     "extra": {
