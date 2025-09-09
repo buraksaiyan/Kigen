@@ -124,8 +124,11 @@ export class RatingSystem {
 
   // Calculate physical points
   static calculatePhysicalPoints(bodyFocusMinutes: number): number {
-    // +20 pts per 30 minutes of body focus
-    return Math.floor(bodyFocusMinutes / 30) * 20;
+    // +20 pts per 30 minutes of body focus (proportional calculation)
+    // Examples: 15 min = 10 pts, 30 min = 20 pts, 45 min = 30 pts
+    const pointsPerMinute = 20 / 30; // 0.666... points per minute
+    const totalPoints = bodyFocusMinutes * pointsPerMinute;
+    return Math.ceil(totalPoints); // Round up to integer
   }
 
   // Calculate overall rating (mean of all stats)
