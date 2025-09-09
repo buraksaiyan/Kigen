@@ -46,8 +46,8 @@ const STORAGE_KEYS = {
 class FocusSessionService {
   // Calculate points based on session duration and completion
   private calculatePoints(actualMinutes: number, completed: boolean, mode: string): number {
-    // Minimum threshold - must focus for at least 6 minutes to get any points
-    if (actualMinutes < 6) {
+    // Minimum threshold - must focus for at least 5 minutes to get any points
+    if (actualMinutes < 5) {
       return 0;
     }
 
@@ -129,7 +129,7 @@ class FocusSessionService {
       session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
 
       // Only save to history if minimum time threshold is met
-      if (actualMinutes >= 6) {
+      if (actualMinutes >= 5) {
         await this.saveFocusSession(session);
         await this.updateDailyPoints(session.pointsEarned);
         await this.updateSessionStats(session);
@@ -146,6 +146,48 @@ class FocusSessionService {
       await AsyncStorage.removeItem('@kigen_current_session');
     } catch (error) {
       console.error('Error completing focus session:', error);
+      throw error;
+    }
+  }
+
+  // Early finish session (awards points based on time completed)
+  async earlyFinishSession(sessionId: string): Promise<void> {
+    await this.completeSession(sessionId, false); // Mark as not fully completed but award points
+  }
+
+  // Abort session (no points awarded)
+  async abortSession(sessionId: string): Promise<void> {
+    try {
+      const currentSessionData = await AsyncStorage.getItem('@kigen_current_session');
+      if (!currentSessionData) {
+        console.error('No current session found');
+        return;
+      }
+
+      const session: FocusSession = JSON.parse(currentSessionData);
+      const endTime = new Date().toISOString();
+      const actualMinutes = Math.floor(
+        (new Date(endTime).getTime() - new Date(session.startTime).getTime()) / (1000 * 60)
+      );
+
+      // Update session with actual time spent but no points
+      session.endTime = endTime;
+      session.completed = false;
+      session.actualDuration = actualMinutes;
+      session.pointsEarned = 0; // No points for aborted sessions
+
+      // Always save aborted sessions to history for tracking
+      await this.saveFocusSession(session);
+      
+      // Update aborted sessions count in stats (negative impact on discipline)
+      await this.updateSessionStats(session);
+      
+      console.log(`Focus session aborted: ${actualMinutes} minutes, no points earned`);
+
+      // Clear current session
+      await AsyncStorage.removeItem('@kigen_current_session');
+    } catch (error) {
+      console.error('Error aborting focus session:', error);
       throw error;
     }
   }

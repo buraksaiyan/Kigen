@@ -38,6 +38,8 @@ interface CountdownScreenProps {
   onComplete: () => void;
   onPause: () => void;
   onStop: () => void;
+  onEarlyFinish: () => void;
+  onAbort: () => void;
 }
 
 // Mode-specific quote databases
@@ -426,6 +428,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   onComplete,
   onPause,
   onStop,
+  onEarlyFinish,
+  onAbort,
 }) => {
   const [timeLeft, setTimeLeft] = useState(totalHours * 3600 + totalMinutes * 60);
   const [isRunning, setIsRunning] = useState(true);
@@ -821,14 +825,25 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
         {/* Controls */}
         <View style={styles.controls}>
+          {/* Small Emergency Stop/Pause Button */}
           <TouchableOpacity
-            style={[styles.controlButton, styles.secondaryButton]}
-            onPress={handleStop}
+            style={[styles.smallControlButton, { borderColor: mode.color }]}
+            onPress={onStop}
             activeOpacity={0.8}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#FFFFFF' }]}>Stop</Text>
+            <Text style={[styles.smallButtonText, { color: mode.color }]}>⏸</Text>
           </TouchableOpacity>
 
+          {/* Abort Button */}
+          <TouchableOpacity
+            style={[styles.controlButton, styles.abortButton]}
+            onPress={onAbort}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.secondaryButtonText, { color: '#FF4444' }]}>Abort</Text>
+          </TouchableOpacity>
+
+          {/* Main Pause/Resume Button */}
           <TouchableOpacity
             style={[styles.controlButton, { backgroundColor: mode.color, borderRadius: 25 }]}
             onPress={handlePause}
@@ -837,6 +852,15 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
               {isPaused ? 'Resume' : 'Pause'}
             </Text>
+          </TouchableOpacity>
+
+          {/* Early Finish Button */}
+          <TouchableOpacity
+            style={[styles.controlButton, styles.earlyFinishButton]}
+            onPress={onEarlyFinish}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.secondaryButtonText, { color: '#22C55E' }]}>Early Finish</Text>
           </TouchableOpacity>
         </View>
 
@@ -974,16 +998,43 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: theme.spacing.lg,
+    alignItems: 'center',
+    gap: theme.spacing.sm,
     marginBottom: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.md,
   },
-  controlButton: {
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.xl,
-    borderRadius: 25,
-    minWidth: 120,
+  smallControlButton: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    borderWidth: 2,
+    backgroundColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  smallButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  controlButton: {
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: 20,
+    minWidth: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    maxWidth: 120,
+  },
+  abortButton: {
+    backgroundColor: 'rgba(255,68,68,0.1)',
+    borderWidth: 1,
+    borderColor: '#FF4444',
+  },
+  earlyFinishButton: {
+    backgroundColor: 'rgba(34,197,94,0.1)',
+    borderWidth: 1,
+    borderColor: '#22C55E',
   },
   primaryButton: {
     shadowColor: '#000',

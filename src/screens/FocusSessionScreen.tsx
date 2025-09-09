@@ -182,6 +182,46 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
+  const handleEarlyFinish = async () => {
+    try {
+      if (currentSessionId) {
+        await focusSessionService.earlyFinishSession(currentSessionId);
+        console.log('Focus session finished early with points!', { 
+          mode: selectedMode?.title, 
+          goal: selectedGoal?.title 
+        });
+        
+        // Notify dashboard that a session has completed (to refresh stats)
+        onSessionComplete?.();
+      }
+    } catch (error) {
+      console.error('Error early finishing focus session:', error);
+    } finally {
+      // Reset all states
+      setShowCountdown(false);
+      setSelectedMode(null);
+      setSelectedGoal(null);
+      setCurrentSessionId(null);
+    }
+  };
+
+  const handleAbort = async () => {
+    try {
+      if (currentSessionId) {
+        await focusSessionService.abortSession(currentSessionId);
+        console.log('Focus session aborted - no points awarded');
+      }
+    } catch (error) {
+      console.error('Error aborting focus session:', error);
+    } finally {
+      // Reset all states
+      setShowCountdown(false);
+      setSelectedMode(null);
+      setSelectedGoal(null);
+      setCurrentSessionId(null);
+    }
+  };
+
   const handleSetupClose = () => {
     setShowSetup(false);
     setSelectedMode(null);
@@ -202,6 +242,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}
             onStop={handleCountdownStop}
+            onEarlyFinish={handleEarlyFinish}
+            onAbort={handleAbort}
           />
         ) : (
           <>
