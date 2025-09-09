@@ -65,7 +65,7 @@ const focusModes: FocusMode[] = [
     id: 'body',
     title: 'Body Focus',
     subtitle: 'Physical Training',
-    color: '#EC4899',
+    color: '#7C2D42',
     description: 'Focus on physical training and body awareness exercises.',
   },
   {

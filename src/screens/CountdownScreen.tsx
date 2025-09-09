@@ -399,79 +399,18 @@ interface FlipDigitProps {
   nextDigit: string;
   color: string;
   isFlipping: boolean;
-  size?: 'large' | 'small'; // New prop for different sizes
+  size?: 'large' | 'small';
 }
 
-const FlipDigit: React.FC<FlipDigitProps> = ({ digit, nextDigit, color, isFlipping, size = 'large' }) => {
-  const flipAnimation = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (isFlipping) {
-      flipAnimation.setValue(0);
-      Animated.timing(flipAnimation, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [isFlipping, flipAnimation]);
-
-  const topRotation = flipAnimation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['0deg', '-90deg', '-90deg'],
-    extrapolate: 'clamp',
-  });
-
-  const bottomRotation = flipAnimation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['90deg', '90deg', '0deg'],
-    extrapolate: 'clamp',
-  });
-
+// Simple digital display without flip animation
+const SimpleDigit: React.FC<{ digit: string; size?: 'large' | 'small' }> = ({ digit, size = 'large' }) => {
   return (
-    <View style={[styles.digitContainer, size === 'small' ? styles.digitContainerSmall : styles.digitContainerLarge]}>
-      {/* Main static digit - what user normally sees */}
-      <View style={[styles.digitCard, { backgroundColor: color }, size === 'small' ? styles.digitCardSmall : styles.digitCardLarge]}>
-        <Text style={[styles.digitText, size === 'small' ? styles.digitTextSmall : styles.digitTextLarge]}>{isFlipping ? nextDigit : digit}</Text>
-      </View>
-      
-      {/* Flip animation overlay - only during flip */}
-      {isFlipping && (
-        <View style={styles.flipContainer}>
-          {/* Top half flipping */}
-          <Animated.View 
-            style={[
-              styles.digitHalf,
-              styles.digitTop,
-              { backgroundColor: color },
-              size === 'small' ? styles.digitHalfSmall : styles.digitHalfLarge,
-              {
-                transform: [{ rotateX: topRotation }],
-                zIndex: 3,
-              },
-            ]}
-          >
-            <Text style={[styles.digitText, size === 'small' ? styles.digitTextSmall : styles.digitTextLarge]}>{digit}</Text>
-          </Animated.View>
-
-          {/* Bottom half flipping */}
-          <Animated.View 
-            style={[
-              styles.digitHalf,
-              styles.digitBottom,
-              { backgroundColor: color },
-              size === 'small' ? styles.digitHalfSmall : styles.digitHalfLarge,
-              {
-                transform: [{ rotateX: bottomRotation }],
-                zIndex: 3,
-              },
-            ]}
-          >
-            <Text style={[styles.digitText, size === 'small' ? styles.digitTextSmall : styles.digitTextLarge]}>{nextDigit}</Text>
-          </Animated.View>
-        </View>
-      )}
-    </View>
+    <Text style={[
+      styles.simpleDigitText, 
+      size === 'small' ? styles.simpleDigitTextSmall : styles.simpleDigitTextLarge
+    ]}>
+      {digit}
+    </Text>
   );
 };
 
@@ -487,16 +426,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const [timeLeft, setTimeLeft] = useState(totalHours * 3600 + totalMinutes * 60);
   const [isRunning, setIsRunning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const [prevTime, setPrevTime] = useState({ h1: '0', h2: '0', m1: '0', m2: '0', s1: '0', s2: '0' });
-  const [isFlipping, setIsFlipping] = useState({ h1: false, h2: false, m1: false, m2: false, s1: false, s2: false });
   const [startTime] = useState(Date.now());
   const [selectedQuote] = useState(() => {
     // Select random quote based on mode
     const quotes = FOCUS_QUOTES[mode.id as keyof typeof FOCUS_QUOTES] || FOCUS_QUOTES.meditation;
     return quotes[Math.floor(Math.random() * quotes.length)];
   });
-
-  const pulseAnimation = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -512,24 +447,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
       deactivateKeepAwake();
     };
   }, []);
-
-  useEffect(() => {
-    const pulse = () => {
-      Animated.sequence([
-        Animated.timing(pulseAnimation, {
-          toValue: 1.05,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnimation, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ]).start(() => pulse());
-    };
-    pulse();
-  }, [pulseAnimation]);
 
   // Show notification when timer starts
   useEffect(() => {
@@ -609,26 +526,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   const currentTime = formatTime(timeLeft);
 
-  useEffect(() => {
-    // Check for digit changes to trigger flip animations
-    const newFlipping = {
-      h1: currentTime.h1 !== prevTime.h1,
-      h2: currentTime.h2 !== prevTime.h2,
-      m1: currentTime.m1 !== prevTime.m1,
-      m2: currentTime.m2 !== prevTime.m2,
-      s1: currentTime.s1 !== prevTime.s1,
-      s2: currentTime.s2 !== prevTime.s2,
-    };
-
-    setIsFlipping(newFlipping);
-    setPrevTime(currentTime);
-
-    // Reset flipping state after animation
-    setTimeout(() => {
-      setIsFlipping({ h1: false, h2: false, m1: false, m2: false, s1: false, s2: false });
-    }, 600);
-  }, [timeLeft]);
-
   const handlePause = () => {
     const newPausedState = !isPaused;
     setIsPaused(newPausedState);
@@ -648,7 +545,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   if (!visible) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: '#000000' }]}>
       <KigenKanjiBackground />
       
       <SafeAreaView style={styles.safeArea}>
@@ -670,66 +567,51 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           </View>
         </View>
 
-        {/* Zen Clock Display */}
-        <Animated.View 
-          style={[
-            styles.clockContainer,
-            { transform: [{ scale: pulseAnimation }] }
-          ]}
-        >
-          <View style={styles.timeRow}>
-            <FlipDigit 
-              digit={prevTime.h1} 
-              nextDigit={currentTime.h1} 
-              color={mode.color} 
-              isFlipping={isFlipping.h1}
-              size="large"
-            />
-            <FlipDigit 
-              digit={prevTime.h2} 
-              nextDigit={currentTime.h2} 
-              color={mode.color} 
-              isFlipping={isFlipping.h2}
-              size="large"
-            />
-            <Text style={[styles.separatorLarge, { color: mode.color }]}>:</Text>
-            <FlipDigit 
-              digit={prevTime.m1} 
-              nextDigit={currentTime.m1} 
-              color={mode.color} 
-              isFlipping={isFlipping.m1}
-              size="large"
-            />
-            <FlipDigit 
-              digit={prevTime.m2} 
-              nextDigit={currentTime.m2} 
-              color={mode.color} 
-              isFlipping={isFlipping.m2}
-              size="large"
-            />
-            <Text style={[styles.separatorSmall, { color: mode.color }]}>:</Text>
-            <FlipDigit 
-              digit={prevTime.s1} 
-              nextDigit={currentTime.s1} 
-              color={mode.color} 
-              isFlipping={isFlipping.s1}
-              size="small"
-            />
-            <FlipDigit 
-              digit={prevTime.s2} 
-              nextDigit={currentTime.s2} 
-              color={mode.color} 
-              isFlipping={isFlipping.s2}
-              size="small"
-            />
+        {/* Circular Timer Display */}
+        <View style={styles.circularTimerContainer}>
+          {/* Progress Circle */}
+          <View style={styles.progressCircle}>
+            <View style={[styles.progressRing, { borderColor: `${mode.color}40` }]}>
+              {/* Progress arc - proper implementation */}
+              <View 
+                style={[
+                  styles.progressArc,
+                  { 
+                    borderColor: mode.color,
+                    borderWidth: 6,
+                    shadowColor: mode.color,
+                    shadowOpacity: 0.5,
+                    shadowRadius: 10,
+                    elevation: 8,
+                    transform: [{ rotate: `${-90 + (getProgressPercentage() / 100) * 360}deg` }]
+                  }
+                ]}
+              />
+            </View>
+            
+            {/* Time Display */}
+            <View style={styles.timeDisplayContainer}>
+              {/* Hours and Minutes - Large */}
+              <View style={styles.primaryTimeContainer}>
+                <Text style={[styles.primaryTimeText, { color: '#FFFFFF' }]}>
+                  {currentTime.h1}{currentTime.h2}:{currentTime.m1}{currentTime.m2}
+                </Text>
+                <View style={styles.primaryLabelsContainer}>
+                  <Text style={styles.primaryLabel}>HOURS</Text>
+                  <Text style={styles.primaryLabel}>MINUTES</Text>
+                </View>
+              </View>
+              
+              {/* Seconds - Small */}
+              <View style={styles.secondaryTimeContainer}>
+                <Text style={[styles.secondaryTimeText, { color: mode.color }]}>
+                  {currentTime.s1}{currentTime.s2}
+                </Text>
+                <Text style={styles.secondaryLabel}>SECONDS</Text>
+              </View>
+            </View>
           </View>
-          
-          <View style={styles.timeLabels}>
-            <Text style={styles.timeLabelLarge}>HOURS</Text>
-            <Text style={styles.timeLabelLarge}>MINUTES</Text>
-            <Text style={styles.timeLabelSmall}>SECONDS</Text>
-          </View>
-        </Animated.View>
+        </View>
 
         {/* Controls */}
         <View style={styles.controls}>
@@ -738,15 +620,15 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             onPress={handleStop}
             activeOpacity={0.8}
           >
-            <Text style={styles.secondaryButtonText}>Stop</Text>
+            <Text style={[styles.secondaryButtonText, { color: '#FFFFFF' }]}>Stop</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.controlButton, styles.primaryButton, { backgroundColor: mode.color }]}
+            style={[styles.controlButton, { backgroundColor: mode.color, borderRadius: 25 }]}
             onPress={handlePause}
             activeOpacity={0.8}
           >
-            <Text style={styles.primaryButtonText}>
+            <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
               {isPaused ? 'Resume' : 'Pause'}
             </Text>
           </TouchableOpacity>
@@ -892,24 +774,25 @@ const styles = StyleSheet.create({
   controlButton: {
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.xl,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: 25,
     minWidth: 120,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButton: {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   secondaryButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderWidth: 2,
-    borderColor: theme.colors.text.secondary,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   primaryButtonText: {
     ...theme.typography.bodyLarge,
@@ -928,14 +811,14 @@ const styles = StyleSheet.create({
   },
   quoteText: {
     ...theme.typography.body,
-    color: theme.colors.text.secondary,
+    color: 'rgba(255,255,255,0.9)',
     textAlign: 'center',
     fontStyle: 'italic',
     marginBottom: theme.spacing.sm,
   },
   quoteAuthor: {
     ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
+    color: 'rgba(255,255,255,0.7)',
     textAlign: 'center',
   },
   digitCard: {
@@ -954,34 +837,98 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  // Large digit styles (for hours and minutes)
-  digitContainerLarge: {
-    width: 80,
-    height: 100,
+  // New circular timer styles
+  circularTimerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xl,
   },
-  digitCardLarge: {
-    width: 80,
-    height: 100,
+  progressCircle: {
+    width: 350,
+    height: 350,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
-  digitTextLarge: {
+  progressRing: {
+    position: 'absolute',
+    width: 330,
+    height: 330,
+    borderRadius: 165,
+    borderWidth: 6,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  progressArc: {
+    position: 'absolute',
+    width: 330,
+    height: 330,
+    borderRadius: 165,
+    borderWidth: 6,
+    borderColor: '#FFFFFF',
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
+  timeDisplayContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2,
+  },
+  primaryTimeContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  primaryTimeText: {
+    fontSize: 64,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontFamily: 'monospace',
+    letterSpacing: 2,
+  },
+  primaryLabelsContainer: {
+    flexDirection: 'row',
+    marginTop: theme.spacing.xs,
+    gap: theme.spacing.lg,
+  },
+  primaryLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  secondaryTimeContainer: {
+    alignItems: 'center',
+    marginTop: theme.spacing.sm,
+  },
+  secondaryTimeText: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  secondaryLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  // Simple text styles for backup
+  simpleDigitText: {
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  simpleDigitTextLarge: {
     fontSize: 48,
   },
-  digitHalfLarge: {
-    height: 50,
-  },
-  // Small digit styles (for seconds)
-  digitContainerSmall: {
-    width: 50,
-    height: 70,
-  },
-  digitCardSmall: {
-    width: 50,
-    height: 70,
-  },
-  digitTextSmall: {
+  simpleDigitTextSmall: {
     fontSize: 28,
-  },
-  digitHalfSmall: {
-    height: 35,
   },
 });
