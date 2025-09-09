@@ -1098,7 +1098,9 @@ const styles = StyleSheet.create({
   // SVG progress circle styles
   progressSvg: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    top: '50%',
+    left: '50%',
+    marginTop: -120, // Half of SVG height (240/2)
+    marginLeft: -120, // Half of SVG width (240/2)
   },
 });

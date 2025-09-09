@@ -37,6 +37,7 @@ interface FocusSessionScreenProps {
   visible: boolean;
   onClose: () => void;
   onOpenGoals?: () => void;
+  onSessionComplete?: () => void; // Callback for when a session completes
 }
 
 const focusModes: FocusMode[] = [
@@ -77,7 +78,12 @@ const focusModes: FocusMode[] = [
   },
 ];
 
-export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible, onClose, onOpenGoals }) => {
+export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ 
+  visible, 
+  onClose, 
+  onOpenGoals,
+  onSessionComplete 
+}) => {
   const [selectedMode, setSelectedMode] = useState<FocusMode | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -140,6 +146,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible,
           mode: selectedMode?.title, 
           goal: selectedGoal?.title 
         });
+        
+        // Notify dashboard that a session has completed (to refresh stats)
+        onSessionComplete?.();
       }
     } catch (error) {
       console.error('Error completing focus session:', error);

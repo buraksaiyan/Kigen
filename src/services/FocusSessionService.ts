@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserStatsService } from './userStatsService';
 
 interface FocusSession {
   id: string;
@@ -132,6 +133,9 @@ class FocusSessionService {
         await this.saveFocusSession(session);
         await this.updateDailyPoints(session.pointsEarned);
         await this.updateSessionStats(session);
+        
+        // Update UserStatsService with the completed session
+        await this.updateUserStats(session, actualMinutes);
         
         console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned`);
       } else {
@@ -414,6 +418,42 @@ class FocusSessionService {
     } catch (error) {
       console.error('Error getting today\'s summary:', error);
       return { sessions: 0, minutes: 0, points: 0, completedSessions: 0 };
+    }
+  }
+
+  // Update UserStatsService with completed session data
+  private async updateUserStats(session: FocusSession, actualMinutes: number): Promise<void> {
+    try {
+      const today = await UserStatsService.getTodayActivity();
+      
+      // Update focus minutes for the specific mode
+      switch(session.mode.id) {
+        case 'flow':
+          today.focusMinutes.flow += actualMinutes;
+          break;
+        case 'executioner':
+          today.focusMinutes.executioner += actualMinutes;
+          break;
+        case 'body':
+          today.focusMinutes.body += actualMinutes;
+          break;
+        case 'meditation':
+          today.focusMinutes.meditation += actualMinutes;
+          break;
+        case 'notech':
+          today.focusMinutes.notech += actualMinutes;
+          break;
+      }
+      
+      // Update completed sessions count
+      today.completedSessions += 1;
+      
+      // Save the updated activity
+      await UserStatsService.updateTodayActivity(today);
+      
+      console.log(`UserStatsService updated: ${session.mode.id} +${actualMinutes} minutes`);
+    } catch (error) {
+      console.error('Error updating UserStatsService:', error);
     }
   }
 }

@@ -233,6 +233,10 @@ export const DashboardScreen: React.FC = () => {
             setIsFocusSessionOpen(false);
             setIsGoalsOpen(true);
           }}
+          onSessionComplete={() => {
+            // Force refresh of stats card when a session completes
+            setRefreshTrigger(prev => prev + 1);
+          }}
         />
 
         <ProgressScreen
