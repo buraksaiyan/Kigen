@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import * as Notifications from 'expo-notifications';
 import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
@@ -162,34 +163,17 @@ interface FlipDigitProps {
 
 const FlipDigit: React.FC<FlipDigitProps> = ({ digit, nextDigit, color, isFlipping }) => {
   const flipAnimation = useRef(new Animated.Value(0)).current;
-  const scaleAnimation = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (isFlipping) {
       flipAnimation.setValue(0);
-      scaleAnimation.setValue(1);
-      
-      Animated.parallel([
-        Animated.timing(flipAnimation, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.sequence([
-          Animated.timing(scaleAnimation, {
-            toValue: 1.1,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scaleAnimation, {
-            toValue: 1,
-            duration: 700,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
+      Animated.timing(flipAnimation, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
     }
-  }, [isFlipping, flipAnimation, scaleAnimation]);
+  }, [isFlipping, flipAnimation]);
 
   const topRotation = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
@@ -203,67 +187,48 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, nextDigit, color, isFlippi
     extrapolate: 'clamp',
   });
 
-  const topOpacity = flipAnimation.interpolate({
-    inputRange: [0, 0.4, 0.6, 1],
-    outputRange: [1, 1, 0, 0],
-    extrapolate: 'clamp',
-  });
-
-  const bottomOpacity = flipAnimation.interpolate({
-    inputRange: [0, 0.4, 0.6, 1],
-    outputRange: [0, 0, 1, 1],
-    extrapolate: 'clamp',
-  });
-
   return (
-    <Animated.View 
-      style={[
-        styles.digitContainer,
-        { transform: [{ scale: scaleAnimation }] }
-      ]}
-    >
-      {/* Static bottom half - current digit */}
-      <View style={[styles.digitHalf, styles.digitBottom, { backgroundColor: color }]}>
-        <Text style={styles.digitText}>{digit}</Text>
+    <View style={styles.digitContainer}>
+      {/* Main static digit - what user normally sees */}
+      <View style={[styles.digitCard, { backgroundColor: color }]}>
+        <Text style={styles.digitText}>{isFlipping ? nextDigit : digit}</Text>
       </View>
+      
+      {/* Flip animation overlay - only during flip */}
+      {isFlipping && (
+        <View style={styles.flipContainer}>
+          {/* Top half flipping */}
+          <Animated.View 
+            style={[
+              styles.digitHalf,
+              styles.digitTop,
+              { backgroundColor: color },
+              {
+                transform: [{ rotateX: topRotation }],
+                zIndex: 3,
+              },
+            ]}
+          >
+            <Text style={styles.digitText}>{digit}</Text>
+          </Animated.View>
 
-      {/* Static top half - next digit */}
-      <View style={[styles.digitHalf, styles.digitTop, { backgroundColor: color }]}>
-        <Text style={styles.digitText}>{nextDigit}</Text>
-      </View>
-
-      {/* Animated top half - current digit flipping down */}
-      <Animated.View 
-        style={[
-          styles.digitHalf,
-          styles.digitTop,
-          { backgroundColor: color },
-          {
-            transform: [{ rotateX: topRotation }],
-            opacity: topOpacity,
-            zIndex: 2,
-          },
-        ]}
-      >
-        <Text style={styles.digitText}>{digit}</Text>
-      </Animated.View>
-
-      {/* Animated bottom half - next digit flipping up */}
-      <Animated.View 
-        style={[
-          styles.digitHalf,
-          styles.digitBottom,
-          { backgroundColor: color },
-          {
-            transform: [{ rotateX: bottomRotation }],
-            opacity: bottomOpacity,
-            zIndex: 2,
-          },
-        ]}
-      >
-        <Text style={styles.digitText}>{nextDigit}</Text>
-      </Animated.View>
-    </Animated.View>
+          {/* Bottom half flipping */}
+          <Animated.View 
+            style={[
+              styles.digitHalf,
+              styles.digitBottom,
+              { backgroundColor: color },
+              {
+                transform: [{ rotateX: bottomRotation }],
+                zIndex: 3,
+              },
+            ]}
+          >
+            <Text style={styles.digitText}>{nextDigit}</Text>
+          </Animated.View>
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -322,6 +287,34 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     };
     pulse();
   }, [pulseAnimation]);
+
+  // Show notification when timer starts
+  useEffect(() => {
+    if (visible && isRunning && !isPaused) {
+      const showStartNotification = async () => {
+        try {
+          const totalTimeFormatted = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:00`;
+          
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: `${mode.title} Focus Mode Active`,
+              body: `Your ${totalTimeFormatted} focus session has started. Stay focused!`,
+              data: { 
+                sessionId: startTime,
+                mode: mode.title,
+                duration: totalHours * 3600 + totalMinutes * 60 
+              },
+            },
+            trigger: null, // Show immediately
+          });
+        } catch (error) {
+          console.log('Failed to show start notification:', error);
+        }
+      };
+
+      showStartNotification();
+    }
+  }, [visible, isRunning, isPaused, mode.title, totalHours, totalMinutes, startTime]);
 
   // TODO: Re-implement background timer sync after fixing the issues
   // useEffect(() => {
@@ -671,5 +664,21 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.text.tertiary,
     textAlign: 'center',
+  },
+  digitCard: {
+    width: 60,
+    height: 80,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  flipContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
