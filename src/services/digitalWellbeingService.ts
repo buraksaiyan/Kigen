@@ -1,6 +1,7 @@
 import { Platform, Alert } from 'react-native';
 import { nativeUsageTracker } from './nativeUsageTracker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AppUtilsService, { InstalledApp } from './AppUtilsService';
 
 export interface DigitalWellbeingStats {
   totalScreenTime: number;
@@ -390,8 +391,48 @@ class DigitalWellbeingService {
   }
 
   /**
-   * Get display name for app package
+   * Get installed apps with usage data and real icons
    */
+  async getInstalledAppsWithUsage(): Promise<DigitalWellbeingStats['apps']> {
+    try {
+      // Get usage stats
+      const stats = await this.getTodaysStats();
+      if (!stats) return [];
+
+      // Get actual installed apps with icons
+      const installedApps = await AppUtilsService.getInstalledApps();
+      
+      // Merge usage data with app info
+      const appsWithUsage = stats.apps.map(usageApp => {
+        const installedApp = installedApps.find(app => app.packageName === usageApp.packageName);
+        
+        return {
+          ...usageApp,
+          appName: installedApp?.appName || usageApp.appName,
+          icon: installedApp?.icon || usageApp.icon, // Use real icon if available
+        };
+      });
+
+      return appsWithUsage;
+      
+    } catch (error) {
+      console.error('Error getting apps with usage and icons:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get social media apps specifically for monitoring
+   */
+  async getSocialMediaAppsForMonitoring(): Promise<InstalledApp[]> {
+    try {
+      const socialApps = await AppUtilsService.getSocialMediaApps();
+      return socialApps;
+    } catch (error) {
+      console.error('Error getting social media apps:', error);
+      return [];
+    }
+  }
   private getAppDisplayName(packageName: string): string {
     const appNames: { [key: string]: string } = {
       'com.instagram.android': 'Instagram',

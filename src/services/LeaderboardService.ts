@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from './supabase';
 
 interface LeaderboardEntry {
   id: string;
@@ -66,39 +67,105 @@ class LeaderboardService {
     }
   }
 
-  // Sync with global leaderboard (placeholder for Supabase integration)
+  // Sync with global leaderboard (Supabase integration)
   private static async syncWithGlobalLeaderboard(userEntry: LeaderboardEntry): Promise<void> {
     try {
-      // TODO: Implement Supabase integration
-      console.log('Syncing with global leaderboard:', userEntry);
+      // Upsert user data to Supabase leaderboard table
+      const { error } = await supabase
+        .from('leaderboard')
+        .upsert([{
+          user_id: userEntry.id,
+          username: userEntry.username,
+          total_points: userEntry.totalPoints,
+          monthly_points: userEntry.monthlyPoints,
+          weekly_points: userEntry.weeklyPoints,
+          overall_rating: userEntry.overallRating,
+          card_tier: userEntry.cardTier,
+          country: userEntry.country,
+          last_updated: userEntry.lastUpdated
+        }], {
+          onConflict: 'user_id'
+        });
+
+      if (error) {
+        console.error('Error syncing with global leaderboard:', error);
+        return;
+      }
+
+      console.log('Successfully synced user data to global leaderboard');
       
-      // For now, just simulate global leaderboard with mock data
-      const mockGlobalData = await this.getMockGlobalLeaderboard();
-      await this.cacheLeaderboard(mockGlobalData);
+      // Fetch updated global leaderboard and cache it
+      const globalData = await this.fetchGlobalLeaderboardFromSupabase();
+      await this.cacheLeaderboard(globalData);
       
     } catch (error) {
       console.error('Error syncing with global leaderboard:', error);
     }
   }
 
-  // Get global leaderboard (fetch from server)
+  // Fetch global leaderboard from Supabase
+  private static async fetchGlobalLeaderboardFromSupabase(limit: number = 100): Promise<LeaderboardEntry[]> {
+    try {
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .select('*')
+        .order('total_points', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching global leaderboard:', error);
+        return [];
+      }
+
+      // Transform Supabase data to LeaderboardEntry format
+      return data.map(row => ({
+        id: row.user_id,
+        username: row.username,
+        totalPoints: row.total_points,
+        monthlyPoints: row.monthly_points,
+        weeklyPoints: row.weekly_points,
+        overallRating: row.overall_rating,
+        cardTier: row.card_tier,
+        country: row.country,
+        lastUpdated: row.last_updated
+      }));
+
+    } catch (error) {
+      console.error('Error fetching from Supabase:', error);
+      return [];
+    }
+  }
+
+  // Get global leaderboard (fetch from Supabase)
   static async getGlobalLeaderboard(limit: number = 100): Promise<LeaderboardEntry[]> {
     try {
-      // TODO: Replace with actual Supabase call
-      // For now, return cached data with some mock entries
+      // Try to fetch fresh data from Supabase
+      const freshData = await this.fetchGlobalLeaderboardFromSupabase(limit);
+      
+      if (freshData.length > 0) {
+        // Cache the fresh data
+        await this.cacheLeaderboard(freshData);
+        return freshData;
+      }
+      
+      // If Supabase fails, fall back to cached data
       const cached = await this.getCachedLeaderboard();
       if (cached.length > 0) {
         return cached.slice(0, limit);
       }
       
-      // Generate mock data for testing
+      // If everything fails, generate mock data for testing
+      console.warn('Using mock leaderboard data - check Supabase connection');
       const mockData = await this.getMockGlobalLeaderboard();
       await this.cacheLeaderboard(mockData);
       return mockData.slice(0, limit);
       
     } catch (error) {
       console.error('Error getting global leaderboard:', error);
-      return [];
+      
+      // Fall back to cached or mock data
+      const cached = await this.getCachedLeaderboard();
+      return cached.length > 0 ? cached.slice(0, limit) : [];
     }
   }
 
