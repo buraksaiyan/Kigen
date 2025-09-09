@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  PanResponder,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -30,6 +31,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
       useNativeDriver: true,
     }).start();
   }, [isOpen]);
+
+  // Pan responder for swipe gesture
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
+    },
+    onPanResponderMove: (evt, gestureState) => {
+      if (gestureState.dx < 0) {
+        slideAnim.setValue(Math.max(-300, gestureState.dx));
+      }
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      if (gestureState.dx < -100 || gestureState.vx < -0.5) {
+        onClose();
+      } else {
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+  });
 
   const menuItems = [
     { id: 'dashboard', title: 'Dashboard', icon: '' },
@@ -65,6 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
           },
         ]}
         pointerEvents={isOpen ? 'auto' : 'none'}
+        {...panResponder.panHandlers}
       >
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
@@ -158,8 +184,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: theme.spacing.lg,
-    paddingTop: theme.spacing.xl,
+    padding: theme.spacing.md,
+    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
     alignItems: 'center',
@@ -172,16 +199,15 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     flex: 1,
-    paddingTop: theme.spacing.lg,
+    paddingTop: theme.spacing.sm,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.lg,
-    marginHorizontal: theme.spacing.md,
-    marginVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.md,
+    paddingVertical: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
     backgroundColor: 'transparent',
   },
   menuIcon: {
@@ -196,19 +222,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footer: {
-    padding: theme.spacing.lg,
+    padding: theme.spacing.md,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },
   authSection: {
     width: '100%',
-    marginBottom: theme.spacing.md,
-    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    gap: theme.spacing.xs,
   },
   authButton: {
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
     borderRadius: theme.borderRadius.md,
     alignItems: 'center',
   },
@@ -220,8 +246,8 @@ const styles = StyleSheet.create({
   },
   adminButton: {
     backgroundColor: theme.colors.secondary,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
     borderRadius: theme.borderRadius.md,
     alignItems: 'center',
   },
