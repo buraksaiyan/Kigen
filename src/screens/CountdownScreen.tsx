@@ -433,20 +433,29 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     return quotes[Math.floor(Math.random() * quotes.length)];
   });
 
+  // Animated progress value for smooth circle animation
+  const progressAnimation = useRef(new Animated.Value(0)).current;
+  const pulseAnimation = useRef(new Animated.Value(1)).current;
+
   useEffect(() => {
     StatusBar.setHidden(true);
     
     // Keep screen awake during focus session
     activateKeepAwake();
     
-    // Request notification permissions for future use
+    // Register background task and request permissions
     BackgroundTimerService.requestPermissions();
+    BackgroundTimerService.registerBackgroundTask();
     
     return () => {
       StatusBar.setHidden(false);
       deactivateKeepAwake();
+      // Clean up background timer on unmount
+      if (!isRunning) {
+        BackgroundTimerService.stopTimer();
+      }
     };
-  }, []);
+  }, [isRunning]);
 
   // Show notification when timer starts
   useEffect(() => {
@@ -473,8 +482,77 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
       };
 
       showStartNotification();
+      
+      // Start background timer
+      BackgroundTimerService.startTimer({
+        id: startTime.toString(),
+        startTime,
+        duration: totalHours * 3600 + totalMinutes * 60,
+        isPaused: false,
+        isRunning: true,
+        mode: {
+          title: mode.title,
+          color: mode.color,
+        },
+      });
     }
   }, [visible, isRunning, isPaused, mode.title, totalHours, totalMinutes, startTime]);
+
+  // Background state sync
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        // App came back to foreground, sync with background timer
+        try {
+          const backgroundState = await BackgroundTimerService.getTimer();
+          if (backgroundState) {
+            const elapsed = Math.floor((Date.now() - backgroundState.startTime) / 1000);
+            const newTimeLeft = Math.max(0, backgroundState.duration - elapsed);
+            setTimeLeft(newTimeLeft);
+            setIsPaused(backgroundState.isPaused);
+            setIsRunning(backgroundState.isRunning && newTimeLeft > 0);
+          }
+        } catch (error) {
+          console.log('Failed to sync background timer:', error);
+        }
+      }
+    };
+    
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription?.remove();
+  }, []);
+
+  // Animate progress circle smoothly
+  useEffect(() => {
+    const progressPercent = getProgressPercentage();
+    Animated.timing(progressAnimation, {
+      toValue: progressPercent,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
+  }, [timeLeft]);
+
+  // Subtle pulse animation for the progress arc
+  useEffect(() => {
+    const createPulse = () => {
+      Animated.sequence([
+        Animated.timing(pulseAnimation, {
+          toValue: 1.05,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnimation, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => createPulse());
+    };
+    
+    if (isRunning && !isPaused) {
+      createPulse();
+    }
+  }, [isRunning, isPaused]);
 
   // TODO: Re-implement background timer sync after fixing the issues
   // useEffect(() => {
@@ -529,11 +607,21 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const handlePause = () => {
     const newPausedState = !isPaused;
     setIsPaused(newPausedState);
+    
+    // Update background timer state
+    BackgroundTimerService.updateTimer({
+      isPaused: newPausedState,
+    });
+    
     onPause();
   };
 
   const handleStop = () => {
     setIsRunning(false);
+    
+    // Stop background timer
+    BackgroundTimerService.stopTimer();
+    
     onStop();
   };
 
@@ -572,8 +660,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           {/* Progress Circle */}
           <View style={styles.progressCircle}>
             <View style={[styles.progressRing, { borderColor: `${mode.color}40` }]}>
-              {/* Progress arc - proper implementation */}
-              <View 
+              {/* Progress arc - animated implementation */}
+              <Animated.View 
                 style={[
                   styles.progressArc,
                   { 
@@ -583,7 +671,17 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                     shadowOpacity: 0.5,
                     shadowRadius: 10,
                     elevation: 8,
-                    transform: [{ rotate: `${-90 + (getProgressPercentage() / 100) * 360}deg` }]
+                    transform: [
+                      {
+                        rotate: progressAnimation.interpolate({
+                          inputRange: [0, 100],
+                          outputRange: ['-90deg', '270deg'],
+                        })
+                      },
+                      {
+                        scale: pulseAnimation
+                      }
+                    ]
                   }
                 ]}
               />
@@ -858,6 +956,11 @@ const styles = StyleSheet.create({
     borderRadius: 165,
     borderWidth: 6,
     borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   progressArc: {
     position: 'absolute',

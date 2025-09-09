@@ -34,17 +34,19 @@ class BackgroundTimerService {
   // Register background task
   static async registerBackgroundTask() {
     try {
-      // Temporarily disabled to fix immediate completion issue
-      console.log('Background task registration temporarily disabled');
-      return;
-      
       await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data, error, executionInfo }) => {
         if (error) {
           console.error('Background task error:', error);
-          return;
+          return BackgroundFetch.BackgroundFetchResult.Failed;
         }
         
-        await this.checkTimerProgress();
+        try {
+          await this.checkTimerProgress();
+          return BackgroundFetch.BackgroundFetchResult.NewData;
+        } catch (e) {
+          console.error('Background timer check failed:', e);
+          return BackgroundFetch.BackgroundFetchResult.Failed;
+        }
       });
 
       await BackgroundFetch.registerTaskAsync(BACKGROUND_TIMER_TASK, {
