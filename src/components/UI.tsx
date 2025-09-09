@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, TouchableOpacity, ViewStyle, TextStyle, StyleProp } from 'react-native';
 import { theme } from '../config/theme';
 
 interface ButtonProps {
@@ -91,7 +91,7 @@ export const Button: React.FC<ButtonProps> = ({
 
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Card: React.FC<CardProps> = ({ children, style }) => (

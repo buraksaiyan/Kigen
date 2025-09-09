@@ -12,6 +12,8 @@ import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
+import { FocusModeSetupScreen } from './FocusModeSetupScreen';
+import { CountdownScreen } from './CountdownScreen';
 
 interface FocusMode {
   id: string;
@@ -66,11 +68,43 @@ const focusModes: FocusMode[] = [
 
 export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible, onClose }) => {
   const [selectedMode, setSelectedMode] = useState<FocusMode | null>(null);
+  const [showSetup, setShowSetup] = useState(false);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [sessionHours, setSessionHours] = useState(0);
+  const [sessionMinutes, setSessionMinutes] = useState(0);
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
-    // Here you would typically navigate to the focus session setup
-    console.log(`Starting ${mode.title} session`);
+    setShowSetup(true);
+  };
+
+  const handleStartSession = (mode: FocusMode, hours: number, minutes: number) => {
+    setSessionHours(hours);
+    setSessionMinutes(minutes);
+    setShowSetup(false);
+    setShowCountdown(true);
+  };
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
+    setSelectedMode(null);
+    // Here you would typically save the session data and update stats
+    console.log('Focus session completed!');
+  };
+
+  const handleCountdownPause = () => {
+    console.log('Session paused');
+  };
+
+  const handleCountdownStop = () => {
+    setShowCountdown(false);
+    setSelectedMode(null);
+    console.log('Session stopped');
+  };
+
+  const handleSetupClose = () => {
+    setShowSetup(false);
+    setSelectedMode(null);
   };
 
   return (
@@ -118,6 +152,27 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ visible,
             </View>
           </View>
         </ScrollView>
+
+        {/* Setup Screen */}
+        <FocusModeSetupScreen
+          visible={showSetup}
+          mode={selectedMode}
+          onClose={handleSetupClose}
+          onStartSession={handleStartSession}
+        />
+
+        {/* Countdown Screen */}
+        {selectedMode && (
+          <CountdownScreen
+            visible={showCountdown}
+            mode={selectedMode}
+            totalHours={sessionHours}
+            totalMinutes={sessionMinutes}
+            onComplete={handleCountdownComplete}
+            onPause={handleCountdownPause}
+            onStop={handleCountdownStop}
+          />
+        )}
       </SafeAreaView>
     </Modal>
   );
