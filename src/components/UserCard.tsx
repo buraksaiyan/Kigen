@@ -32,6 +32,8 @@ export const UserCard: React.FC<UserCardProps> = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState(profileImage);
   const tierColors = RatingSystem.getCardTierColors(userRating.cardTier);
+  const backgroundImage = RatingSystem.getCardBackgroundImage(userRating.cardTier);
+  const textColor = RatingSystem.getCardTextColor(userRating.cardTier);
 
   const handleImagePress = async () => {
     if (!onImageUpdate) return;
@@ -87,7 +89,7 @@ export const UserCard: React.FC<UserCardProps> = ({
     
     return (
       <View style={styles.statContainer}>
-        <Text style={styles.statLabel}>{label}</Text>
+        <Text style={[styles.statLabel, { color: textColor }]}>{label}</Text>
         <View style={styles.statBarContainer}>
           <View style={styles.statBarBackground}>
             <LinearGradient
@@ -97,7 +99,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               end={{ x: 1, y: 0 }}
             />
           </View>
-          <Text style={styles.statValue}>{value}</Text>
+          <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
         </View>
       </View>
     );
@@ -105,21 +107,21 @@ export const UserCard: React.FC<UserCardProps> = ({
 
   return (
     <View style={styles.cardContainer}>
-      <LinearGradient
-        colors={[tierColors.primary, tierColors.secondary]}
+      <ImageBackground
+        source={backgroundImage}
         style={styles.cardBackground}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        imageStyle={{ borderRadius: 20 }}
+        resizeMode="cover"
       >
         {/* Card Header */}
         <View style={styles.cardHeader}>
           <View style={styles.tierContainer}>
-            <Text style={styles.tierText}>{userRating.cardTier}</Text>
-            {isMonthlyCard && <Text style={styles.monthlyIndicator}>MONTHLY</Text>}
+            <Text style={[styles.tierText, { color: textColor }]}>{userRating.cardTier}</Text>
+            {isMonthlyCard && <Text style={[styles.monthlyIndicator, { color: textColor }]}>MONTHLY</Text>}
           </View>
           <View style={styles.overallRatingContainer}>
-            <Text style={styles.overallRatingNumber}>{userRating.overallRating}</Text>
-            <Text style={styles.overallRatingLabel}>OVR</Text>
+            <Text style={[styles.overallRatingNumber, { color: textColor }]}>{userRating.overallRating}</Text>
+            <Text style={[styles.overallRatingLabel, { color: textColor }]}>OVR</Text>
           </View>
         </View>
 
@@ -139,8 +141,8 @@ export const UserCard: React.FC<UserCardProps> = ({
             </View>
           </TouchableOpacity>
           <View style={styles.usernameContainer}>
-            <Text style={styles.username}>{username}</Text>
-            <Text style={styles.totalPoints}>
+            <Text style={[styles.username, { color: textColor }]}>{username}</Text>
+            <Text style={[styles.totalPoints, { color: textColor }]}>
               {isMonthlyCard ? userRating.monthlyPoints : userRating.totalPoints} PTS
             </Text>
           </View>
@@ -164,14 +166,14 @@ export const UserCard: React.FC<UserCardProps> = ({
 
         {/* Card Footer */}
         <View style={styles.cardFooter}>
-          <Text style={styles.footerText}>KIGEN</Text>
+          <Text style={[styles.footerText, { color: textColor }]}>KIGEN</Text>
           <View style={styles.cardTypeIndicator}>
-            <Text style={styles.cardTypeText}>
+            <Text style={[styles.cardTypeText, { color: textColor }]}>
               {isMonthlyCard ? 'MONTHLY CARD' : 'LIFETIME CARD'}
             </Text>
           </View>
         </View>
-      </LinearGradient>
+      </ImageBackground>
 
       {/* Tier glow effect */}
       <View style={[styles.glowEffect, { shadowColor: tierColors.accent }]} />

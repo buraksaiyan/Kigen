@@ -29,6 +29,26 @@ export class RatingSystem {
   private static DAILY_JOURNAL_CAP = 1;
   private static PHONE_USAGE_THRESHOLD = 3; // hours
 
+  // Card background images for each tier
+  static getCardBackgroundImage(tier: CardTier) {
+    const backgrounds = {
+      [CardTier.Bronze]: require('../../assets/images/bronze-card.png'),
+      [CardTier.Silver]: require('../../assets/images/silver-card.png'),
+      [CardTier.Gold]: require('../../assets/images/gold-card.png'),
+      [CardTier.Platinum]: require('../../assets/images/platinum-card.png'),
+      [CardTier.Diamond]: require('../../assets/images/diamond-card.png'),
+      [CardTier.Carbon]: require('../../assets/images/carbon-card.png'),
+      [CardTier.Obsidian]: require('../../assets/images/obsidian-card.png'),
+    };
+    return backgrounds[tier];
+  }
+
+  // Text color for each tier (white for dark backgrounds)
+  static getCardTextColor(tier: CardTier): string {
+    const darkTiers = [CardTier.Carbon, CardTier.Obsidian];
+    return darkTiers.includes(tier) ? '#FFFFFF' : '#000000';
+  }
+
   // Calculate discipline points
   static calculateDisciplinePoints(
     completedSessions: number,
