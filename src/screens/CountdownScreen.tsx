@@ -831,7 +831,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             onPress={onStop}
             activeOpacity={0.8}
           >
-            <Text style={[styles.smallButtonText, { color: mode.color }]}>⏸</Text>
+            <Text style={[styles.smallButtonText, { color: mode.color }]}>Stop</Text>
           </TouchableOpacity>
 
           {/* Abort Button */}

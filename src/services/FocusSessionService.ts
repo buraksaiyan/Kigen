@@ -51,20 +51,14 @@ class FocusSessionService {
       return 0;
     }
 
-    const basePoints = Math.floor(actualMinutes / 5); // 1 point per 5 minutes
-    const completionBonus = completed ? Math.floor(actualMinutes * 0.2) : 0;
+    // Use proportional calculation: +20 pts per 30 minutes (like ratingSystem.ts)
+    const pointsPerMinute = 20 / 30; // 0.666... points per minute
+    const basePoints = actualMinutes * pointsPerMinute;
     
-    // Mode-specific multipliers
-    const modeMultipliers = {
-      'executioner': 1.5, // Higher reward for high-intensity mode
-      'flow': 1.2,
-      'meditation': 1.1,
-      'body': 1.1,
-      'notech': 1.0,
-    };
+    // Completion bonus: extra 20% if fully completed
+    const completionBonus = completed ? basePoints * 0.2 : 0;
     
-    const multiplier = modeMultipliers[mode as keyof typeof modeMultipliers] || 1.0;
-    const totalPoints = (basePoints + completionBonus) * multiplier;
+    const totalPoints = basePoints + completionBonus;
     
     // Round up to keep number as integer
     return Math.ceil(totalPoints);

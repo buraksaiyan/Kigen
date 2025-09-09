@@ -36,7 +36,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   onStartSession,
 }) => {
   const [hours, setHours] = useState('0');
-  const [minutes, setMinutes] = useState('25');
+  const [minutes, setMinutes] = useState('30');
 
   const handleStartSession = () => {
     if (!mode) return;
@@ -53,7 +53,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
 
   const presetTimes = [
     { label: '15 min', hours: 0, minutes: 15 },
-    { label: '25 min', hours: 0, minutes: 25 },
+    { label: '30 min', hours: 0, minutes: 30 },
     { label: '45 min', hours: 0, minutes: 45 },
     { label: '1 hour', hours: 1, minutes: 0 },
     { label: '1.5 hours', hours: 1, minutes: 30 },
