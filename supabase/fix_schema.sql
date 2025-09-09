@@ -1,9 +1,9 @@
 -- ========================================
--- KIGEN APP - FIX DATABASE SCHEMA
+-- KIGEN APP - CLEAN DATABASE SCHEMA
 -- ========================================
--- Run this in Supabase SQL Editor to fix the column name issue
+-- Run this in Supabase SQL Editor to create proper tables
 
--- 1. Drop existing table if it has wrong column names
+-- 1. Drop existing tables if they exist
 DROP TABLE IF EXISTS leaderboard CASCADE;
 DROP TABLE IF EXISTS user_stats CASCADE;
 DROP TABLE IF EXISTS user_profiles CASCADE;
@@ -54,34 +54,20 @@ ALTER TABLE leaderboard ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_stats ENABLE ROW LEVEL SECURITY;
 
--- 6. Create policies to allow public access
-CREATE POLICY "Allow public read on leaderboard" ON leaderboard FOR SELECT USING (true);
-CREATE POLICY "Allow public insert on leaderboard" ON leaderboard FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update on leaderboard" ON leaderboard FOR UPDATE USING (true);
+-- 6. Create policies for public access (you can restrict later)
+CREATE POLICY "Enable read access for all users" ON leaderboard FOR SELECT USING (true);
+CREATE POLICY "Enable insert access for all users" ON leaderboard FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update access for all users" ON leaderboard FOR UPDATE USING (true);
 
-CREATE POLICY "Allow public read on user_profiles" ON user_profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert on user_profiles" ON user_profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update on user_profiles" ON user_profiles FOR UPDATE USING (true);
+CREATE POLICY "Enable read access for all users" ON user_profiles FOR SELECT USING (true);
+CREATE POLICY "Enable insert access for all users" ON user_profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update access for all users" ON user_profiles FOR UPDATE USING (true);
 
-CREATE POLICY "Allow public read on user_stats" ON user_stats FOR SELECT USING (true);
-CREATE POLICY "Allow public insert on user_stats" ON user_stats FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update on user_stats" ON user_stats FOR UPDATE USING (true);
+CREATE POLICY "Enable read access for all users" ON user_stats FOR SELECT USING (true);
+CREATE POLICY "Enable insert access for all users" ON user_stats FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update access for all users" ON user_stats FOR UPDATE USING (true);
 
--- 7. Insert test data with correct column names
-INSERT INTO leaderboard (user_id, username, total_points, monthly_points, weekly_points, overall_rating, card_tier, country) VALUES
-('demo_user_1', 'KigenMaster', 8500, 1200, 340, 89, 'Diamond', 'USA'),
-('demo_user_2', 'FocusNinja', 6200, 850, 220, 78, 'Platinum', 'Canada'),
-('demo_user_3', 'ZenWarrior', 4800, 680, 180, 71, 'Gold', 'UK'),
-('demo_user_4', 'MindfulSoul', 3200, 480, 120, 65, 'Silver', 'Australia'),
-('demo_user_5', 'DisciplineSeeker', 1800, 320, 85, 58, 'Bronze', 'Germany');
-
--- 8. Create indexes for better performance
+-- 7. Create performance indexes
 CREATE INDEX idx_leaderboard_total_points ON leaderboard(total_points DESC);
 CREATE INDEX idx_leaderboard_monthly_points ON leaderboard(monthly_points DESC);
 CREATE INDEX idx_leaderboard_weekly_points ON leaderboard(weekly_points DESC);
-
--- 9. Verify the table structure
-SELECT column_name, data_type, is_nullable 
-FROM information_schema.columns 
-WHERE table_name = 'leaderboard' 
-ORDER BY ordinal_position;
