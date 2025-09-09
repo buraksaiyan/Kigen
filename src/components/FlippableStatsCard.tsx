@@ -211,7 +211,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     return (
       <View style={styles.card}>
         <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.cardContent}>
-          <Text style={styles.loadingText}>Loading FIFA Card...</Text>
+          <Text style={styles.loadingText}>Loading User Stats...</Text>
         </LinearGradient>
       </View>
     );

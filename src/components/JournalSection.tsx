@@ -15,6 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
+import { UserStatsService } from '../services/userStatsService';
 import { Card } from './UI';
 import { KigenKanjiBackground } from './KigenKanjiBackground';
 import { KigenLogo } from './KigenLogo';
@@ -88,6 +89,10 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     setIsLoading(true);
     try {
       await journalStorage.addEntry(newEntry);
+      
+      // Record journal entry for points calculation
+      await UserStatsService.recordJournalEntry();
+      
       setNewEntry('');
       await loadEntries();
       await loadStats();

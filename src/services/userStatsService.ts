@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStats, UserRating, CardTier, RatingSystem } from './ratingSystem';
+import LeaderboardService from './LeaderboardService';
 
 interface UserProfile {
   id: string;
@@ -264,18 +265,29 @@ export class UserStatsService {
     }
 
     await this.saveDailyActivity(today);
+    
+    // Sync with leaderboard after focus session
+    if (completed) {
+      await this.syncUserToLeaderboard();
+    }
   }
 
   static async recordJournalEntry(): Promise<void> {
     const today = await this.getTodayActivity();
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
+    
+    // Sync with leaderboard after updating journal entry
+    await this.syncUserToLeaderboard();
   }
 
   static async recordGoalCompletion(): Promise<void> {
     const today = await this.getTodayActivity();
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
+    
+    // Sync with leaderboard after completing a goal
+    await this.syncUserToLeaderboard();
   }
 
   static async updatePhoneUsage(minutes: number, socialMediaMinutes: number = 0): Promise<void> {
@@ -338,5 +350,34 @@ export class UserStatsService {
     }
     
     return [];
+  }
+
+  // Sync user data to leaderboard
+  static async syncUserToLeaderboard(): Promise<void> {
+    try {
+      const profile = await this.getUserProfile();
+      const rating = await this.getCurrentRating();
+      
+      if (!profile) {
+        console.warn('No user profile found, cannot sync to leaderboard');
+        return;
+      }
+
+      const userData = {
+        username: profile.username,
+        totalPoints: rating.totalPoints,
+        monthlyPoints: rating.monthlyPoints,
+        weeklyPoints: rating.totalPoints, // TODO: Calculate proper weekly points
+        overallRating: rating.overallRating,
+        cardTier: rating.cardTier,
+        country: 'Unknown' // TODO: Get from user profile
+      };
+
+      await LeaderboardService.updateUserData(userData);
+      console.log('✅ Synced user data to leaderboard:', userData);
+      
+    } catch (error) {
+      console.error('❌ Error syncing user to leaderboard:', error);
+    }
   }
 }
