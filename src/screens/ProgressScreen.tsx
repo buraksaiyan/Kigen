@@ -189,7 +189,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
                             {log.completionType === 'completed' 
                               ? 'Completed' 
                               : log.completionType === 'early-finish' 
-                                ? 'Early Finish' 
+                                ? 'Finished Early' 
                                 : 'Aborted'
                             }
                           </Text>

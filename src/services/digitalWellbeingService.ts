@@ -17,6 +17,14 @@ export interface DigitalWellbeingStats {
   lastUpdated: number;
 }
 
+export interface UsageNotificationSettings {
+  enabled: boolean;
+  dailyLimitWarning: boolean; // Warn when approaching 3 hours
+  socialMediaWarning: boolean; // Warn when opening social media apps
+  timeInAppWarning: boolean; // Warn after 10 minutes in certain apps
+  warningApps: string[]; // Package names of apps to monitor
+}
+
 class DigitalWellbeingService {
   private static instance: DigitalWellbeingService;
 
@@ -265,6 +273,140 @@ class DigitalWellbeingService {
     } catch (error) {
       console.error('Error setting screen time goal:', error);
     }
+  }
+
+  /**
+   * Get usage notification settings
+   */
+  async getUsageNotificationSettings(): Promise<UsageNotificationSettings> {
+    try {
+      const stored = await AsyncStorage.getItem('@kigen_usage_notification_settings');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      // Default settings - enabled by default as requested
+      return {
+        enabled: true,
+        dailyLimitWarning: true,
+        socialMediaWarning: true,
+        timeInAppWarning: true,
+        warningApps: [
+          'com.instagram.android',
+          'com.facebook.katana',
+          'com.twitter.android',
+          'com.snapchat.android',
+          'com.zhiliaoapp.musically', // TikTok
+          'com.reddit.frontpage',
+          'com.linkedin.android',
+          'com.pinterest',
+          'com.discord',
+          'com.whatsapp'
+        ]
+      };
+    } catch (error) {
+      console.error('Error getting usage notification settings:', error);
+      return {
+        enabled: true,
+        dailyLimitWarning: true,
+        socialMediaWarning: true,
+        timeInAppWarning: true,
+        warningApps: []
+      };
+    }
+  }
+
+  /**
+   * Update usage notification settings
+   */
+  async updateUsageNotificationSettings(settings: Partial<UsageNotificationSettings>): Promise<void> {
+    try {
+      const current = await this.getUsageNotificationSettings();
+      const updated = { ...current, ...settings };
+      await AsyncStorage.setItem('@kigen_usage_notification_settings', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Error updating usage notification settings:', error);
+    }
+  }
+
+  /**
+   * Check if user should receive notification when opening specific apps
+   */
+  async checkAndSendUsageNotification(packageName: string, timeSpentInApp: number): Promise<void> {
+    try {
+      const settings = await this.getUsageNotificationSettings();
+      
+      if (!settings.enabled) {
+        return;
+      }
+
+      // Check if this is a monitored app
+      if (settings.warningApps.includes(packageName) && settings.socialMediaWarning) {
+        if (timeSpentInApp >= 10) { // 10 minutes threshold
+          await this.sendUsageWarningNotification(packageName, timeSpentInApp);
+        }
+      }
+
+      // Check daily usage limit (3 hours = 180 minutes)
+      const stats = await this.getTodaysStats();
+      if (stats && stats.totalScreenTime >= 150 && settings.dailyLimitWarning) { // 30 minutes before limit
+        await this.sendDailyLimitWarningNotification(stats.totalScreenTime);
+      }
+
+    } catch (error) {
+      console.error('Error checking usage notification:', error);
+    }
+  }
+
+  /**
+   * Send usage warning notification
+   */
+  private async sendUsageWarningNotification(packageName: string, timeSpentInApp: number): Promise<void> {
+    const appName = this.getAppDisplayName(packageName);
+    
+    const messages = [
+      `You've been on ${appName} for ${timeSpentInApp} minutes. Time to take a break? 🧘‍♂️`,
+      `${appName} again? You've got this - maybe try a quick meditation instead? ✨`,
+      `${timeSpentInApp} minutes on ${appName}. Your focus goals are waiting! 🎯`,
+      `Hey! That's ${timeSpentInApp} minutes on ${appName}. How about some body focus time? 💪`,
+      `Time check: ${timeSpentInApp} minutes on ${appName}. Your digital wellbeing matters! 🌟`
+    ];
+    
+    const message = messages[Math.floor(Math.random() * messages.length)];
+    
+    // TODO: Integrate with notification service
+    console.log('Usage Warning:', message);
+  }
+
+  /**
+   * Send daily limit warning
+   */
+  private async sendDailyLimitWarningNotification(totalUsage: number): Promise<void> {
+    const remaining = 180 - totalUsage;
+    const message = `You have ${remaining} minutes left of screen time today. Make them count! 💪`;
+    
+    // TODO: Integrate with notification service
+    console.log('Daily Limit Warning:', message);
+  }
+
+  /**
+   * Get display name for app package
+   */
+  private getAppDisplayName(packageName: string): string {
+    const appNames: { [key: string]: string } = {
+      'com.instagram.android': 'Instagram',
+      'com.facebook.katana': 'Facebook',
+      'com.twitter.android': 'Twitter',
+      'com.snapchat.android': 'Snapchat',
+      'com.zhiliaoapp.musically': 'TikTok',
+      'com.reddit.frontpage': 'Reddit',
+      'com.linkedin.android': 'LinkedIn',
+      'com.pinterest': 'Pinterest',
+      'com.discord': 'Discord',
+      'com.whatsapp': 'WhatsApp'
+    };
+    
+    return appNames[packageName] || 'App';
   }
 }
 

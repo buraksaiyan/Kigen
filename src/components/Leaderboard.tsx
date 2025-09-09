@@ -11,17 +11,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { UserStatsService } from '../services/userStatsService';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
+import LeaderboardService, { LeaderboardEntry } from '../services/LeaderboardService';
 
 const { width } = Dimensions.get('window');
-
-interface LeaderboardEntry {
-  userId: string;
-  username: string;
-  totalPoints?: number;
-  monthlyPoints?: number;
-  cardTier: CardTier;
-  rank: number;
-}
 
 type LeaderboardType = 'lifetime' | 'monthly';
 
@@ -38,18 +30,23 @@ export const Leaderboard: React.FC = () => {
 
   const loadLeaderboards = async () => {
     try {
-      // Load lifetime leaderboard
-      const lifetimeData = await UserStatsService.getLifetimeLeaderboard();
-      const lifetimeWithRanks = lifetimeData
-        .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+      // Load global leaderboard from LeaderboardService
+      const globalData = await LeaderboardService.getGlobalLeaderboard(50);
+      
+      // For lifetime leaderboard, use totalPoints
+      const lifetimeWithRanks = globalData.map((entry, index) => ({ 
+        ...entry, 
+        rank: index + 1 
+      }));
       setLifetimeLeaderboard(lifetimeWithRanks);
 
-      // Load monthly leaderboard
-      const monthlyData = await UserStatsService.getMonthlyLeaderboard(selectedMonth);
-      const monthlyWithRanks = monthlyData
-        .sort((a, b) => (b.monthlyPoints || 0) - (a.monthlyPoints || 0))
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+      // For monthly leaderboard, use monthlyPoints and re-sort
+      const monthlyWithRanks = [...globalData]
+        .sort((a, b) => b.monthlyPoints - a.monthlyPoints)
+        .map((entry, index) => ({ 
+          ...entry, 
+          rank: index + 1 
+        }));
       setMonthlyLeaderboard(monthlyWithRanks);
     } catch (error) {
       console.error('Error loading leaderboards:', error);
@@ -72,17 +69,17 @@ export const Leaderboard: React.FC = () => {
   };
 
   const renderLeaderboardEntry = (entry: LeaderboardEntry, isLifetime: boolean) => {
-    const tierColors = RatingSystem.getCardTierColors(entry.cardTier);
+    const tierColors = RatingSystem.getCardTierColors(entry.cardTier as CardTier);
     const points = isLifetime ? entry.totalPoints : entry.monthlyPoints;
 
     return (
-      <View key={`${entry.userId}-${isLifetime ? 'lifetime' : 'monthly'}`} style={styles.entryContainer}>
+      <View key={`${entry.id}-${isLifetime ? 'lifetime' : 'monthly'}`} style={styles.entryContainer}>
         <LinearGradient
           colors={[`${tierColors.primary}20`, `${tierColors.secondary}20`]}
           style={styles.entryBackground}
         >
           <View style={styles.rankContainer}>
-            <Text style={styles.rankText}>{getRankIcon(entry.rank)}</Text>
+            <Text style={styles.rankText}>{getRankIcon(entry.rank!)}</Text>
           </View>
 
           <View style={styles.userInfo}>
