@@ -18,6 +18,7 @@ import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import MeditationSoundService, { MeditationSound, PRESET_MEDITATION_SOUNDS } from '../services/MeditationSoundService';
+import CustomMeditationSoundService, { CustomMeditationSound } from '../services/CustomMeditationSoundService';
 import { useSettings } from '../hooks/useSettings';
 
 const { width, height } = Dimensions.get('window');
@@ -30,11 +31,20 @@ interface FocusMode {
   description: string;
 }
 
+interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 interface CountdownScreenProps {
   visible: boolean;
   mode: FocusMode;
   totalHours: number;
   totalMinutes: number;
+  selectedGoal?: Goal | null; // Add goal support
   onComplete: () => void;
   onPause: () => void;
   onEarlyFinish: () => void;
@@ -424,6 +434,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   mode,
   totalHours,
   totalMinutes,
+  selectedGoal,
   onComplete,
   onPause,
   onEarlyFinish,
@@ -444,6 +455,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   // Meditation sound selection state
   const [selectedMeditationSound, setSelectedMeditationSound] = useState<MeditationSound | null>(null);
+  const [customSounds, setCustomSounds] = useState<CustomMeditationSound[]>([]);
+  const [showAddSoundPrompt, setShowAddSoundPrompt] = useState(false);
 
   // Settings for sounds
   const { settings } = useSettings();
@@ -451,6 +464,28 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // Calculate progress percentage based on timeLeft
   const totalSeconds = totalHours * 3600 + totalMinutes * 60;
   const progressPercentage = totalSeconds > 0 ? ((totalSeconds - timeLeft) / totalSeconds) * 100 : 0;
+
+  // Load custom meditation sounds
+  const loadCustomSounds = async () => {
+    try {
+      const sounds = await CustomMeditationSoundService.getCustomSounds();
+      setCustomSounds(sounds);
+    } catch (error) {
+      console.error('Error loading custom sounds:', error);
+    }
+  };
+
+  // Add custom sound with name
+  const handleAddCustomSound = async () => {
+    try {
+      const soundName = `Custom Sound ${customSounds.length + 1}`;
+      const newSound = await CustomMeditationSoundService.createCustomSound(soundName);
+      setCustomSounds([...customSounds, newSound]);
+      setShowAddSoundPrompt(false);
+    } catch (error) {
+      console.error('Error adding custom sound:', error);
+    }
+  };
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -460,6 +495,11 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     
     // Initialize timer sound service
     TimerSoundService.initialize();
+    
+    // Load custom meditation sounds
+    if (mode.id === 'meditation') {
+      loadCustomSounds();
+    }
     
     // Register background task and request permissions
     BackgroundTimerService.requestPermissions();
@@ -701,6 +741,19 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           </View>
         </View>
 
+        {/* Selected Goal Display - Only show for Executioner mode */}
+        {mode.id === 'executioner' && selectedGoal && (
+          <View style={styles.goalDisplayContainer}>
+            <Text style={[styles.goalLabel, { color: mode.color }]}>FOCUSING ON</Text>
+            <View style={[styles.goalCard, { borderColor: mode.color }]}>
+              <Text style={styles.goalTitle}>{selectedGoal.title}</Text>
+              {selectedGoal.description && (
+                <Text style={styles.goalDescription}>{selectedGoal.description}</Text>
+              )}
+            </View>
+          </View>
+        )}
+
         {/* Circular Timer Display */}
         <View style={styles.circularTimerContainer}>
           {/* Body Focus Set Counter - only show for body mode */}
@@ -787,6 +840,43 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                     </Text>
                   </TouchableOpacity>
                 ))}
+
+                {/* Custom Sounds */}
+                {customSounds.map((sound) => (
+                  <TouchableOpacity
+                    key={sound.id}
+                    style={[
+                      styles.soundCard,
+                      styles.customSoundCard,
+                    ]}
+                    onPress={() => {
+                      // For now, just select the custom sound placeholder
+                      console.log('Selected custom sound:', sound.name);
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.soundCardTitle}>
+                      {sound.name}
+                    </Text>
+                    <Text style={styles.soundCardDescription}>
+                      Custom • {CustomMeditationSoundService.formatDuration(sound.duration || 300)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+
+                {/* Add Custom Sound Button */}
+                <TouchableOpacity
+                  style={[styles.soundCard, styles.addSoundCard, { borderColor: mode.color }]}
+                  onPress={handleAddCustomSound}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.soundCardTitle, { color: mode.color }]}>
+                    + Add Sound
+                  </Text>
+                  <Text style={styles.soundCardDescription}>
+                    Create custom
+                  </Text>
+                </TouchableOpacity>
               </ScrollView>
             </View>
           )}
@@ -1307,5 +1397,53 @@ const styles = StyleSheet.create({
     left: '50%',
     marginTop: -170, // Half of SVG height (340/2)
     marginLeft: -170, // Half of SVG width (340/2)
+  },
+  // Goal display styles
+  goalDisplayContainer: {
+    width: '90%',
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    alignSelf: 'center',
+  },
+  goalLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    marginBottom: theme.spacing.sm,
+    opacity: 0.8,
+  },
+  goalCard: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+  },
+  goalTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  goalDescription: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  // Custom sound styles
+  customSoundCard: {
+    borderColor: 'rgba(255,215,0,0.3)', // Golden border for custom sounds
+    backgroundColor: 'rgba(255,215,0,0.05)',
+  },
+  addSoundCard: {
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    backgroundColor: 'transparent',
   },
 });

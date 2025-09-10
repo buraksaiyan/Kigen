@@ -116,36 +116,40 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      // Respond to any movement
-      return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+      // Only respond to clear horizontal swipes with minimal vertical movement
+      const { dx, dy } = gestureState;
+      return Math.abs(dx) > 8 || Math.abs(dy) > 8;
     },
     onPanResponderGrant: () => {
       gestureStartTime.current = Date.now();
       isSwipeGesture.current = false;
     },
     onPanResponderMove: (_, gestureState) => {
-      // Mark as swipe if there's horizontal movement
-      if (Math.abs(gestureState.dx) > 20) {
+      const { dx, dy } = gestureState;
+      // Mark as swipe only for predominantly horizontal movement
+      if (Math.abs(dx) > 25 && Math.abs(dx) > Math.abs(dy) * 1.5) {
         isSwipeGesture.current = true;
       }
     },
     onPanResponderRelease: (_, gestureState) => {
       const gestureDuration = Date.now() - gestureStartTime.current;
-      const isHorizontalSwipe = Math.abs(gestureState.dx) > 30;
-      const isQuickTap = gestureDuration < 300 && Math.abs(gestureState.dx) < 10 && Math.abs(gestureState.dy) < 10;
+      const { dx, dy } = gestureState;
+      const isHorizontalSwipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5;
+      const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
-      if (isHorizontalSwipe) {
-        // Flip the card
-        console.log('Flipping card');
+      if (isHorizontalSwipe && isSwipeGesture.current) {
+        // Smooth flip animation
+        console.log('Flipping card with improved animation');
+        const toValue = isFlipped ? 0 : 1;
         setIsFlipped(!isFlipped);
         Animated.timing(flipAnimation, {
-          toValue: isFlipped ? 0 : 1,
-          duration: 600,
+          toValue,
+          duration: 750, // Smoother, longer animation
           useNativeDriver: true,
         }).start();
-      } else if (isQuickTap) {
-        // Expand the card or handle photo selection
-        console.log('Tapped card');
+      } else if (isQuickTap && !isSwipeGesture.current) {
+        // Tap to expand - only if not swiping
+        console.log('Tapped card to expand');
         setIsExpanded(!isExpanded);
       }
 
@@ -153,6 +157,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       isSwipeGesture.current = false;
     },
     onStartShouldSetPanResponder: () => true, // Always capture touch events
+    onPanResponderTerminationRequest: () => false, // Don't let parent views intercept
   });
 
   // Handle tap separately

@@ -239,6 +239,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             mode={selectedMode}
             totalHours={sessionHours}
             totalMinutes={sessionMinutes}
+            selectedGoal={selectedGoal} // Pass the selected goal
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}
             onEarlyFinish={handleEarlyFinish}

@@ -49,12 +49,26 @@ export class UserStatsService {
       createdAt: new Date(),
       lastUpdated: new Date()
     };
-
+    
     await AsyncStorage.setItem(this.USER_PROFILE_KEY, JSON.stringify(profile));
+    
+    // Immediately sync to leaderboard after creating profile
+    await this.syncUserToLeaderboard();
+    
     return profile;
   }
 
-  static async getUserProfile(): Promise<UserProfile | null> {
+  // Ensure user is logged in and has profile
+  static async ensureUserProfile(): Promise<UserProfile> {
+    let profile = await this.getUserProfile();
+    if (!profile) {
+      // Create default profile if none exists
+      const defaultUsername = `Player${Date.now().toString().slice(-6)}`;
+      profile = await this.createUserProfile(defaultUsername);
+      console.log('✅ Created default user profile:', defaultUsername);
+    }
+    return profile;
+  }  static async getUserProfile(): Promise<UserProfile | null> {
     try {
       const profileData = await AsyncStorage.getItem(this.USER_PROFILE_KEY);
       if (profileData) {
@@ -237,6 +251,9 @@ export class UserStatsService {
 
   // Activity Recording Methods
   static async recordFocusSession(type: string, minutes: number, completed: boolean = true): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
     const today = await this.getTodayActivity();
     
     if (completed) {
@@ -273,6 +290,9 @@ export class UserStatsService {
   }
 
   static async recordJournalEntry(): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
     const today = await this.getTodayActivity();
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
@@ -282,6 +302,9 @@ export class UserStatsService {
   }
 
   static async recordGoalCompletion(): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
     const today = await this.getTodayActivity();
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
