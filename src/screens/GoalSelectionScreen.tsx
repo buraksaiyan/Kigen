@@ -9,17 +9,23 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
+
+const GOALS_STORAGE_KEY = '@kigen_goals';
 
 interface Goal {
   id: string;
   title: string;
   description?: string;
   completed: boolean;
+  failed: boolean;
   createdAt: string;
+  completedAt?: string;
+  failedAt?: string;
 }
 
 interface FocusMode {
@@ -57,34 +63,16 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   const loadGoals = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with real goal loading from service
-      // For now, we'll simulate loading goals from AsyncStorage or service
-      const mockGoals: Goal[] = [
-        {
-          id: '1',
-          title: 'Complete project proposal',
-          description: 'Finish the Q4 project proposal document',
-          completed: false,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          title: 'Review code changes',
-          description: 'Go through the PR reviews and implement feedback',
-          completed: false,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          title: 'Write blog post',
-          description: 'Draft the technical blog post about React Native optimization',
-          completed: false,
-          createdAt: new Date().toISOString(),
-        },
-      ];
-      
-      // Filter out completed goals
-      setGoals(mockGoals.filter(goal => !goal.completed));
+      // Load real goals from AsyncStorage
+      const stored = await AsyncStorage.getItem(GOALS_STORAGE_KEY);
+      if (stored) {
+        const allGoals: Goal[] = JSON.parse(stored);
+        // Filter to only show active goals (not completed or failed)
+        const activeGoals = allGoals.filter(goal => !goal.completed && !goal.failed);
+        setGoals(activeGoals);
+      } else {
+        setGoals([]);
+      }
     } catch (error) {
       console.error('Error loading goals:', error);
       setGoals([]);
