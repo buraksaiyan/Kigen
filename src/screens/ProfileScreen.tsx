@@ -49,7 +49,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   const loadProfile = async () => {
     try {
       setIsLoading(true);
-      const userProfile = await UserStatsService.getUserProfile();
+      // Use ensureUserProfile to create profile if it doesn't exist
+      const userProfile = await UserStatsService.ensureUserProfile();
       if (userProfile) {
         setProfile(userProfile);
         setNewUsername(userProfile.username);

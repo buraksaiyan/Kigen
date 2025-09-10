@@ -44,8 +44,8 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const fetchRatings = async () => {
     setIsLoading(true);
     try {
-      // Get user profile
-      const profile = await UserStatsService.getUserProfile();
+      // Get user profile, create if doesn't exist
+      const profile = await UserStatsService.ensureUserProfile();
       if (profile) {
         setUserName(profile.username);
         if (profile.profileImage) {

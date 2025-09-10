@@ -13,6 +13,7 @@ import { GoalsScreen } from '../../screens/GoalsScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { RatingsScreen } from '../../screens/RatingsScreen';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
+import { UserStatsService } from '../../services/userStatsService';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
@@ -42,6 +43,8 @@ export const DashboardScreen: React.FC = () => {
 
   useEffect(() => {
     maybePromptForRating();
+    // Ensure profile exists when dashboard loads
+    UserStatsService.ensureUserProfile().catch(console.error);
   }, []);
 
   const onRefresh = async () => {
@@ -104,6 +107,8 @@ export const DashboardScreen: React.FC = () => {
         break;
       case 'profile':
         console.log('📱 Profile navigation triggered');
+        // Switch to dashboard view when opening profile
+        setCurrentView('dashboard');
         setIsProfileOpen(true);
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
