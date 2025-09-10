@@ -370,8 +370,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
               <Text style={[styles.toggleButton, { 
                 color: theme.colors.primary,
                 textShadowColor: '#888691',
-                textShadowOffset: { width: 0, height: 0 },
-                textShadowRadius: 1,
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
               }]}>
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </Text>

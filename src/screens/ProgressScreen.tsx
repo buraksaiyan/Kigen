@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: '600',
     textShadowColor: '#888691',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 1,
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   logoContainer: {
     alignItems: 'center',
