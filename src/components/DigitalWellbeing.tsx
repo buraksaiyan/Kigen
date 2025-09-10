@@ -49,7 +49,12 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
       setHasPermission(permission);
       
       if (permission) {
-        await loadUsageData();
+        try {
+          const stats = await digitalWellbeingService.getTodaysStats();
+          setUsageStats(stats);
+        } catch (error) {
+          console.error('Error loading usage data:', error);
+        }
       }
     } catch (error) {
       console.error('Error checking permission:', error);
@@ -65,6 +70,8 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
       setUsageStats(stats);
     } catch (error) {
       console.error('Error loading usage data:', error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -110,8 +117,15 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     
+    // Timeout fallback to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.log('🕐 DigitalWellbeing: Loading timeout, setting loading to false');
+      setIsLoading(false);
+    }, 5000);
+    
     return () => {
       subscription?.remove();
+      clearTimeout(timeout);
       // No cleanup needed for digitalWellbeingService
     };
   }, [checkPermissionStatus, handleAppStateChange]);

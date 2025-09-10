@@ -146,7 +146,16 @@ export const DashboardScreen: React.FC = () => {
         <View style={styles.topNavContainer}>
           <TouchableOpacity
             style={[styles.topNavTab, currentView === 'dashboard' && styles.activeTopNavTab]}
-            onPress={() => setCurrentView('dashboard')}
+            onPress={() => {
+              setCurrentView('dashboard');
+              // Close all modals when switching to dashboard
+              setIsProfileOpen(false);
+              setIsSettingsOpen(false);
+              setIsProgressOpen(false);
+              setIsGoalsOpen(false);
+              setIsJournalOpen(false);
+              setIsFocusSessionOpen(false);
+            }}
           >
             <Text style={[styles.topNavText, currentView === 'dashboard' && styles.activeTopNavText]}>
               Dashboard
@@ -154,7 +163,16 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.topNavTab, currentView === 'leaderboard' && styles.activeTopNavTab]}
-            onPress={() => setCurrentView('leaderboard')}
+            onPress={() => {
+              setCurrentView('leaderboard');
+              // Close all modals when switching to leaderboard
+              setIsProfileOpen(false);
+              setIsSettingsOpen(false);
+              setIsProgressOpen(false);
+              setIsGoalsOpen(false);
+              setIsJournalOpen(false);
+              setIsFocusSessionOpen(false);
+            }}
           >
             <Text style={[styles.topNavText, currentView === 'leaderboard' && styles.activeTopNavText]}>
               Leaderboard
