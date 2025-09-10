@@ -47,6 +47,9 @@ export const Leaderboard: React.FC = () => {
           ...entry, 
           rank: index + 1 
         }));
+      
+      console.log('📊 Monthly leaderboard data:', monthlyWithRanks.length, 'entries');
+      console.log('📊 Sample monthly data:', monthlyWithRanks.slice(0, 3));
       setMonthlyLeaderboard(monthlyWithRanks);
     } catch (error) {
       console.error('Error loading leaderboards:', error);
@@ -196,8 +199,8 @@ export const Leaderboard: React.FC = () => {
               monthlyLeaderboard.map(entry => renderLeaderboardEntry(entry, false))
             ) : (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No data for this month yet</Text>
-                <Text style={styles.emptySubtext}>Start your journey to become the champion!</Text>
+                <Text style={styles.emptyText}>No users found</Text>
+                <Text style={styles.emptySubtext}>Pull to refresh to load leaderboard data</Text>
               </View>
             )
           ) : (
@@ -234,9 +237,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#888691',
   },
   activeTab: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#2E1A47', // Midnight purple
+    borderColor: '#888691',
   },
   tabText: {
     fontSize: 16,

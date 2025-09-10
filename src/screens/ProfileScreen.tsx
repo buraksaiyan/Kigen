@@ -208,6 +208,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   //     </SafeAreaView>
   //   );
   // }
+  //NOTE: THIS SHIT DOES NOTHING BUT SPINNING AND OCCUPYING SPACE ON SCREEN. AND THIS LITTLE SHIT STAYS THERE PERMANANTLY UNLESS YOU DISABLE IT FROM HERE.
 
   if (!profile) {
     return (

@@ -292,9 +292,12 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
     alignItems: 'center',
     borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#888691',
   },
   activeTab: {
     backgroundColor: theme.colors.primary,
+    borderColor: '#888691',
   },
   tabText: {
     ...theme.typography.bodyLarge,
