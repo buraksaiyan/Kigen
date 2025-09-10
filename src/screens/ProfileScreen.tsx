@@ -195,18 +195,19 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
     }).format(date);
   };
 
-  if (isLoading) {
-    return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
-          <Text style={[styles.loadingText, { color: theme.colors.text.primary }]}>
-            Loading Profile...
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  // Remove the loading state - just render directly
+  // if (isLoading) {
+  //   return (
+  //     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+  //       <View style={styles.loadingContainer}>
+  //         <ActivityIndicator size="large" color="#FFFFFF" />
+  //         <Text style={[styles.loadingText, { color: theme.colors.text.primary }]}>
+  //           Loading Profile...
+  //         </Text>
+  //       </View>
+  //     </SafeAreaView>
+  //   );
+  // }
 
   if (!profile) {
     return (

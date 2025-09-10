@@ -196,10 +196,10 @@ export class UserStatsService {
     const overallRating = RatingSystem.calculateOverallRating(stats);
     const cardTier = RatingSystem.getCardTier(totalPoints);
 
-    // Get monthly points (for current month)
+    // Get monthly points (for current month only)
     const currentMonth = new Date().toISOString().slice(0, 7);
     const monthlyRecord = await this.getMonthlyRecord(currentMonth);
-    const monthlyPoints = monthlyRecord ? monthlyRecord.totalPoints : totalPoints;
+    const monthlyPoints = monthlyRecord ? monthlyRecord.totalPoints : 0; // 0 if no current month record
 
     return {
       stats,
