@@ -12,6 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 import { supabase } from '../services/supabase';
@@ -39,8 +40,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   useEffect(() => {
-    loadProfile();
-  }, []);
+    console.log('📱 ProfileScreen visibility changed:', visible);
+    if (visible) {
+      loadProfile();
+    }
+  }, [visible]);
 
   const loadProfile = async () => {
     try {
@@ -149,6 +153,39 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
     }
   };
 
+  const handleProfileImageChange = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant camera roll permissions to change your profile picture.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0 && result.assets[0]) {
+        // Update the profile with new image
+        await UserStatsService.updateUserProfile({ 
+          profileImage: result.assets[0].uri 
+        });
+        
+        // Reload the profile to get updated data
+        await loadProfile();
+        
+        Alert.alert('Success', 'Profile picture updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating profile image:', error);
+      Alert.alert('Error', 'Failed to update profile picture. Please try again.');
+    }
+  };
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -217,7 +254,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile Picture Section */}
         <View style={styles.profileImageSection}>
-          <View style={styles.profileImageContainer}>
+          <TouchableOpacity style={styles.profileImageContainer} onPress={handleProfileImageChange}>
             {profile.profileImage ? (
               <Image 
                 source={{ uri: profile.profileImage }} 
@@ -230,7 +267,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                 </Text>
               </View>
             )}
-          </View>
+            <View style={styles.editImageOverlay}>
+              <Text style={styles.editImageText}>Edit</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Username Section */}
@@ -419,6 +459,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     overflow: 'hidden',
+    position: 'relative',
   },
   profileImage: {
     width: 120,
@@ -435,6 +476,20 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 48,
     fontWeight: 'bold',
+  },
+  editImageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingVertical: 4,
+    alignItems: 'center',
+  },
+  editImageText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
   },
   section: {
     marginBottom: 24,

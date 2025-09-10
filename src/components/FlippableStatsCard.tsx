@@ -14,7 +14,6 @@ import {
   Alert,
   ImageBackground,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { UserStatsService } from '../services/userStatsService';
 import { UserRating, RatingSystem } from '../services/ratingSystem';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -166,25 +165,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     if (!isSwipeGesture.current) {
       setIsExpanded(!isExpanded);
     }
-  };  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please grant camera roll permissions to add a profile picture.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets && result.assets.length > 0 && result.assets[0]) {
-      setProfileImage(result.assets[0].uri);
-      // Here you would typically save this to UserStatsService
-    }
   };
 
   const getStatName = (statKey: string): string => {
@@ -257,7 +237,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Left Column - Picture and Username */}
                 <View style={styles.leftColumn}>
-                  <TouchableOpacity onPress={pickImage} style={styles.pictureContainer}>
+                  <View style={styles.pictureContainer}>
                     {profileImage ? (
                       <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
                     ) : (
@@ -265,7 +245,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                         <Text style={[styles.picturePlaceholderText, { color: textColor }]}>picture</Text>
                       </View>
                     )}
-                  </TouchableOpacity>
+                  </View>
                   <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
                 </View>
                 
@@ -324,7 +304,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Left Column - Picture and Username */}
                 <View style={styles.leftColumn}>
-                  <TouchableOpacity onPress={pickImage} style={styles.pictureContainer}>
+                  <View style={styles.pictureContainer}>
                     {profileImage ? (
                       <Image source={{ uri: profileImage }} style={styles.cardProfileImage} />
                     ) : (
@@ -332,7 +312,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                         <Text style={[styles.picturePlaceholderText, { color: textColor }]}>picture</Text>
                       </View>
                     )}
-                  </TouchableOpacity>
+                  </View>
                   <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
                 </View>
                 
@@ -383,7 +363,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
             
             {/* Profile Picture Section */}
             <View style={styles.profileSection}>
-              <TouchableOpacity style={styles.profileImageContainer} onPress={pickImage}>
+              <View style={styles.profileImageContainer}>
                 {profileImage ? (
                   <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 ) : (
@@ -392,7 +372,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                     <Text style={[styles.addPhotoText, { color: textColor }]}>Add Photo</Text>
                   </View>
                 )}
-              </TouchableOpacity>
+              </View>
               
               <Text style={[styles.playerName, { color: textColor }]}>{userName}</Text>
             </View>

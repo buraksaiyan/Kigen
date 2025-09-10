@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
@@ -25,6 +25,7 @@ import { env } from '../../config/env';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
+  const insets = useSafeAreaInsets();
   const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard');
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -102,6 +103,7 @@ export const DashboardScreen: React.FC = () => {
         setIsProfileOpen(false);
         break;
       case 'profile':
+        console.log('📱 Profile navigation triggered');
         setIsProfileOpen(true);
         setIsGoalsOpen(false);
         setIsJournalOpen(false);
@@ -157,7 +159,10 @@ export const DashboardScreen: React.FC = () => {
 
         {currentView === 'dashboard' ? (
           <ScrollView 
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent, 
+              { paddingBottom: Math.max(insets.bottom + 20, theme.spacing.xxl + 20) }
+            ]}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -316,7 +321,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl + 20,
+    // paddingBottom will be set dynamically based on safe area insets
   },
   menuButton: {
     padding: theme.spacing.sm,
