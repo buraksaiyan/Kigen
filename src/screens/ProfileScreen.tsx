@@ -164,7 +164,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images',
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -237,6 +237,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       visible={visible}
       animationType="slide"
       presentationStyle="fullScreen"
+      onRequestClose={onClose}
     >
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
@@ -247,9 +248,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         >
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
-          Profile
-        </Text>
+        <View style={styles.titleContainer}>
+          <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
+            Profile
+          </Text>
+        </View>
+        <View style={styles.placeholder} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -421,25 +425,27 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    position: 'relative',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   closeButton: {
-    position: 'absolute',
-    left: 20,
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 8,
   },
   closeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: theme.colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholder: {
+    width: 60,
   },
   headerTitle: {
     flex: 1,

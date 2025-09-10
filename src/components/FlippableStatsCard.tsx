@@ -44,15 +44,23 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const fetchRatings = async () => {
     setIsLoading(true);
     try {
+      console.log('📊 FlippableStatsCard: Starting to fetch ratings');
+      
       // Get user profile, create if doesn't exist
       const profile = await UserStatsService.ensureUserProfile();
-      if (profile) {
-        setUserName(profile.username);
-        if (profile.profileImage) {
-          setProfileImage(profile.profileImage);
-        }
+      console.log('📊 FlippableStatsCard: Profile obtained:', profile?.username);
+      
+      if (!profile) {
+        console.error('📊 FlippableStatsCard: No profile available');
+        return;
+      }
+      
+      setUserName(profile.username);
+      if (profile.profileImage) {
+        setProfileImage(profile.profileImage);
       }
 
+      console.log('📊 FlippableStatsCard: Getting ratings');
       // Use REAL data from the actual rating system
       const monthlyRating = await UserStatsService.getCurrentRating();
       
@@ -91,10 +99,12 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
       setMonthlyRating(monthlyRating);
       setLifetimeRating(lifetimeRating);
+      console.log('📊 FlippableStatsCard: Ratings updated successfully');
     } catch (error) {
-      console.error('Error fetching ratings:', error);
+      console.error('📊 FlippableStatsCard: Error fetching ratings:', error);
     } finally {
       setIsLoading(false);
+      console.log('📊 FlippableStatsCard: Loading completed');
     }
   };
 
