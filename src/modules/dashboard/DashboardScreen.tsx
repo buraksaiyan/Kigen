@@ -307,10 +307,15 @@ export const DashboardScreen: React.FC = () => {
           onClose={() => setIsSettingsOpen(false)}
         />
 
-        <ProfileScreen
-          visible={isProfileOpen}
-          onClose={() => setIsProfileOpen(false)}
-        />
+        {currentView === 'dashboard' && (
+          <ProfileScreen
+            visible={isProfileOpen}
+            onClose={() => {
+              console.log('📱 ProfileScreen closing');
+              setIsProfileOpen(false);
+            }}
+          />
+        )}
 
         {showSupabaseDebug && (
           <View style={styles.fullScreenModal}>

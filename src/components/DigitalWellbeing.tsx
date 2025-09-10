@@ -350,6 +350,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: 100, // Add bottom padding to avoid home button collision
   },
   title: {
     fontSize: 24,
