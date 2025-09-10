@@ -192,7 +192,7 @@ export const DashboardScreen: React.FC = () => {
                 refreshing={isRefreshing}
                 onRefresh={onRefresh}
                 tintColor="#fff"
-                colors={['#8b5cf6']}
+                colors={['#007AFF']}
               />
             }
           >
