@@ -356,7 +356,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                 style={[styles.editButton, { borderColor: theme.colors.border }]}
                 onPress={() => setIsEditing(true)}
               >
-                <Text style={[styles.editButtonText, { color: theme.colors.primary }]}>
+                <Text style={[styles.editButtonText, { 
+                  color: theme.colors.primary,
+                  textShadowColor: '#888691',
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 1,
+                }]}>
                   Edit
                 </Text>
               </TouchableOpacity>

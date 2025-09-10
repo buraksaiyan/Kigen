@@ -198,8 +198,21 @@ export class UserStatsService {
 
     // Get monthly points (for current month only)
     const currentMonth = new Date().toISOString().slice(0, 7);
-    const monthlyRecord = await this.getMonthlyRecord(currentMonth);
-    const monthlyPoints = monthlyRecord ? monthlyRecord.totalPoints : 0; // 0 if no current month record
+    let monthlyRecord = await this.getMonthlyRecord(currentMonth);
+    
+    // If no monthly record exists for current month, create one
+    if (!monthlyRecord) {
+      monthlyRecord = {
+        month: currentMonth,
+        stats,
+        totalPoints,
+        cardTier
+      };
+      await this.saveMonthlyRecord(monthlyRecord);
+      console.log('📅 Created monthly record for', currentMonth);
+    }
+    
+    const monthlyPoints = monthlyRecord.totalPoints;
 
     return {
       stats,

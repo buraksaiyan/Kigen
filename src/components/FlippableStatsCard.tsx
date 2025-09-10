@@ -725,6 +725,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: theme.colors.primary,
+    textShadowColor: '#888691',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 1,
   },
   // Keep old styles for backwards compatibility but unused now
   detailedStatRow: {

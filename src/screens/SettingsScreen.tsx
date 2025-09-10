@@ -332,6 +332,9 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.primary,
     fontWeight: '600',
+    textShadowColor: '#888691',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 1,
   },
   logoContainer: {
     alignItems: 'center',
@@ -373,6 +376,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: theme.spacing.md,
     textTransform: 'uppercase',
+    textShadowColor: '#888691',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 1,
   },
   settingRow: {
     flexDirection: 'row',
