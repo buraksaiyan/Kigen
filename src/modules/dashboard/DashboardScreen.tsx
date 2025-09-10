@@ -187,12 +187,13 @@ export const DashboardScreen: React.FC = () => {
               { paddingBottom: Math.max(insets.bottom + 20, theme.spacing.xxl + 20) }
             ]}
             showsVerticalScrollIndicator={false}
+            overScrollMode="never"
             refreshControl={
               <RefreshControl
                 refreshing={isRefreshing}
                 onRefresh={onRefresh}
                 tintColor="#fff"
-                colors={['#007AFF']}
+                colors={['#8b5cf6']}
               />
             }
           >
