@@ -369,9 +369,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
             <TouchableOpacity onPress={toggleMode} disabled={loading}>
               <Text style={[styles.toggleButton, { 
                 color: theme.colors.primary,
-                textShadowColor: '#888691',
+                textShadowColor: '#FFFFFF',
                 textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 2,
+                textShadowRadius: 3,
               }]}>
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </Text>
