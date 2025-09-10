@@ -199,7 +199,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <ActivityIndicator size="large" color="#FFFFFF" />
           <Text style={[styles.loadingText, { color: theme.colors.text.primary }]}>
             Loading Profile...
           </Text>
