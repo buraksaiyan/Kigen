@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import { Alert } from 'react-native';
 
@@ -16,30 +15,14 @@ export interface CustomMeditationSound {
 
 class CustomMeditationSoundService {
   private static STORAGE_KEY = '@kigen_custom_meditation_sounds';
-  private static getSoundsDirectory = () => `${FileSystem.documentDirectory}meditation_sounds/`;
-
-  // Initialize the sounds directory
-  static async initializeSoundsDirectory(): Promise<void> {
-    try {
-      const SOUNDS_DIRECTORY = this.getSoundsDirectory();
-      const dirInfo = await FileSystem.getInfoAsync(SOUNDS_DIRECTORY);
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(SOUNDS_DIRECTORY, { intermediates: true });
-      }
-    } catch (error) {
-      console.error('Error initializing sounds directory:', error);
-    }
-  }
 
   // Import custom sound from device storage
   static async importCustomSound(): Promise<CustomMeditationSound | null> {
     try {
-      await this.initializeSoundsDirectory();
-
       // Open document picker for audio files
       const result = await DocumentPicker.getDocumentAsync({
         type: 'audio/*',
-        copyToCacheDirectory: false,
+        copyToCacheDirectory: true, // Use cache directory for now
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -65,23 +48,13 @@ class CustomMeditationSoundService {
         return null;
       }
 
-      // Generate unique ID and filename
+      // Generate unique ID
       const soundId = Date.now().toString();
-      const fileExtension = asset.name?.split('.').pop() || 'mp3';
-      const filename = `sound_${soundId}.${fileExtension}`;
-      const SOUNDS_DIRECTORY = this.getSoundsDirectory();
-      const localPath = `${SOUNDS_DIRECTORY}${filename}`;
-
-      // Copy file to app directory
-      await FileSystem.copyAsync({
-        from: asset.uri,
-        to: localPath,
-      });
 
       // Get audio duration if possible
       let duration: number | undefined;
       try {
-        const { sound } = await Audio.Sound.createAsync({ uri: localPath }, { shouldPlay: false });
+        const { sound } = await Audio.Sound.createAsync({ uri: asset.uri }, { shouldPlay: false });
         const status = await sound.getStatusAsync();
         if (status.isLoaded && status.durationMillis) {
           duration = Math.floor(status.durationMillis / 1000);
@@ -94,7 +67,7 @@ class CustomMeditationSoundService {
       const customSound: CustomMeditationSound = {
         id: soundId,
         name: asset.name?.replace(/\.[^/.]+$/, '') || `Sound ${soundId}`, // Remove file extension
-        filePath: localPath,
+        filePath: asset.uri, // Store the original URI for now
         originalName: asset.name || `sound_${soundId}`,
         duration: duration,
         createdAt: new Date().toISOString(),
@@ -166,21 +139,6 @@ class CustomMeditationSoundService {
   static async deleteCustomSound(soundId: string): Promise<void> {
     try {
       const sounds = await this.getCustomSounds();
-      const soundToDelete = sounds.find(s => s.id === soundId);
-      
-      // Delete the actual file if it exists and is not a placeholder
-      if (soundToDelete && soundToDelete.filePath !== 'placeholder') {
-        try {
-          const fileInfo = await FileSystem.getInfoAsync(soundToDelete.filePath);
-          if (fileInfo.exists) {
-            await FileSystem.deleteAsync(soundToDelete.filePath);
-          }
-        } catch (fileError) {
-          console.error('Error deleting sound file:', fileError);
-          // Continue with removing from storage even if file deletion fails
-        }
-      }
-      
       const updatedSounds = sounds.filter(s => s.id !== soundId);
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedSounds));
     } catch (error) {
@@ -189,38 +147,12 @@ class CustomMeditationSoundService {
     }
   }
 
-  // Get all custom sounds and verify file existence
+  // Get all custom sounds (no validation needed since we use original URIs)
   static async getCustomSoundsWithValidation(): Promise<CustomMeditationSound[]> {
     try {
-      const sounds = await this.getCustomSounds();
-      const validSounds: CustomMeditationSound[] = [];
-      
-      for (const sound of sounds) {
-        if (sound.filePath === 'placeholder') {
-          // Keep placeholder sounds for legacy compatibility
-          validSounds.push(sound);
-        } else {
-          try {
-            const fileInfo = await FileSystem.getInfoAsync(sound.filePath);
-            if (fileInfo.exists) {
-              validSounds.push(sound);
-            } else {
-              console.log(`Sound file not found, removing from list: ${sound.name}`);
-            }
-          } catch {
-            console.log(`Error checking sound file, removing from list: ${sound.name}`);
-          }
-        }
-      }
-      
-      // Update storage if any sounds were removed
-      if (validSounds.length !== sounds.length) {
-        await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(validSounds));
-      }
-      
-      return validSounds;
+      return await this.getCustomSounds();
     } catch (error) {
-      console.error('Error validating custom sounds:', error);
+      console.error('Error getting custom sounds:', error);
       return [];
     }
   }
