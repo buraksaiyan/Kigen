@@ -19,6 +19,7 @@ import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import { ProgressScreen } from '../../screens/ProgressScreen';
 import { SettingsScreen } from '../../screens/SettingsScreen';
+import { ProfileScreen } from '../../screens/ProfileScreen';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
 
@@ -31,6 +32,7 @@ export const DashboardScreen: React.FC = () => {
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -66,12 +68,14 @@ export const DashboardScreen: React.FC = () => {
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
+        setIsProfileOpen(false);
         break;
       case 'journals':
         setIsGoalsOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
+        setIsProfileOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
@@ -79,6 +83,7 @@ export const DashboardScreen: React.FC = () => {
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
+        setIsProfileOpen(false);
         break;
       case 'progress':
         setIsProgressOpen(true);
@@ -86,6 +91,7 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsSettingsOpen(false);
+        setIsProfileOpen(false);
         break;
       case 'settings':
         setIsSettingsOpen(true);
@@ -93,6 +99,15 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
+        setIsProfileOpen(false);
+        break;
+      case 'profile':
+        setIsProfileOpen(true);
+        setIsGoalsOpen(false);
+        setIsJournalOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
+        setIsSettingsOpen(false);
         break;
       default:
         console.log('Navigate to:', screen);
@@ -262,6 +277,11 @@ export const DashboardScreen: React.FC = () => {
         <SettingsScreen
           visible={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
+        />
+
+        <ProfileScreen
+          visible={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
         />
 
         {showSupabaseDebug && (

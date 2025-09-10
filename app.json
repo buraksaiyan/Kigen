@@ -43,12 +43,16 @@
           "icon": "./assets/icon.png",
           "color": "#14B8A6"
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kigen.app",
-      "backgroundModes": ["background-processing", "background-fetch"]
+      "backgroundModes": [
+        "background-processing",
+        "background-fetch"
+      ]
     },
     "android": {
       "package": "com.kigen.app",

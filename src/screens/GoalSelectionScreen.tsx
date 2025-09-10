@@ -69,8 +69,10 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
         const allGoals: Goal[] = JSON.parse(stored);
         // Filter to only show active goals (not completed or failed)
         const activeGoals = allGoals.filter(goal => !goal.completed && !goal.failed);
+        console.log(`Loaded ${activeGoals.length} active goals for executioner mode`);
         setGoals(activeGoals);
       } else {
+        console.log('No goals found in storage');
         setGoals([]);
       }
     } catch (error) {
@@ -82,6 +84,7 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   };
 
   const handleGoalSelect = (goal: Goal) => {
+    console.log('Goal selected:', goal.title);
     Alert.alert(
       'Start Executioner Focus',
       `Focus on: "${goal.title}"\n\nThis will help you tackle this goal with maximum intensity and discipline.`,
@@ -122,15 +125,24 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   };
 
   useEffect(() => {
-    if (visible && goals.length === 0 && !loading) {
-      // Show no goals alert after a short delay to ensure loading is complete
-      setTimeout(() => {
-        if (goals.length === 0) {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (visible && !loading) {
+      // Only show no goals alert if we're sure there are no goals and loading is complete
+      timeoutId = setTimeout(() => {
+        if (goals.length === 0 && !loading) {
+          console.log('No active goals found, showing create goal prompt');
           handleNoGoals();
         }
-      }, 500);
+      }, 1000); // Increased delay to ensure loading completes
     }
-  }, [goals, visible, loading]);
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [goals.length, visible, loading]);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">

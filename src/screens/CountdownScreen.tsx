@@ -18,7 +18,6 @@ import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import MeditationSoundService, { MeditationSound, PRESET_MEDITATION_SOUNDS } from '../services/MeditationSoundService';
-import CustomMeditationSoundService, { CustomMeditationSound } from '../services/CustomMeditationSoundService';
 import { useSettings } from '../hooks/useSettings';
 
 const { width, height } = Dimensions.get('window');
@@ -455,8 +454,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   // Meditation sound selection state
   const [selectedMeditationSound, setSelectedMeditationSound] = useState<MeditationSound | null>(null);
-  const [customSounds, setCustomSounds] = useState<CustomMeditationSound[]>([]);
-  const [showAddSoundPrompt, setShowAddSoundPrompt] = useState(false);
 
   // Settings for sounds
   const { settings } = useSettings();
@@ -464,28 +461,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // Calculate progress percentage based on timeLeft
   const totalSeconds = totalHours * 3600 + totalMinutes * 60;
   const progressPercentage = totalSeconds > 0 ? ((totalSeconds - timeLeft) / totalSeconds) * 100 : 0;
-
-  // Load custom meditation sounds
-  const loadCustomSounds = async () => {
-    try {
-      const sounds = await CustomMeditationSoundService.getCustomSounds();
-      setCustomSounds(sounds);
-    } catch (error) {
-      console.error('Error loading custom sounds:', error);
-    }
-  };
-
-  // Add custom sound with name
-  const handleAddCustomSound = async () => {
-    try {
-      const soundName = `Custom Sound ${customSounds.length + 1}`;
-      const newSound = await CustomMeditationSoundService.createCustomSound(soundName);
-      setCustomSounds([...customSounds, newSound]);
-      setShowAddSoundPrompt(false);
-    } catch (error) {
-      console.error('Error adding custom sound:', error);
-    }
-  };
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -495,11 +470,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     
     // Initialize timer sound service
     TimerSoundService.initialize();
-    
-    // Load custom meditation sounds
-    if (mode.id === 'meditation') {
-      loadCustomSounds();
-    }
     
     // Register background task and request permissions
     BackgroundTimerService.requestPermissions();
@@ -840,43 +810,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                     </Text>
                   </TouchableOpacity>
                 ))}
-
-                {/* Custom Sounds */}
-                {customSounds.map((sound) => (
-                  <TouchableOpacity
-                    key={sound.id}
-                    style={[
-                      styles.soundCard,
-                      styles.customSoundCard,
-                    ]}
-                    onPress={() => {
-                      // For now, just select the custom sound placeholder
-                      console.log('Selected custom sound:', sound.name);
-                    }}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.soundCardTitle}>
-                      {sound.name}
-                    </Text>
-                    <Text style={styles.soundCardDescription}>
-                      Custom • {CustomMeditationSoundService.formatDuration(sound.duration || 300)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-
-                {/* Add Custom Sound Button */}
-                <TouchableOpacity
-                  style={[styles.soundCard, styles.addSoundCard, { borderColor: mode.color }]}
-                  onPress={handleAddCustomSound}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.soundCardTitle, { color: mode.color }]}>
-                    + Add Sound
-                  </Text>
-                  <Text style={styles.soundCardDescription}>
-                    Create custom
-                  </Text>
-                </TouchableOpacity>
               </ScrollView>
             </View>
           )}
