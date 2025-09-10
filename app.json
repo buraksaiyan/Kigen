@@ -44,7 +44,8 @@
           "color": "#14B8A6"
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-video"
     ],
     "ios": {
       "supportsTablet": true,

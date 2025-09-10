@@ -216,7 +216,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
             style={styles.closeButton} 
             onPress={onClose}
           >
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
             Profile
@@ -245,7 +245,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
           style={styles.closeButton} 
           onPress={onClose}
         >
-          <Text style={styles.closeButtonText}>✕</Text>
+          <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
           Profile

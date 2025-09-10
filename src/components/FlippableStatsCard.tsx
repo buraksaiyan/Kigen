@@ -33,7 +33,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const [isLoading, setIsLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [userName, setUserName] = useState('Player Name');
+  const [userName, setUserName] = useState('User Name');
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
   
@@ -246,7 +246,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                       </View>
                     )}
                   </View>
-                  <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
+                  <Text style={[styles.cardUserName, { color: textColor }]}>{userName || 'username'}</Text>
                 </View>
                 
                 {/* Middle Column - OVR (moved up, X removed) */}
@@ -313,7 +313,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                       </View>
                     )}
                   </View>
-                  <Text style={[styles.cardPlayerName, { color: textColor }]}>{userName || 'username'}</Text>
+                  <Text style={[styles.cardUserName, { color: textColor }]}>{userName || 'username'}</Text>
                 </View>
                 
                 {/* Middle Column - OVR (moved up, X removed) */}
@@ -374,7 +374,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 )}
               </View>
               
-              <Text style={[styles.playerName, { color: textColor }]}>{userName}</Text>
+              <Text style={[styles.userName, { color: textColor }]}>{userName}</Text>
             </View>
             
             {/* OVR */}
@@ -386,7 +386,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
           
           {/* Detailed Stats */}
           <View style={styles.detailedStatsContainer}>
-            <Text style={styles.detailedStatsTitle}>PLAYER STATISTICS</Text>
+            <Text style={styles.detailedStatsTitle}>USER STATISTICS</Text>
             
             {Object.entries(currentRating.stats).map(([key, value]) => (
               <View key={key} style={styles.cleanStatRow}>
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: '500',
   },
-  cardPlayerName: {
+  cardUserName: {
     fontSize: 12,
     fontWeight: '600',
     color: 'black',
@@ -665,7 +665,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginTop: 4,
   },
-  playerName: {
+  userName: {
     fontSize: 24,
     fontWeight: '700',
     color: '#FFFFFF',
