@@ -89,7 +89,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
     if (!newGoalTitle.trim()) return;
 
     const newGoal: Goal = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       title: newGoalTitle.trim(),
       completed: false,
       failed: false,

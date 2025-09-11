@@ -43,7 +43,7 @@ export class UserStatsService {
   // User Profile Management
   static async createUserProfile(username: string, profileImage?: string): Promise<UserProfile> {
     const profile: UserProfile = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       username,
       profileImage,
       createdAt: new Date(),

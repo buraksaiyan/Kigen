@@ -242,7 +242,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
             const percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
             
             return (
-              <View key={app.appName} style={styles.appRow}>
+              <View key={app.packageName || `${app.appName}-${index}`} style={styles.appRow}>
                 <View style={styles.appInfo}>
                   <View style={[styles.appIcon, { backgroundColor: app.color }]}>
                     <Text style={styles.appIconText}>
