@@ -641,7 +641,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 24,
     color: '#FFFFFF',
-    fontWeight: '300',
+    fontWeight: '600',
   },
   profileSection: {
     alignItems: 'center',

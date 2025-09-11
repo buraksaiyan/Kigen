@@ -407,6 +407,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#9CA3AF',
     fontSize: 16,
+    fontWeight: '600',
   },
   headerTitle: {
     color: '#FFFFFF',
@@ -531,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   smallDeleteText: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#FFFFFF',
     fontWeight: '600',
   },

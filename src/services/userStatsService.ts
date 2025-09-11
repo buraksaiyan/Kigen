@@ -196,43 +196,52 @@ export class UserStatsService {
     const overallRating = RatingSystem.calculateOverallRating(stats);
     const cardTier = RatingSystem.getCardTier(totalPoints);
 
-    // Get monthly points (accumulate throughout the month, don't reset daily)
+    // Get monthly points (properly accumulate throughout the month)
     const currentMonth = new Date().toISOString().slice(0, 7);
     let monthlyRecord = await this.getMonthlyRecord(currentMonth);
     
-    // If no monthly record exists for current month, create one with current stats
+    // If no monthly record exists for current month, create one with current daily stats
     if (!monthlyRecord) {
       monthlyRecord = {
         month: currentMonth,
-        stats,
+        stats: { ...stats }, // Copy current daily stats as initial monthly
         totalPoints,
         cardTier
       };
       await this.saveMonthlyRecord(monthlyRecord);
-      console.log('📅 Created monthly record for', currentMonth);
+      console.log('📅 Created monthly record for', currentMonth, 'with points:', totalPoints);
     } else {
-      // Update the monthly record with accumulated stats (not daily reset)
-      // Only update if current stats are higher (progressive accumulation)
-      const updatedStats = {
-        DIS: Math.max(monthlyRecord.stats.DIS, stats.DIS),
-        FOC: Math.max(monthlyRecord.stats.FOC, stats.FOC), 
-        JOU: Math.max(monthlyRecord.stats.JOU, stats.JOU),
-        USA: Math.max(monthlyRecord.stats.USA, stats.USA),
-        MEN: Math.max(monthlyRecord.stats.MEN, stats.MEN),
-        PHY: Math.max(monthlyRecord.stats.PHY, stats.PHY)
-      };
+      // For existing monthly record, we should ADD today's stats to accumulated monthly stats
+      // But only if today hasn't been counted yet (to prevent double counting)
+      const today = new Date().toISOString().slice(0, 10);
+      const lastUpdateKey = `@kigen_monthly_last_update_${currentMonth}`;
+      const lastUpdate = await AsyncStorage.getItem(lastUpdateKey);
       
-      const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
-      const updatedCardTier = RatingSystem.getCardTier(updatedTotalPoints);
-      
-      monthlyRecord = {
-        month: currentMonth,
-        stats: updatedStats,
-        totalPoints: updatedTotalPoints,
-        cardTier: updatedCardTier
-      };
-      
-      await this.saveMonthlyRecord(monthlyRecord);
+      if (lastUpdate !== today) {
+        // Add today's achievements to monthly totals
+        const updatedStats = {
+          DIS: monthlyRecord.stats.DIS + stats.DIS,
+          FOC: monthlyRecord.stats.FOC + stats.FOC,
+          JOU: monthlyRecord.stats.JOU + stats.JOU,
+          USA: monthlyRecord.stats.USA + stats.USA,
+          MEN: monthlyRecord.stats.MEN + stats.MEN,
+          PHY: monthlyRecord.stats.PHY + stats.PHY
+        };
+        
+        const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
+        const updatedCardTier = RatingSystem.getCardTier(updatedTotalPoints);
+        
+        monthlyRecord = {
+          month: currentMonth,
+          stats: updatedStats,
+          totalPoints: updatedTotalPoints,
+          cardTier: updatedCardTier
+        };
+        
+        await this.saveMonthlyRecord(monthlyRecord);
+        await AsyncStorage.setItem(lastUpdateKey, today);
+        console.log('📅 Updated monthly record for', currentMonth, 'new total:', updatedTotalPoints);
+      }
     }
     
     const monthlyPoints = monthlyRecord.totalPoints;

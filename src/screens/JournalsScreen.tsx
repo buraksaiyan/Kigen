@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#9CA3AF',
     fontSize: 16,
+    fontWeight: '600',
   },
   headerTitle: {
     color: '#FFFFFF',

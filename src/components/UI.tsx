@@ -48,7 +48,7 @@ export const Button: React.FC<ButtonProps> = ({
       outline: {
         backgroundColor: 'transparent',
         borderWidth: 1,
-        borderColor: disabled ? theme.colors.text.disabled : theme.colors.primary,
+        borderColor: disabled ? theme.colors.text.disabled : '#888691',
       },
     };
 
@@ -71,7 +71,7 @@ export const Button: React.FC<ButtonProps> = ({
     };
 
     const color = variant === 'outline' 
-      ? (disabled ? theme.colors.text.disabled : theme.colors.primary)
+      ? (disabled ? theme.colors.text.disabled : '#888691')
       : theme.colors.text.primary;
 
     return {
