@@ -357,10 +357,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                 onPress={() => setIsEditing(true)}
               >
                 <Text style={[styles.editButtonText, { 
-                  color: theme.colors.primary,
-                  textShadowColor: '#888691',
-                  textShadowOffset: { width: 0, height: 0 },
-                  textShadowRadius: 1,
+                  color: '#888691',
                 }]}>
                   Edit
                 </Text>
@@ -443,7 +440,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   closeButtonText: {
-    color: theme.colors.primary,
+    color: '#888691',
     fontSize: 16,
     fontWeight: '600',
   },

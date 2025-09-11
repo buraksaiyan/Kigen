@@ -273,10 +273,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
                   onPress={onRefresh}
                 >
                   <Text style={[styles.refreshButtonText, { 
-                    color: theme.colors.primary,
-                    textShadowColor: '#FFFFFF',
-                    textShadowOffset: { width: 1, height: 1 },
-                    textShadowRadius: 3,
+                    color: '#888691',
                   }]}>
                     Refresh Data
                   </Text>
@@ -327,10 +324,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
               onPress={onRefresh}
             >
               <Text style={[styles.refreshButtonText, { 
-                color: theme.colors.primary,
-                textShadowColor: '#FFFFFF',
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 3,
+                color: '#888691',
               }]}>
                 Retry
               </Text>

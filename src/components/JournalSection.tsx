@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: theme.colors.primary,
+    color: '#888691',
     fontWeight: '600',
   },
   headerTitle: {
@@ -324,11 +324,8 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     ...theme.typography.h4,
-    color: theme.colors.primary,
+    color: '#888691',
     fontWeight: '700',
-    textShadowColor: '#FFFFFF',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   statLabel: {
     ...theme.typography.small,

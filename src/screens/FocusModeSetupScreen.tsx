@@ -221,11 +221,8 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: theme.colors.primary,
+    color: '#888691',
     fontWeight: '600',
-    textShadowColor: '#FFFFFF',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   logoContainer: {
     alignItems: 'center',

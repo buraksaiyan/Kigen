@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
   cleanStatValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: theme.colors.primary,
+    color: '#888691',
   },
   // Keep old styles for backwards compatibility but unused now
   detailedStatRow: {
