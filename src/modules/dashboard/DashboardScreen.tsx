@@ -197,7 +197,9 @@ export const DashboardScreen: React.FC = () => {
               />
             }
           >
-            <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} />
+            <View style={styles.statsCardContainer}>
+              <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} />
+            </View>
 
             <View style={styles.actionsSection}>
               <Text style={styles.sectionTitle}>Build Discipline</Text>
@@ -206,11 +208,13 @@ export const DashboardScreen: React.FC = () => {
                 <Button
                   title="Goals"
                   onPress={() => setCurrentScreen('goals')}
+                  variant="outline"
                   style={styles.actionButton}
                 />
                 <Button
                   title="Journal"
                   onPress={handleJournal}
+                  variant="outline"
                   style={styles.actionButton}
                 />
               </View>
@@ -219,11 +223,13 @@ export const DashboardScreen: React.FC = () => {
                 <Button
                   title="Focus Session"
                   onPress={() => setIsFocusSessionOpen(true)}
+                  variant="outline"
                   style={styles.actionButton}
                 />
                 <Button
                   title="View Progress"
                   onPress={() => setIsProgressOpen(true)}
+                  variant="outline"
                   style={styles.actionButton}
                 />
               </View>
@@ -367,6 +373,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: theme.spacing.lg,
     // paddingBottom will be set dynamically based on safe area insets
+  },
+  statsCardContainer: {
+    marginVertical: theme.spacing.md,
+    paddingHorizontal: 4, // Add slight horizontal padding
   },
   menuButton: {
     padding: theme.spacing.sm,

@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import * as Notifications from 'expo-notifications';
 import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../config/theme';
@@ -466,7 +466,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     StatusBar.setHidden(true);
     
     // Keep screen awake during focus session
-    activateKeepAwake();
+    activateKeepAwakeAsync();
     
     // Initialize timer sound service
     TimerSoundService.initialize();
@@ -581,8 +581,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
           
-          // Play tick sound if enabled in settings
-          if (settings.timerSoundsEnabled && newTime > 0) {
+          // Play tick sound if enabled in settings (but not for meditation)
+          if (settings.timerSoundsEnabled && newTime > 0 && mode.id !== 'meditation') {
             TimerSoundService.playTick(settings.soundVolume, false).catch(err => 
               console.log('Timer tick sound error:', err)
             );
@@ -871,7 +871,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           <TouchableOpacity
             style={[styles.controlButton, styles.abortButton]}
             onPress={handleAbort}
-            activeOpacity={0.8}
+            activeOpacity={0.6}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text style={[styles.secondaryButtonText, { color: '#888691' }]}>Abort</Text>
           </TouchableOpacity>
@@ -880,7 +881,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           <TouchableOpacity
             style={[styles.controlButton, { backgroundColor: mode.color, borderRadius: 25 }]}
             onPress={handlePause}
-            activeOpacity={0.8}
+            activeOpacity={0.6}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
               {isPaused ? 'Resume' : 'Pause'}
@@ -891,7 +893,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           <TouchableOpacity
             style={[styles.controlButton, styles.earlyFinishButton]}
             onPress={handleEarlyFinish}
-            activeOpacity={0.8}
+            activeOpacity={0.6}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text style={[styles.secondaryButtonText, { color: '#888691' }]} numberOfLines={1}>Early Finish</Text>
           </TouchableOpacity>

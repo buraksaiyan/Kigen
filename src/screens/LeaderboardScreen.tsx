@@ -189,13 +189,17 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
     alignItems: 'center',
     borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#888691',
+    backgroundColor: 'transparent',
   },
   activeTab: {
     backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   tabText: {
     ...theme.typography.bodyLarge,
-    color: theme.colors.text.secondary,
+    color: '#888691',
     fontWeight: '600',
   },
   activeTabText: {

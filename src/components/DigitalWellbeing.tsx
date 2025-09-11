@@ -192,7 +192,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
               onPress={requestPermission}
               disabled={isRequestingPermission}
             >
-              <Text style={[styles.permissionButtonText, { color: theme.colors.background }]}>
+              <Text style={[styles.permissionButtonText, { color: theme.colors.text.primary }]}>
                 {isRequestingPermission ? 'Opening Settings...' : 'Grant Usage Access'}
               </Text>
             </TouchableOpacity>
