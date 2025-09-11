@@ -192,23 +192,29 @@ export class UserStatsService {
   }
 
   static async getCurrentRating(): Promise<UserRating> {
-    const stats = await this.calculateCurrentStats();
-    const totalPoints = RatingSystem.calculateTotalPoints(stats);
-    const overallRating = RatingSystem.calculateOverallRating(stats);
-    const cardTier = RatingSystem.getCardTier(totalPoints);
-
-    // Get current month record for monthly points
     const currentMonth = new Date().toISOString().slice(0, 7);
     const monthlyRecord = await this.getMonthlyRecord(currentMonth);
     
-    // Monthly points come from stored monthly record
-    // If no record exists, monthly points = daily points (first day of month)
-    const monthlyPoints = monthlyRecord?.totalPoints || totalPoints;
+    let monthlyStats, monthlyPoints, cardTier;
+    
+    if (monthlyRecord) {
+      // Use accumulated month-to-date stats from monthly record
+      monthlyStats = monthlyRecord.stats;
+      monthlyPoints = monthlyRecord.totalPoints;
+      cardTier = monthlyRecord.cardTier;
+    } else {
+      // First day of month or no record yet - use current day's stats
+      monthlyStats = await this.calculateCurrentStats();
+      monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
+      cardTier = RatingSystem.getCardTier(monthlyPoints);
+    }
+    
+    const overallRating = RatingSystem.calculateOverallRating(monthlyStats);
 
     return {
-      stats,
+      stats: monthlyStats,
       overallRating,
-      totalPoints,
+      totalPoints: monthlyPoints, // This represents monthly total points
       monthlyPoints,
       cardTier
     };

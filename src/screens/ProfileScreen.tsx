@@ -18,6 +18,7 @@ import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
+import { StatsValidator } from '../../debug/StatsValidator';
 
 interface UserProfile {
   id: string;
@@ -406,6 +407,23 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
             </Text>
           </View>
         </View>
+
+        {/* Debug Stats Validation */}
+        <TouchableOpacity 
+          style={{
+            backgroundColor: 'rgba(0, 255, 0, 0.2)',
+            padding: 15,
+            borderRadius: 8,
+            marginVertical: 10,
+            borderWidth: 1,
+            borderColor: '#00ff00'
+          }}
+          onPress={() => StatsValidator.validateStatsConsistency()}
+        >
+          <Text style={{ color: '#00ff00', textAlign: 'center', fontWeight: 'bold' }}>
+            🔍 Debug Stats (Check Console)
+          </Text>
+        </TouchableOpacity>
 
         {/* Privacy Notice */}
         <View style={styles.privacyNotice}>
