@@ -14,6 +14,7 @@ import {
   Alert,
   ImageBackground,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { UserStatsService } from '../services/userStatsService';
 import { UserRating, RatingSystem } from '../services/ratingSystem';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -105,6 +106,39 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     } finally {
       setIsLoading(false);
       console.log('📊 FlippableStatsCard: Loading completed');
+    }
+  };
+
+  const handleAddPhoto = async () => {
+    try {
+      // Request permissions
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (permissionResult.granted === false) {
+        Alert.alert("Permission Required", "Permission to access camera roll is required!");
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const imageUri = result.assets[0].uri;
+        setProfileImage(imageUri);
+        
+        // Save to user profile
+        await UserStatsService.updateUserProfile({ profileImage: imageUri });
+        
+        Alert.alert("Success", "Profile photo updated successfully!");
+      }
+    } catch (error) {
+      console.error('Error adding photo:', error);
+      Alert.alert("Error", "Failed to update profile photo. Please try again.");
     }
   };
 
@@ -373,7 +407,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
             
             {/* Profile Picture Section */}
             <View style={styles.profileSection}>
-              <View style={styles.profileImageContainer}>
+              <TouchableOpacity style={styles.profileImageContainer} onPress={handleAddPhoto}>
                 {profileImage ? (
                   <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 ) : (
@@ -382,7 +416,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                     <Text style={[styles.addPhotoText, { color: textColor }]}>Add Photo</Text>
                   </View>
                 )}
-              </View>
+              </TouchableOpacity>
               
               <Text style={[styles.userName, { color: textColor }]}>{userName}</Text>
             </View>

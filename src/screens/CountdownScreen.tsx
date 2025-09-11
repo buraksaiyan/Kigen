@@ -873,7 +873,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             onPress={handleAbort}
             activeOpacity={0.8}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#FF4444' }]}>Abort</Text>
+            <Text style={[styles.secondaryButtonText, { color: '#888691' }]}>Abort</Text>
           </TouchableOpacity>
 
           {/* Main Pause/Resume Button */}
@@ -893,7 +893,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             onPress={handleEarlyFinish}
             activeOpacity={0.8}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#22C55E' }]} numberOfLines={1}>Early Finish</Text>
+            <Text style={[styles.secondaryButtonText, { color: '#888691' }]} numberOfLines={1}>Early Finish</Text>
           </TouchableOpacity>
         </View>
 
@@ -1062,12 +1062,12 @@ const styles = StyleSheet.create({
   abortButton: {
     backgroundColor: 'rgba(255,68,68,0.1)',
     borderWidth: 1,
-    borderColor: '#FF4444',
+    borderColor: '#888691',
   },
   earlyFinishButton: {
     backgroundColor: 'rgba(34,197,94,0.1)',
     borderWidth: 1,
-    borderColor: '#22C55E',
+    borderColor: '#888691',
     minWidth: 130, // Wider to fit "Early Finish" on one line
     maxWidth: 140,
   },

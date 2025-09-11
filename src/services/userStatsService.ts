@@ -63,7 +63,7 @@ export class UserStatsService {
     let profile = await this.getUserProfile();
     if (!profile) {
       // Create default profile if none exists
-      const defaultUsername = `Player${Date.now().toString().slice(-6)}`;
+      const defaultUsername = `User${Date.now().toString().slice(-6)}`;
       profile = await this.createUserProfile(defaultUsername);
       console.log('✅ Created default user profile:', defaultUsername);
     }
@@ -196,55 +196,13 @@ export class UserStatsService {
     const overallRating = RatingSystem.calculateOverallRating(stats);
     const cardTier = RatingSystem.getCardTier(totalPoints);
 
-    // Get monthly points (properly accumulate throughout the month)
+    // Get current month record for monthly points
     const currentMonth = new Date().toISOString().slice(0, 7);
-    let monthlyRecord = await this.getMonthlyRecord(currentMonth);
+    const monthlyRecord = await this.getMonthlyRecord(currentMonth);
     
-    // If no monthly record exists for current month, create one with current daily stats
-    if (!monthlyRecord) {
-      monthlyRecord = {
-        month: currentMonth,
-        stats: { ...stats }, // Copy current daily stats as initial monthly
-        totalPoints,
-        cardTier
-      };
-      await this.saveMonthlyRecord(monthlyRecord);
-      console.log('📅 Created monthly record for', currentMonth, 'with points:', totalPoints);
-    } else {
-      // For existing monthly record, we should ADD today's stats to accumulated monthly stats
-      // But only if today hasn't been counted yet (to prevent double counting)
-      const today = new Date().toISOString().slice(0, 10);
-      const lastUpdateKey = `@kigen_monthly_last_update_${currentMonth}`;
-      const lastUpdate = await AsyncStorage.getItem(lastUpdateKey);
-      
-      if (lastUpdate !== today) {
-        // Add today's achievements to monthly totals
-        const updatedStats = {
-          DIS: monthlyRecord.stats.DIS + stats.DIS,
-          FOC: monthlyRecord.stats.FOC + stats.FOC,
-          JOU: monthlyRecord.stats.JOU + stats.JOU,
-          USA: monthlyRecord.stats.USA + stats.USA,
-          MEN: monthlyRecord.stats.MEN + stats.MEN,
-          PHY: monthlyRecord.stats.PHY + stats.PHY
-        };
-        
-        const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
-        const updatedCardTier = RatingSystem.getCardTier(updatedTotalPoints);
-        
-        monthlyRecord = {
-          month: currentMonth,
-          stats: updatedStats,
-          totalPoints: updatedTotalPoints,
-          cardTier: updatedCardTier
-        };
-        
-        await this.saveMonthlyRecord(monthlyRecord);
-        await AsyncStorage.setItem(lastUpdateKey, today);
-        console.log('📅 Updated monthly record for', currentMonth, 'new total:', updatedTotalPoints);
-      }
-    }
-    
-    const monthlyPoints = monthlyRecord.totalPoints;
+    // Monthly points come from stored monthly record
+    // If no record exists, monthly points = daily points (first day of month)
+    const monthlyPoints = monthlyRecord?.totalPoints || totalPoints;
 
     return {
       stats,
@@ -253,6 +211,56 @@ export class UserStatsService {
       monthlyPoints,
       cardTier
     };
+  }
+
+  // Method to properly update monthly stats when activities occur
+  static async updateMonthlyStats(): Promise<void> {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const today = new Date().toISOString().slice(0, 10);
+    const lastUpdateKey = `@kigen_monthly_last_update_${currentMonth}`;
+    const lastUpdate = await AsyncStorage.getItem(lastUpdateKey);
+    
+    // Only update if we haven't updated today
+    if (lastUpdate !== today) {
+      const todayStats = await this.calculateCurrentStats();
+      const todayPoints = RatingSystem.calculateTotalPoints(todayStats);
+      
+      let monthlyRecord = await this.getMonthlyRecord(currentMonth);
+      
+      if (!monthlyRecord) {
+        // First day of the month - create new record
+        monthlyRecord = {
+          month: currentMonth,
+          stats: { ...todayStats },
+          totalPoints: todayPoints,
+          cardTier: RatingSystem.getCardTier(todayPoints)
+        };
+        console.log('📅 New month detected - created fresh monthly record for', currentMonth);
+      } else {
+        // Add today's stats to monthly accumulation
+        const updatedStats = {
+          DIS: monthlyRecord.stats.DIS + todayStats.DIS,
+          FOC: monthlyRecord.stats.FOC + todayStats.FOC,
+          JOU: monthlyRecord.stats.JOU + todayStats.JOU,
+          USA: monthlyRecord.stats.USA + todayStats.USA,
+          MEN: monthlyRecord.stats.MEN + todayStats.MEN,
+          PHY: monthlyRecord.stats.PHY + todayStats.PHY
+        };
+        
+        const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
+        
+        monthlyRecord = {
+          month: currentMonth,
+          stats: updatedStats,
+          totalPoints: updatedTotalPoints,
+          cardTier: RatingSystem.getCardTier(updatedTotalPoints)
+        };
+      }
+      
+      await this.saveMonthlyRecord(monthlyRecord);
+      await AsyncStorage.setItem(lastUpdateKey, today);
+      console.log('📅 Updated monthly stats for', currentMonth, 'total points:', monthlyRecord.totalPoints);
+    }
   }
 
   // Monthly Records Management
@@ -328,6 +336,9 @@ export class UserStatsService {
 
     await this.saveDailyActivity(today);
     
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
     // Sync with leaderboard after focus session
     if (completed) {
       await this.syncUserToLeaderboard();
@@ -342,6 +353,9 @@ export class UserStatsService {
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
     
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
     // Sync with leaderboard after updating journal entry
     await this.syncUserToLeaderboard();
   }
@@ -353,6 +367,9 @@ export class UserStatsService {
     const today = await this.getTodayActivity();
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
     
     // Sync with leaderboard after completing a goal
     await this.syncUserToLeaderboard();
@@ -385,16 +402,38 @@ export class UserStatsService {
   // Leaderboard data
   static async getLifetimeLeaderboard(): Promise<Array<{ userId: string; username: string; totalPoints: number; cardTier: CardTier }>> {
     // This would typically fetch from a backend service
-    // For now, return current user data
+    // For now, return current user data with proper lifetime calculation
     const profile = await this.getUserProfile();
-    const rating = await this.getCurrentRating();
     
     if (profile) {
+      // Calculate lifetime stats from all monthly records
+      const monthlyRecords = await this.getMonthlyRecords();
+      let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+      
+      if (monthlyRecords.length > 0) {
+        // Sum up all historical monthly stats
+        monthlyRecords.forEach(record => {
+          lifetimeStats.DIS += record.stats.DIS;
+          lifetimeStats.FOC += record.stats.FOC;
+          lifetimeStats.JOU += record.stats.JOU;
+          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.MEN += record.stats.MEN;
+          lifetimeStats.PHY += record.stats.PHY;
+        });
+      } else {
+        // If no monthly records, use current daily stats as fallback
+        const currentStats = await this.calculateCurrentStats();
+        lifetimeStats = currentStats;
+      }
+      
+      const totalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
+      const cardTier = RatingSystem.getCardTier(totalPoints);
+
       return [{
         userId: profile.id,
         username: profile.username,
-        totalPoints: rating.totalPoints,
-        cardTier: rating.cardTier
+        totalPoints,
+        cardTier
       }];
     }
     
@@ -446,6 +485,30 @@ export class UserStatsService {
       
     } catch (error) {
       console.error('❌ Error syncing user to leaderboard:', error);
+    }
+  }
+
+  // Development/Debug utility methods
+  static async clearAllData(): Promise<void> {
+    try {
+      // Get all keys
+      const keys = await AsyncStorage.getAllKeys();
+      
+      // Filter for Kigen-related keys but EXCLUDE user profile (to keep username)
+      const kigenKeys = keys.filter(key => 
+        (key.includes('@kigen') || 
+         key.includes('daily_activity') ||
+         key.includes('monthly_records')) &&
+        !key.includes('user_profile') // Keep user profile (username, etc)
+      );
+      
+      // Remove selected Kigen data but preserve user profile
+      await AsyncStorage.multiRemove(kigenKeys);
+      console.log('🗑️ Cleared Kigen stats data from AsyncStorage (preserved username)');
+      
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      throw error;
     }
   }
 }

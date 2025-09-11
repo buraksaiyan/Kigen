@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { maybePromptForRating } from '../../services/rating';
@@ -243,6 +243,22 @@ export const DashboardScreen: React.FC = () => {
                     style={{ marginBottom: 8 }}
                   />
                 )}
+                <Button
+                  title="🗑️ Clear All Data"
+                  onPress={async () => {
+                    try {
+                      const { UserStatsService } = await import('../../services/userStatsService');
+                      await UserStatsService.clearAllData();
+                      Alert.alert('Success', 'All data cleared successfully!');
+                    } catch (error) {
+                      Alert.alert('Error', 'Failed to clear data');
+                      console.error(error);
+                    }
+                  }}
+                  variant="outline"
+                  size="small"
+                  style={{ marginBottom: 8 }}
+                />
                 <Button
                   title="Sign Out"
                   onPress={signOut}
