@@ -3,13 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Settings {
   timerSoundsEnabled: boolean;
-  meditationSoundsEnabled: boolean;
   soundVolume: number;
 }
 
 const DEFAULT_SETTINGS: Settings = {
   timerSoundsEnabled: false,
-  meditationSoundsEnabled: false,
   soundVolume: 0.5,
 };
 
@@ -52,10 +50,6 @@ export const useSettings = () => {
     updateSettings({ timerSoundsEnabled: !settings.timerSoundsEnabled });
   };
 
-  const toggleMeditationSounds = () => {
-    updateSettings({ meditationSoundsEnabled: !settings.meditationSoundsEnabled });
-  };
-
   const updateVolume = (volume: number) => {
     updateSettings({ soundVolume: Math.max(0, Math.min(1, volume)) });
   };
@@ -65,7 +59,6 @@ export const useSettings = () => {
     isLoading,
     updateSettings,
     toggleTimerSounds,
-    toggleMeditationSounds,
     updateVolume,
   };
 };

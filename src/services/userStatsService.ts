@@ -406,12 +406,15 @@ export class UserStatsService {
     const profile = await this.getUserProfile();
     
     if (profile) {
-      // Calculate lifetime stats from all monthly records
+      // Calculate lifetime stats using same logic as FlippableStatsCard
       const monthlyRecords = await this.getMonthlyRecords();
       let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
       
-      if (monthlyRecords.length > 0) {
-        // Sum up all historical monthly stats
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
+      
+      if (currentMonthRecord) {
+        // Current month is already saved, use all monthly records (including current)
         monthlyRecords.forEach(record => {
           lifetimeStats.DIS += record.stats.DIS;
           lifetimeStats.FOC += record.stats.FOC;
@@ -421,9 +424,27 @@ export class UserStatsService {
           lifetimeStats.PHY += record.stats.PHY;
         });
       } else {
-        // If no monthly records, use current daily stats as fallback
+        // Current month not saved yet, use historical records + current month's live stats
+        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
+        
+        // Add historical months
+        historicalRecords.forEach(record => {
+          lifetimeStats.DIS += record.stats.DIS;
+          lifetimeStats.FOC += record.stats.FOC;
+          lifetimeStats.JOU += record.stats.JOU;
+          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.MEN += record.stats.MEN;
+          lifetimeStats.PHY += record.stats.PHY;
+        });
+        
+        // Add current month's live stats
         const currentStats = await this.calculateCurrentStats();
-        lifetimeStats = currentStats;
+        lifetimeStats.DIS += currentStats.DIS;
+        lifetimeStats.FOC += currentStats.FOC;
+        lifetimeStats.JOU += currentStats.JOU;
+        lifetimeStats.USA += currentStats.USA;
+        lifetimeStats.MEN += currentStats.MEN;
+        lifetimeStats.PHY += currentStats.PHY;
       }
       
       const totalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);

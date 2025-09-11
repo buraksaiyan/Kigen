@@ -17,7 +17,6 @@ import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
-import MeditationSoundService, { MeditationSound, PRESET_MEDITATION_SOUNDS } from '../services/MeditationSoundService';
 import { useSettings } from '../hooks/useSettings';
 
 const { width, height } = Dimensions.get('window');
