@@ -38,12 +38,12 @@ export const Button: React.FC<ButtonProps> = ({
       primary: {
         backgroundColor: disabled ? theme.colors.text.disabled : theme.colors.primary,
         borderWidth: 1,
-        borderColor: disabled ? theme.colors.text.disabled : '#888691',
+        borderColor: disabled ? theme.colors.text.disabled : theme.colors.primary,
       },
       secondary: {
         backgroundColor: disabled ? theme.colors.text.disabled : theme.colors.secondary,
         borderWidth: 1,
-        borderColor: disabled ? theme.colors.text.disabled : '#888691',
+        borderColor: disabled ? theme.colors.text.disabled : theme.colors.primary,
       },
       outline: {
         backgroundColor: 'transparent',

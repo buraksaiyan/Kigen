@@ -336,7 +336,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
                     onPress={() => deleteGoal(goal.id)}
                     style={styles.smallDeleteButton}
                   >
-                    <Text style={styles.smallDeleteText}>X</Text>
+                    <Text style={styles.smallDeleteText}>×</Text>
                   </TouchableOpacity>
                 </Card>
               ))}
@@ -361,7 +361,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
                     onPress={() => deleteGoal(goal.id)}
                     style={styles.smallDeleteButton}
                   >
-                    <Text style={styles.smallDeleteText}>X</Text>
+                    <Text style={styles.smallDeleteText}>×</Text>
                   </TouchableOpacity>
                 </Card>
               ))}
@@ -535,6 +535,8 @@ const styles = StyleSheet.create({
   },
   smallDeleteText: {
     fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   emptyCard: {
     alignItems: 'center',

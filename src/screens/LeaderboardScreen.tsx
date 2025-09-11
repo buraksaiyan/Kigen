@@ -71,16 +71,11 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
   };
 
   const getTierColors = (tier: CardTier): { primary: string; secondary: string } => {
-    switch (tier) {
-      case 'Bronze': return { primary: '#CD7F32', secondary: '#A0522D' };
-      case 'Silver': return { primary: '#C0C0C0', secondary: '#A9A9A9' };
-      case 'Gold': return { primary: '#FFD700', secondary: '#FFA500' };
-      case 'Platinum': return { primary: '#E5E4E2', secondary: '#BCC6CC' };
-      case 'Diamond': return { primary: '#B9F2FF', secondary: '#4A90E2' };
-      case 'Carbon': return { primary: '#36454F', secondary: '#2F4F4F' };
-      case 'Obsidian': return { primary: '#0F0F23', secondary: '#800080' };
-      default: return { primary: '#CD7F32', secondary: '#A0522D' };
-    }
+    const ratingSystemColors = RatingSystem.getCardTierColors(tier);
+    return { 
+      primary: ratingSystemColors.primary, 
+      secondary: ratingSystemColors.secondary 
+    };
   };
 
   const formatMonthYear = (monthStr: string) => {

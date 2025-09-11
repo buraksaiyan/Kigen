@@ -694,9 +694,6 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: '900',
     color: '#FFFFFF',
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
   },
   detailedStatsContainer: {
     padding: 20,
@@ -725,9 +722,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: theme.colors.primary,
-    textShadowColor: '#FFFFFF',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   // Keep old styles for backwards compatibility but unused now
   detailedStatRow: {

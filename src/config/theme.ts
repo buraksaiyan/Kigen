@@ -1,7 +1,7 @@
 // Dark, discipline-focused theme for Android
 export const theme = {
   colors: {
-    primary: '#2E1A47',      // Midnight purple for key actions
+    primary: '#888691',      // Changed from midnight purple to lighter gray
     secondary: '#7c3aed',    // Keep secondary as before  
     success: '#10b981',      // Green for positive actions
     danger: '#ef4444',       // Red for warnings/mistakes

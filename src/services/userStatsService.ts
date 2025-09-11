@@ -196,11 +196,11 @@ export class UserStatsService {
     const overallRating = RatingSystem.calculateOverallRating(stats);
     const cardTier = RatingSystem.getCardTier(totalPoints);
 
-    // Get monthly points (for current month only)
+    // Get monthly points (accumulate throughout the month, don't reset daily)
     const currentMonth = new Date().toISOString().slice(0, 7);
     let monthlyRecord = await this.getMonthlyRecord(currentMonth);
     
-    // If no monthly record exists for current month, create one
+    // If no monthly record exists for current month, create one with current stats
     if (!monthlyRecord) {
       monthlyRecord = {
         month: currentMonth,
@@ -210,6 +210,29 @@ export class UserStatsService {
       };
       await this.saveMonthlyRecord(monthlyRecord);
       console.log('📅 Created monthly record for', currentMonth);
+    } else {
+      // Update the monthly record with accumulated stats (not daily reset)
+      // Only update if current stats are higher (progressive accumulation)
+      const updatedStats = {
+        DIS: Math.max(monthlyRecord.stats.DIS, stats.DIS),
+        FOC: Math.max(monthlyRecord.stats.FOC, stats.FOC), 
+        JOU: Math.max(monthlyRecord.stats.JOU, stats.JOU),
+        USA: Math.max(monthlyRecord.stats.USA, stats.USA),
+        MEN: Math.max(monthlyRecord.stats.MEN, stats.MEN),
+        PHY: Math.max(monthlyRecord.stats.PHY, stats.PHY)
+      };
+      
+      const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
+      const updatedCardTier = RatingSystem.getCardTier(updatedTotalPoints);
+      
+      monthlyRecord = {
+        month: currentMonth,
+        stats: updatedStats,
+        totalPoints: updatedTotalPoints,
+        cardTier: updatedCardTier
+      };
+      
+      await this.saveMonthlyRecord(monthlyRecord);
     }
     
     const monthlyPoints = monthlyRecord.totalPoints;

@@ -78,7 +78,7 @@ export const Leaderboard: React.FC = () => {
     return (
       <View key={`${entry.id}-${isLifetime ? 'lifetime' : 'monthly'}`} style={styles.entryContainer}>
         <LinearGradient
-          colors={['#8b5cf6', '#7c3aed']}
+          colors={[tierColors.primary, tierColors.secondary]}
           style={styles.entryBackground}
         >
           <View style={styles.rankContainer}>
