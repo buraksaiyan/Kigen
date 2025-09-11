@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as IntentLauncher from 'expo-intent-launcher';
 
 export interface AppUsage {
+  id: string;
   packageName: string;
   appName: string;
   timeInForeground: number; // milliseconds

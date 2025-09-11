@@ -2,12 +2,14 @@
 // This wrapper is kept for backwards compatibility.
 
 import usageStatsService from '../services/usageStatsService';
+import { generateUniqueId } from '../utils/uniqueId';
 
 interface LegacyUsageStats {
   totalScreenTime: number;
   pickups: number;
   notifications: number;
   apps: Array<{
+    id: string;
     packageName: string;
     appName: string;
     timeInForeground: number;
@@ -39,6 +41,7 @@ const UsageStatsNative = {
       pickups: 0, // Not available in new service
       notifications: 0, // Not available in new service
       apps: stats.map(app => ({
+        id: generateUniqueId(),
         packageName: app.packageName,
         appName: app.appName,
         timeInForeground: app.totalTimeInForeground,
@@ -57,6 +60,7 @@ const UsageStatsNative = {
       pickups: 0, // Not available in new service
       notifications: 0, // Not available in new service
       apps: stats.map(app => ({
+        id: generateUniqueId(),
         packageName: app.packageName,
         appName: app.appName,
         timeInForeground: app.totalTimeInForeground,

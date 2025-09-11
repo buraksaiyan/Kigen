@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStats, UserRating, CardTier, RatingSystem } from './ratingSystem';
 import LeaderboardService from './LeaderboardService';
+import { generateUniqueId } from '../utils/uniqueId';
 
 interface UserProfile {
   id: string;
@@ -43,7 +44,7 @@ export class UserStatsService {
   // User Profile Management
   static async createUserProfile(username: string, profileImage?: string): Promise<UserProfile> {
     const profile: UserProfile = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateUniqueId(),
       username,
       profileImage,
       createdAt: new Date(),

@@ -18,6 +18,7 @@ import { UserStatsService } from '../services/userStatsService';
 import { Button, Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
+import { generateUniqueId } from '../utils/uniqueId';
 
 interface Goal {
   id: string;
@@ -89,7 +90,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
     if (!newGoalTitle.trim()) return;
 
     const newGoal: Goal = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateUniqueId(),
       title: newGoalTitle.trim(),
       completed: false,
       failed: false,

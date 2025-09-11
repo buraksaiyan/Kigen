@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStatsService } from './userStatsService';
+import { generateUniqueId } from '../utils/uniqueId';
 
 interface FocusSession {
   id: string;
@@ -76,7 +77,7 @@ class FocusSessionService {
   // Start a new focus session
   async startSession(mode: any, duration: number, goal?: any): Promise<string> {
     try {
-      const sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const sessionId = generateUniqueId();
       const startTime = new Date().toISOString();
       const date = new Date().toISOString().split('T')[0] as string;
 

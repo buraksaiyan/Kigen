@@ -59,7 +59,7 @@ export const UsageChart: React.FC<UsageChartProps> = ({
           
           return (
             <Circle
-              key={index}
+              key={`${item.app}-${item.timeInForeground}-${index}`}
               cx={centerX}
               cy={centerY}
               r={radius}

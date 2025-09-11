@@ -2,8 +2,10 @@ import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform, AppState, AppStateStatus, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import usageStatsService from './usageStatsService';
+import { generateUniqueId } from '../utils/uniqueId';
 
 export interface AppUsage {
+  id: string;
   packageName: string;
   appName: string;
   icon?: string;
@@ -13,6 +15,7 @@ export interface AppUsage {
 }
 
 export interface UsageStats {
+  id?: string;
   totalScreenTime: number;
   pickups: number;
   notifications: number;
@@ -189,6 +192,7 @@ class NativeUsageTracker {
           pickups: 0, // This would need additional implementation
           notifications: 0, // This would need additional implementation
           apps: nativeStats.map(app => ({
+            id: generateUniqueId(),
             packageName: app.packageName,
             appName: app.appName,
             timeInForeground: app.totalTimeInForeground,
@@ -207,6 +211,7 @@ class NativeUsageTracker {
           notifications: 42,
           apps: [
             {
+              id: generateUniqueId(),
               packageName: 'com.expo.client',
               appName: 'Expo Go',
               timeInForeground: 2 * 60 * 60 * 1000, // 2 hours
@@ -214,6 +219,7 @@ class NativeUsageTracker {
               launchCount: 12
             },
             {
+              id: generateUniqueId(),
               packageName: 'com.google.android.apps.messaging',
               appName: 'Messages',
               timeInForeground: 45 * 60 * 1000, // 45 minutes
@@ -221,6 +227,7 @@ class NativeUsageTracker {
               launchCount: 23
             },
             {
+              id: generateUniqueId(),
               packageName: 'com.android.chrome',
               appName: 'Chrome',
               timeInForeground: 35 * 60 * 1000, // 35 minutes
@@ -228,6 +235,7 @@ class NativeUsageTracker {
               launchCount: 8
             },
             {
+              id: generateUniqueId(),
               packageName: 'com.instagram.android',
               appName: 'Instagram',
               timeInForeground: 25 * 60 * 1000, // 25 minutes
@@ -263,6 +271,7 @@ class NativeUsageTracker {
           pickups: 0, // This would need additional implementation
           notifications: 0, // This would need additional implementation
           apps: nativeStats.map(app => ({
+            id: generateUniqueId(),
             packageName: app.packageName,
             appName: app.appName,
             timeInForeground: app.totalTimeInForeground,

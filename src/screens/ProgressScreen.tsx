@@ -99,12 +99,22 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
+    const timeString = date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    });
+
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return `Today, ${timeString}`;
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return `Yesterday, ${timeString}`;
     } else {
-      return date.toLocaleDateString();
+      const dateStr = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      return `${dateStr}, ${timeString}`;
     }
   };
 
