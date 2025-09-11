@@ -65,6 +65,14 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
         focusSessionService.getKigenStatsLogs(20), // Get last 20 Kigen stats logs
       ]);
 
+      console.log('📊 Loaded focus sessions for progress:', logs.length, 'sessions');
+      console.log('📋 Recent sessions:', logs.map(s => ({
+        mode: s.mode.title,
+        duration: s.actualDuration,
+        type: s.completionType,
+        points: s.pointsEarned
+      })));
+
       setFocusLogs(logs);
       setSessionStats(stats);
       setTodaysSummary(summary);

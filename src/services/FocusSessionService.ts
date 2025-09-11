@@ -131,20 +131,26 @@ class FocusSessionService {
       session.completed = completed;
       session.completionType = completionType; // Set completion type for display
       session.actualDuration = actualMinutes; // Set actual time spent
+      
+      // Calculate points (may be 0 if session is too short)
       session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
 
-      // Save session if it meets minimum threshold (5 min) OR if it's meditation (every minute counts)
+      // Always save session for tracking purposes (users should see their attempts)
+      await this.saveFocusSession(session);
+      await this.updateSessionStats(session);
+      
+      // Only award points and update daily points if session meets minimum threshold OR is meditation
       if (actualMinutes >= 5 || session.mode.id === 'meditation') {
-        await this.saveFocusSession(session);
-        await this.updateDailyPoints(session.pointsEarned);
-        await this.updateSessionStats(session);
+        if (session.pointsEarned > 0) {
+          await this.updateDailyPoints(session.pointsEarned);
+        }
         
         // Update UserStatsService with the completed session
         await this.updateUserStats(session, actualMinutes);
         
         console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned`);
       } else {
-        console.log(`Session too short (${actualMinutes} minutes), no points awarded`);
+        console.log(`Session recorded but too short (${actualMinutes} minutes), no points awarded`);
       }
 
       // Clear current session
@@ -157,7 +163,9 @@ class FocusSessionService {
 
   // Early finish session (awards points based on time completed)
   async earlyFinishSession(sessionId: string): Promise<void> {
+    console.log('🔸 Early finishing session:', sessionId);
     await this.completeSession(sessionId, false, 'early-finish'); // Mark as early finish with points
+    console.log('✅ Early finish completed for session:', sessionId);
   }
 
   // Abort session (no points awarded)
@@ -201,6 +209,14 @@ class FocusSessionService {
   // Save a focus session to history
   private async saveFocusSession(session: FocusSession): Promise<void> {
     try {
+      console.log('🔹 Saving focus session:', {
+        id: session.id,
+        mode: session.mode.title,
+        duration: session.actualDuration,
+        completionType: session.completionType,
+        points: session.pointsEarned
+      });
+      
       const existingSessions = await this.getFocusSessions();
       const updatedSessions = [session, ...existingSessions];
       
@@ -211,8 +227,10 @@ class FocusSessionService {
         STORAGE_KEYS.FOCUS_SESSIONS,
         JSON.stringify(limitedSessions)
       );
+      
+      console.log('✅ Focus session saved successfully. Total sessions:', limitedSessions.length);
     } catch (error) {
-      console.error('Error saving focus session:', error);
+      console.error('❌ Error saving focus session:', error);
       throw error;
     }
   }
