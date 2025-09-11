@@ -208,14 +208,14 @@ export const DashboardScreen: React.FC = () => {
                 <Button
                   title="Goals"
                   onPress={() => setCurrentScreen('goals')}
-                  variant="outline"
-                  style={styles.actionButton}
+                  variant="primary"
+                  style={styles.outlinedActionButton}
                 />
                 <Button
                   title="Journal"
                   onPress={handleJournal}
-                  variant="outline"
-                  style={styles.actionButton}
+                  variant="primary"
+                  style={styles.outlinedActionButton}
                 />
               </View>
               
@@ -223,14 +223,14 @@ export const DashboardScreen: React.FC = () => {
                 <Button
                   title="Focus Session"
                   onPress={() => setIsFocusSessionOpen(true)}
-                  variant="outline"
-                  style={styles.actionButton}
+                  variant="primary"
+                  style={styles.outlinedActionButton}
                 />
                 <Button
                   title="View Progress"
                   onPress={() => setIsProgressOpen(true)}
-                  variant="outline"
-                  style={styles.actionButton}
+                  variant="primary"
+                  style={styles.outlinedActionButton}
                 />
               </View>
             </View>
@@ -456,6 +456,11 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
+  },
+  outlinedActionButton: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#888691',
   },
   fullWidthButtonContainer: {
     marginTop: theme.spacing.md,
