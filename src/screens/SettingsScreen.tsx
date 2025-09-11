@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   Modal,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -27,6 +28,21 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
   const [loading, setLoading] = useState(false);
 
   const volumeSteps = [0.1, 0.3, 0.5, 0.7, 1.0];
+
+  // Handle hardware back button
+  useEffect(() => {
+    if (!visible) return;
+
+    const backAction = () => {
+      console.log('📱 Hardware back button pressed in SettingsScreen');
+      onClose();
+      return true; // Prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [visible, onClose]);
 
   const handleManageSounds = async () => {
     setShowSoundManager(true);

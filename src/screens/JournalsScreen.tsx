@@ -8,6 +8,7 @@ import {
   Alert,
   StatusBar,
   Modal,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
@@ -32,6 +33,21 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
   useEffect(() => {
     loadData();
   }, []);
+
+  // Handle hardware back button
+  useEffect(() => {
+    if (!visible || !onClose) return;
+
+    const backAction = () => {
+      console.log('📱 Hardware back button pressed in JournalsScreen');
+      onClose();
+      return true; // Prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [visible, onClose]);
 
   const loadData = async () => {
     try {

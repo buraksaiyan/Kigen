@@ -10,6 +10,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -45,6 +46,21 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       loadProfile();
     }
   }, [visible]);
+
+  // Handle hardware back button
+  useEffect(() => {
+    if (!visible) return;
+
+    const backAction = () => {
+      console.log('📱 Hardware back button pressed in ProfileScreen');
+      onClose();
+      return true; // Prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [visible, onClose]);
 
   const loadProfile = async () => {
     try {
