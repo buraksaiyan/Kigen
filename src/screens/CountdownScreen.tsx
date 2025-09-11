@@ -451,9 +451,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // Set counter state for Body Focus mode
   const [setCount, setSetCount] = useState(0);
 
-  // Meditation sound selection state
-  const [selectedMeditationSound, setSelectedMeditationSound] = useState<MeditationSound | null>(null);
-
   // Settings for sounds
   const { settings } = useSettings();
 
@@ -473,29 +470,17 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     // Register background task and request permissions
     BackgroundTimerService.requestPermissions();
     BackgroundTimerService.registerBackgroundTask();
-
-    // Start meditation sounds if enabled
-    if (mode.id === 'meditation' && settings.meditationSoundsEnabled) {
-      // TODO: Start meditation ambient sounds
-      console.log('Starting meditation sounds...');
-    }
     
     return () => {
       StatusBar.setHidden(false);
       deactivateKeepAwake();
-      
-      // Stop meditation sounds if they were playing
-      if (mode.id === 'meditation') {
-        // TODO: Stop meditation ambient sounds
-        console.log('Stopping meditation sounds...');
-      }
       
       // Clean up background timer on unmount
       if (!isRunning) {
         BackgroundTimerService.stopTimer();
       }
     };
-  }, [isRunning, mode.id, settings.meditationSoundsEnabled]);
+  }, [isRunning, mode.id]);
 
   // Show notification when timer starts
   useEffect(() => {
@@ -603,28 +588,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
       }
     };
   }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume]);
-
-  // Meditation sound control effect
-  useEffect(() => {
-    if (mode.id === 'meditation' && selectedMeditationSound) {
-      if (isRunning && !isPaused) {
-        // Resume meditation sound when timer is running
-        MeditationSoundService.resumeSound();
-      } else {
-        // Pause meditation sound when timer is paused
-        MeditationSoundService.pauseSound();
-      }
-    }
-  }, [isRunning, isPaused, mode.id, selectedMeditationSound]);
-
-  // Cleanup meditation sound when component unmounts or timer completes
-  useEffect(() => {
-    return () => {
-      if (mode.id === 'meditation') {
-        MeditationSoundService.cleanup();
-      }
-    };
-  }, [mode.id]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -745,71 +708,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                   <Text style={styles.setResetButtonText}>RESET</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          )}
-
-          {/* Meditation Sound Selector - only show for meditation mode */}
-          {mode.id === 'meditation' && (
-            <View style={styles.meditationSoundContainer}>
-              <Text style={[styles.soundSelectorLabel, { color: mode.color }]}>
-                MEDITATION SOUND
-              </Text>
-              
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                style={styles.soundScrollView}
-                contentContainerStyle={styles.soundScrollContent}
-              >
-                {/* None Option */}
-                <TouchableOpacity 
-                  style={[
-                    styles.soundCard,
-                    !selectedMeditationSound && [styles.soundCardActive, { borderColor: mode.color }]
-                  ]}
-                  onPress={() => {
-                    setSelectedMeditationSound(null);
-                    MeditationSoundService.stopSound();
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[
-                    styles.soundCardTitle, 
-                    !selectedMeditationSound && { color: mode.color }
-                  ]}>
-                    None
-                  </Text>
-                  <Text style={styles.soundCardDescription}>
-                    Silent meditation
-                  </Text>
-                </TouchableOpacity>
-                
-                {/* Preset Sounds */}
-                {PRESET_MEDITATION_SOUNDS.map((sound) => (
-                  <TouchableOpacity
-                    key={sound.id}
-                    style={[
-                      styles.soundCard,
-                      selectedMeditationSound?.id === sound.id && [styles.soundCardActive, { borderColor: mode.color }]
-                    ]}
-                    onPress={() => {
-                      setSelectedMeditationSound(sound);
-                      MeditationSoundService.playSound(sound, 0.3);
-                    }}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[
-                      styles.soundCardTitle,
-                      selectedMeditationSound?.id === sound.id && { color: mode.color }
-                    ]}>
-                      {sound.name}
-                    </Text>
-                    <Text style={styles.soundCardDescription}>
-                      {sound.description}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
             </View>
           )}
 
@@ -1276,55 +1174,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  // Meditation sound selector styles
-  meditationSoundContainer: {
-    width: '90%',
-    marginBottom: theme.spacing.lg,
-  },
-  soundSelectorLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  soundScrollView: {
-    flexGrow: 0,
-  },
-  soundScrollContent: {
-    paddingHorizontal: theme.spacing.sm,
-    alignItems: 'center',
-  },
-  soundCard: {
-    width: 120,
-    height: 80,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.1)',
-    marginHorizontal: theme.spacing.xs,
-    padding: theme.spacing.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  soundCardActive: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 2,
-  },
-  soundCardTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  soundCardDescription: {
-    fontSize: 10,
-    color: 'rgba(255,255,255,0.6)',
-    textAlign: 'center',
-    lineHeight: 12,
-  },
   // SVG progress circle styles
   progressSvg: {
     position: 'absolute',
@@ -1370,15 +1219,5 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.7)',
     textAlign: 'center',
     lineHeight: 20,
-  },
-  // Custom sound styles
-  customSoundCard: {
-    borderColor: 'rgba(255,215,0,0.3)', // Golden border for custom sounds
-    backgroundColor: 'rgba(255,215,0,0.05)',
-  },
-  addSoundCard: {
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    backgroundColor: 'transparent',
   },
 });
