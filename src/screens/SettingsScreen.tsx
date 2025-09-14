@@ -287,7 +287,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
         </View>
       </ScrollView>
     </SafeAreaView>
-  </View>
+      </View>
   </Modal>
 
   {/* Language Picker Modal */}
