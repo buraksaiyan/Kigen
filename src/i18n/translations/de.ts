@@ -18,6 +18,7 @@ export const de = {
     week: 'Woche',
     month: 'Monat',
   },
+
   login: {
     createAccount: 'Konto erstellen',
     welcomeBack: 'Willkommen zurück',

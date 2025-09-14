@@ -143,6 +143,16 @@ export const fr = {
     deleteGoal: 'Supprimer l\'Objectif',
     completed: 'Terminé',
     pending: 'En Attente',
+    yourGoals: 'Vos Objectifs',
+    goalCompleted: 'Objectif Terminé !',
+    goalCompletedDesc: 'Cet objectif sera marqué comme terminé avec succès.',
+    deleteGoalConfirm: 'Cet objectif sera supprimé définitivement.',
+    completedGoals: 'Objectifs Terminés',
+    activeGoals: 'Objectifs Actifs',
+    loading: 'Chargement des objectifs...',
+    saveGoal: 'Enregistrer l\'Objectif',
+    goalSaved: 'Objectif enregistré avec succès !',
+    goalDeleted: 'Objectif supprimé avec succès !',
   },
 
   achievements: {
