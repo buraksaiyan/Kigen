@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, BackHandler, Platform } from 'react-native';
 import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
+import { I18nProvider } from './i18n/I18nProvider';
 import { clearOldFocusData } from './utils/clearOldData';
 
 // Conditional import for web compatibility
@@ -37,9 +38,11 @@ export default function App() {
   return (
     <GestureHandler style={{ flex: 1 }}>
       <View style={styles.container}>
-        <AuthProvider>
-          <Navigation />
-        </AuthProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <Navigation />
+          </AuthProvider>
+        </I18nProvider>
       </View>
     </GestureHandler>
   );

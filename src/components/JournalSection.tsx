@@ -34,6 +34,13 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
+  const handleClose = () => {
+    console.log('📱 JournalSection close button pressed');
+    // Dismiss keyboard before closing
+    Keyboard.dismiss();
+    onClose();
+  };
+
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
       setKeyboardHeight(e.endCoordinates.height);
@@ -139,7 +146,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
             <View style={styles.logoContainer}>
@@ -192,7 +199,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               bottom: keyboardHeight + 60, // Add space above navigation
               left: 0,
               right: 0,
-              backgroundColor: theme.colors.surface,
+              backgroundColor: theme.colors.background, // Pure black background
               borderTopWidth: 1,
               borderTopColor: theme.colors.border,
             }
@@ -201,6 +208,14 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           <Text style={styles.inputLabel}>Write about your discipline journey</Text>
           
           <TextInput
+            ref={(ref) => {
+              // Store ref for programmatic focus management
+              if (ref) {
+                ref.setNativeProps({ 
+                  selection: undefined // Clear selection to prevent issues
+                });
+              }
+            }}
             style={[
               styles.textInput,
               {
@@ -214,8 +229,17 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             placeholderTextColor={theme.colors.text.tertiary}
             multiline
             textAlignVertical="top"
-            blurOnSubmit={true}
-            returnKeyType="done"
+            blurOnSubmit={false} // Keep input focused for multiline
+            returnKeyType="default" // Better for multiline
+            keyboardType="default"
+            autoCorrect={true}
+            autoCapitalize="sentences"
+            onFocus={() => {
+              // Ensure stable focus state
+            }}
+            onBlur={() => {
+              // Handle blur if needed
+            }}
           />
           
           {/* Button Row - Always visible */}
@@ -224,7 +248,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               style={styles.cancelButton}
               onPress={() => {
                 setNewEntry('');
-                onClose(); // Close the journal section
+                handleClose(); // Close the journal section
               }}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -265,7 +289,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderTopLeftRadius: theme.borderRadius.lg,
     borderTopRightRadius: theme.borderRadius.lg,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.background, // Pure black background instead of surface
   },
   header: {
     flexDirection: 'row',
@@ -324,7 +348,7 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     ...theme.typography.h4,
-    color: '#888691',
+    color: theme.colors.text.primary, // Use theme color instead of fixed gray
     fontWeight: '700',
   },
   statLabel: {
@@ -335,7 +359,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   inputSection: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.background, // Pure black background
     padding: theme.spacing.md,
     paddingBottom: theme.spacing.xl, // More space to avoid navigation overlap
     borderTopWidth: 1,

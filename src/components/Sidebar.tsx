@@ -61,6 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
     { id: 'journals', title: 'Past Journals', icon: '' },
     { id: 'goals', title: 'Past Goals', icon: '' },
     { id: 'progress', title: 'Progress', icon: '' },
+    { id: 'achievements', title: 'Achievements', icon: '🏆' },
     { id: 'profile', title: 'Profile', icon: '' },
     { id: 'settings', title: 'Settings', icon: '' },
   ];

@@ -21,6 +21,8 @@ import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
 import { ProgressScreen } from '../../screens/ProgressScreen';
 import { SettingsScreen } from '../../screens/SettingsScreen';
 import { ProfileScreen } from '../../screens/ProfileScreen';
+import { AchievementsScreen } from '../../screens/AchievementsScreen';
+import { achievementService } from '../../services/achievementService';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
 
@@ -35,6 +37,7 @@ export const DashboardScreen: React.FC = () => {
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -80,6 +83,7 @@ export const DashboardScreen: React.FC = () => {
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
         setIsProfileOpen(false);
+        setIsAchievementsOpen(false);
         break;
       case 'goals':
         setIsGoalsOpen(true);
@@ -88,6 +92,7 @@ export const DashboardScreen: React.FC = () => {
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
         setIsProfileOpen(false);
+        setIsAchievementsOpen(false);
         break;
       case 'progress':
         setIsProgressOpen(true);
@@ -96,6 +101,7 @@ export const DashboardScreen: React.FC = () => {
         setIsFocusSessionOpen(false);
         setIsSettingsOpen(false);
         setIsProfileOpen(false);
+        setIsAchievementsOpen(false);
         break;
       case 'settings':
         setIsSettingsOpen(true);
@@ -103,6 +109,16 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
+        setIsProfileOpen(false);
+        setIsAchievementsOpen(false);
+        break;
+      case 'achievements':
+        setIsAchievementsOpen(true);
+        setIsGoalsOpen(false);
+        setIsJournalOpen(false);
+        setIsFocusSessionOpen(false);
+        setIsProgressOpen(false);
+        setIsSettingsOpen(false);
         setIsProfileOpen(false);
         break;
       case 'profile':
@@ -115,6 +131,7 @@ export const DashboardScreen: React.FC = () => {
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
         setIsSettingsOpen(false);
+        setIsAchievementsOpen(false);
         break;
       default:
         console.log('Navigate to:', screen);
@@ -317,6 +334,16 @@ export const DashboardScreen: React.FC = () => {
             setTimeout(() => {
               setRefreshTrigger(prev => prev + 1);
             }, 500);
+            
+            // Check for new achievements after session completion
+            setTimeout(async () => {
+              try {
+                await achievementService.checkAchievements();
+                console.log('✅ Achievement check completed after session');
+              } catch (error) {
+                console.error('❌ Error checking achievements after session:', error);
+              }
+            }, 1000);
           }}
         />
 
@@ -339,6 +366,11 @@ export const DashboardScreen: React.FC = () => {
             }}
           />
         )}
+
+        <AchievementsScreen
+          visible={isAchievementsOpen}
+          onClose={() => setIsAchievementsOpen(false)}
+        />
 
         {showSupabaseDebug && (
           <View style={styles.fullScreenModal}>

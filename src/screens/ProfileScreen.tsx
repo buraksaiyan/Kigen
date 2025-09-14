@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Modal,
   BackHandler,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,6 +20,7 @@ import { UserStatsService } from '../services/userStatsService';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
 import { StatsValidator } from '../../debug/StatsValidator';
+import { focusSessionService } from '../services/FocusSessionService';
 
 interface UserProfile {
   id: string;
@@ -26,6 +28,13 @@ interface UserProfile {
   profileImage?: string;
   createdAt: Date;
   lastUpdated: Date;
+}
+
+interface ProfileStats {
+  totalFocusTime: number; // in minutes
+  sessionsThisWeek: number;
+  currentStreak: number;
+  longestSession: number; // in minutes
 }
 
 interface ProfileScreenProps {
@@ -40,24 +49,92 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [stats, setStats] = useState<ProfileStats>({
+    totalFocusTime: 0,
+    sessionsThisWeek: 0,
+    currentStreak: 0,
+    longestSession: 0
+  });
 
   useEffect(() => {
     console.log('📱 ProfileScreen visibility changed:', visible);
     if (visible) {
       loadProfile();
+      loadStatistics();
     }
   }, [visible]);
 
+  // Calculate real statistics from focus sessions
+  const loadStatistics = async () => {
+    try {
+      const sessionStats = await focusSessionService.getSessionStats();
+      const allSessions = await focusSessionService.getFocusSessions();
+      
+      // Calculate sessions this week
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const thisWeekSessions = allSessions.filter(session => {
+        const sessionDate = new Date(session.startTime);
+        return sessionDate >= oneWeekAgo && session.completed;
+      });
+      
+      // Calculate total focus time from COMPLETED sessions only
+      const completedSessions = allSessions.filter(session => session.completed);
+      const totalFocusMinutes = completedSessions.reduce((total, session) => {
+        return total + session.actualDuration;
+      }, 0);
+      
+      // Find longest completed session
+      const longestSessionMinutes = completedSessions.reduce((longest, session) => {
+        return Math.max(longest, session.actualDuration);
+      }, 0);
+      
+      setStats({
+        totalFocusTime: totalFocusMinutes,
+        sessionsThisWeek: thisWeekSessions.length,
+        currentStreak: sessionStats.currentStreak,
+        longestSession: longestSessionMinutes
+      });
+    } catch (error) {
+      console.error('Error loading statistics:', error);
+      setStats({
+        totalFocusTime: 0,
+        sessionsThisWeek: 0,
+        currentStreak: 0,
+        longestSession: 0
+      });
+    }
+  };
+
+  const formatTime = (minutes: number): string => {
+    if (minutes === 0) return '0m';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours > 0) {
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+    return `${mins}m`;
+  };
+
   // Handle hardware back button
+  const handleClose = () => {
+    console.log('📱 ProfileScreen close button pressed');
+    // Dismiss keyboard before closing
+    Keyboard.dismiss();
+    onClose();
+  };
+
   useEffect(() => {
     if (!visible) return;
 
     const backAction = () => {
       console.log('📱 Hardware back button pressed in ProfileScreen');
+      // Dismiss keyboard before closing
+      Keyboard.dismiss();
       onClose();
       return true; // Prevent default behavior
     };
-
+    
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
@@ -233,7 +310,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         <View style={styles.header}>
           <TouchableOpacity 
             style={styles.closeButton} 
-            onPress={onClose}
+            onPress={handleClose}
           >
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
@@ -256,14 +333,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       visible={visible}
       animationType="slide"
       presentationStyle="fullScreen"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.closeButton} 
-          onPress={onClose}
+          onPress={handleClose}
         >
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
@@ -381,6 +458,87 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
               </TouchableOpacity>
             </View>
           )}
+        </View>
+
+        {/* Focus Statistics - Real Data */}
+        <View style={[styles.section, { borderColor: theme.colors.border }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
+            Focus Statistics
+          </Text>
+          
+          <View style={styles.statsGrid}>
+            <View style={styles.statCard}>
+              <Text style={[styles.statNumber, { color: theme.colors.primary }]}>
+                {formatTime(stats.totalFocusTime)}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Total Focus Time</Text>
+            </View>
+            
+            <View style={styles.statCard}>
+              <Text style={[styles.statNumber, { color: theme.colors.success }]}>
+                {stats.sessionsThisWeek}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Sessions This Week</Text>
+            </View>
+            
+            <View style={styles.statCard}>
+              <Text style={[styles.statNumber, { color: theme.colors.warning }]}>
+                {stats.currentStreak}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Current Streak</Text>
+            </View>
+            
+            <View style={styles.statCard}>
+              <Text style={[styles.statNumber, { color: theme.colors.secondary }]}>
+                {formatTime(stats.longestSession)}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Longest Session</Text>
+            </View>
+          </View>
+        </View>
+          
+          <View style={styles.infoRow}>
+            <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
+              Member Since
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
+              {formatDate(profile.createdAt)}
+            </Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
+              Last Updated
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
+              {formatDate(profile.lastUpdated)}
+            </Text>
+          </View>
+        </View>
+
+        {/* Debug Stats Validation */}
+        <TouchableOpacity 
+          style={{
+            backgroundColor: 'rgba(0, 255, 0, 0.2)',
+            padding: 15,
+            borderRadius: 8,
+            marginVertical: 10,
+            borderWidth: 1,
+            borderColor: '#00ff00'
+          }}
+          onPress={() => StatsValidator.validateStatsConsistency()}
+        >
+          <Text style={{ color: '#00ff00', textAlign: 'center', fontWeight: 'bold' }}>
+            🔍 Debug Stats (Check Console)
+          </Text>
+        </TouchableOpacity>
+
+        {/* Privacy Notice */}
+        <View style={styles.privacyNotice}>
+          <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
+            Your username is visible to other users on the leaderboard. 
+            Make sure it's appropriate and follows our community guidelines.
+          </Text>
         </View>
 
         {/* Account Information */}
@@ -630,5 +788,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
+  },
+  
+  // Statistics styles  
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 8,
+  },
+  statCard: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 });

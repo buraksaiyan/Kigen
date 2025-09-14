@@ -14,16 +14,44 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { useSettings } from '../hooks/useSettings';
+import { useTranslation } from '../i18n/I18nProvider';
+import { SUPPORTED_LANGUAGES, Language } from '../i18n';
 
 interface SettingsScreenProps {
   visible: boolean;
   onClose: () => void;
 }
+}
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose }) => {
-  const { settings, toggleTimerSounds, updateVolume } = useSettings();
+  const { 
+    settings, 
+    toggleTimerSounds, 
+    updateVolume, 
+    toggleFocusReminders,
+    toggleDigitalWellbeingAlerts,
+    toggleKeepScreenOn,
+    updateLanguage,
+  } = useSettings();
+  const { t, language, setLanguage } = useTranslation();
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
   const volumeSteps = [0.1, 0.3, 0.5, 0.7, 1.0];
+
+  const handleLanguageSelect = async (languageCode: Language) => {
+    try {
+      await setLanguage(languageCode);
+      updateLanguage(languageCode);
+      setShowLanguagePicker(false);
+    } catch (error) {
+      console.error('Failed to change language:', error);
+    }
+  };
+
+  const getCurrentLanguageName = () => {
+    const currentLang = SUPPORTED_LANGUAGES.find(lang => lang.code === language);
+    return currentLang?.nativeName || 'English';
+  };
 
   // Handle hardware back button
   useEffect(() => {
@@ -54,10 +82,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
             </TouchableOpacity>
             <View style={styles.logoContainer}>
-              <Text style={styles.title}>Settings</Text>
+              <Text style={styles.title}>{t('settings.title')}</Text>
             </View>
             <View style={styles.placeholder} />
           </View>
@@ -126,6 +154,126 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
           </View>
 
           <View style={styles.section}>
+            <Text style={styles.sectionTitle}>NOTIFICATIONS</Text>
+            
+            {/* Focus Reminders Toggle */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>{t('settings.focusReminders')}</Text>
+                <Text style={styles.settingDescription}>
+                  Get reminded to take breaks and start focus sessions
+                </Text>
+              </View>
+              <Switch
+                value={settings.focusRemindersEnabled}
+                onValueChange={toggleFocusReminders}
+                trackColor={{ false: '#333333', true: theme.colors.primary }}
+                thumbColor={settings.focusRemindersEnabled ? '#FFFFFF' : '#CCCCCC'}
+              />
+            </View>
+
+            {/* Wellbeing Alerts Toggle */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>{t('settings.digitalWellbeingAlerts')}</Text>
+                <Text style={styles.settingDescription}>
+                  Receive warnings when exceeding daily screen time limits
+                </Text>
+              </View>
+              <Switch
+                value={settings.digitalWellbeingAlertsEnabled}
+                onValueChange={toggleDigitalWellbeingAlerts}
+                trackColor={{ false: '#333333', true: theme.colors.primary }}
+                thumbColor={settings.digitalWellbeingAlertsEnabled ? '#FFFFFF' : '#CCCCCC'}
+              />
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>FOCUS PREFERENCES</Text>
+            
+            {/* Default Session Duration */}
+            <TouchableOpacity style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>{t('settings.defaultFocusDuration')}</Text>
+                <Text style={styles.settingDescription}>
+                  Set your preferred session length (currently {settings.defaultFocusDuration} {t('common.minutes')})
+                </Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+
+            {/* Keep Screen On */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>{t('settings.keepScreenOn')}</Text>
+                <Text style={styles.settingDescription}>
+                  Prevent screen from dimming during focus sessions
+                </Text>
+              </View>
+              <Switch
+                value={settings.keepScreenOnEnabled}
+                onValueChange={toggleKeepScreenOn}
+                trackColor={{ false: '#333333', true: theme.colors.primary }}
+                thumbColor={settings.keepScreenOnEnabled ? '#FFFFFF' : '#CCCCCC'}
+              />
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PERSONALIZATION</Text>
+            
+            {/* Language Selection */}
+            <TouchableOpacity 
+              style={styles.settingRow}
+              onPress={() => setShowLanguagePicker(true)}
+            >
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>{t('settings.language')}</Text>
+                <Text style={styles.settingDescription}>
+                  Choose your preferred language ({getCurrentLanguageName()})
+                </Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PRIVACY & DATA</Text>
+            
+            {/* Reset Data */}
+            <TouchableOpacity style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>Reset All Data</Text>
+                <Text style={styles.settingDescription}>
+                  Clear all focus sessions, goals, and preferences
+                </Text>
+              </View>
+              <Text style={[styles.chevron, { color: theme.colors.danger }]}>›</Text>
+            </TouchableOpacity>
+
+            {/* Privacy Policy */}
+            <TouchableOpacity style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>Privacy Policy</Text>
+                <Text style={styles.settingDescription}>
+                  Learn how we protect your data and privacy
+                </Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+          </View>
+            
+            <View style={styles.settingRow}>
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>Kigen Focus App</Text>
+                <Text style={styles.settingDescription}>
+                  Version 1.0.0 - Focus modes with mindful productivity
+                </Text>
+              </View>
+            </View>
+
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>ABOUT</Text>
             
             <View style={styles.settingRow}>
@@ -136,14 +284,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 </Text>
               </View>
             </View>
-            </View>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </View>
-    </Modal>
-    </>
-  );
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  </View>
+  </Modal>
+  </>
+);
 };
 
 const styles = StyleSheet.create({

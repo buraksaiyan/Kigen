@@ -216,7 +216,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.background, // Already correct - pure black
   },
   modalHeader: {
     flexDirection: 'row',
@@ -225,18 +225,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#374151',
+    borderBottomColor: theme.colors.border, // Use theme border color
   },
   closeButton: {
     padding: 8,
   },
   closeButtonText: {
-    color: '#9CA3AF',
+    color: theme.colors.text.secondary, // Use theme color
     fontSize: 16,
     fontWeight: '600',
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary, // Use theme color
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     ...theme.typography.h3,
-    color: '#888691',
+    color: theme.colors.text.primary, // Use theme color instead of fixed gray
     fontWeight: '700',
   },
   statLabel: {
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
   deleteText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: theme.colors.text.primary, // Use theme color
   },
   entryContent: {
     ...theme.typography.body,
