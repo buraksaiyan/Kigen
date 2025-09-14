@@ -16,6 +16,7 @@ import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
+import { useTranslation } from '../i18n/I18nProvider';
 
 interface JournalsScreenProps {
   visible?: boolean;
@@ -26,6 +27,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
   visible = true,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0 });
@@ -66,19 +68,19 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 
   const deleteEntry = async (entryId: string) => {
     Alert.alert(
-      'Delete Entry?',
-      'This journal entry will be permanently deleted.',
+      t('journal.deleteEntry'),
+      t('journal.deleteEntryConfirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await journalStorage.deleteEntry(entryId);
               await loadData(); // Reload data
             } catch (error) {
-              Alert.alert('Error', 'Failed to delete entry');
+              Alert.alert(t('common.error'), t('journal.deleteEntryError'));
             }
           },
         },
@@ -110,7 +112,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading journals...</Text>
+          <Text style={styles.loadingText}>{t('journal.loading')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -123,7 +125,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
+            <Text style={styles.closeButtonText}>{t('common.close')}</Text>
           </TouchableOpacity>
           <View style={styles.logoContainer}>
             <KigenLogo size="small" variant="image" showJapanese={false} />
@@ -135,8 +137,8 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
           {/* Content */}
           <View style={styles.content}>
             <View style={styles.contentHeader}>
-              <Text style={styles.title}>Your Journals</Text>
-              <Text style={styles.subtitle}>Reflect on your discipline journey</Text>
+              <Text style={styles.title}>{t('journal.yourJournals')}</Text>
+              <Text style={styles.subtitle}>{t('journal.subtitle')}</Text>
             </View>
           </View>
 
@@ -145,17 +147,17 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>{stats.streak}</Text>
-                <Text style={styles.statLabel}>Day Streak</Text>
+                <Text style={styles.statLabel}>{t('journal.dayStreak')}</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>{stats.thisMonth}</Text>
-                <Text style={styles.statLabel}>This Month</Text>
+                <Text style={styles.statLabel}>{t('journal.thisMonth')}</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>{stats.totalEntries}</Text>
-                <Text style={styles.statLabel}>Total Entries</Text>
+                <Text style={styles.statLabel}>{t('journal.totalEntries')}</Text>
               </View>
             </View>
           </Card>
@@ -201,9 +203,9 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
           {/* Empty State */}
           {entries.length === 0 && (
             <Card style={styles.emptyCard}>
-              <Text style={styles.emptyTitle}>No Journal Entries Yet</Text>
+              <Text style={styles.emptyTitle}>{t('journal.noEntriesYet')}</Text>
               <Text style={styles.emptyText}>
-                Start journaling about your discipline journey from the main screen!
+                {t('journal.emptyStateText')}
               </Text>
             </Card>
           )}

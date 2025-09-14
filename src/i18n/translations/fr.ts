@@ -87,7 +87,7 @@ export const fr = {
     achievements: 'Réalisations',
     disciplineAndFocus: 'Discipline et Concentration',
     leaderboard: 'Classement',
-  buildDiscipline: 'Renforcer la discipline',
+    buildDiscipline: 'Renforcer la discipline',
     development: 'Développement',
     closeDebug: 'Fermer la vue de débogage',
   },
@@ -115,14 +115,23 @@ export const fr = {
 
   journal: {
     title: 'Journal',
+    yourJournals: 'Vos Journaux',
+    subtitle: 'Réfléchissez à votre parcours de discipline',
     writeEntry: 'Écrire une nouvelle entrée...',
     noEntries: 'Aucune entrée de journal pour le moment.',
+    noEntriesYet: 'Aucune Entrée de Journal Encore',
+    emptyStateText: 'Commencez à journaliser votre parcours de discipline depuis l\'écran principal !',
     saveEntry: 'Enregistrer l\'Entrée',
     entryPlaceholder: 'À quoi pensez-vous aujourd\'hui ?',
     entrySaved: 'Entrée enregistrée avec succès !',
     totalEntries: 'Total des Entrées',
     streak: 'Série',
+    dayStreak: 'Série de Jours',
     thisMonth: 'Ce Mois-ci',
+    loading: 'Chargement des journaux...',
+    deleteEntry: 'Supprimer l\'Entrée ?',
+    deleteEntryConfirm: 'Cette entrée de journal sera supprimée définitivement.',
+    deleteEntryError: 'Échec de la suppression de l\'entrée',
   },
 
   goals: {
@@ -179,6 +188,12 @@ export const fr = {
 
   settings: {
     title: 'Paramètres',
+    customize: 'Personnalisez votre expérience Kigen',
+    soundsTitle: 'Sons',
+    timerTickSounds: 'Sons de tic du minuteur',
+    timerTickSoundsDesc: 'Jouer des sons de tic doux pendant que les secondes décomptent pendant les sessions de concentration',
+    soundVolume: 'Volume du son',
+    soundVolumeDesc: 'Ajustez le volume des sons du minuteur',
     focusReminders: 'Rappels de Concentration',
     digitalWellbeingAlerts: 'Alertes de Bien-être Numérique',
     defaultFocusDuration: 'Durée de Concentration par Défaut',

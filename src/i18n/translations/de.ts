@@ -87,7 +87,7 @@ export const de = {
     achievements: 'Erfolge',
     disciplineAndFocus: 'Disziplin und Fokus',
     leaderboard: 'Rangliste',
-  buildDiscipline: 'Disziplin stärken',
+    buildDiscipline: 'Disziplin stärken',
     development: 'Entwicklung',
     closeDebug: 'Debug-Ansicht schließen',
   },
@@ -114,14 +114,23 @@ export const de = {
 
   journal: {
     title: 'Tagebuch',
+    yourJournals: 'Ihre Tagebücher',
+    subtitle: 'Reflektieren Sie über Ihre Disziplin-Reise',
     writeEntry: 'Neuen Eintrag schreiben...',
     noEntries: 'Noch keine Tagebucheinträge.',
+    noEntriesYet: 'Noch Keine Tagebucheinträge',
+    emptyStateText: 'Beginnen Sie, über Ihre Disziplin-Reise vom Hauptbildschirm aus zu journalisieren!',
     saveEntry: 'Eintrag speichern',
     entryPlaceholder: 'Was beschäftigt dich heute?',
     entrySaved: 'Eintrag erfolgreich gespeichert!',
     totalEntries: 'Gesamte Einträge',
     streak: 'Serie',
+    dayStreak: 'Tages-Serie',
     thisMonth: 'Dieser Monat',
+    loading: 'Tagebücher laden...',
+    deleteEntry: 'Eintrag löschen?',
+    deleteEntryConfirm: 'Dieser Tagebucheintrag wird dauerhaft gelöscht.',
+    deleteEntryError: 'Fehler beim Löschen des Eintrags',
   },
 
   goals: {
@@ -178,6 +187,12 @@ export const de = {
 
   settings: {
     title: 'Einstellungen',
+    customize: 'Passen Sie Ihr Kigen-Erlebnis an',
+    soundsTitle: 'Töne',
+    timerTickSounds: 'Timer-Tick-Töne',
+    timerTickSoundsDesc: 'Spielen Sie sanfte Tick-Töne ab, während die Sekunden während der Fokussessions herunterzählen',
+    soundVolume: 'Tonlautstärke',
+    soundVolumeDesc: 'Passen Sie die Lautstärke der Timer-Töne an',
     focusReminders: 'Fokus-Erinnerungen',
     digitalWellbeingAlerts: 'Digitales Wohlbefinden Warnungen',
     defaultFocusDuration: 'Standard-Fokus-Dauer',

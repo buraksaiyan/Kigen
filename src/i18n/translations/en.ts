@@ -115,14 +115,23 @@ export const en = {
 
   journal: {
     title: 'Journal',
+    yourJournals: 'Your Journals',
+    subtitle: 'Reflect on your discipline journey',
     writeEntry: 'Write a new entry...',
     noEntries: 'No journal entries yet.',
+    noEntriesYet: 'No Journal Entries Yet',
+    emptyStateText: 'Start journaling about your discipline journey from the main screen!',
     saveEntry: 'Save Entry',
     entryPlaceholder: 'What\'s on your mind today?',
     entrySaved: 'Entry saved successfully!',
     totalEntries: 'Total Entries',
     streak: 'Streak',
+    dayStreak: 'Day Streak',
     thisMonth: 'This Month',
+    loading: 'Loading journals...',
+    deleteEntry: 'Delete Entry?',
+    deleteEntryConfirm: 'This journal entry will be permanently deleted.',
+    deleteEntryError: 'Failed to delete entry',
   },
 
   goals: {

@@ -87,7 +87,7 @@ export const tr = {
     achievements: 'Başarımlar',
     disciplineAndFocus: 'Disiplin ve Odaklanma',
     leaderboard: 'Lider Sıralaması',
-  buildDiscipline: 'Disiplin geliştir',
+    buildDiscipline: 'Disiplin geliştir',
     development: 'Geliştirme',
     closeDebug: 'Hata ayıklama görünümünü kapat',
   },
@@ -114,14 +114,23 @@ export const tr = {
 
   journal: {
     title: 'Günlük',
+    yourJournals: 'Günlükleriniz',
+    subtitle: 'Disiplin yolculuğunuzu yansıtın',
     writeEntry: 'Yeni bir giriş yaz...',
     noEntries: 'Henüz günlük girişi yok.',
+    noEntriesYet: 'Henüz Günlük Girişi Yok',
+    emptyStateText: 'Disiplin yolculuğunuz hakkında ana ekrandan günlük tutmaya başlayın!',
     saveEntry: 'Girişi Kaydet',
     entryPlaceholder: 'Bugün aklında ne var?',
     entrySaved: 'Giriş başarıyla kaydedildi!',
     totalEntries: 'Toplam Giriş',
     streak: 'Seri',
+    dayStreak: 'Gün Serisi',
     thisMonth: 'Bu Ay',
+    loading: 'Günlükler yükleniyor...',
+    deleteEntry: 'Girişi Sil?',
+    deleteEntryConfirm: 'Bu günlük girişi kalıcı olarak silinecek.',
+    deleteEntryError: 'Giriş silinemedi',
   },
 
   goals: {
@@ -178,6 +187,12 @@ export const tr = {
 
   settings: {
     title: 'Ayarlar',
+    customize: 'Kigen deneyimini özelleştirin',
+    soundsTitle: 'Sesler',
+    timerTickSounds: 'Zamanlayıcı Tik Sesleri',
+    timerTickSoundsDesc: 'Odaklanma seansları sırasında saniyeler geri sayılırken yumuşak tik sesleri çalın',
+    soundVolume: 'Ses Seviyesi',
+    soundVolumeDesc: 'Zamanlayıcı seslerinin seviyesini ayarlayın',
     focusReminders: 'Odaklanma Hatırlatıcıları',
     digitalWellbeingAlerts: 'Dijital Esenlik Uyarıları',
     defaultFocusDuration: 'Varsayılan Odaklanma Süresi',

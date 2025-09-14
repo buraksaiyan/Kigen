@@ -87,7 +87,7 @@ export const es = {
     achievements: 'Logros',
     disciplineAndFocus: 'Disciplina y Concentración',
     leaderboard: 'Tabla de Clasificación',
-  buildDiscipline: 'Fortalecer la disciplina',
+    buildDiscipline: 'Fortalecer la disciplina',
     development: 'Desarrollo',
     closeDebug: 'Cerrar vista de depuración',
   },
@@ -115,14 +115,23 @@ export const es = {
 
   journal: {
     title: 'Diario',
+    yourJournals: 'Tus Diarios',
+    subtitle: 'Reflexiona sobre tu viaje de disciplina',
     writeEntry: 'Escribir una nueva entrada...',
     noEntries: 'No hay entradas de diario aún.',
+    noEntriesYet: 'Aún No Hay Entradas de Diario',
+    emptyStateText: '¡Comienza a escribir en tu diario sobre tu viaje de disciplina desde la pantalla principal!',
     saveEntry: 'Guardar Entrada',
     entryPlaceholder: '¿Qué tienes en mente hoy?',
     entrySaved: '¡Entrada guardada exitosamente!',
     totalEntries: 'Total de Entradas',
     streak: 'Racha',
+    dayStreak: 'Racha de Días',
     thisMonth: 'Este Mes',
+    loading: 'Cargando diarios...',
+    deleteEntry: '¿Eliminar Entrada?',
+    deleteEntryConfirm: 'Esta entrada del diario será eliminada permanentemente.',
+    deleteEntryError: 'Error al eliminar la entrada',
   },
 
   goals: {
@@ -155,6 +164,12 @@ export const es = {
 
   settings: {
     title: 'Configuración',
+    customize: 'Personaliza tu experiencia Kigen',
+    soundsTitle: 'Sonidos',
+    timerTickSounds: 'Sonidos de tic del temporizador',
+    timerTickSoundsDesc: 'Reproduce sonidos suaves de tic mientras los segundos cuentan hacia atrás durante las sesiones de concentración',
+    soundVolume: 'Volumen del sonido',
+    soundVolumeDesc: 'Ajusta el volumen de los sonidos del temporizador',
     focusReminders: 'Recordatorios de Concentración',
     digitalWellbeingAlerts: 'Alertas de Bienestar Digital',
     defaultFocusDuration: 'Duración Predeterminada de Concentración',
