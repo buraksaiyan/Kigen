@@ -240,7 +240,7 @@ export const DashboardScreen: React.FC = () => {
               
               <View style={styles.actionGrid}>
                 <Button
-                  title="Start Focus Session"
+                  title="Focus Session"
                   onPress={() => setIsFocusSessionOpen(true)}
                   variant="primary"
                   style={styles.outlinedActionButton}

@@ -223,25 +223,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>PERSONALIZATION</Text>
-            
-            {/* Language Selection - Commented out for now
-            <TouchableOpacity 
-              style={styles.settingRow}
-              onPress={() => setShowLanguagePicker(true)}
-            >
-              <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>{t('settings.language')}</Text>
-                <Text style={styles.settingDescription}>
-                  Choose your preferred language ({getCurrentLanguageName()})
-                </Text>
-              </View>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-            */}
-          </View>
-
-          <View style={styles.section}>
             <Text style={styles.sectionTitle}>PRIVACY & DATA</Text>
             
             {/* Reset Data */}
