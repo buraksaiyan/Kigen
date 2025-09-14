@@ -15,19 +15,19 @@ export const KigenKanjiBackground: React.FC<KigenKanjiBackgroundProps> = ({ styl
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     alignItems: 'center',
+    bottom: 0,
     justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
     zIndex: -1,
   },
   kanji: {
+    color: 'rgba(255, 255, 255, 0.08)',
     fontSize: 200,
     fontWeight: '100',
-    color: 'rgba(255, 255, 255, 0.08)',
     textAlign: 'center',
   },
 });

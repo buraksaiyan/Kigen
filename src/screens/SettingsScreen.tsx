@@ -91,20 +91,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
           
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             <View style={styles.header}>
-              <Text style={styles.subtitle}>Customize your Kigen experience</Text>
+              <Text style={styles.subtitle}>{t('settings.customize')}</Text>
             </View>
 
             <View style={styles.content}>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>SOUNDS</Text>
+            <Text style={styles.sectionTitle}>{t('settings.soundsTitle')}</Text>
             
             {/* Timer Sounds Toggle */}
             <View style={styles.settingRow}>
               <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>Timer Tick Sounds</Text>
+                <Text style={styles.settingTitle}>{t('settings.timerTickSounds')}</Text>
                 <Text style={styles.settingDescription}>
-                  Play soft tick sounds as seconds count down during focus sessions
+                  {t('settings.timerTickSoundsDesc')}
                 </Text>
               </View>
               <Switch
@@ -119,9 +119,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             {settings.timerSoundsEnabled && (
               <View style={styles.settingRow}>
                 <View style={styles.settingContent}>
-                  <Text style={styles.settingTitle}>Sound Volume</Text>
+                  <Text style={styles.settingTitle}>{t('settings.soundVolume')}</Text>
                   <Text style={styles.settingDescription}>
-                    Adjust the volume of timer sounds
+                    {t('settings.soundVolumeDesc')}
                   </Text>
                 </View>
               </View>
@@ -349,20 +349,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#000000',
+    flex: 1,
   },
   safeArea: {
     flex: 1,
   },
   modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   closeButton: {
     padding: 8,
@@ -387,52 +387,52 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: theme.spacing.md,
     marginBottom: theme.spacing.xl,
+    paddingTop: theme.spacing.md,
   },
   title: {
+    color: '#FFFFFF',
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
     marginBottom: theme.spacing.xs,
   },
   subtitle: {
-    fontSize: 16,
     color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center',
+    fontSize: 16,
     paddingHorizontal: theme.spacing.lg,
+    textAlign: 'center',
   },
   section: {
     marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
+    color: '#888691',
     fontSize: 14,
     fontWeight: '700',
-    color: '#888691',
     letterSpacing: 1.5,
     marginBottom: theme.spacing.md,
     textTransform: 'uppercase',
   },
   settingRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingVertical: theme.spacing.md,
   },
   settingContent: {
     flex: 1,
     marginRight: theme.spacing.md,
   },
   settingTitle: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
     marginBottom: theme.spacing.xs,
   },
   settingDescription: {
-    fontSize: 14,
     color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
     lineHeight: 20,
   },
   volumeContainer: {
@@ -442,85 +442,85 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
   },
   volumeButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: theme.borderRadius.md,
+    minWidth: 60,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    minWidth: 60,
-    alignItems: 'center',
   },
   volumeButtonActive: {
     backgroundColor: theme.colors.primary,
   },
   volumeButtonText: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 14,
     fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
   },
   volumeButtonTextActive: {
     color: '#FFFFFF',
   },
   chevron: {
-    fontSize: 24,
     color: 'rgba(255,255,255,0.5)',
+    fontSize: 24,
     fontWeight: '300',
   },
   // Language Picker Modal Styles
   modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    flex: 1,
+    justifyContent: 'center',
   },
   languageModal: {
     backgroundColor: '#1a1a1a',
     borderRadius: 16,
-    width: '85%',
     maxHeight: '70%',
     overflow: 'hidden',
+    width: '85%',
   },
   languageModalHeader: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   languageModalTitle: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   modalCloseButton: {
-    padding: 8,
-    borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 20,
+    padding: 8,
   },
   modalCloseText: {
-    fontSize: 16,
     color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   languageList: {
     maxHeight: 400,
   },
   languageOption: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   selectedLanguageOption: {
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   languageInfo: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
   },
   languageFlag: {
@@ -531,21 +531,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   languageOptionText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
     marginBottom: 2,
   },
   selectedLanguageText: {
     color: theme.colors.primary,
   },
   languageEnglishName: {
-    fontSize: 14,
     color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
   },
   checkMark: {
-    fontSize: 18,
     color: theme.colors.primary,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

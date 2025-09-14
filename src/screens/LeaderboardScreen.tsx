@@ -171,52 +171,16 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    borderColor: '#888691',
-    backgroundColor: 'transparent',
-  },
   activeTab: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
   },
-  tabText: {
-    ...theme.typography.bodyLarge,
-    color: '#888691',
-    fontWeight: '600',
-  },
   activeTabText: {
     color: '#FFFFFF',
   },
-  monthSelector: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  monthText: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
-  scrollView: {
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
-    paddingHorizontal: theme.spacing.lg,
   },
   emptyState: {
     alignItems: 'center',
@@ -228,28 +192,90 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
   },
   leaderboardCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
     borderRadius: theme.borderRadius.lg,
+    elevation: 3,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
-  },
-  rankContainer: {
-    width: 50,
-    alignItems: 'center',
   },
   medalEmoji: {
     fontSize: 24,
+  },
+  monthSelector: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
+  },
+  monthText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
+  pointsContainer: {
+    alignItems: 'flex-end',
+  },
+  pointsLabel: {
+    ...theme.typography.small,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 2,
+  },
+  pointsText: {
+    ...theme.typography.h4,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  rankContainer: {
+    alignItems: 'center',
+    width: 50,
   },
   rankNumber: {
     ...theme.typography.h4,
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  tab: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderColor: '#888691',
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: theme.spacing.sm,
+  },
+  tabContainer: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.md,
+    padding: 4,
+  },
+  tabText: {
+    ...theme.typography.bodyLarge,
+    color: '#888691',
+    fontWeight: '600',
+  },
+  tierBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  tierText: {
+    ...theme.typography.small,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
   userInfo: {
     flex: 1,
@@ -260,31 +286,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     marginBottom: 4,
-  },
-  tierBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  tierText: {
-    ...theme.typography.small,
-    color: '#FFFFFF',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  pointsContainer: {
-    alignItems: 'flex-end',
-  },
-  pointsText: {
-    ...theme.typography.h4,
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  pointsLabel: {
-    ...theme.typography.small,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 2,
   },
 });

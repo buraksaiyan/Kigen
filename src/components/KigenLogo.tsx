@@ -70,24 +70,6 @@ const getStyles = (size: 'small' | 'medium' | 'large') => {
   const config = sizeConfig[size];
   
   return StyleSheet.create({
-    container: {
-      alignItems: 'center',
-    },
-    logoImage: {
-      width: config.imageSize,
-      height: config.imageSize,
-    },
-    japanese: {
-      fontSize: config.japanese,
-      color: theme.colors.text.secondary,
-      fontWeight: '300',
-      marginBottom: config.spacing,
-      letterSpacing: 2,
-    },
-    logoContainer: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-    },
     capitalK: {
       fontSize: config.capitalK,
       color: theme.colors.primary,
@@ -95,9 +77,27 @@ const getStyles = (size: 'small' | 'medium' | 'large') => {
       // Make capital K the same height as lowercase letters
       lineHeight: config.main * 0.75, // Reduced line height to match lowercase
     },
+    container: {
+      alignItems: 'center',
+    },
+    japanese: {
+      color: theme.colors.text.secondary,
+      fontSize: config.japanese,
+      fontWeight: '300',
+      letterSpacing: 2,
+      marginBottom: config.spacing,
+    },
+    logoContainer: {
+      alignItems: 'baseline',
+      flexDirection: 'row',
+    },
+    logoImage: {
+      height: config.imageSize,
+      width: config.imageSize,
+    },
     lowercase: {
-      fontSize: config.main,
       color: theme.colors.text.primary,
+      fontSize: config.main,
       fontWeight: '300',
       letterSpacing: 1,
     },

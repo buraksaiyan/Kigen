@@ -70,7 +70,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
       // User returned to app, check permission again
-      setTimeout(checkPermission, 500);
+  globalThis.setTimeout(checkPermission, 500);
     }
     setAppState(nextAppState);
   };
@@ -280,9 +280,9 @@ const styles = StyleSheet.create({
   
   // Permission Card
   permissionCard: {
-    padding: 24,
-    borderRadius: 16,
     alignItems: 'center',
+    borderRadius: 16,
+    padding: 24,
   },
   permissionIcon: {
     fontSize: 48,
@@ -296,24 +296,24 @@ const styles = StyleSheet.create({
   },
   permissionDescription: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 24,
     lineHeight: 22,
+    marginBottom: 24,
+    textAlign: 'center',
   },
   permissionButton: {
     backgroundColor: '#8B5CF6',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
     borderRadius: 12,
     marginBottom: 12,
     minWidth: 200,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   demoButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
     borderRadius: 12,
     marginBottom: 12,
     minWidth: 200,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   permissionButtonText: {
     color: 'white',
@@ -322,11 +322,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   resetButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    borderColor: 'rgba(255,255,255,0.2)',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
   resetButtonText: {
     fontSize: 14,
@@ -335,14 +335,14 @@ const styles = StyleSheet.create({
   
   // Main Cards
   mainCard: {
-    padding: 20,
     borderRadius: 16,
-    marginBottom: 12, // Reduced from 16
+    marginBottom: 12,
+    padding: 20, // Reduced from 16
   },
   appListCard: {
-    padding: 16,
     borderRadius: 16,
     marginBottom: 20,
+    padding: 16,
   },
   cardTitle: {
     fontSize: 18,
@@ -389,9 +389,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   appInfo: {
+    alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
   },
   appIcon: {
     width: 32, // Smaller icon
@@ -415,9 +415,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   emptyChartContainer: {
+    alignItems: 'center',
     height: 180,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   emptyChartText: {
     fontSize: 16,

@@ -214,19 +214,6 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background, // Already correct - pure black
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border, // Use theme border color
-  },
   closeButton: {
     padding: 8,
   },
@@ -235,132 +222,145 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  headerTitle: {
-    color: theme.colors.text.primary, // Use theme color
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  placeholder: {
-    width: 60,
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1, // Already correct - pure black
   },
   content: {
     paddingHorizontal: theme.spacing.lg,
   },
-  scrollView: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-  },
   contentHeader: {
+    alignItems: 'center',
     paddingVertical: theme.spacing.xl,
-    alignItems: 'center',
-  },
-  title: {
-    ...theme.typography.h1,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-  },
-  statsCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: theme.colors.border,
-  },
-  statNumber: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary, // Use theme color instead of fixed gray
-    fontWeight: '700',
-  },
-  statLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.tertiary,
-    marginTop: theme.spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
   },
   daySection: {
     marginBottom: theme.spacing.xl,
   },
   dayTitle: {
     ...theme.typography.h4,
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
     paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  entryCard: {
-    marginBottom: theme.spacing.md,
-  },
-  entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  entryMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  entryTime: {
-    ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
   },
   deleteButton: {
-    width: 24,
-    height: 24,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'transparent',
     borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
   },
   deleteText: {
+    color: theme.colors.text.primary,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.colors.text.primary, // Use theme color
-  },
-  entryContent: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    lineHeight: 22,
+    fontWeight: 'bold', // Use theme color
   },
   emptyCard: {
     alignItems: 'center',
     paddingVertical: theme.spacing.xl,
-  },
-  emptyTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
   },
   emptyText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     textAlign: 'center',
   },
-  logoContainer: {
-    flex: 1,
+  emptyTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.sm,
+  },
+  entryCard: {
+    marginBottom: theme.spacing.md,
+  },
+  entryContent: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    lineHeight: 22,
+  },
+  entryHeader: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
+  },
+  entryMeta: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  entryTime: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
+  },
+  headerTitle: {
+    color: theme.colors.text.primary, // Use theme color
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15, // Use theme border color
+  },
+  placeholder: {
+    width: 60,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  statDivider: {
+    backgroundColor: theme.colors.border,
+    height: 30,
+    width: 1,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
+    ...theme.typography.small,
+    color: theme.colors.text.tertiary,
+    letterSpacing: 1,
+    marginTop: theme.spacing.xs,
+    textTransform: 'uppercase',
+  },
+  statNumber: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary, // Use theme color instead of fixed gray
+    fontWeight: '700',
+  },
+  statsCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  statsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  subtitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+  },
+  title: {
+    ...theme.typography.h1,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
   },
 });

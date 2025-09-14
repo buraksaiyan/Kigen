@@ -271,46 +271,42 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 };
 
 const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
-  },
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  journalCard: {
-    flex: 1,
-    margin: 0,
-    borderRadius: 0,
-    borderTopLeftRadius: theme.borderRadius.lg,
-    borderTopRightRadius: theme.borderRadius.lg,
-    backgroundColor: theme.colors.background, // Pure black background instead of surface
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: theme.spacing.lg,
-    paddingBottom: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  modalHeader: {
-    flexDirection: 'row',
+  addButton: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    flex: 1,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+  },
+  addButtonDisabled: {
+    opacity: 0.5,
+  },
+  addButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+  },
+  blackBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000000',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  cancelButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: theme.borderRadius.md,
+    flex: 1,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  cancelButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
   },
   closeButton: {
     paddingHorizontal: theme.spacing.md,
@@ -321,102 +317,24 @@ const styles = StyleSheet.create({
     color: '#888691',
     fontWeight: '600',
   },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
-  placeholder: {
-    width: 60, // Same width as close button area
-  },
-  title: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  subtitle: {
-    ...theme.typography.caption,
-    color: theme.colors.text.secondary,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    marginBottom: theme.spacing.lg,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary, // Use theme color instead of fixed gray
-    fontWeight: '700',
-  },
-  statLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.tertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: theme.spacing.xs,
-  },
-  inputSection: {
-    backgroundColor: theme.colors.background, // Pure black background
-    padding: theme.spacing.md,
-    paddingBottom: theme.spacing.xl, // More space to avoid navigation overlap
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+  container: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    bottom: 0,
+    justifyContent: 'flex-end',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   contentContainer: {
     flex: 1,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: theme.colors.surfaceSecondary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
-  },
-  inputLabel: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-  },
-  textInput: {
+  emptyText: {
     ...theme.typography.body,
-    color: theme.colors.text.primary,
-    backgroundColor: theme.colors.background,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    marginBottom: theme.spacing.md,
-    textAlignVertical: 'top',
-    fontSize: 16, // Prevent zoom on iOS
-  },
-  addButton: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
-  },
-  addButtonDisabled: {
-    opacity: 0.5,
-  },
-  addButtonText: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
+    color: theme.colors.text.secondary,
+    fontStyle: 'italic',
+    marginTop: theme.spacing.lg,
+    textAlign: 'center',
   },
   entriesContainer: {
     flex: 1,
@@ -426,42 +344,124 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
   },
-  emptyText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginTop: theme.spacing.lg,
-  },
   entryCard: {
     backgroundColor: theme.colors.background,
-    padding: theme.spacing.md,
     borderRadius: theme.borderRadius.sm,
     marginBottom: theme.spacing.md,
-  },
-  entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  entryDate: {
-    ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    padding: theme.spacing.md,
   },
   entryContent: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     lineHeight: 20,
   },
-  blackBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
+  entryDate: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  entryHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.sm,
+  },
+  header: {
+    alignItems: 'flex-start',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
+  inputLabel: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  inputSection: {
+    backgroundColor: theme.colors.background, // Pure black background
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.xl, // More space to avoid navigation overlap
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  journalCard: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 0,
+    borderTopLeftRadius: theme.borderRadius.lg,
+    borderTopRightRadius: theme.borderRadius.lg,
+    flex: 1,
+    margin: 0, // Pure black background instead of surface
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   logoContainer: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  placeholder: {
+    width: 60, // Same width as close button area
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
+    ...theme.typography.small,
+    color: theme.colors.text.tertiary,
+    letterSpacing: 1,
+    marginTop: theme.spacing.xs,
+    textTransform: 'uppercase',
+  },
+  statNumber: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary, // Use theme color instead of fixed gray
+    fontWeight: '700',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    marginBottom: theme.spacing.lg,
+  },
+  subtitle: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+  },
+  textInput: {
+    ...theme.typography.body,
+    backgroundColor: theme.colors.background,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
+    textAlignVertical: 'top', // Prevent zoom on iOS
+  },
+  title: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
   },
 });

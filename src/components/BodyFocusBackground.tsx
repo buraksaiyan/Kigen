@@ -68,11 +68,11 @@ export const BodyFocusBackground: React.FC<BodyFocusBackgroundProps> = ({ style,
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-  },
   blackBase: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000000',
+  },
+  container: {
+    ...StyleSheet.absoluteFillObject,
   },
 });

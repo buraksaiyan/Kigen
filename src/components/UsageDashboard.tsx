@@ -37,9 +37,9 @@ const UsageDashboard: React.FC<UsageDashboardProps> = ({ theme }) => {
       }
     };
 
-    const interval = setInterval(checkPermissions, 5000); // Check every 5 seconds
+  const interval = globalThis.setInterval(checkPermissions, 5000); // Check every 5 seconds
     
-    return () => clearInterval(interval);
+  return () => globalThis.clearInterval(interval);
   }, [hasPermission]);
 
   const checkPermissionAndLoadData = async () => {
@@ -222,62 +222,32 @@ const UsageDashboard: React.FC<UsageDashboardProps> = ({ theme }) => {
 };
 
 const styles = StyleSheet.create({
+  appInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  appItem: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginBottom: 8,
+    padding: 12,
+  },
+  appName: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  appRank: {
+    alignItems: 'center',
+    width: 40,
+  },
+  appsList: {
+    maxHeight: 300,
+  },
   container: {
     marginTop: 20,
     paddingHorizontal: 16,
-  },
-  headerContainer: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  permissionContainer: {
-    padding: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  permissionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  permissionText: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 20,
-  },
-  permissionButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  permissionButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  statsContainer: {
-    borderRadius: 16,
-    padding: 16,
-  },
-  statsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  totalTime: {
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   expandButton: {
     padding: 8,
@@ -286,42 +256,54 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  appsList: {
-    maxHeight: 300,
+  headerContainer: {
+    marginBottom: 16,
   },
-  appItem: {
-    flexDirection: 'row',
+  noDataContainer: {
     alignItems: 'center',
-    padding: 12,
-    marginBottom: 8,
+    borderRadius: 16,
+    padding: 40,
+  },
+  noDataText: {
+    fontSize: 16,
+  },
+  packageName: {
+    fontSize: 12,
+  },
+  permissionButton: {
     borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
-  appRank: {
-    width: 40,
+  permissionButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  permissionContainer: {
     alignItems: 'center',
+    borderRadius: 16,
+    padding: 20,
+  },
+  permissionText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  permissionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   rankText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-  appInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  appName: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 2,
-  },
-  packageName: {
-    fontSize: 12,
-  },
-  usageTime: {
-    alignItems: 'flex-end',
-  },
-  timeText: {
-    fontSize: 16,
-    fontWeight: '600',
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   showMoreButton: {
     alignItems: 'center',
@@ -330,13 +312,25 @@ const styles = StyleSheet.create({
   showMoreText: {
     fontSize: 14,
   },
-  noDataContainer: {
-    padding: 40,
+  statsContainer: {
     borderRadius: 16,
-    alignItems: 'center',
+    padding: 16,
   },
-  noDataText: {
-    fontSize: 16,
+  statsHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  stepText: {
+    fontSize: 14,
+    marginBottom: 4,
+    paddingLeft: 8,
   },
   stepsContainer: {
     marginVertical: 16,
@@ -347,10 +341,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 8,
   },
-  stepText: {
-    fontSize: 14,
-    marginBottom: 4,
-    paddingLeft: 8,
+  timeText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  totalTime: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  usageTime: {
+    alignItems: 'flex-end',
   },
 });
 

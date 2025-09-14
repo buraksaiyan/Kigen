@@ -18,6 +18,62 @@ export const de = {
     week: 'Woche',
     month: 'Monat',
   },
+  login: {
+    createAccount: 'Konto erstellen',
+    welcomeBack: 'Willkommen zurück',
+    createYourAccount: 'Erstelle dein Konto',
+    signInToYourAccount: 'Melde dich bei deinem Konto an',
+    joinKigen: 'Tritt Kigen bei und beginne deine Reise zum digitalen Wohlbefinden',
+    welcomeBackPleaseSignIn: 'Willkommen zurück! Bitte melde dich an, um fortzufahren',
+    username: 'Benutzername',
+    email: 'E-Mail-Adresse',
+    password: 'Passwort',
+    confirmPassword: 'Passwort bestätigen',
+    signIn: 'Anmelden',
+    signUp: 'Registrieren',
+    signInToContinue: 'Melde dich an, um fortzufahren',
+    alreadyHaveAccount: 'Hast du bereits ein Konto?',
+    dontHaveAccount: 'Noch kein Konto?',
+    checkEmail: {
+      title: 'Überprüfe deine E-Mails',
+      message: 'Wir haben dir einen Bestätigungslink gesendet. Bitte überprüfe deine E-Mails und klicke auf den Link, um dein Konto zu verifizieren.'
+    },
+    placeholders: {
+      username: 'Gib deinen Benutzernamen ein',
+      email: 'Gib deine E-Mail-Adresse ein',
+      createPassword: 'Erstelle ein Passwort (mind. 6 Zeichen)',
+      enterPassword: 'Gib dein Passwort ein',
+      confirmPassword: 'Bestätige dein Passwort'
+    },
+    privacy: {
+      creatingAccount: 'Durch das Erstellen eines Kontos akzeptierst du unsere Nutzungsbedingungen und Datenschutzerklärung. Wir können deine E-Mail verwenden, um Updates und gelegentliche Nachrichten zu senden.',
+      signingIn: 'Durch das Anmelden akzeptierst du unsere Nutzungsbedingungen und Datenschutzerklärung. Wir können deine E-Mail verwenden, um Updates und gelegentliche Nachrichten zu senden.'
+    },
+    success: {
+      title: 'Erfolg',
+      welcomeBack: 'Willkommen zurück!'
+    },
+    errors: {
+      emailRequiredTitle: 'Fehler',
+      emailRequired: 'Bitte gib deine E-Mail-Adresse ein',
+      invalidEmailTitle: 'Fehler',
+      invalidEmail: 'Bitte gib eine gültige E-Mail-Adresse ein',
+      passwordRequiredTitle: 'Fehler',
+      passwordRequired: 'Bitte gib dein Passwort ein',
+      passwordTooShortTitle: 'Fehler',
+      passwordTooShort: 'Das Passwort muss mindestens 6 Zeichen lang sein',
+      usernameRequiredTitle: 'Fehler',
+      usernameRequired: 'Bitte gib deinen Benutzernamen ein',
+      passwordsDoNotMatchTitle: 'Fehler',
+      passwordsDoNotMatch: 'Passwörter stimmen nicht überein',
+      authUnavailableTitle: 'Fehler',
+      authUnavailable: 'Authentifizierung nicht verfügbar - Supabase ist nicht konfiguriert',
+      signInFailedTitle: 'Anmeldung fehlgeschlagen',
+      signInFailed: 'Bei der Anmeldung ist ein Fehler aufgetreten. Bitte versuche es erneut.',
+      signUpFailedTitle: 'Registrierung fehlgeschlagen',
+      signUpFailed: 'Bei der Registrierung ist ein Fehler aufgetreten. Bitte versuche es erneut.'
+    }
+  },
   
   dashboard: {
     title: 'Startseite',

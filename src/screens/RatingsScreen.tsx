@@ -261,124 +261,124 @@ export const RatingsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 2,
-  },
-  headerButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  activeHeaderButton: {
-    backgroundColor: '#8b5cf6',
-  },
-  headerButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#888',
-  },
-  activeHeaderButtonText: {
-    color: '#fff',
-  },
-  content: {
-    flex: 1,
-  },
-  cardModeToggle: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 15,
-    padding: 4,
-  },
-  cardModeButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-  },
   activeCardMode: {
     backgroundColor: '#8b5cf6',
-  },
-  cardModeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#888',
   },
   activeCardModeText: {
     color: '#fff',
   },
-  statsExplanation: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    marginBottom: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 20,
+  activeHeaderButton: {
+    backgroundColor: '#8b5cf6',
   },
-  explanationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  activeHeaderButtonText: {
     color: '#fff',
+  },
+  cardModeButton: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  cardModeText: {
+    color: '#888',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cardModeToggle: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 15,
+    flexDirection: 'row',
     marginBottom: 20,
-    textAlign: 'center',
+    marginHorizontal: 20,
+    padding: 4,
+  },
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    backgroundColor: '#000',
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  errorText: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  explanationHeader: {
+    color: '#8b5cf6',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   explanationSection: {
     marginBottom: 15,
   },
-  explanationHeader: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#8b5cf6',
-    marginBottom: 8,
-  },
   explanationText: {
-    fontSize: 12,
     color: '#ccc',
+    fontSize: 12,
     lineHeight: 16,
   },
-  loadingText: {
-    fontSize: 16,
+  explanationTitle: {
     color: '#fff',
-    marginTop: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#ff6b6b',
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  headerButton: {
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  headerButtonText: {
+    color: '#888',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  headerButtons: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    flexDirection: 'row',
+    padding: 2,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 20,
   },
   retryButton: {
     backgroundColor: '#8b5cf6',
+    borderRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 10,
   },
   retryButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  statsExplanation: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    marginBottom: 40,
+    marginHorizontal: 20,
+    marginTop: 20,
+    padding: 20,
   },
 });

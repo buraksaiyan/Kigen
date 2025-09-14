@@ -18,6 +18,62 @@ export const en = {
     week: 'week',
     month: 'month',
   },
+  login: {
+    createAccount: 'Create Account',
+    welcomeBack: 'Welcome Back',
+    createYourAccount: 'Create your account',
+    signInToYourAccount: 'Sign in to your account',
+    joinKigen: 'Join Kigen and start your digital wellbeing journey',
+    welcomeBackPleaseSignIn: 'Welcome back! Please sign in to continue',
+    username: 'Username',
+    email: 'Email Address',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+    signInToContinue: 'Sign in to continue',
+    alreadyHaveAccount: 'Already have an account?',
+    dontHaveAccount: "Don't have an account?",
+    checkEmail: {
+      title: 'Check your email',
+      message: "We sent you a verification link. Please check your email and click the link to verify your account.",
+    },
+    placeholders: {
+      username: 'Enter your username',
+      email: 'Enter your email',
+      createPassword: 'Create a password (min. 6 characters)',
+      enterPassword: 'Enter your password',
+      confirmPassword: 'Confirm your password',
+    },
+    privacy: {
+      creatingAccount: 'By creating an account, you agree to our Terms of Service and Privacy Policy. We may use your email to send updates and occasional messages.',
+      signingIn: 'By signing in, you agree to our Terms of Service and Privacy Policy. We may use your email to send updates and occasional messages.'
+    },
+    success: {
+      title: 'Success',
+      welcomeBack: 'Welcome back!'
+    },
+    errors: {
+      emailRequiredTitle: 'Error',
+      emailRequired: 'Please enter your email address',
+      invalidEmailTitle: 'Error',
+      invalidEmail: 'Please enter a valid email address',
+      passwordRequiredTitle: 'Error',
+      passwordRequired: 'Please enter your password',
+      passwordTooShortTitle: 'Error',
+      passwordTooShort: 'Password must be at least 6 characters long',
+      usernameRequiredTitle: 'Error',
+      usernameRequired: 'Please enter your username',
+      passwordsDoNotMatchTitle: 'Error',
+      passwordsDoNotMatch: 'Passwords do not match',
+      authUnavailableTitle: 'Error',
+      authUnavailable: 'Authentication not available - Supabase not configured',
+      signInFailedTitle: 'Sign In Failed',
+      signInFailed: 'An error occurred during sign in. Please try again.',
+      signUpFailedTitle: 'Sign Up Failed',
+      signUpFailed: 'An error occurred during sign up. Please try again.',
+    }
+  },
   
   dashboard: {
     title: 'Dashboard',
@@ -99,6 +155,12 @@ export const en = {
 
   settings: {
     title: 'Settings',
+    customize: 'Customize your Kigen experience',
+    soundsTitle: 'Sounds',
+    timerTickSounds: 'Timer Tick Sounds',
+    timerTickSoundsDesc: 'Play soft tick sounds as seconds count down during focus sessions',
+    soundVolume: 'Sound Volume',
+    soundVolumeDesc: 'Adjust the volume of timer sounds',
     focusReminders: 'Focus Reminders',
     digitalWellbeingAlerts: 'Digital Wellbeing Alerts',
     defaultFocusDuration: 'Default Focus Duration',

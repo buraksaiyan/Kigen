@@ -118,14 +118,14 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     
     // Timeout fallback to prevent infinite loading
-    const timeout = setTimeout(() => {
-      console.log('🕐 DigitalWellbeing: Loading timeout, setting loading to false');
-      setIsLoading(false);
-    }, 5000);
+      const timeout = globalThis.setTimeout(() => {
+        console.log('🕐 DigitalWellbeing: Loading timeout, setting loading to false');
+        setIsLoading(false);
+      }, 5000);
     
     return () => {
       subscription?.remove();
-      clearTimeout(timeout);
+        globalThis.clearTimeout(timeout);
       // No cleanup needed for digitalWellbeingService
     };
   }, [checkPermissionStatus, handleAppStateChange]);
@@ -134,13 +134,13 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
   useEffect(() => {
     if (!hasPermission) return;
 
-    const interval = setInterval(() => {
+    const interval = globalThis.setInterval(() => {
       if (AppState.currentState === 'active') {
         loadUsageData();
       }
     }, 30000);
 
-    return () => clearInterval(interval);
+    return () => globalThis.clearInterval(interval);
   }, [hasPermission, loadUsageData]);
 
   if (isLoading) {
@@ -337,89 +337,43 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 16,
-  },
-  loadingText: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginTop: 100,
-  },
-  permissionContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  appIcon: {
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 100, // Add bottom padding to avoid home button collision
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    marginRight: 12,
+    width: 40,
   },
-  title: {
-    fontSize: 24,
+  appIconImage: {
+    borderRadius: 20,
+    height: 40,
+    marginRight: 12,
+    width: 40,
+  },
+  appIconText: {
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
   },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+  appInfo: {
+    flex: 1,
   },
-  permissionButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
-    marginBottom: 16,
+  appItem: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingVertical: 12,
   },
-  devButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  permissionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  helpText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  statsContainer: {
-    marginTop: 8,
-  },
-  statsHeader: {
-    marginBottom: 24,
-  },
-  todayText: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  lastUpdated: {
+  appLaunches: {
     fontSize: 12,
   },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
+  appName: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 2,
   },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  statLabel: {
+  appUsage: {
     fontSize: 14,
   },
   appsHeader: {
@@ -430,44 +384,27 @@ const styles = StyleSheet.create({
   appsList: {
     marginTop: 16,
   },
-  appItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  appIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  appIconImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  appIconText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  appInfo: {
+  container: {
     flex: 1,
   },
-  appName: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 2,
+  devButton: {
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
-  appUsage: {
+  helpText: {
     fontSize: 14,
+    fontStyle: 'italic',
+    textAlign: 'center',
   },
-  appLaunches: {
+  lastUpdated: {
     fontSize: 12,
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 100,
+    textAlign: 'center',
   },
   noDataContainer: {
     alignItems: 'center',
@@ -476,18 +413,81 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
     lineHeight: 24,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  permissionButton: {
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+  },
+  permissionButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  permissionContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingBottom: 100,
+    paddingHorizontal: 20, // Add bottom padding to avoid home button collision
   },
   refreshButton: {
+    borderRadius: 8,
+    borderWidth: 2,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderWidth: 2,
-    borderRadius: 8,
   },
   refreshButtonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 16,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 14,
+  },
+  statNumber: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statsContainer: {
+    marginTop: 8,
+  },
+  statsHeader: {
+    marginBottom: 24,
+  },
+  statsRow: {
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 32,
+    paddingVertical: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  todayText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
   },
 });

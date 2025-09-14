@@ -347,19 +347,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
     padding: 8,
   },
@@ -368,14 +355,8 @@ const styles = StyleSheet.create({
     color: '#888691',
     fontWeight: '600',
   },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholder: {
-    width: 60,
-  },
-  scrollView: {
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
   content: {
@@ -385,44 +366,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
-  title: {
-    ...theme.typography.h2,
-    color: theme.colors.text.primary,
-    textAlign: 'center',
-    marginBottom: theme.spacing.sm,
-    fontWeight: '700',
+  logoContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-  modesContainer: {
-    gap: theme.spacing.md,
+  modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
   modeCard: {
-    borderWidth: 2,
     borderColor: theme.colors.border,
+    borderWidth: 2,
   },
   modeContent: {
     padding: theme.spacing.md,
   },
+  modeDescription: {
+    ...theme.typography.body,
+    color: theme.colors.text.tertiary,
+    lineHeight: 20,
+  },
   modeHeader: {
     marginBottom: theme.spacing.sm,
-  },
-  modeTitle: {
-    ...theme.typography.h3,
-    fontWeight: '700',
-    marginBottom: theme.spacing.xs,
   },
   modeSubtitle: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     fontWeight: '600',
   },
-  modeDescription: {
+  modeTitle: {
+    ...theme.typography.h3,
+    fontWeight: '700',
+    marginBottom: theme.spacing.xs,
+  },
+  modesContainer: {
+    gap: theme.spacing.md,
+  },
+  placeholder: {
+    width: 60,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  subtitle: {
     ...theme.typography.body,
-    color: theme.colors.text.tertiary,
-    lineHeight: 20,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+  },
+  title: {
+    ...theme.typography.h2,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
   },
 });

@@ -96,92 +96,92 @@ export const StatsPreview: React.FC<StatsPreviewProps> = ({ onPress }) => {
 };
 
 const styles = StyleSheet.create({
+  background: {
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 15,
+    borderWidth: 1,
+    padding: 20,
+  },
   container: {
     marginHorizontal: 20,
     marginVertical: 10,
   },
-  background: {
-    borderRadius: 15,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+  footer: {
+    alignItems: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
   },
   loadingContainer: {
-    height: 150,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 15,
+    height: 150,
+    justifyContent: 'center',
   },
   loadingText: {
     color: '#888',
     fontSize: 16,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  tierBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  tierText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
   overallRating: {
     alignItems: 'center',
     marginBottom: 15,
   },
+  overallRatingLabel: {
+    color: '#ccc',
+    fontSize: 14,
+    marginTop: -5,
+  },
   overallRatingNumber: {
+    color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#fff',
   },
-  overallRatingLabel: {
-    fontSize: 14,
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
     color: '#ccc',
-    marginTop: -5,
+    fontSize: 10,
+    marginTop: 2,
+  },
+  statValue: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15,
   },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
+  tapHint: {
+    color: '#888',
+    fontSize: 12,
   },
-  statValue: {
-    fontSize: 16,
+  tierBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  tierText: {
+    fontSize: 12,
     fontWeight: 'bold',
+  },
+  title: {
     color: '#fff',
-  },
-  statLabel: {
-    fontSize: 10,
-    color: '#ccc',
-    marginTop: 2,
-  },
-  footer: {
-    alignItems: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   totalPoints: {
+    color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 4,
-  },
-  tapHint: {
-    fontSize: 12,
-    color: '#888',
   },
 });

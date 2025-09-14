@@ -18,6 +18,62 @@ export const fr = {
     week: 'semaine',
     month: 'mois',
   },
+  login: {
+    createAccount: 'Créer un compte',
+    welcomeBack: 'Bon retour',
+    createYourAccount: 'Créez votre compte',
+    signInToYourAccount: 'Connectez-vous à votre compte',
+    joinKigen: "Rejoignez Kigen et commencez votre parcours de bien-être numérique",
+    welcomeBackPleaseSignIn: 'Bon retour ! Veuillez vous connecter pour continuer',
+    username: 'Nom d\'utilisateur',
+    email: 'Adresse e-mail',
+    password: 'Mot de passe',
+    confirmPassword: 'Confirmer le mot de passe',
+    signIn: 'Se connecter',
+    signUp: 'S\'inscrire',
+    signInToContinue: 'Connectez-vous pour continuer',
+    alreadyHaveAccount: 'Vous avez déjà un compte ?',
+    dontHaveAccount: 'Vous n\'avez pas de compte ?',
+    checkEmail: {
+      title: 'Vérifiez votre e-mail',
+      message: 'Nous vous avons envoyé un lien de vérification. Veuillez vérifier votre e-mail et cliquer sur le lien pour vérifier votre compte.'
+    },
+    placeholders: {
+      username: 'Entrez votre nom d\'utilisateur',
+      email: 'Entrez votre e-mail',
+      createPassword: 'Créez un mot de passe (min. 6 caractères)',
+      enterPassword: 'Entrez votre mot de passe',
+      confirmPassword: 'Confirmez votre mot de passe'
+    },
+    privacy: {
+      creatingAccount: 'En créant un compte, vous acceptez nos Conditions d\'utilisation et notre Politique de confidentialité. Nous pouvons utiliser votre e-mail pour vous envoyer des mises à jour et des messages occasionnels.',
+      signingIn: 'En vous connectant, vous acceptez nos Conditions d\'utilisation et notre Politique de confidentialité. Nous pouvons utiliser votre e-mail pour vous envoyer des mises à jour et des messages occasionnels.'
+    },
+    success: {
+      title: 'Succès',
+      welcomeBack: 'Bon retour !'
+    },
+    errors: {
+      emailRequiredTitle: 'Erreur',
+      emailRequired: 'Veuillez entrer votre adresse e-mail',
+      invalidEmailTitle: 'Erreur',
+      invalidEmail: 'Veuillez entrer une adresse e-mail valide',
+      passwordRequiredTitle: 'Erreur',
+      passwordRequired: 'Veuillez entrer votre mot de passe',
+      passwordTooShortTitle: 'Erreur',
+      passwordTooShort: 'Le mot de passe doit comporter au moins 6 caractères',
+      usernameRequiredTitle: 'Erreur',
+      usernameRequired: 'Veuillez entrer votre nom d\'utilisateur',
+      passwordsDoNotMatchTitle: 'Erreur',
+      passwordsDoNotMatch: 'Les mots de passe ne correspondent pas',
+      authUnavailableTitle: 'Erreur',
+      authUnavailable: 'Authentification non disponible : Supabase non configuré',
+      signInFailedTitle: 'Échec de la connexion',
+      signInFailed: 'Une erreur est survenue lors de la connexion. Veuillez réessayer.',
+      signUpFailedTitle: 'Échec de l\'inscription',
+      signUpFailed: 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.'
+    }
+  },
   
   dashboard: {
     title: 'Accueil',

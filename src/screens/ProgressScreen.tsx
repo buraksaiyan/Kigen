@@ -286,17 +286,17 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   closeButton: {
     padding: 8,
@@ -314,20 +314,20 @@ const styles = StyleSheet.create({
     width: 60,
   },
   tabContainer: {
-    flexDirection: 'row',
-    marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
     padding: 4,
   },
   tab: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
     alignItems: 'center',
+    borderColor: '#888691',
     borderRadius: theme.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#888691',
+    flex: 1,
+    paddingVertical: theme.spacing.sm,
   },
   activeTab: {
     backgroundColor: theme.colors.primary,
@@ -354,9 +354,9 @@ const styles = StyleSheet.create({
   title: {
     ...theme.typography.h2,
     color: theme.colors.text.primary,
-    textAlign: 'center',
-    marginBottom: theme.spacing.sm,
     fontWeight: '700',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
     ...theme.typography.body,
@@ -370,9 +370,9 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
   },
   logHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: theme.spacing.sm,
   },
   logType: {
@@ -383,8 +383,8 @@ const styles = StyleSheet.create({
   logAction: {
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
-    fontWeight: '600',
     flex: 1,
+    fontWeight: '600',
     marginRight: theme.spacing.sm,
   },
   logStatus: {
@@ -392,9 +392,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   logDetails: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
   logDuration: {
     ...theme.typography.body,
@@ -420,14 +420,14 @@ const styles = StyleSheet.create({
   },
   // Summary card styles
   summaryCard: {
-    marginBottom: theme.spacing.lg,
     backgroundColor: theme.colors.surface,
+    marginBottom: theme.spacing.lg,
   },
   summaryTitle: {
     ...theme.typography.h3,
     color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
     fontWeight: '700',
+    marginBottom: theme.spacing.md,
     textAlign: 'center',
   },
   summaryGrid: {

@@ -18,6 +18,62 @@ export const tr = {
     week: 'hafta',
     month: 'ay',
   },
+  login: {
+    createAccount: 'Hesap Oluştur',
+    welcomeBack: 'Tekrar hoş geldiniz',
+    createYourAccount: 'Hesabınızı oluşturun',
+    signInToYourAccount: 'Hesabınıza giriş yapın',
+    joinKigen: 'Kigen\'e katılın ve dijital iyilik yolculuğunuza başlayın',
+    welcomeBackPleaseSignIn: 'Tekrar hoş geldiniz! Devam etmek için lütfen giriş yapın',
+    username: 'Kullanıcı adı',
+    email: 'E-posta adresi',
+    password: 'Parola',
+    confirmPassword: 'Parolayı Onayla',
+    signIn: 'Giriş Yap',
+    signUp: 'Kayıt Ol',
+    signInToContinue: 'Devam etmek için giriş yapın',
+    alreadyHaveAccount: 'Zaten bir hesabınız var mı?',
+    dontHaveAccount: 'Hesabınız yok mu?',
+    checkEmail: {
+      title: 'E-postanızı kontrol edin',
+      message: 'Sana bir doğrulama bağlantısı gönderdik. Hesabınızı doğrulamak için lütfen e-postanızı kontrol edin ve bağlantıya tıklayın.'
+    },
+    placeholders: {
+      username: 'Kullanıcı adınızı girin',
+      email: 'E-postanızı girin',
+      createPassword: 'Bir parola oluşturun (min. 6 karakter)',
+      enterPassword: 'Parolanızı girin',
+      confirmPassword: 'Parolanızı onaylayın'
+    },
+    privacy: {
+      creatingAccount: 'Hesap oluştururken Hizmet Şartlarımızı ve Gizlilik Politikamızı kabul etmiş olursunuz. E-postanızı güncellemeler ve ara sıra mesajlar göndermek için kullanabiliriz.',
+      signingIn: 'Giriş yaparken Hizmet Şartlarımızı ve Gizlilik Politikamızı kabul etmiş olursunuz. E-postanızı güncellemeler ve ara sıra mesajlar göndermek için kullanabiliriz.'
+    },
+    success: {
+      title: 'Başarılı',
+      welcomeBack: 'Tekrar hoş geldiniz!'
+    },
+    errors: {
+      emailRequiredTitle: 'Hata',
+      emailRequired: 'Lütfen e-posta adresinizi girin',
+      invalidEmailTitle: 'Hata',
+      invalidEmail: 'Lütfen geçerli bir e-posta adresi girin',
+      passwordRequiredTitle: 'Hata',
+      passwordRequired: 'Lütfen parolanızı girin',
+      passwordTooShortTitle: 'Hata',
+      passwordTooShort: 'Parola en az 6 karakter olmalıdır',
+      usernameRequiredTitle: 'Hata',
+      usernameRequired: 'Lütfen kullanıcı adınızı girin',
+      passwordsDoNotMatchTitle: 'Hata',
+      passwordsDoNotMatch: 'Parolalar eşleşmiyor',
+      authUnavailableTitle: 'Hata',
+      authUnavailable: 'Kimlik doğrulama kullanılamıyor - Supabase yapılandırılmamış',
+      signInFailedTitle: 'Giriş Başarısız',
+      signInFailed: 'Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.',
+      signUpFailedTitle: 'Kayıt Başarısız',
+      signUpFailed: 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.'
+    }
+  },
   
   dashboard: {
     title: 'Ana Sayfa',

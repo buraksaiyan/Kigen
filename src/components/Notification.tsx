@@ -39,11 +39,11 @@ export const Notification: React.FC<NotificationProps> = ({
 
       // Auto close after duration
       if (duration > 0) {
-        const timer = setTimeout(() => {
+        const timer = globalThis.setTimeout(() => {
           onClose?.();
         }, duration);
 
-        return () => clearTimeout(timer);
+        return () => globalThis.clearTimeout(timer);
       }
     } else {
       // Animate out
@@ -105,12 +105,11 @@ export const Notification: React.FC<NotificationProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    right: 20,
-    zIndex: 9999,
     borderRadius: 12,
+    elevation: 8,
+    left: 20,
+    position: 'absolute',
+    right: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -118,21 +117,22 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
+    top: 60,
+    zIndex: 9999,
   },
   content: {
     padding: 16,
+  },
+  message: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.9,
   },
   title: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
-  },
-  message: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    opacity: 0.9,
-    lineHeight: 20,
   },
 });

@@ -220,127 +220,144 @@ export const Leaderboard: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#1a1a1a',
-    margin: 20,
-    marginBottom: 10,
-    borderRadius: 15,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#888691',
-  },
   activeTab: {
     backgroundColor: '#2E1A47', // Midnight purple
     borderColor: '#888691',
   },
-  tabText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#888',
-  },
   activeTabText: {
     color: '#fff',
   },
-  monthNavigator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  container: {
+    backgroundColor: '#000',
+    flex: 1,
   },
-  monthButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1a1a1a',
-    justifyContent: 'center',
-    alignItems: 'center',
+  currentMonthIndicator: {
+    color: '#8b5cf6',
+    fontSize: 10,
+    marginTop: 2,
   },
   disabledButton: {
     opacity: 0.3,
   },
-  monthButtonText: {
-    fontSize: 20,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
   disabledText: {
     color: '#666',
   },
-  monthDisplay: {
+  emptyContainer: {
     alignItems: 'center',
+    paddingVertical: 40,
   },
-  monthText: {
+  emptySubtext: {
+    color: '#888',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  emptyText: {
+    color: '#666',
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
-  },
-  currentMonthIndicator: {
-    fontSize: 10,
-    color: '#8b5cf6',
-    marginTop: 2,
-  },
-  leaderboardContainer: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#888',
+    marginBottom: 8,
   },
   entriesContainer: {
-    paddingHorizontal: 20,
     paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  entryBackground: {
+    alignItems: 'center',
+    borderColor: '#333',
+    borderRadius: 15,
+    borderWidth: 1,
+    flexDirection: 'row',
+    padding: 16,
   },
   entryContainer: {
     marginBottom: 12,
   },
-  entryBackground: {
-    borderRadius: 15,
-    padding: 16,
+  header: {
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerSubtitle: {
+    color: '#888',
+    fontSize: 14,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  leaderboardContainer: {
+    flex: 1,
+  },
+  monthButton: {
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  monthButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  monthDisplay: {
+    alignItems: 'center',
+  },
+  monthNavigator: {
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#333',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingHorizontal: 20,
   },
-  rankContainer: {
-    width: 50,
-    alignItems: 'center',
-  },
-  rankText: {
+  monthText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  pointsContainer: {
+    alignItems: 'flex-end',
+  },
+  pointsLabel: {
+    color: '#888',
+    fontSize: 12,
+  },
+  pointsText: {
     color: '#fff',
-  },
-  userInfo: {
-    flex: 1,
-    marginLeft: 15,
-  },
-  username: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  rankContainer: {
+    alignItems: 'center',
+    width: 50,
+  },
+  rankText: {
     color: '#fff',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  tab: {
+    alignItems: 'center',
+    borderColor: '#888691',
+    borderRadius: 12,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  tabContainer: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 15,
+    flexDirection: 'row',
+    margin: 20,
+    marginBottom: 10,
+    padding: 4,
+  },
+  tabText: {
+    color: '#888',
+    fontSize: 16,
+    fontWeight: '600',
   },
   tierBadge: {
     alignSelf: 'flex-start',
@@ -349,31 +366,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  pointsContainer: {
-    alignItems: 'flex-end',
+  userInfo: {
+    flex: 1,
+    marginLeft: 15,
   },
-  pointsText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  username: {
     color: '#fff',
-  },
-  pointsLabel: {
-    fontSize: 12,
-    color: '#888',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#666',
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
+    marginBottom: 4,
   },
 });

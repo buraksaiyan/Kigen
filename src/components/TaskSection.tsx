@@ -80,11 +80,12 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isTimerActive && focusMode) {
-      interval = setInterval(() => {
-        setFocusTimer(prev => prev + 1);
-      }, 1000);
+        interval = globalThis.setInterval(() => {
+          setFocusTimer(prev => prev + 1);
+        }, 1000);
     }
     return () => clearInterval(interval);
+      return () => globalThis.clearInterval(interval);
   }, [isTimerActive, focusMode]);
 
   const loadTasks = async () => {
@@ -441,49 +442,49 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    bottom: 0,
     justifyContent: 'flex-end',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   taskCard: {
-    flex: 1,
-    margin: 0,
+    backgroundColor: theme.colors.surface,
     borderRadius: 0,
     borderTopLeftRadius: theme.borderRadius.lg,
     borderTopRightRadius: theme.borderRadius.lg,
-    backgroundColor: theme.colors.surface,
+    flex: 1,
+    margin: 0,
   },
   contentContainer: {
     flex: 1,
   },
   focusCard: {
-    margin: theme.spacing.lg,
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.primary,
     borderWidth: 2,
+    margin: theme.spacing.lg,
   },
   focusOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   header: {
+    alignItems: 'flex-start',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   headerLeft: {
     flex: 1,
@@ -498,16 +499,16 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surfaceSecondary,
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 16,
+    height: 32,
     justifyContent: 'center',
+    width: 32,
   },
   closeText: {
-    fontSize: 20,
     color: theme.colors.text.secondary,
+    fontSize: 20,
     fontWeight: '300',
   },
   statsContainer: {
@@ -515,8 +516,8 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.lg,
   },
   statItem: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
   },
   statNumber: {
     ...theme.typography.h4,
@@ -526,15 +527,15 @@ const styles = StyleSheet.create({
   statLabel: {
     ...theme.typography.small,
     color: theme.colors.text.tertiary,
-    textTransform: 'uppercase',
     letterSpacing: 1,
     marginTop: theme.spacing.xs,
+    textTransform: 'uppercase',
   },
   inputSection: {
     backgroundColor: theme.colors.surface,
-    padding: theme.spacing.md,
-    borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
+    padding: theme.spacing.md,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -542,12 +543,12 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.sm,
   },
   cancelButton: {
-    flex: 1,
-    backgroundColor: theme.colors.surfaceSecondary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: theme.borderRadius.md,
+    flex: 1,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
   },
   cancelButtonText: {
     ...theme.typography.body,
@@ -556,21 +557,21 @@ const styles = StyleSheet.create({
   },
   taskInput: {
     ...theme.typography.body,
-    color: theme.colors.text.primary,
     backgroundColor: theme.colors.background,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    padding: theme.spacing.md,
   },
   addButton: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
     alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    flex: 1,
     justifyContent: 'center',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
   },
   addButtonDisabled: {
     opacity: 0.5,
@@ -589,30 +590,30 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   taskItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.background,
-    padding: theme.spacing.md,
     borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.sm,
+    flexDirection: 'row',
     gap: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    padding: theme.spacing.md,
   },
   completedTaskItem: {
     opacity: 0.7,
   },
   taskCheckbox: {
-    width: 24,
-    height: 24,
     alignItems: 'center',
+    height: 24,
     justifyContent: 'center',
+    width: 24,
   },
   checkboxEmpty: {
-    fontSize: 18,
     color: theme.colors.text.tertiary,
+    fontSize: 18,
   },
   checkboxChecked: {
-    fontSize: 16,
     color: theme.colors.success,
+    fontSize: 16,
   },
   taskTitle: {
     flex: 1,
@@ -620,49 +621,49 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
   },
   completedTaskTitle: {
-    textDecorationLine: 'line-through',
     color: theme.colors.text.secondary,
+    textDecorationLine: 'line-through',
   },
   taskActions: {
     flexDirection: 'row',
     gap: theme.spacing.xs,
   },
   focusButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.primary,
     alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: 16,
+    height: 32,
     justifyContent: 'center',
+    width: 32,
   },
   focusButtonText: {
     fontSize: 14,
   },
   deleteButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surfaceSecondary,
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 16,
+    height: 32,
     justifyContent: 'center',
+    width: 32,
   },
   deleteButtonText: {
-    fontSize: 16,
     color: theme.colors.text.secondary,
+    fontSize: 16,
     fontWeight: '300',
   },
   emptyText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
     fontStyle: 'italic',
     marginTop: theme.spacing.lg,
+    textAlign: 'center',
   },
   // Focus Mode Styles
   focusHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
   focusTitle: {
@@ -670,10 +671,10 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
   exitButton: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
     backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   exitButtonText: {
     ...theme.typography.body,
@@ -687,23 +688,23 @@ const styles = StyleSheet.create({
   focusTaskTitle: {
     ...theme.typography.h1,
     color: theme.colors.text.primary,
-    textAlign: 'center',
     marginBottom: theme.spacing.md,
+    textAlign: 'center',
   },
   focusSubtitle: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
     fontStyle: 'italic',
+    textAlign: 'center',
   },
   focusActions: {
     alignItems: 'center',
   },
   completeButton: {
     backgroundColor: theme.colors.success,
+    borderRadius: theme.borderRadius.lg,
     paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.lg,
-    borderRadius: theme.borderRadius.lg,
   },
   completeButtonText: {
     ...theme.typography.h4,
@@ -713,10 +714,10 @@ const styles = StyleSheet.create({
   // New styles for timer and failure
   focusTimerContainer: {
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-    paddingVertical: theme.spacing.lg,
     backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
   },
   focusTimer: {
     ...theme.typography.h1,
@@ -726,10 +727,10 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   timerButton: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.sm,
     backgroundColor: theme.colors.primary,
     borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
   },
   timerButtonText: {
     ...theme.typography.body,
@@ -738,10 +739,10 @@ const styles = StyleSheet.create({
   },
   failButton: {
     backgroundColor: theme.colors.danger,
-    paddingHorizontal: theme.spacing.xl,
-    paddingVertical: theme.spacing.lg,
     borderRadius: theme.borderRadius.lg,
     marginTop: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
   },
   failButtonText: {
     ...theme.typography.h4,

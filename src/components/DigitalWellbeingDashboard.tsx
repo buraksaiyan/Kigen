@@ -32,9 +32,9 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
     checkPermissionAndLoadData();
     
     // Check permissions periodically
-    const interval = setInterval(checkPermissionAndLoadData, 3000);
+  const interval = globalThis.setInterval(checkPermissionAndLoadData, 3000);
     
-    return () => clearInterval(interval);
+  return () => globalThis.clearInterval(interval);
   }, []);
 
   const checkPermissionAndLoadData = async () => {
@@ -271,9 +271,9 @@ const styles = StyleSheet.create({
   
   // Permission Request Styles
   permissionContainer: {
-    padding: 24,
-    borderRadius: 16,
     alignItems: 'center',
+    borderRadius: 16,
+    padding: 24,
   },
   iconContainer: {
     marginBottom: 16,
@@ -289,13 +289,13 @@ const styles = StyleSheet.create({
   },
   permissionDescription: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 24,
     lineHeight: 22,
+    marginBottom: 24,
+    textAlign: 'center',
   },
   requirementsContainer: {
-    width: '100%',
     marginBottom: 24,
+    width: '100%',
   },
   requirementsTitle: {
     fontSize: 16,
@@ -303,20 +303,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   requirementStep: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: 8,
   },
   stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
     backgroundColor: 'rgba(139, 92, 246, 0.1)',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginRight: 12,
+    borderRadius: 12,
     fontSize: 14,
     fontWeight: 'bold',
+    height: 24,
+    lineHeight: 24,
+    marginRight: 12,
+    textAlign: 'center',
+    width: 24,
   },
   stepText: {
     flex: 1,
@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   permissionButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
     borderRadius: 12,
     marginBottom: 12,
     minWidth: 200,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   permissionButtonText: {
     color: 'white',
@@ -337,10 +337,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   resetButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
   resetButtonText: {
     fontSize: 14,
@@ -352,10 +352,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chartSection: {
-    padding: 20,
-    borderRadius: 16,
     alignItems: 'center',
+    borderRadius: 16,
     marginBottom: 16,
+    padding: 20,
   },
   chartTitle: {
     fontSize: 18,
@@ -367,9 +367,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   appsSection: {
-    padding: 16,
     borderRadius: 16,
     marginBottom: 16,
+    padding: 16,
   },
   appsTitle: {
     fontSize: 18,
@@ -377,23 +377,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   appItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomWidth: 0.5,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   appInfo: {
+    alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
   },
   appColorDot: {
-    width: 12,
-    height: 12,
     borderRadius: 6,
+    height: 12,
     marginRight: 12,
+    width: 12,
   },
   appDetails: {
     flex: 1,
@@ -420,9 +420,9 @@ const styles = StyleSheet.create({
   
   // No Data Styles
   noDataContainer: {
-    padding: 40,
-    borderRadius: 16,
     alignItems: 'center',
+    borderRadius: 16,
+    padding: 40,
   },
   noDataIcon: {
     fontSize: 48,
@@ -435,15 +435,15 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 16,
     lineHeight: 20,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   noDataReason: {
-    fontSize: 14,
-    textAlign: 'left',
-    marginBottom: 4,
     alignSelf: 'stretch',
+    fontSize: 14,
+    marginBottom: 4,
+    textAlign: 'left',
   },
 });
 

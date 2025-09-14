@@ -61,11 +61,11 @@ export const MeditationBackground: React.FC<MeditationBackgroundProps> = ({ styl
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-  },
   blackBase: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000000',
+  },
+  container: {
+    ...StyleSheet.absoluteFillObject,
   },
 });

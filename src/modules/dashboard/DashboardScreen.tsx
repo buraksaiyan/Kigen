@@ -333,12 +333,12 @@ export const DashboardScreen: React.FC = () => {
           onSessionComplete={() => {
             // Force refresh of stats card when a session completes
             // Add slight delay to ensure data is saved before refreshing
-            setTimeout(() => {
+            globalThis.setTimeout(() => {
               setRefreshTrigger(prev => prev + 1);
             }, 500);
             
             // Check for new achievements after session completion
-            setTimeout(async () => {
+            globalThis.setTimeout(async () => {
               try {
                 await achievementService.checkAchievements();
                 console.log('✅ Achievement check completed after session');
@@ -400,108 +400,41 @@ export const DashboardScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  actionButton: {
     flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  scrollContent: {
-    padding: theme.spacing.lg,
-    // paddingBottom will be set dynamically based on safe area insets
-  },
-  statsCardContainer: {
-    marginVertical: theme.spacing.md,
-    paddingHorizontal: 4, // Add slight horizontal padding
-  },
-  menuButton: {
-    padding: theme.spacing.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.sm,
-    paddingTop: theme.spacing.sm,
-    paddingBottom: theme.spacing.sm,
-    justifyContent: 'space-between',
-  },
-  headerLeft: {
-    width: 80,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  logoContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topNavContainer: {
-    flexDirection: 'row',
-    marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: 4,
-  },
-  topNavTab: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    borderColor: '#888691',
-  },
-  activeTopNavTab: {
-    backgroundColor: theme.colors.primary,
-    borderColor: '#888691',
-  },
-  topNavText: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
-  },
-  activeTopNavText: {
-    color: '#FFFFFF',
-  },
-  headerRight: {
-    width: 80,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  menuButtonText: {
-    fontSize: 20,
-    color: theme.colors.text.primary,
-  },
-  actionsSection: {
-    marginTop: 60,
-    marginBottom: theme.spacing.lg,
-  },
-  sectionTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-    fontWeight: '700',
   },
   actionGrid: {
     flexDirection: 'row',
     gap: theme.spacing.md,
     marginBottom: theme.spacing.md,
   },
-  actionButton: {
-    flex: 1,
+  actionsSection: {
+    marginBottom: theme.spacing.lg,
+    marginTop: 60,
   },
-  outlinedActionButton: {
-    flex: 1,
-    borderWidth: 2,
+  activeTopNavTab: {
+    backgroundColor: theme.colors.primary,
     borderColor: '#888691',
   },
-  fullWidthButtonContainer: {
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
+  activeTopNavText: {
+    color: '#FFFFFF',
   },
-  fullWidthButton: {
-    width: '100%',
+  closeDebugButton: {
+    backgroundColor: theme.colors.danger,
+    borderRadius: 8,
+    padding: 12,
+    position: 'absolute',
+    right: 20,
+    top: 50,
+    zIndex: 2001,
+  },
+  closeDebugText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
   },
   devCard: {
     backgroundColor: theme.colors.border,
@@ -513,25 +446,92 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   fullScreenModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: theme.colors.background,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
     zIndex: 2000,
   },
-  closeDebugButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    backgroundColor: theme.colors.danger,
-    padding: 12,
-    borderRadius: 8,
-    zIndex: 2001,
+  fullWidthButton: {
+    width: '100%',
   },
-  closeDebugText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  fullWidthButtonContainer: {
+    marginBottom: theme.spacing.md,
+    marginTop: theme.spacing.md,
+  },
+  headerLeft: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    width: 80,
+  },
+  headerRight: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: 80,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  menuButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.sm,
+  },
+  menuButtonText: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
+  },
+  outlinedActionButton: {
+    borderColor: '#888691',
+    borderWidth: 2,
+    flex: 1,
+  },
+  scrollContent: {
+    padding: theme.spacing.lg,
+    // paddingBottom will be set dynamically based on safe area insets
+  },
+  sectionTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+    marginBottom: theme.spacing.md,
+  },
+  statsCardContainer: {
+    marginVertical: theme.spacing.md,
+    paddingHorizontal: 4, // Add slight horizontal padding
+  },
+  topHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingTop: theme.spacing.sm,
+  },
+  topNavContainer: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+    padding: 4,
+  },
+  topNavTab: {
+    alignItems: 'center',
+    borderColor: '#888691',
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: theme.spacing.sm,
+  },
+  topNavText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
   },
 });

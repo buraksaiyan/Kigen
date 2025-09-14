@@ -558,10 +558,10 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // }, [onComplete]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+  let interval: NodeJS.Timeout;
     
     if (isRunning && !isPaused && timeLeft > 0) {
-      interval = setInterval(async () => {
+  interval = globalThis.setInterval(async () => {
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
           
@@ -584,7 +584,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
     return () => {
       if (interval) {
-        clearInterval(interval);
+        globalThis.clearInterval(interval);
       }
     };
   }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume]);
@@ -811,8 +811,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   safeArea: {
     flex: 1,
@@ -820,8 +820,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: theme.spacing.lg,
     marginBottom: theme.spacing.xl,
+    paddingTop: theme.spacing.lg,
   },
   modeTitle: {
     ...theme.typography.h2,
@@ -829,39 +829,39 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   progressBar: {
-    width: width * 0.8,
-    height: 4,
     borderRadius: 2,
+    height: 4,
     overflow: 'hidden',
+    width: width * 0.8,
   },
   progressFill: {
-    height: '100%',
     borderRadius: 2,
+    height: '100%',
   },
   clockContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   timeRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: theme.spacing.lg,
   },
   digitContainer: {
-    width: 60,
     height: 80,
     marginHorizontal: 2,
     position: 'relative',
+    width: 60,
   },
   digitHalf: {
-    position: 'absolute',
-    width: '100%',
-    height: '50%',
-    justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
+    elevation: 5,
+    height: '50%',
+    justifyContent: 'center',
+    position: 'absolute',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -869,22 +869,22 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    width: '100%',
   },
   digitTop: {
-    top: 0,
-    borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.2)',
+    borderBottomWidth: 1,
+    top: 0,
   },
   digitBottom: {
-    bottom: 0,
-    borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.2)',
+    borderTopWidth: 1,
+    bottom: 0,
   },
   digitText: {
+    color: '#FFFFFF',
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
     textAlign: 'center',
   },
   separator: {
@@ -905,8 +905,8 @@ const styles = StyleSheet.create({
   timeLabels: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
     paddingHorizontal: theme.spacing.lg,
+    width: '100%',
   },
   timeLabel: {
     ...theme.typography.caption,
@@ -917,52 +917,52 @@ const styles = StyleSheet.create({
   timeLabelLarge: {
     ...theme.typography.caption,
     color: theme.colors.text.secondary,
+    fontSize: 14,
     fontWeight: '600',
     letterSpacing: 2,
-    fontSize: 14,
   },
   timeLabelSmall: {
     ...theme.typography.caption,
     color: theme.colors.text.secondary,
+    fontSize: 10,
     fontWeight: '600',
     letterSpacing: 1,
-    fontSize: 10,
   },
   controls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: theme.spacing.sm,
+    justifyContent: 'center',
     marginBottom: theme.spacing.xl,
     paddingHorizontal: theme.spacing.md,
   },
   smallControlButton: {
-    width: 45,
-    height: 45,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 22.5,
     borderWidth: 2,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center',
+    height: 45,
     justifyContent: 'center',
+    width: 45,
   },
   smallButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
   },
   controlButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    borderRadius: 20,
-    minWidth: 100,
     alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 20,
     flex: 1,
+    justifyContent: 'center',
     maxWidth: 120,
+    minWidth: 100,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   abortButton: {
     backgroundColor: 'rgba(255,68,68,0.1)',
-    borderWidth: 1,
     borderColor: '#888691',
+    borderWidth: 1,
   },
   earlyFinishButton: {
     backgroundColor: 'rgba(34,197,94,0.1)',
@@ -972,6 +972,7 @@ const styles = StyleSheet.create({
     maxWidth: 140,
   },
   primaryButton: {
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -979,12 +980,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
   },
   secondaryButton: {
     backgroundColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.3)',
+    borderWidth: 2,
   },
   primaryButtonText: {
     ...theme.typography.bodyLarge,
@@ -998,15 +998,15 @@ const styles = StyleSheet.create({
   },
   quoteContainer: {
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
   },
   quoteText: {
     ...theme.typography.body,
     color: 'rgba(255,255,255,0.9)',
-    textAlign: 'center',
     fontStyle: 'italic',
     marginBottom: theme.spacing.sm,
+    textAlign: 'center',
   },
   quoteAuthor: {
     ...theme.typography.caption,
@@ -1014,63 +1014,63 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   digitCard: {
-    width: 60,
-    height: 80,
+    alignItems: 'center',
     backgroundColor: '#2A2A2A',
     borderRadius: 8,
+    height: 80,
     justifyContent: 'center',
-    alignItems: 'center',
     overflow: 'hidden',
+    width: 60,
   },
   flipContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   // New circular timer styles
   circularTimerContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: theme.spacing.xl,
   },
   progressCircle: {
-    width: 420,
+    alignItems: 'center',
     height: 420,
     justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: -30,
     position: 'relative',
-    marginTop: -30, // Move circle up slightly
+    width: 420, // Move circle up slightly
   },
   progressRing: {
-    position: 'absolute',
-    width: 330,
-    height: 330,
+    borderColor: 'rgba(255,255,255,0.15)',
     borderRadius: 165,
     borderWidth: 6,
-    borderColor: 'rgba(255,255,255,0.15)',
+    elevation: 5,
+    height: 330,
+    position: 'absolute',
     shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5,
+    width: 330,
   },
   progressArc: {
+    borderBottomColor: 'transparent',
+    borderColor: '#FFFFFF',
+    borderRadius: 165,
+    borderRightColor: 'transparent',
+    borderTopColor: 'transparent',
+    borderWidth: 6,
+    height: 330,
     position: 'absolute',
     width: 330,
-    height: 330,
-    borderRadius: 165,
-    borderWidth: 6,
-    borderColor: '#FFFFFF',
-    borderTopColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
   },
   timeDisplayContainer: {
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     zIndex: 2,
   },
   primaryTimeContainer: {
@@ -1078,22 +1078,22 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   primaryTimeText: {
+    color: '#FFFFFF',
+    fontFamily: 'monospace',
     fontSize: 64,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    fontFamily: 'monospace',
     letterSpacing: 2,
+    textAlign: 'center',
   },
   primaryLabelsContainer: {
     flexDirection: 'row',
-    marginTop: theme.spacing.xs,
     gap: theme.spacing.lg,
+    marginTop: theme.spacing.xs,
   },
   primaryLabel: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 12,
     fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
@@ -1102,26 +1102,26 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.sm,
   },
   secondaryTimeText: {
+    color: '#FFFFFF',
+    fontFamily: 'monospace',
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    fontFamily: 'monospace',
     letterSpacing: 1,
+    textAlign: 'center',
   },
   secondaryLabel: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 10,
     fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
     letterSpacing: 1.5,
-    textTransform: 'uppercase',
     marginTop: 2,
+    textTransform: 'uppercase',
   },
   // Simple text styles for backup
   simpleDigitText: {
+    color: '#FFFFFF',
     fontFamily: 'monospace',
     fontWeight: 'bold',
-    color: '#FFFFFF',
   },
   simpleDigitTextLarge: {
     fontSize: 48,
@@ -1142,35 +1142,35 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   setCounterRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: theme.spacing.md,
   },
   setCounterButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 3,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 40,
+    borderWidth: 3,
+    height: 80,
+    justifyContent: 'center',
+    width: 80,
   },
   setCounterValue: {
+    fontFamily: 'monospace',
     fontSize: 32,
     fontWeight: 'bold',
-    fontFamily: 'monospace',
   },
   setResetButton: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
+    alignItems: 'center',
     borderRadius: theme.borderRadius.md,
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   setResetButtonText: {
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -1184,40 +1184,40 @@ const styles = StyleSheet.create({
   },
   // Goal display styles
   goalDisplayContainer: {
-    width: '90%',
     alignItems: 'center',
+    alignSelf: 'center',
     marginBottom: theme.spacing.lg,
     paddingHorizontal: theme.spacing.md,
-    alignSelf: 'center',
+    width: '90%',
   },
   goalLabel: {
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    textAlign: 'center',
     marginBottom: theme.spacing.sm,
     opacity: 0.8,
+    textAlign: 'center',
+    textTransform: 'uppercase',
   },
   goalCard: {
-    width: '100%',
+    alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: theme.borderRadius.md,
     borderWidth: 2,
     padding: theme.spacing.md,
-    alignItems: 'center',
+    width: '100%',
   },
   goalTitle: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
-    textAlign: 'center',
     marginBottom: theme.spacing.xs,
+    textAlign: 'center',
   },
   goalDescription: {
-    fontSize: 14,
     color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center',
+    fontSize: 14,
     lineHeight: 20,
+    textAlign: 'center',
   },
 });

@@ -401,22 +401,31 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  actionButton: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
-  modalHeader: {
+  addButton: {
+    flex: 1,
+  },
+  addGoalActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#374151',
+    gap: theme.spacing.sm,
   },
-  header: {
-    paddingVertical: theme.spacing.xl,
+  addGoalCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  addGoalPrompt: {
     alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+  },
+  addGoalTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  cancelButton: {
+    flex: 1,
   },
   closeButton: {
     padding: 8,
@@ -426,190 +435,181 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  headerTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  placeholder: {
-    width: 60,
-  },
-  content: {
-    paddingHorizontal: theme.spacing.lg,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-  },
-  contentHeader: {
-    paddingVertical: theme.spacing.xl,
-    alignItems: 'center',
-  },
-  title: {
-    ...theme.typography.h1,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-  },
-  statsCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: theme.colors.border,
-  },
-  statNumber: {
-    ...theme.typography.h3,
-    color: '#888691',
-    fontWeight: '700',
-  },
-  statLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.tertiary,
-    marginTop: theme.spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  sectionTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginVertical: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-  },
-  goalCard: {
-    marginBottom: theme.spacing.md,
-  },
   completedCard: {
     backgroundColor: theme.colors.surfaceSecondary,
     opacity: 0.8,
-  },
-  failedCard: {
-    backgroundColor: theme.colors.surfaceSecondary,
-    opacity: 0.7,
-  },
-  goalHeader: {
-    marginBottom: theme.spacing.md,
-  },
-  goalTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
   },
   completedTitle: {
     color: theme.colors.success,
     textDecorationLine: 'line-through',
   },
-  failedTitle: {
-    color: theme.colors.danger,
-    textDecorationLine: 'line-through',
-  },
-  goalDate: {
-    ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
-  },
-  goalActions: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-  },
-  actionButton: {
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
+  },
+  content: {
+    paddingHorizontal: theme.spacing.lg,
+  },
+  contentHeader: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xl,
   },
   deleteButton: {
     minWidth: 50,
   },
-  smallDeleteButton: {
-    position: 'absolute',
-    right: theme.spacing.sm,
-    top: theme.spacing.sm,
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: 16,
-  },
-  smallDeleteText: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
   emptyCard: {
     alignItems: 'center',
     paddingVertical: theme.spacing.xl,
-  },
-  emptyTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
   },
   emptyText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     textAlign: 'center',
   },
-  addGoalCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  addGoalTitle: {
+  emptyTitle: {
     ...theme.typography.h3,
     color: theme.colors.text.primary,
+    marginBottom: theme.spacing.sm,
+  },
+  failedCard: {
+    backgroundColor: theme.colors.surfaceSecondary,
+    opacity: 0.7,
+  },
+  failedTitle: {
+    color: theme.colors.danger,
+    textDecorationLine: 'line-through',
+  },
+  goalActions: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  goalCard: {
+    marginBottom: theme.spacing.md,
+  },
+  goalDate: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
+  },
+  goalHeader: {
     marginBottom: theme.spacing.md,
   },
   goalInput: {
     ...theme.typography.body,
-    color: theme.colors.text.primary,
     backgroundColor: theme.colors.background,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
   },
-  addGoalActions: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
+  goalTitle: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
   },
-  cancelButton: {
-    flex: 1,
-  },
-  addButton: {
-    flex: 1,
-  },
-  addGoalPrompt: {
+  header: {
     alignItems: 'center',
-    paddingVertical: theme.spacing.lg,
-    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.xl,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#374151',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  placeholder: {
+    width: 60,
+  },
+  promptButton: {
+    minWidth: 120,
   },
   promptTitle: {
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
   },
-  promptButton: {
-    minWidth: 120,
-  },
-  logoContainer: {
+  scrollView: {
     flex: 1,
+  },
+  sectionTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+    marginVertical: theme.spacing.lg,
+  },
+  smallDeleteButton: {
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: theme.spacing.sm,
+    top: theme.spacing.sm,
+    width: 32,
+  },
+  smallDeleteText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  statDivider: {
+    backgroundColor: theme.colors.border,
+    height: 30,
+    width: 1,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
+    ...theme.typography.small,
+    color: theme.colors.text.tertiary,
+    letterSpacing: 1,
+    marginTop: theme.spacing.xs,
+    textTransform: 'uppercase',
+  },
+  statNumber: {
+    ...theme.typography.h3,
+    color: '#888691',
+    fontWeight: '700',
+  },
+  statsCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  statsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  subtitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+  },
+  title: {
+    ...theme.typography.h1,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
   },
 });

@@ -78,47 +78,27 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
-  },
   alertContainer: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.lg,
-    minWidth: 280,
-    maxWidth: 400,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 1,
+    maxWidth: 400,
+    minWidth: 280,
+    padding: theme.spacing.lg,
   },
-  title: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    textAlign: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  message: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: theme.spacing.lg,
-    lineHeight: 22,
+  button: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    flex: 1,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: theme.spacing.md,
-  },
-  button: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonText: {
     ...theme.typography.body,
@@ -127,8 +107,8 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: theme.colors.surfaceSecondary,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderWidth: 1,
   },
   cancelButtonText: {
     color: theme.colors.text.secondary,
@@ -138,5 +118,25 @@ const styles = StyleSheet.create({
   },
   destructiveButtonText: {
     color: theme.colors.text.primary,
+  },
+  message: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    lineHeight: 22,
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+  },
+  overlay: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.lg,
+  },
+  title: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+    textAlign: 'center',
   },
 });

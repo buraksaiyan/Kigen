@@ -56,11 +56,11 @@ export const NoTechBackground: React.FC<NoTechBackgroundProps> = ({ style, fullC
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   blackBase: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#1F2937',
+  },
+  container: {
+    flex: 1,
   },
 });

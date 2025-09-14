@@ -483,12 +483,11 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
 const styles = StyleSheet.create({
   card: {
-    width: width - 32,
-    height: 200,
     alignSelf: 'center',
     borderRadius: 16,
-    overflow: 'hidden',
     elevation: 8,
+    height: 200,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -496,14 +495,15 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 8,
+    width: width - 32,
   },
   cardContent: {
     flex: 1,
     padding: 16,
   },
   cardSide: {
-    flex: 1,
     backfaceVisibility: 'hidden',
+    flex: 1,
   },
   
   // Card layout matching the exact sketch
@@ -519,26 +519,26 @@ const styles = StyleSheet.create({
     marginTop: -4, // Move higher
   },
   timePeriod: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 6,
+    color: 'black',
     fontSize: 12,
     fontWeight: '600',
-    color: 'black',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 6,
   },
   
   // Main content area with 3 columns
   mainContent: {
+    alignItems: 'stretch',
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'stretch',
   },
   
   // Left column - Picture and username
   leftColumn: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
     paddingRight: 8,
   },
@@ -554,11 +554,11 @@ const styles = StyleSheet.create({
   
   // Right column - Stats list
   rightColumn: {
-    flex: 1,
-    paddingLeft: 8,
-    justifyContent: 'center',
-    borderLeftWidth: 2,
     borderLeftColor: 'black',
+    borderLeftWidth: 2,
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 8,
   },
   
   // Stats container
@@ -570,48 +570,48 @@ const styles = StyleSheet.create({
   // Bottom section for rank (moved down)
   bottomSection: {
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: -4, // Move down
+    marginBottom: -4,
+    marginTop: 12, // Move down
   },
   rankText: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 6,
+    color: 'black',
     fontSize: 12,
     fontWeight: '600',
-    color: 'black',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 6,
   },
   pictureContainer: {
-    width: 70,
-    height: 90,
-    borderRadius: 4,
-    overflow: 'hidden',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    marginBottom: 8,
-    borderWidth: 2,
     borderColor: 'black',
+    borderRadius: 4,
+    borderWidth: 2,
+    height: 90,
+    marginBottom: 8,
+    overflow: 'hidden',
+    width: 70,
   },
   cardProfileImage: {
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   picturePlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
   },
   picturePlaceholderText: {
-    fontSize: 10,
     color: 'black',
+    fontSize: 10,
     fontWeight: '500',
   },
   cardUserName: {
+    color: 'black',
     fontSize: 12,
     fontWeight: '600',
-    color: 'black',
     textAlign: 'center',
   },
   rightSection: {
@@ -623,15 +623,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   ovrLabel: {
+    color: 'black',
     fontSize: 14,
     fontWeight: '700',
-    color: 'black',
     textAlign: 'center',
   },
   ovrValue: {
+    color: 'black',
     fontSize: 36,
     fontWeight: '900',
-    color: 'black',
     textAlign: 'center',
   },
   allStatsGrid: {
@@ -641,9 +641,9 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   statKey: {
+    color: 'black',
     fontSize: 14,
     fontWeight: '600',
-    color: 'black',
   },
   statValue: {
     fontSize: 14,
@@ -655,47 +655,47 @@ const styles = StyleSheet.create({
   },
   
   tierText: {
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
     letterSpacing: 1,
   },
   
   // Loading state
   loadingText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
-    textAlign: 'center',
     marginTop: 80,
+    textAlign: 'center',
   },
   
   // Expanded Modal Styles (keeping existing)
   expandedCard: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   expandedContent: {
     paddingBottom: 40,
   },
   expandedHeader: {
-    paddingTop: 60,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    paddingTop: 60,
   },
   closeButton: {
-    alignSelf: 'flex-end',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
     marginBottom: 20,
+    width: 32,
   },
   closeButtonText: {
-    fontSize: 24,
     color: '#FFFFFF',
+    fontSize: 24,
     fontWeight: '600',
   },
   profileSection: {
@@ -703,116 +703,116 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileImageContainer: {
-    width: 100,
-    height: 100,
     borderRadius: 50,
+    height: 100,
     marginBottom: 12,
     overflow: 'hidden',
+    width: 100,
   },
   profileImage: {
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   profilePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
   },
   profilePlaceholderText: {
-    fontSize: 32,
     color: '#FFFFFF',
+    fontSize: 32,
     fontWeight: '300',
   },
   addPhotoText: {
-    fontSize: 10,
     color: '#FFFFFF',
+    fontSize: 10,
     marginTop: 4,
   },
   userName: {
+    color: '#FFFFFF',
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
     textAlign: 'center',
   },
   expandedOvrContainer: {
     alignItems: 'center',
   },
   expandedOvrLabel: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
     marginBottom: 8,
   },
   expandedOvrNumber: {
+    color: '#FFFFFF',
     fontSize: 64,
     fontWeight: '900',
-    color: '#FFFFFF',
   },
   detailedStatsContainer: {
     padding: 20,
   },
   detailedStatsTitle: {
+    color: theme.colors.text.primary,
     fontSize: 20,
     fontWeight: '700',
-    color: theme.colors.text.primary,
     marginBottom: 20,
     textAlign: 'center',
   },
   cleanStatRow: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   cleanStatName: {
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.text.primary,
   },
   cleanStatValue: {
+    color: '#888691',
     fontSize: 18,
     fontWeight: '700',
-    color: '#888691',
   },
   // Keep old styles for backwards compatibility but unused now
   detailedStatRow: {
     marginBottom: 16,
   },
   detailedStatName: {
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
-    color: theme.colors.text.primary,
     marginBottom: 8,
   },
   statBar: {
-    height: 32,
+    alignItems: 'center',
     backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: 16,
-    overflow: 'hidden',
     flexDirection: 'row',
-    alignItems: 'center',
+    height: 32,
+    overflow: 'hidden',
     paddingRight: 12,
   },
   statBarFill: {
-    height: '100%',
     backgroundColor: theme.colors.primary,
     borderRadius: 16,
+    height: '100%',
   },
   detailedStatValue: {
+    color: theme.colors.text.primary,
     fontSize: 14,
     fontWeight: '700',
-    color: theme.colors.text.primary,
     marginLeft: 'auto',
   },
   additionalInfo: {
-    marginTop: 24,
-    padding: 16,
     backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: 12,
+    marginTop: 24,
+    padding: 16,
   },
   infoRow: {
     flexDirection: 'row',
@@ -820,12 +820,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoLabel: {
-    fontSize: 14,
     color: theme.colors.text.secondary,
+    fontSize: 14,
   },
   infoValue: {
+    color: theme.colors.text.primary,
     fontSize: 14,
     fontWeight: '600',
-    color: theme.colors.text.primary,
   },
 });

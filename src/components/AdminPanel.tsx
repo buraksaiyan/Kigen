@@ -332,20 +332,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  actionButton: {
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 50,
-    borderBottomWidth: 1,
+    borderRadius: 8,
+    flex: 1,
+    padding: 12,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  actionButtonText: {
+    fontWeight: '600',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  badge: {
+    borderRadius: 4,
+    marginRight: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   closeButton: {
     padding: 8,
@@ -354,107 +363,98 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  container: {
+    flex: 1,
+  },
   content: {
     padding: 20,
   },
+  deleteButton: {
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  deleteButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+    paddingTop: 50,
+  },
   loadingText: {
-    textAlign: 'center',
     fontSize: 16,
     marginTop: 50,
+    textAlign: 'center',
   },
-  statsContainer: {
-    padding: 20,
-    borderRadius: 12,
+  searchInput: {
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 44,
     marginBottom: 20,
+    paddingHorizontal: 12,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
   },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
   statItem: {
     alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 12,
   },
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 12,
+  statsContainer: {
+    borderRadius: 12,
+    marginBottom: 20,
+    padding: 20,
   },
-  actionsContainer: {
+  statsGrid: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
+    justifyContent: 'space-around',
   },
-  actionButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
-  actionButtonText: {
-    fontWeight: '600',
-  },
-  searchInput: {
-    height: 44,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 20,
-  },
-  usersContainer: {
-    marginBottom: 20,
+  userBadges: {
+    flexDirection: 'row',
+    marginTop: 8,
   },
   userCard: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
     alignItems: 'center',
+    borderRadius: 8,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 16,
   },
-  userInfo: {
-    flex: 1,
+  userDate: {
+    fontSize: 12,
+    marginBottom: 2,
   },
   userEmail: {
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 4,
   },
+  userInfo: {
+    flex: 1,
+  },
   userName: {
     fontSize: 14,
     marginBottom: 4,
   },
-  userDate: {
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  userBadges: {
-    flexDirection: 'row',
-    marginTop: 8,
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  deleteButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  deleteButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
+  usersContainer: {
+    marginBottom: 20,
   },
 });

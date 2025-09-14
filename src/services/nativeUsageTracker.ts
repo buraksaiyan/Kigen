@@ -138,9 +138,9 @@ class NativeUsageTracker {
     this.appStateListener = AppState.addEventListener('change', this.handleAppStateChange);
     
     // Also check periodically in case AppState doesn't trigger
-    this.permissionCheckInterval = setInterval(async () => {
+    this.permissionCheckInterval = globalThis.setInterval(async () => {
       await this.checkPermissionStatus();
-    }, 2000);
+    }, 2000) as unknown as NodeJS.Timeout;
   }
 
   private handleAppStateChange = async (nextAppState: AppStateStatus): Promise<void> => {
@@ -167,7 +167,7 @@ class NativeUsageTracker {
       this.appStateListener = null;
     }
     if (this.permissionCheckInterval) {
-      clearInterval(this.permissionCheckInterval);
+      globalThis.clearInterval(this.permissionCheckInterval as unknown as number | NodeJS.Timeout);
       this.permissionCheckInterval = null;
     }
   }

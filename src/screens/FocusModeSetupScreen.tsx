@@ -203,19 +203,6 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
     padding: 8,
   },
@@ -224,14 +211,8 @@ const styles = StyleSheet.create({
     color: '#888691',
     fontWeight: '600',
   },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholder: {
-    width: 60,
-  },
-  scrollView: {
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
   content: {
@@ -241,71 +222,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
-  modeIndicator: {
-    width: 4,
-    height: 40,
-    borderRadius: 2,
-    marginBottom: theme.spacing.md,
-  },
-  title: {
-    ...theme.typography.h2,
-    textAlign: 'center',
-    marginBottom: theme.spacing.sm,
-    fontWeight: '700',
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-  setupCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  sectionTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.lg,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  timeInputContainer: {
-    flexDirection: 'row',
+  logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: theme.spacing.xl,
   },
-  timeInputGroup: {
+  modalHeader: {
     alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
-  timeInput: {
-    borderWidth: 2,
+  modeIndicator: {
+    borderRadius: 2,
+    height: 40,
+    marginBottom: theme.spacing.md,
+    width: 4,
+  },
+  placeholder: {
+    width: 60,
+  },
+  presetButton: {
+    backgroundColor: 'transparent',
     borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text.primary,
-    backgroundColor: theme.colors.surface,
-    textAlign: 'center',
-    minWidth: 80,
-    marginBottom: theme.spacing.sm,
+    borderWidth: 1,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
-  timeLabel: {
-    ...theme.typography.caption,
-    color: theme.colors.text.secondary,
+  presetText: {
+    ...theme.typography.body,
     fontWeight: '600',
-  },
-  timeSeparator: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text.primary,
-    marginHorizontal: theme.spacing.md,
   },
   presetTitle: {
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
     fontWeight: '600',
+    marginBottom: theme.spacing.md,
   },
   presetsContainer: {
     flexDirection: 'row',
@@ -313,23 +267,26 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
     justifyContent: 'center',
   },
-  presetButton: {
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: 'transparent',
+  scrollView: {
+    flex: 1,
   },
-  presetText: {
-    ...theme.typography.body,
+  sectionTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
     fontWeight: '600',
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+  },
+  setupCard: {
+    marginBottom: theme.spacing.lg,
   },
   startButton: {
-    borderRadius: theme.borderRadius.md,
-    paddingVertical: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.xl,
     alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+    elevation: 5,
     marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -337,25 +294,68 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
   },
   startButtonText: {
     ...theme.typography.h3,
     color: '#FFFFFF',
     fontWeight: '700',
   },
+  subtitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+  },
+  timeInput: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: theme.spacing.sm,
+    minWidth: 80,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    textAlign: 'center',
+  },
+  timeInputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  timeInputGroup: {
+    alignItems: 'center',
+  },
+  timeLabel: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
+  },
+  timeSeparator: {
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginHorizontal: theme.spacing.md,
+  },
   tipsCard: {
     backgroundColor: theme.colors.surface,
-  },
-  tipsTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-    fontWeight: '600',
   },
   tipsText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     lineHeight: 22,
+  },
+  tipsTitle: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.md,
+  },
+  title: {
+    ...theme.typography.h2,
+    fontWeight: '700',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
   },
 });

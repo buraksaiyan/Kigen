@@ -29,7 +29,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     ]).start();
 
     // Auto-hide after 3 seconds
-    const timer = setTimeout(() => {
+  const timer = globalThis.setTimeout(() => {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -46,7 +46,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       });
     }, 2500);
 
-    return () => clearTimeout(timer);
+    return () => globalThis.clearTimeout(timer);
   }, [fadeAnim, scaleAnim, onFinish]);
 
   return (
@@ -68,9 +68,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
     alignItems: 'center',
+    backgroundColor: theme.colors.background,
+    flex: 1,
     justifyContent: 'center',
   },
   logoContainer: {

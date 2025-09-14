@@ -278,33 +278,33 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   safeArea: {
     flex: 1,
   },
   header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   closeButton: {
     padding: 8,
   },
   closeButtonText: {
-    fontSize: 16,
     color: theme.colors.text.secondary,
+    fontSize: 16,
     fontWeight: '600',
   },
   title: {
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: 'bold',
-    color: theme.colors.text.primary,
   },
   placeholder: {
     width: 60,
@@ -312,30 +312,30 @@ const styles = StyleSheet.create({
   
   // Overall Progress
   overallProgress: {
-    padding: 20,
     alignItems: 'center',
+    padding: 20,
   },
   overallTitle: {
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.text.primary,
     marginBottom: 8,
   },
   overallStats: {
-    fontSize: 14,
     color: theme.colors.text.secondary,
+    fontSize: 14,
     marginBottom: 12,
   },
   overallProgressBar: {
-    width: '100%',
-    height: 8,
     backgroundColor: theme.colors.surface,
     borderRadius: 4,
+    height: 8,
     overflow: 'hidden',
+    width: '100%',
   },
   overallProgressFill: {
-    height: '100%',
     borderRadius: 4,
+    height: '100%',
   },
 
   // Category Tabs
@@ -343,16 +343,16 @@ const styles = StyleSheet.create({
     maxHeight: 100,
   },
   categoryTabsContent: {
-    paddingHorizontal: 20,
     gap: 12,
+    paddingHorizontal: 20,
   },
   categoryTab: {
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
     minWidth: 80,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   categoryTabActive: {
     backgroundColor: theme.colors.primary,
@@ -364,8 +364,8 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontSize: 12,
     fontWeight: '600',
-    textAlign: 'center',
     marginBottom: 2,
+    textAlign: 'center',
   },
   categoryProgress: {
     fontSize: 10,
@@ -378,33 +378,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.text.primary,
     marginVertical: 16,
   },
   
   // Achievement Card
   achievementCard: {
-    flexDirection: 'row',
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
+    flexDirection: 'row',
     marginBottom: 12,
     opacity: 0.7,
+    padding: 16,
   },
   achievementCardUnlocked: {
-    opacity: 1,
-    borderWidth: 1,
     borderColor: theme.colors.success,
+    borderWidth: 1,
+    opacity: 1,
   },
   achievementBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 24,
+    height: 48,
+    justifyContent: 'center',
     marginRight: 16,
+    width: 48,
   },
   achievementEmoji: {
     fontSize: 24,
@@ -416,9 +416,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   achievementHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 4,
   },
   achievementTitle: {
@@ -442,20 +442,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   progressContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 12,
   },
   progressBar: {
-    flex: 1,
-    height: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 2,
+    flex: 1,
+    height: 4,
     overflow: 'hidden',
   },
   progressFill: {
-    height: '100%',
     borderRadius: 2,
+    height: '100%',
   },
   progressText: {
     fontSize: 12,

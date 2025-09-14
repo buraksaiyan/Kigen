@@ -17,6 +17,7 @@ import { env } from '../config/env';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { KigenLogo } from '../components/KigenLogo';
 import { UserStatsService } from '../services/userStatsService';
+import { useTranslation } from '../i18n/I18nProvider';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -42,6 +43,7 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
+  const { t } = useTranslation();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,33 +59,33 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
 
   const validateForm = (): boolean => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address');
+      Alert.alert(t('login.errors.emailRequiredTitle'), t('login.errors.emailRequired'));
       return false;
     }
     
     if (!validateEmail(email)) {
-      Alert.alert('Error', 'Please enter a valid email address');
+      Alert.alert(t('login.errors.invalidEmailTitle'), t('login.errors.invalidEmail'));
       return false;
     }
 
     if (!password.trim()) {
-      Alert.alert('Error', 'Please enter your password');
+      Alert.alert(t('login.errors.passwordRequiredTitle'), t('login.errors.passwordRequired'));
       return false;
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert(t('login.errors.passwordTooShortTitle'), t('login.errors.passwordTooShort'));
       return false;
     }
 
     if (isSignUp) {
       if (!username.trim()) {
-        Alert.alert('Error', 'Please enter your username');
+        Alert.alert(t('login.errors.usernameRequiredTitle'), t('login.errors.usernameRequired'));
         return false;
       }
 
       if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match');
+        Alert.alert(t('login.errors.passwordsDoNotMatchTitle'), t('login.errors.passwordsDoNotMatch'));
         return false;
       }
     }
@@ -98,7 +100,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
     try {
       // Check if Supabase is configured
       if (env.supabaseUrl.includes('placeholder')) {
-        Alert.alert('Error', 'Authentication not available - Supabase not configured');
+        Alert.alert(t('login.errors.authUnavailableTitle'), t('login.errors.authUnavailable'));
         setLoading(false);
         return;
       }
@@ -110,13 +112,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
 
       if (error) throw error;
 
-      Alert.alert('Success', 'Welcome back!');
+      Alert.alert(t('login.success.title'), t('login.success.welcomeBack'));
       onClose();
     } catch (error: any) {
       console.error('Sign in error:', error.message);
       Alert.alert(
-        'Sign In Failed', 
-        error.message || 'An error occurred during sign in. Please try again.'
+        t('login.errors.signInFailedTitle'),
+        error.message || t('login.errors.signInFailed')
       );
     } finally {
       setLoading(false);
@@ -130,7 +132,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
     try {
       // Check if Supabase is configured
       if (env.supabaseUrl.includes('placeholder')) {
-        Alert.alert('Error', 'Authentication not available - Supabase not configured');
+        Alert.alert(t('login.errors.authUnavailableTitle'), t('login.errors.authUnavailable'));
         setLoading(false);
         return;
       }
@@ -151,15 +153,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
       await UserStatsService.createUserProfile(username.trim());
 
       Alert.alert(
-        'Check your email',
-        'We sent you a verification link. Please check your email and click the link to verify your account.',
-        [{ text: 'OK', onPress: onClose }]
+        t('login.checkEmail.title'),
+        t('login.checkEmail.message'),
+        [{ text: t('common.ok') || 'OK', onPress: onClose }]
       );
     } catch (error: any) {
       console.error('Sign up error:', error.message);
       Alert.alert(
-        'Sign Up Failed',
-        error.message || 'An error occurred during sign up. Please try again.'
+        t('login.errors.signUpFailedTitle'),
+        error.message || t('login.errors.signUpFailed')
       );
     } finally {
       setLoading(false);
@@ -204,7 +206,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           <Ionicons name="close" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
-          {isSignUp ? 'Create Account' : 'Welcome Back'}
+          {isSignUp ? t('login.createAccount') : t('login.welcomeBack')}
         </Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -218,13 +220,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           <View style={styles.titleContainer}>
             <KigenLogo size="large" variant="image" />
             <Text style={[styles.title, { color: theme.colors.text.primary }]}>
-              {isSignUp ? 'Create your account' : 'Sign in to your account'}
+              {isSignUp ? t('login.createYourAccount') : t('login.signInToYourAccount')}
             </Text>
             <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
-              {isSignUp
-                ? 'Join Kigen and start your digital wellbeing journey'
-                : 'Welcome back! Please sign in to continue'
-              }
+              {isSignUp ? t('login.joinKigen') : t('login.welcomeBackPleaseSignIn')}
             </Text>
           </View>
 
@@ -232,7 +231,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           {isSignUp && (
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: theme.colors.text.primary }]}>
-                Username
+                {t('login.username')}
               </Text>
               <TextInput
                 style={[
@@ -243,7 +242,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                     color: theme.colors.text.primary,
                   },
                 ]}
-                placeholder="Enter your username"
+                placeholder={t('login.placeholders.username')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={username}
                 onChangeText={setUsername}
@@ -257,7 +256,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           {/* Email Field */}
           <View style={styles.inputContainer}>
             <Text style={[styles.label, { color: theme.colors.text.primary }]}>
-              Email Address
+              {t('login.email')}
             </Text>
             <TextInput
               style={[
@@ -268,7 +267,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                   color: theme.colors.text.primary,
                 },
               ]}
-              placeholder="Enter your email"
+              placeholder={t('login.placeholders.email')}
               placeholderTextColor={theme.colors.text.tertiary}
               value={email}
               onChangeText={setEmail}
@@ -282,7 +281,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           {/* Password Field */}
           <View style={styles.inputContainer}>
             <Text style={[styles.label, { color: theme.colors.text.primary }]}>
-              Password
+              {t('login.password')}
             </Text>
             <View style={styles.passwordContainer}>
               <TextInput
@@ -294,7 +293,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                     color: theme.colors.text.primary,
                   },
                 ]}
-                placeholder={isSignUp ? 'Create a password (min. 6 characters)' : 'Enter your password'}
+                placeholder={isSignUp ? t('login.placeholders.createPassword') : t('login.placeholders.enterPassword')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={password}
                 onChangeText={setPassword}
@@ -320,7 +319,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
           {isSignUp && (
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: theme.colors.text.primary }]}>
-                Confirm Password
+                {t('login.confirmPassword')}
               </Text>
               <TextInput
                 style={[
@@ -331,7 +330,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                     color: theme.colors.text.primary,
                   },
                 ]}
-                placeholder="Confirm your password"
+                placeholder={t('login.placeholders.confirmPassword')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -352,34 +351,32 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
             onPress={handleSubmit}
             disabled={loading}
           >
-            {loading ? (
+                {loading ? (
               <ActivityIndicator size="small" color={theme.colors.background} />
             ) : (
-              <Text style={[styles.submitButtonText, { color: theme.colors.background }]}>
-                {isSignUp ? 'Create Account' : 'Sign In'}
-              </Text>
+                  <Text style={[styles.submitButtonText, { color: theme.colors.background }]}>
+                {isSignUp ? t('login.createAccount') : t('login.signIn')}
+                </Text>
             )}
           </TouchableOpacity>
 
           {/* Toggle Sign In/Sign Up */}
           <View style={styles.toggleContainer}>
             <Text style={[styles.toggleText, { color: theme.colors.text.secondary }]}>
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+              {isSignUp ? t('login.alreadyHaveAccount') : t('login.dontHaveAccount')}
             </Text>
             <TouchableOpacity onPress={toggleMode} disabled={loading}>
-              <Text style={[styles.toggleButton, { 
+                <Text style={[styles.toggleButton, { 
                 color: '#888691',
               }]}>
-                {isSignUp ? 'Sign In' : 'Sign Up'}
+                {isSignUp ? t('login.signIn') : t('login.signUp')}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Privacy Notice */}
           <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
-            By {isSignUp ? 'creating an account' : 'signing in'}, you agree to our Terms of Service
-            and Privacy Policy. We'll use your email to send you updates about your digital
-            wellbeing progress and promotional messages.
+            {isSignUp ? t('login.privacy.creatingAccount') : t('login.privacy.signingIn')}
           </Text>
         </View>
       </ScrollView>
@@ -388,56 +385,45 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
 };
 
 const styles = StyleSheet.create({
+  closeButton: {
+    padding: 5,
+  },
   container: {
     flex: 1,
   },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  form: {
+    alignSelf: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    maxWidth: 400,
+    width: '100%',
+  },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: 15,
     paddingHorizontal: 20,
     paddingTop: 50,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
   },
-  closeButton: {
-    padding: 5,
+  headerSpacer: {
+    width: 34, // Same width as close button to center title
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
   },
-  headerSpacer: {
-    width: 34, // Same width as close button to center title
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-  },
-  form: {
-    flex: 1,
-    justifyContent: 'center',
-    maxWidth: 400,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  titleContainer: {
-    marginBottom: 32,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-    marginTop: 20,
-  },
-  subtitle: {
+  input: {
+    borderRadius: 12,
+    borderWidth: 1,
     fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 22,
+    height: 50,
+    paddingHorizontal: 16,
   },
   inputContainer: {
     marginBottom: 20,
@@ -446,13 +432,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 8,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
   },
   passwordContainer: {
     position: 'relative',
@@ -466,44 +445,62 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   passwordToggle: {
+    padding: 5,
     position: 'absolute',
     right: 16,
     top: 15,
-    padding: 5,
+  },
+  privacyText: {
+    fontSize: 13,
+    lineHeight: 18,
+    paddingHorizontal: 10,
+    textAlign: 'center',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
   },
   submitButton: {
-    height: 50,
-    borderRadius: 12,
-    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    borderRadius: 12,
+    height: 50,
+    justifyContent: 'center',
     marginBottom: 20,
-  },
-  disabledButton: {
-    opacity: 0.7,
+    marginTop: 10,
   },
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
-  toggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 30,
+  subtitle: {
+    fontSize: 16,
+    lineHeight: 22,
+    textAlign: 'center',
   },
-  toggleText: {
-    fontSize: 15,
-    marginRight: 5,
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
   },
   toggleButton: {
     fontSize: 15,
     fontWeight: '500',
   },
-  privacyText: {
-    fontSize: 13,
-    textAlign: 'center',
-    lineHeight: 18,
-    paddingHorizontal: 10,
+  toggleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 30,
+  },
+  toggleText: {
+    fontSize: 15,
+    marginRight: 5,
   },
 });

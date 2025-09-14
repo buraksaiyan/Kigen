@@ -21,6 +21,7 @@ import { supabase } from '../services/supabase';
 import { env } from '../config/env';
 import { StatsValidator } from '../../debug/StatsValidator';
 import { focusSessionService } from '../services/FocusSessionService';
+import { useTranslation } from '../i18n/I18nProvider';
 
 interface UserProfile {
   id: string;
@@ -44,6 +45,7 @@ interface ProfileScreenProps {
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -186,10 +188,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
     } catch (error) {
       console.error('Error checking username availability:', error);
       // If there's an error, allow the change but warn the user
-      Alert.alert(
-        'Warning', 
-        'Could not verify username availability. Proceed with caution.'
-      );
+      Alert.alert(t('profile.alerts.loadErrorTitle'), t('profile.alerts.loadErrorMsg'));
       return true;
     } finally {
       setIsCheckingUsername(false);
@@ -198,24 +197,24 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
 
   const handleSaveUsername = async () => {
     if (!newUsername.trim()) {
-      Alert.alert('Error', 'Username cannot be empty');
+      Alert.alert(t('profile.alerts.usernameEmptyTitle'), t('profile.alerts.usernameEmptyMsg'));
       return;
     }
 
     if (newUsername.trim().length < 3) {
-      Alert.alert('Error', 'Username must be at least 3 characters long');
+      Alert.alert(t('profile.alerts.usernameTooShortTitle'), t('profile.alerts.usernameTooShortMsg'));
       return;
     }
 
     if (newUsername.trim().length > 20) {
-      Alert.alert('Error', 'Username cannot be more than 20 characters long');
+      Alert.alert(t('profile.alerts.usernameTooLongTitle'), t('profile.alerts.usernameTooLongMsg'));
       return;
     }
 
     // Check for invalid characters
     const validUsernameRegex = /^[a-zA-Z0-9_-]+$/;
     if (!validUsernameRegex.test(newUsername.trim())) {
-      Alert.alert('Error', 'Username can only contain letters, numbers, underscores, and hyphens');
+      Alert.alert(t('profile.alerts.usernameInvalidCharsTitle'), t('profile.alerts.usernameInvalidCharsMsg'));
       return;
     }
 
@@ -226,7 +225,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       const isAvailable = await checkUsernameAvailability(newUsername.trim());
       
       if (!isAvailable) {
-        Alert.alert('Error', 'This username is already taken. Please choose a different one.');
+        Alert.alert(t('profile.alerts.usernameTakenTitle'), t('profile.alerts.usernameTakenMsg'));
         return;
       }
 
@@ -238,11 +237,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       // Reload the profile to get updated data
       await loadProfile();
       
-      setIsEditing(false);
-      Alert.alert('Success', 'Username updated successfully!');
+  setIsEditing(false);
+  Alert.alert(t('profile.alerts.usernameUpdatedTitle'), t('profile.alerts.usernameUpdatedMsg'));
     } catch (error) {
       console.error('Error updating username:', error);
-      Alert.alert('Error', 'Failed to update username. Please try again.');
+      Alert.alert(t('profile.alerts.usernameUpdateFailedTitle'), t('profile.alerts.usernameUpdateFailedMsg'));
     } finally {
       setIsSaving(false);
     }
@@ -253,7 +252,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please grant camera roll permissions to change your profile picture.');
+        Alert.alert(t('profile.alerts.permissionNeededTitle'), t('profile.alerts.permissionNeededMsg'));
         return;
       }
 
@@ -273,11 +272,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         // Reload the profile to get updated data
         await loadProfile();
         
-        Alert.alert('Success', 'Profile picture updated successfully!');
+  Alert.alert(t('profile.alerts.profilePicUpdatedTitle'), t('profile.alerts.profilePicUpdatedMsg'));
       }
     } catch (error) {
       console.error('Error updating profile image:', error);
-      Alert.alert('Error', 'Failed to update profile picture. Please try again.');
+      Alert.alert(t('profile.alerts.profilePicUpdateFailedTitle'), t('profile.alerts.profilePicUpdateFailedMsg'));
     }
   };
 
@@ -312,10 +311,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
             style={styles.closeButton} 
             onPress={handleClose}
           >
-            <Text style={styles.closeButtonText}>Close</Text>
+            <Text style={styles.closeButtonText}>{t('common.close')}</Text>
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
-            Profile
+            {t('profile.title')}
           </Text>
         </View>
         
@@ -393,7 +392,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                 ]}
                 value={newUsername}
                 onChangeText={setNewUsername}
-                placeholder="Enter new username"
+                placeholder={t('profile.username')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -414,7 +413,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                   disabled={isSaving}
                 >
                   <Text style={[styles.buttonText, { color: theme.colors.text.secondary }]}>
-                    Cancel
+                    {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
                 
@@ -430,7 +429,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                   {isSaving || isCheckingUsername ? (
                     <ActivityIndicator size="small" color="#FFFFFF" />
                   ) : (
-                    <Text style={styles.saveButtonText}>Save</Text>
+                    <Text style={styles.saveButtonText}>{t('common.save')}</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -450,10 +449,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                 style={[styles.editButton, { borderColor: theme.colors.border }]}
                 onPress={() => setIsEditing(true)}
               >
-                <Text style={[styles.editButtonText, { 
+                  <Text style={[styles.editButtonText, { 
                   color: '#888691',
-                }]}>
-                  Edit
+                }]}> 
+                  {t('common.edit')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -463,7 +462,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         {/* Focus Statistics - Real Data */}
         <View style={[styles.section, { borderColor: theme.colors.border }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
-            Focus Statistics
+            {t('dashboard.disciplineAndFocus')}
           </Text>
           
           <View style={styles.statsGrid}>
@@ -471,28 +470,28 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
               <Text style={[styles.statNumber, { color: theme.colors.primary }]}>
                 {formatTime(stats.totalFocusTime)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Total Focus Time</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('profile.totalFocusTime')}</Text>
             </View>
             
             <View style={styles.statCard}>
               <Text style={[styles.statNumber, { color: theme.colors.success }]}>
                 {stats.sessionsThisWeek}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Sessions This Week</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('profile.sessionsThisWeek')}</Text>
             </View>
             
             <View style={styles.statCard}>
               <Text style={[styles.statNumber, { color: theme.colors.warning }]}>
                 {stats.currentStreak}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Current Streak</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('profile.currentStreak')}</Text>
             </View>
             
             <View style={styles.statCard}>
               <Text style={[styles.statNumber, { color: theme.colors.secondary }]}>
                 {formatTime(stats.longestSession)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>Longest Session</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('profile.longestSession')}</Text>
             </View>
           </View>
         </View>
@@ -500,12 +499,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         {/* Account Details */}
         <View style={[styles.section, { borderColor: theme.colors.border }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
-            Account Details
+            {t('profile.title')}
           </Text>
           
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
-              Member Since
+              {t('profile.memberSince')}
             </Text>
             <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
               {formatDate(profile.createdAt)}
@@ -514,7 +513,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
           
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
-              Last Updated
+              {t('profile.lastUpdated') || 'Last Updated'}
             </Text>
             <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
               {formatDate(profile.lastUpdated)}
@@ -607,18 +606,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
     gap: 16,
+    justifyContent: 'center',
   },
   loadingText: {
     fontSize: 16,
   },
   errorContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 20,
   },
   errorText: {
@@ -626,13 +625,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   header: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   closeButton: {
     padding: 8,
@@ -664,22 +663,22 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   profileImageContainer: {
-    width: 120,
-    height: 120,
     borderRadius: 60,
+    height: 120,
     overflow: 'hidden',
     position: 'relative',
+    width: 120,
   },
   profileImage: {
-    width: 120,
     height: 120,
+    width: 120,
   },
   profilePlaceholder: {
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 60,
+    height: 120,
+    justifyContent: 'center',
+    width: 120,
   },
   profilePlaceholderText: {
     color: '#FFFFFF',
@@ -687,13 +686,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   editImageOverlay: {
-    position: 'absolute',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     bottom: 0,
     left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingVertical: 4,
-    alignItems: 'center',
+    position: 'absolute',
+    right: 0,
   },
   editImageText: {
     color: '#FFFFFF',
@@ -701,9 +700,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
+    borderBottomWidth: 1,
     marginBottom: 24,
     paddingBottom: 24,
-    borderBottomWidth: 1,
   },
   sectionTitle: {
     fontSize: 18,
@@ -714,26 +713,26 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   usernameInput: {
-    borderWidth: 1,
     borderRadius: 8,
+    borderWidth: 1,
+    fontSize: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 16,
   },
   editButtons: {
     flexDirection: 'row',
     gap: 12,
   },
   button: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
     alignItems: 'center',
+    borderRadius: 8,
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   cancelButton: {
-    borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1,
   },
   saveButton: {},
   buttonText: {
@@ -751,29 +750,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   usernameDisplay: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   usernameText: {
+    flex: 1,
     fontSize: 18,
     fontWeight: '600',
-    flex: 1,
   },
   editButton: {
+    borderRadius: 6,
+    borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderRadius: 6,
   },
   editButtonText: {
     fontSize: 14,
     fontWeight: '600',
   },
   infoRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 8,
   },
   infoLabel: {
@@ -784,11 +783,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   privacyNotice: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginBottom: 32,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 8,
+    marginBottom: 32,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   privacyText: {
     fontSize: 14,
@@ -804,12 +803,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statCard: {
-    flex: 1,
-    minWidth: '45%',
+    alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
+    flex: 1,
+    minWidth: '45%',
     padding: 16,
-    alignItems: 'center',
   },
   statNumber: {
     fontSize: 24,
@@ -818,8 +817,8 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
+    letterSpacing: 0.5,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
 });
