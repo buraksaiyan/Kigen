@@ -21,3 +21,18 @@ pnpm-debug.log*
 !.vscode/settings.json
 # Bundler
 .sourcemaps
+
+# Android SDK and Development Tools (not needed in repository)
+android/
+*.keystore
+*.jks
+
+# iOS development (if you add iOS later)
+ios/Pods/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Large files that shouldn't be committed
+*.zip
+*.dmg
+*.iso
