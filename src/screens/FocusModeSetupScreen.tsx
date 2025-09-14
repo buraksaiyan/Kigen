@@ -174,7 +174,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 <Text style={styles.tipsText}>
                   • Sit comfortably with spine straight{'\n'}
                   • Focus on your breath{'\n'}
-                  • Don't judge wandering thoughts{'\n'}
+                  • Don&apos;t judge wandering thoughts{'\n'}
                   • Start with shorter sessions
                 </Text>
               )}

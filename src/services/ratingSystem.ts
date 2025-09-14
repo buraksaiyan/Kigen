@@ -32,12 +32,19 @@ export class RatingSystem {
   // Card background images for each tier
   static getCardBackgroundImage(tier: CardTier) {
     const backgrounds = {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Bronze]: require('../../assets/images/bronze-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Silver]: require('../../assets/images/silver-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Gold]: require('../../assets/images/gold-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Platinum]: require('../../assets/images/platinum-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Diamond]: require('../../assets/images/diamond-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Carbon]: require('../../assets/images/carbon-card.png'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
       [CardTier.Obsidian]: require('../../assets/images/obsidian-card.png'),
     };
     return backgrounds[tier];

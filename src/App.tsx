@@ -8,6 +8,7 @@ import { clearOldFocusData } from './utils/clearOldData';
 // Conditional import for web compatibility
 let GestureHandler: any = View;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
   const { GestureHandlerRootView } = require('react-native-gesture-handler');
   GestureHandler = GestureHandlerRootView;
 } catch (e) {
@@ -50,7 +51,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
+    backgroundColor: '#000000', // TODO: Replace with theme color
     flex: 1,
   },
 });

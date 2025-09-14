@@ -114,9 +114,9 @@ const UsageDashboard: React.FC<UsageDashboardProps> = ({ theme }) => {
       
       <View style={styles.stepsContainer}>
         <Text style={[styles.stepsTitle, { color: theme.text }]}>How to enable:</Text>
-        <Text style={[styles.stepText, { color: theme.textSecondary }]}>1. Tap "Grant Permission" below</Text>
-        <Text style={[styles.stepText, { color: theme.textSecondary }]}>2. Find "Kigen" in the list</Text>
-        <Text style={[styles.stepText, { color: theme.textSecondary }]}>3. Toggle "Allow usage access" ON</Text>
+        <Text style={[styles.stepText, { color: theme.textSecondary }]}>1. Tap &quot;Grant Permission&quot; below</Text>
+        <Text style={[styles.stepText, { color: theme.textSecondary }]}>2. Find &quot;Kigen&quot; in the list</Text>
+        <Text style={[styles.stepText, { color: theme.textSecondary }]}>3. Toggle &quot;Allow usage access&quot; ON</Text>
         <Text style={[styles.stepText, { color: theme.textSecondary }]}>4. Return to the app</Text>
       </View>
       
@@ -170,7 +170,7 @@ const UsageDashboard: React.FC<UsageDashboardProps> = ({ theme }) => {
         <View style={styles.statsHeader}>
           <View>
             <Text style={[styles.statsTitle, { color: theme.text }]}>
-              Today's Screen Time
+              Today&apos;s Screen Time
             </Text>
             <Text style={[styles.totalTime, { color: '#8B5CF6' }]}>
               {usageTracker.formatTime(todayStats.totalScreenTime)}

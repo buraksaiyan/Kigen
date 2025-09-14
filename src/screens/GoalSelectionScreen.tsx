@@ -125,7 +125,7 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   };
 
   useEffect(() => {
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: ReturnType<typeof globalThis.setTimeout>;
     
     if (visible && !loading) {
       // Only show no goals alert if we're sure there are no goals and loading is complete

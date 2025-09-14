@@ -558,7 +558,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   // }, [onComplete]);
 
   useEffect(() => {
-  let interval: NodeJS.Timeout;
+  let interval: ReturnType<typeof globalThis.setInterval>;
     
     if (isRunning && !isPaused && timeLeft > 0) {
   interval = globalThis.setInterval(async () => {
@@ -800,7 +800,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         {/* Zen Quote */}
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>
-            "{selectedQuote?.text || 'Focus on the present moment.'}"
+            &quot;{selectedQuote?.text || 'Focus on the present moment.'}&quot;
           </Text>
           <Text style={styles.quoteAuthor}>— {selectedQuote?.author || 'Anonymous'}</Text>
         </View>

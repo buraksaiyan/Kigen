@@ -24,7 +24,7 @@ export interface UsageStats {
 }
 
 class NativeUsageTracker {
-  private permissionCheckInterval: NodeJS.Timeout | null = null;
+  private permissionCheckInterval: ReturnType<typeof globalThis.setInterval> | null = null;
   private appStateListener: any = null;
   
   // Check if we have usage access permission
@@ -140,7 +140,7 @@ class NativeUsageTracker {
     // Also check periodically in case AppState doesn't trigger
     this.permissionCheckInterval = globalThis.setInterval(async () => {
       await this.checkPermissionStatus();
-    }, 2000) as unknown as NodeJS.Timeout;
+    }, 2000);
   }
 
   private handleAppStateChange = async (nextAppState: AppStateStatus): Promise<void> => {
@@ -167,7 +167,7 @@ class NativeUsageTracker {
       this.appStateListener = null;
     }
     if (this.permissionCheckInterval) {
-      globalThis.clearInterval(this.permissionCheckInterval as unknown as number | NodeJS.Timeout);
+      globalThis.clearInterval(this.permissionCheckInterval);
       this.permissionCheckInterval = null;
     }
   }

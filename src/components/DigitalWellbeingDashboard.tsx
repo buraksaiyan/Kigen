@@ -104,19 +104,19 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
         <View style={styles.requirementStep}>
           <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>1</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
-            Tap "Grant Permission" below
+            Tap &quot;Grant Permission&quot; below
           </Text>
         </View>
         <View style={styles.requirementStep}>
           <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>2</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
-            Find "Kigen" in the Usage Access list
+            Find &quot;Kigen&quot; in the Usage Access list
           </Text>
         </View>
         <View style={styles.requirementStep}>
           <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>3</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
-            Toggle "Allow usage access" ON
+            Toggle &quot;Allow usage access&quot; ON
           </Text>
         </View>
         <View style={styles.requirementStep}>
@@ -155,7 +155,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
         Permission is granted, but no usage data could be retrieved. This might be because:
       </Text>
       <Text style={[styles.noDataReason, { color: theme.textSecondary }]}>
-        • You haven't used other apps today
+        • You haven&apos;t used other apps today
       </Text>
       <Text style={[styles.noDataReason, { color: theme.textSecondary }]}>
         • The system needs time to collect data

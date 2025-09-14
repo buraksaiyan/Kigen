@@ -78,14 +78,17 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
 
   // Focus timer effect
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof globalThis.setInterval>;
     if (isTimerActive && focusMode) {
         interval = globalThis.setInterval(() => {
           setFocusTimer(prev => prev + 1);
         }, 1000);
     }
-    return () => clearInterval(interval);
-      return () => globalThis.clearInterval(interval);
+    return () => {
+      if (interval) {
+        globalThis.clearInterval(interval);
+      }
+    };
   }, [isTimerActive, focusMode]);
 
   const loadTasks = async () => {

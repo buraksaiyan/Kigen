@@ -164,7 +164,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
 
                 {/* Today's Summary */}
                 <Card style={styles.summaryCard}>
-                  <Text style={styles.summaryTitle}>Today's Summary</Text>
+                  <Text style={styles.summaryTitle}>Today&apos;s Summary</Text>
                   <View style={styles.summaryGrid}>
                     <View style={styles.summaryRow}>
                       <View style={styles.summaryItem}>
