@@ -20,7 +20,7 @@ export const de = {
   },
   
   dashboard: {
-    title: 'Dashboard',
+    title: 'Startseite',
     welcome: 'Willkommen zurück',
     startFocus: 'Fokus-Session starten',
     journal: 'Tagebuch',
@@ -31,9 +31,9 @@ export const de = {
     achievements: 'Erfolge',
     disciplineAndFocus: 'Disziplin und Fokus',
     leaderboard: 'Rangliste',
-    buildDiscipline: 'Disziplin aufbauen',
+  buildDiscipline: 'Disziplin stärken',
     development: 'Entwicklung',
-    closeDebug: 'Debug schließen',
+    closeDebug: 'Debug-Ansicht schließen',
   },
 
   focusSession: {
@@ -82,6 +82,30 @@ export const de = {
   achievements: {
     title: 'Erfolge',
     overallProgress: 'Gesamtfortschritt',
+    alerts: {
+      loadErrorTitle: 'Fehler',
+      loadErrorMsg: 'Profilinformationen konnten nicht geladen werden',
+      usernameEmptyTitle: 'Fehler',
+      usernameEmptyMsg: 'Der Benutzername darf nicht leer sein',
+      usernameTooShortTitle: 'Fehler',
+      usernameTooShortMsg: 'Der Benutzername muss mindestens 3 Zeichen lang sein',
+      usernameTooLongTitle: 'Fehler',
+      usernameTooLongMsg: 'Der Benutzername darf nicht länger als 20 Zeichen sein',
+      usernameInvalidCharsTitle: 'Fehler',
+      usernameInvalidCharsMsg: 'Der Benutzername darf nur Buchstaben, Zahlen, Unterstriche und Bindestriche enthalten',
+      usernameTakenTitle: 'Fehler',
+      usernameTakenMsg: 'Dieser Benutzername wird bereits verwendet. Bitte wähle einen anderen.',
+      usernameUpdatedTitle: 'Erfolg',
+      usernameUpdatedMsg: 'Benutzername erfolgreich aktualisiert!',
+      usernameUpdateFailedTitle: 'Fehler',
+      usernameUpdateFailedMsg: 'Der Benutzername konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+      permissionNeededTitle: 'Berechtigung erforderlich',
+      permissionNeededMsg: 'Bitte erteile Galerie-Berechtigungen, um dein Profilbild zu ändern.',
+      profilePicUpdatedTitle: 'Erfolg',
+      profilePicUpdatedMsg: 'Profilbild erfolgreich aktualisiert!',
+      profilePicUpdateFailedTitle: 'Fehler',
+      profilePicUpdateFailedMsg: 'Das Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+    },
     achievementsUnlocked: 'Erfolge freigeschaltet',
     categories: {
       focusHours: 'Fokus-Stunden',
@@ -140,7 +164,7 @@ export const de = {
   },
 
   sidebar: {
-    dashboard: 'Dashboard',
+    dashboard: 'Startseite',
     pastJournals: 'Vergangene Tagebücher',
     pastGoals: 'Vergangene Ziele',
     progress: 'Fortschritt',

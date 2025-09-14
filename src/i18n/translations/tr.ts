@@ -20,7 +20,7 @@ export const tr = {
   },
   
   dashboard: {
-    title: 'Ana Panel',
+    title: 'Ana Sayfa',
     welcome: 'Tekrar hoş geldin',
     startFocus: 'Odaklanma Seansı Başlat',
     journal: 'Günlük',
@@ -31,9 +31,9 @@ export const tr = {
     achievements: 'Başarımlar',
     disciplineAndFocus: 'Disiplin ve Odaklanma',
     leaderboard: 'Lider Sıralaması',
-    buildDiscipline: 'Disiplin İnşa Et',
+  buildDiscipline: 'Disiplin geliştir',
     development: 'Geliştirme',
-    closeDebug: 'Debug Kapat',
+    closeDebug: 'Hata ayıklama görünümünü kapat',
   },
 
   focusSession: {
@@ -82,6 +82,30 @@ export const tr = {
   achievements: {
     title: 'Başarımlar',
     overallProgress: 'Genel İlerleme',
+    alerts: {
+      loadErrorTitle: 'Hata',
+      loadErrorMsg: 'Profil bilgileri yüklenemedi',
+      usernameEmptyTitle: 'Hata',
+      usernameEmptyMsg: 'Kullanıcı adı boş olamaz',
+      usernameTooShortTitle: 'Hata',
+      usernameTooShortMsg: 'Kullanıcı adı en az 3 karakter olmalıdır',
+      usernameTooLongTitle: 'Hata',
+      usernameTooLongMsg: 'Kullanıcı adı 20 karakterden uzun olamaz',
+      usernameInvalidCharsTitle: 'Hata',
+      usernameInvalidCharsMsg: 'Kullanıcı adı yalnızca harfler, sayılar, alt çizgi ve tire içerebilir',
+      usernameTakenTitle: 'Hata',
+      usernameTakenMsg: 'Bu kullanıcı adı zaten kullanılıyor. Lütfen başka bir tane seçin.',
+      usernameUpdatedTitle: 'Başarılı',
+      usernameUpdatedMsg: 'Kullanıcı adı başarıyla güncellendi!',
+      usernameUpdateFailedTitle: 'Hata',
+      usernameUpdateFailedMsg: 'Kullanıcı adı güncellenemedi. Lütfen tekrar deneyin.',
+      permissionNeededTitle: 'İzin gerekli',
+      permissionNeededMsg: 'Profil fotoğrafınızı değiştirmek için galeri izinleri verin lütfen.',
+      profilePicUpdatedTitle: 'Başarılı',
+      profilePicUpdatedMsg: 'Profil fotoğrafı başarıyla güncellendi!',
+      profilePicUpdateFailedTitle: 'Hata',
+      profilePicUpdateFailedMsg: 'Profil fotoğrafı güncellenemedi. Lütfen tekrar deneyin.',
+    },
     achievementsUnlocked: 'Başarım Açıldı',
     categories: {
       focusHours: 'Odaklanma Saatleri',
@@ -140,7 +164,7 @@ export const tr = {
   },
 
   sidebar: {
-    dashboard: 'Ana Panel',
+    dashboard: 'Ana Sayfa',
     pastJournals: 'Geçmiş Günlükler',
     pastGoals: 'Geçmiş Hedefler',
     progress: 'İlerleme',

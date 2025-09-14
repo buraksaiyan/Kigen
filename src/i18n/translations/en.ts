@@ -31,9 +31,10 @@ export const en = {
     achievements: 'Achievements',
     disciplineAndFocus: 'Discipline & Focus',
     leaderboard: 'Leaderboard',
-    buildDiscipline: 'Build Discipline',
+  buildDiscipline: 'Build self-discipline',
     development: 'Development',
-    closeDebug: 'Close Debug',
+    // better phrasing for debug close button
+    closeDebug: 'Close debug view',
   },
 
   focusSession: {
@@ -123,6 +124,30 @@ export const en = {
     longestSession: 'Longest Session',
     noProfileFound: 'No profile found. Please create an account first.',
     usernameValidation: 'Username is visible to other users on the leaderboard.',
+    alerts: {
+      loadErrorTitle: 'Error',
+      loadErrorMsg: 'Failed to load profile information',
+      usernameEmptyTitle: 'Error',
+      usernameEmptyMsg: 'Username cannot be empty',
+      usernameTooShortTitle: 'Error',
+      usernameTooShortMsg: 'Username must be at least 3 characters long',
+      usernameTooLongTitle: 'Error',
+      usernameTooLongMsg: 'Username cannot be more than 20 characters long',
+      usernameInvalidCharsTitle: 'Error',
+      usernameInvalidCharsMsg: 'Username can only contain letters, numbers, underscores, and hyphens',
+      usernameTakenTitle: 'Error',
+      usernameTakenMsg: 'This username is already taken. Please choose a different one.',
+      usernameUpdatedTitle: 'Success',
+      usernameUpdatedMsg: 'Username updated successfully!',
+      usernameUpdateFailedTitle: 'Error',
+      usernameUpdateFailedMsg: 'Failed to update username. Please try again.',
+      permissionNeededTitle: 'Permission needed',
+      permissionNeededMsg: 'Please grant camera roll permissions to change your profile picture.',
+      profilePicUpdatedTitle: 'Success',
+      profilePicUpdatedMsg: 'Profile picture updated successfully!',
+      profilePicUpdateFailedTitle: 'Error',
+      profilePicUpdateFailedMsg: 'Failed to update profile picture. Please try again.',
+    },
   },
 
   auth: {

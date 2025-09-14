@@ -20,7 +20,7 @@ export const fr = {
   },
   
   dashboard: {
-    title: 'Tableau de Bord',
+    title: 'Accueil',
     welcome: 'Bon retour',
     startFocus: 'Commencer une Session de Concentration',
     journal: 'Journal',
@@ -31,10 +31,11 @@ export const fr = {
     achievements: 'Réalisations',
     disciplineAndFocus: 'Discipline et Concentration',
     leaderboard: 'Classement',
-    buildDiscipline: 'Construire la Discipline',
+  buildDiscipline: 'Renforcer la discipline',
     development: 'Développement',
-    closeDebug: 'Fermer Debug',
+    closeDebug: 'Fermer la vue de débogage',
   },
+
 
   focusSession: {
     title: 'Session de Concentration',
@@ -82,6 +83,30 @@ export const fr = {
   achievements: {
     title: 'Réalisations',
     overallProgress: 'Progrès Global',
+    alerts: {
+      loadErrorTitle: 'Erreur',
+      loadErrorMsg: 'Impossible de charger les informations du profil',
+      usernameEmptyTitle: 'Erreur',
+      usernameEmptyMsg: "Le nom d'utilisateur ne peut pas être vide",
+      usernameTooShortTitle: 'Erreur',
+      usernameTooShortMsg: "Le nom d'utilisateur doit contenir au moins 3 caractères",
+      usernameTooLongTitle: 'Erreur',
+      usernameTooLongMsg: "Le nom d'utilisateur ne peut pas dépasser 20 caractères",
+      usernameInvalidCharsTitle: 'Erreur',
+      usernameInvalidCharsMsg: "Le nom d'utilisateur ne peut contenir que des lettres, des chiffres, des traits de soulignement et des traits d'union",
+      usernameTakenTitle: 'Erreur',
+      usernameTakenMsg: "Ce nom d'utilisateur est déjà utilisé. Veuillez en choisir un autre.",
+      usernameUpdatedTitle: 'Succès',
+      usernameUpdatedMsg: "Nom d'utilisateur mis à jour avec succès !",
+      usernameUpdateFailedTitle: 'Erreur',
+      usernameUpdateFailedMsg: "Impossible de mettre à jour le nom d'utilisateur. Veuillez réessayer.",
+      permissionNeededTitle: 'Autorisation requise',
+      permissionNeededMsg: "Veuillez accorder les autorisations de la galerie pour changer votre photo de profil.",
+      profilePicUpdatedTitle: 'Succès',
+      profilePicUpdatedMsg: 'Photo de profil mise à jour avec succès !',
+      profilePicUpdateFailedTitle: 'Erreur',
+      profilePicUpdateFailedMsg: "Impossible de mettre à jour la photo de profil. Veuillez réessayer.",
+    },
     achievementsUnlocked: 'Réalisations Débloquées',
     categories: {
       focusHours: 'Heures de Concentration',
@@ -140,7 +165,7 @@ export const fr = {
   },
 
   sidebar: {
-    dashboard: 'Tableau de Bord',
+    dashboard: 'Accueil',
     pastJournals: 'Journaux Passés',
     pastGoals: 'Objectifs Passés',
     progress: 'Progrès',

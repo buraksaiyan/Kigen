@@ -20,7 +20,7 @@ export const es = {
   },
   
   dashboard: {
-    title: 'Panel Principal',
+    title: 'Inicio',
     welcome: 'Bienvenido de nuevo',
     startFocus: 'Iniciar Sesión de Concentración',
     journal: 'Diario',
@@ -31,10 +31,11 @@ export const es = {
     achievements: 'Logros',
     disciplineAndFocus: 'Disciplina y Concentración',
     leaderboard: 'Tabla de Clasificación',
-    buildDiscipline: 'Construir Disciplina',
+  buildDiscipline: 'Fortalecer la disciplina',
     development: 'Desarrollo',
-    closeDebug: 'Cerrar Debug',
+    closeDebug: 'Cerrar vista de depuración',
   },
+
 
   focusSession: {
     title: 'Sesión de Concentración',
@@ -123,6 +124,30 @@ export const es = {
     longestSession: 'Sesión Más Larga',
     noProfileFound: 'No se encontró perfil. Por favor, crea una cuenta primero.',
     usernameValidation: 'El nombre de usuario es visible para otros usuarios en la tabla de clasificación.',
+    alerts: {
+      loadErrorTitle: 'Error',
+      loadErrorMsg: 'No se pudo cargar la información del perfil',
+      usernameEmptyTitle: 'Error',
+      usernameEmptyMsg: 'El nombre de usuario no puede estar vacío',
+      usernameTooShortTitle: 'Error',
+      usernameTooShortMsg: 'El nombre de usuario debe tener al menos 3 caracteres',
+      usernameTooLongTitle: 'Error',
+      usernameTooLongMsg: 'El nombre de usuario no puede tener más de 20 caracteres',
+      usernameInvalidCharsTitle: 'Error',
+      usernameInvalidCharsMsg: 'El nombre de usuario solo puede contener letras, números, guiones bajos y guiones',
+      usernameTakenTitle: 'Error',
+      usernameTakenMsg: 'Este nombre de usuario ya está en uso. Por favor elige otro.',
+      usernameUpdatedTitle: 'Éxito',
+      usernameUpdatedMsg: '¡Nombre de usuario actualizado con éxito!',
+      usernameUpdateFailedTitle: 'Error',
+      usernameUpdateFailedMsg: 'No se pudo actualizar el nombre de usuario. Inténtalo de nuevo.',
+      permissionNeededTitle: 'Permiso necesario',
+      permissionNeededMsg: 'Por favor otorga permisos de galería para cambiar tu foto de perfil.',
+      profilePicUpdatedTitle: 'Éxito',
+      profilePicUpdatedMsg: '¡Foto de perfil actualizada con éxito!',
+      profilePicUpdateFailedTitle: 'Error',
+      profilePicUpdateFailedMsg: 'No se pudo actualizar la foto de perfil. Inténtalo de nuevo.',
+    },
   },
 
   auth: {
@@ -140,7 +165,7 @@ export const es = {
   },
 
   sidebar: {
-    dashboard: 'Panel Principal',
+    dashboard: 'Inicio',
     pastJournals: 'Diarios Pasados',
     pastGoals: 'Objetivos Pasados',
     progress: 'Progreso',
