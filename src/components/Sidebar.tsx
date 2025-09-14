@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { KigenLogo } from './KigenLogo';
 import { useAuth } from '../modules/auth/AuthProvider';
+import { useTranslation } from '../i18n/I18nProvider';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen, onShowAdmin }) => {
   const { session, signOut, showLoginScreen } = useAuth();
+  const { t } = useTranslation();
   const slideAnim = React.useRef(new Animated.Value(-300)).current;
 
   React.useEffect(() => {
@@ -57,13 +59,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   });
 
   const menuItems = [
-    { id: 'dashboard', title: 'Dashboard', icon: '' },
-    { id: 'journals', title: 'Past Journals', icon: '' },
-    { id: 'goals', title: 'Past Goals', icon: '' },
-    { id: 'progress', title: 'Progress', icon: '' },
-    { id: 'achievements', title: 'Achievements', icon: '' },
-    { id: 'profile', title: 'Profile', icon: '' },
-    { id: 'settings', title: 'Settings', icon: '' },
+    { id: 'dashboard', title: t('sidebar.dashboard'), icon: '' },
+    { id: 'journals', title: t('sidebar.pastJournals'), icon: '' },
+    { id: 'goals', title: t('sidebar.pastGoals'), icon: '' },
+    { id: 'progress', title: t('sidebar.progress'), icon: '' },
+    { id: 'achievements', title: t('sidebar.achievements'), icon: '' },
+    { id: 'profile', title: t('sidebar.profile'), icon: '' },
+    { id: 'settings', title: t('sidebar.settings'), icon: '' },
   ];
 
   const handleItemPress = (screenId: string) => {

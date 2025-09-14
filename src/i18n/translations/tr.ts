@@ -30,6 +30,10 @@ export const tr = {
     profile: 'Profil',
     achievements: 'Başarımlar',
     disciplineAndFocus: 'Disiplin ve Odaklanma',
+    leaderboard: 'Lider Sıralaması',
+    buildDiscipline: 'Disiplin İnşa Et',
+    development: 'Geliştirme',
+    closeDebug: 'Debug Kapat',
   },
 
   focusSession: {

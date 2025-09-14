@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
+import { useTranslation } from '../../i18n/I18nProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
 import { Button, Card } from '../../components/UI';
@@ -28,6 +29,7 @@ import { env } from '../../config/env';
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard');
   const [isJournalOpen, setIsJournalOpen] = useState(false);
@@ -175,7 +177,7 @@ export const DashboardScreen: React.FC = () => {
             }}
           >
             <Text style={[styles.topNavText, currentView === 'dashboard' && styles.activeTopNavText]}>
-              Dashboard
+              {t('dashboard.title')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -192,7 +194,7 @@ export const DashboardScreen: React.FC = () => {
             }}
           >
             <Text style={[styles.topNavText, currentView === 'leaderboard' && styles.activeTopNavText]}>
-              Leaderboard
+              {t('dashboard.leaderboard')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -219,7 +221,7 @@ export const DashboardScreen: React.FC = () => {
             </View>
 
             <View style={styles.actionsSection}>
-              <Text style={styles.sectionTitle}>Build Discipline</Text>
+              <Text style={styles.sectionTitle}>{t('dashboard.buildDiscipline')}</Text>
               
               <View style={styles.actionGrid}>
                 <Button
@@ -256,7 +258,7 @@ export const DashboardScreen: React.FC = () => {
 
             {__DEV__ && (
               <Card style={styles.devCard}>
-                <Text style={styles.devTitle}>Development</Text>
+                <Text style={styles.devTitle}>{t('dashboard.development')}</Text>
                 {env.isDevelopment && (
                   <Button
                     title="🔍 Debug Supabase"
@@ -379,7 +381,7 @@ export const DashboardScreen: React.FC = () => {
               style={styles.closeDebugButton}
               onPress={() => setShowSupabaseDebug(false)}
             >
-              <Text style={styles.closeDebugText}>✕ Close Debug</Text>
+              <Text style={styles.closeDebugText}>{t('dashboard.closeDebug')}</Text>
             </TouchableOpacity>
           </View>
         )}

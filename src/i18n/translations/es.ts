@@ -30,6 +30,10 @@ export const es = {
     profile: 'Perfil',
     achievements: 'Logros',
     disciplineAndFocus: 'Disciplina y Concentración',
+    leaderboard: 'Tabla de Clasificación',
+    buildDiscipline: 'Construir Disciplina',
+    development: 'Desarrollo',
+    closeDebug: 'Cerrar Debug',
   },
 
   focusSession: {

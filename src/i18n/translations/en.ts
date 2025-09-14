@@ -30,6 +30,10 @@ export const en = {
     profile: 'Profile',
     achievements: 'Achievements',
     disciplineAndFocus: 'Discipline & Focus',
+    leaderboard: 'Leaderboard',
+    buildDiscipline: 'Build Discipline',
+    development: 'Development',
+    closeDebug: 'Close Debug',
   },
 
   focusSession: {
