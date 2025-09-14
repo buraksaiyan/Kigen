@@ -87,27 +87,6 @@ export const tr = {
     deleteEntryError: 'Giriş silinemedi',
   },
 
-  goals: {
-    title: 'Hedefler',
-    addGoal: 'Hedef Ekle',
-    noGoals: 'Henüz hedef belirlenmedi.',
-    goalPlaceholder: 'Ne başarmak istiyorsunuz?',
-    markComplete: 'Tamamlandı Olarak İşaretle',
-    deleteGoal: 'Hedefi Sil',
-    completed: 'Tamamlandı',
-    pending: 'Beklemede',
-    yourGoals: 'Hedefleriniz',
-    goalCompleted: 'Hedef Tamamlandı!',
-    goalCompletedDesc: 'Bu hedef başarıyla tamamlandı olarak işaretlenecek.',
-    deleteGoalConfirm: 'Bu hedef kalıcı olarak silinecek.',
-    completedGoals: 'Tamamlanan Hedefler',
-    activeGoals: 'Aktif Hedefler',
-    loading: 'Hedefler yükleniyor...',
-    saveGoal: 'Hedefi Kaydet',
-    goalSaved: 'Hedef başarıyla kaydedildi!',
-    goalDeleted: 'Hedef başarıyla silindi!',
-  },
-
   achievements: {
     title: 'Başarımlar',
     overallProgress: 'Genel İlerleme',

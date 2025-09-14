@@ -134,27 +134,6 @@ export const fr = {
     deleteEntryError: 'Échec de la suppression de l\'entrée',
   },
 
-  goals: {
-    title: 'Objectifs',
-    addGoal: 'Ajouter un Objectif',
-    noGoals: 'Aucun objectif défini pour le moment.',
-    goalPlaceholder: 'Que voulez-vous accomplir ?',
-    markComplete: 'Marquer comme Terminé',
-    deleteGoal: 'Supprimer l\'Objectif',
-    completed: 'Terminé',
-    pending: 'En Attente',
-    yourGoals: 'Vos Objectifs',
-    goalCompleted: 'Objectif Terminé !',
-    goalCompletedDesc: 'Cet objectif sera marqué comme terminé avec succès.',
-    deleteGoalConfirm: 'Cet objectif sera supprimé définitivement.',
-    completedGoals: 'Objectifs Terminés',
-    activeGoals: 'Objectifs Actifs',
-    loading: 'Chargement des objectifs...',
-    saveGoal: 'Enregistrer l\'Objectif',
-    goalSaved: 'Objectif enregistré avec succès !',
-    goalDeleted: 'Objectif supprimé avec succès !',
-  },
-
   achievements: {
     title: 'Réalisations',
     overallProgress: 'Progrès Global',

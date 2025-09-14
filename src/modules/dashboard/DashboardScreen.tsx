@@ -225,13 +225,13 @@ export const DashboardScreen: React.FC = () => {
               
               <View style={styles.actionGrid}>
                 <Button
-                  title={t('dashboard.goals')}
+                  title="Goals"
                   onPress={() => setCurrentScreen('goals')}
                   variant="primary"
                   style={styles.outlinedActionButton}
                 />
                 <Button
-                  title={t('dashboard.journal')}
+                  title="Journal"
                   onPress={handleJournal}
                   variant="primary"
                   style={styles.outlinedActionButton}
@@ -240,13 +240,13 @@ export const DashboardScreen: React.FC = () => {
               
               <View style={styles.actionGrid}>
                 <Button
-                  title={t('dashboard.startFocus')}
+                  title="Start Focus Session"
                   onPress={() => setIsFocusSessionOpen(true)}
                   variant="primary"
                   style={styles.outlinedActionButton}
                 />
                 <Button
-                  title={t('dashboard.progress')}
+                  title="View Progress"
                   onPress={() => setIsProgressOpen(true)}
                   variant="primary"
                   style={styles.outlinedActionButton}

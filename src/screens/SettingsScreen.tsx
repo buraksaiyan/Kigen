@@ -15,7 +15,7 @@ import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { useSettings } from '../hooks/useSettings';
 import { useTranslation } from '../i18n/I18nProvider';
-import { SUPPORTED_LANGUAGES, Language } from '../i18n';
+// import { SUPPORTED_LANGUAGES, Language } from '../i18n';
 
 interface SettingsScreenProps {
   visible: boolean;
@@ -30,13 +30,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     toggleFocusReminders,
     toggleDigitalWellbeingAlerts,
     toggleKeepScreenOn,
-    updateLanguage,
+    // updateLanguage,
   } = useSettings();
-  const { t, language, setLanguage } = useTranslation();
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+  const { t } = useTranslation();
+  // const { t, language, setLanguage } = useTranslation();
+  // const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
   const volumeSteps = [0.1, 0.3, 0.5, 0.7, 1.0];
 
+  /*
   const handleLanguageSelect = async (languageCode: Language) => {
     try {
       await setLanguage(languageCode);
@@ -51,6 +53,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     const currentLang = SUPPORTED_LANGUAGES.find(lang => lang.code === language);
     return currentLang ? `${currentLang.flag} ${currentLang.nativeName}` : '🇺🇸 English';
   };
+  */
 
   // Handle hardware back button
   useEffect(() => {
@@ -222,7 +225,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>PERSONALIZATION</Text>
             
-            {/* Language Selection */}
+            {/* Language Selection - Commented out for now
             <TouchableOpacity 
               style={styles.settingRow}
               onPress={() => setShowLanguagePicker(true)}
@@ -235,6 +238,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
               </View>
               <Text style={styles.chevron}>›</Text>
             </TouchableOpacity>
+            */}
           </View>
 
           <View style={styles.section}>
@@ -290,7 +294,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       </View>
   </Modal>
 
-  {/* Language Picker Modal */}
+  {/* Language Picker Modal - Commented out for now
   <Modal
     visible={showLanguagePicker}
     transparent={true}
@@ -342,6 +346,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       </View>
     </View>
   </Modal>
+  */}
 
   </>
 );

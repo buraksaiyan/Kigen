@@ -134,27 +134,6 @@ export const en = {
     deleteEntryError: 'Failed to delete entry',
   },
 
-  goals: {
-    title: 'Goals',
-    addGoal: 'Add Goal',
-    noGoals: 'No goals set yet.',
-    goalPlaceholder: 'What do you want to achieve?',
-    markComplete: 'Mark Complete',
-    deleteGoal: 'Delete Goal',
-    completed: 'Completed',
-    pending: 'Pending',
-    yourGoals: 'Your Goals',
-    goalCompleted: 'Goal Completed!',
-    goalCompletedDesc: 'This goal will be marked as successfully completed.',
-    deleteGoalConfirm: 'This goal will be permanently deleted.',
-    completedGoals: 'Completed Goals',
-    activeGoals: 'Active Goals',
-    loading: 'Loading goals...',
-    saveGoal: 'Save Goal',
-    goalSaved: 'Goal saved successfully!',
-    goalDeleted: 'Goal deleted successfully!',
-  },
-
   achievements: {
     title: 'Achievements',
     overallProgress: 'Overall Progress',

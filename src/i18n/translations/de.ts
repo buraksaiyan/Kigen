@@ -134,17 +134,6 @@ export const de = {
     deleteEntryError: 'Fehler beim Löschen des Eintrags',
   },
 
-  goals: {
-    title: 'Ziele',
-    addGoal: 'Ziel hinzufügen',
-    noGoals: 'Noch keine Ziele gesetzt.',
-    goalPlaceholder: 'Was möchtest du erreichen?',
-    markComplete: 'Als abgeschlossen markieren',
-    deleteGoal: 'Ziel löschen',
-    completed: 'Abgeschlossen',
-    pending: 'Ausstehend',
-  },
-
   achievements: {
     title: 'Erfolge',
     overallProgress: 'Gesamtfortschritt',

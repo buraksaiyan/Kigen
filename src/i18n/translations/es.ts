@@ -134,27 +134,6 @@ export const es = {
     deleteEntryError: 'Error al eliminar la entrada',
   },
 
-  goals: {
-    title: 'Objetivos',
-    addGoal: 'Agregar Objetivo',
-    noGoals: 'No hay objetivos establecidos aún.',
-    goalPlaceholder: '¿Qué quieres lograr?',
-    markComplete: 'Marcar como Completado',
-    deleteGoal: 'Eliminar Objetivo',
-    completed: 'Completado',
-    pending: 'Pendiente',
-    yourGoals: 'Tus Objetivos',
-    goalCompleted: '¡Objetivo Completado!',
-    goalCompletedDesc: 'Este objetivo será marcado como completado exitosamente.',
-    deleteGoalConfirm: 'Este objetivo será eliminado permanentemente.',
-    completedGoals: 'Objetivos Completados',
-    activeGoals: 'Objetivos Activos',
-    loading: 'Cargando objetivos...',
-    saveGoal: 'Guardar Objetivo',
-    goalSaved: '¡Objetivo guardado exitosamente!',
-    goalDeleted: '¡Objetivo eliminado exitosamente!',
-  },
-
   achievements: {
     title: 'Logros',
     overallProgress: 'Progreso General',
