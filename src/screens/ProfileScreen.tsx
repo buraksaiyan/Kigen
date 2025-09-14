@@ -496,6 +496,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
             </View>
           </View>
         </View>
+
+        {/* Account Details */}
+        <View style={[styles.section, { borderColor: theme.colors.border }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
+            Account Details
+          </Text>
           
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
@@ -592,8 +598,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         </View>
       </ScrollView>
     </SafeAreaView>
-    </Modal>
-  );
+  </Modal>
+);
 };
 
 const styles = StyleSheet.create({

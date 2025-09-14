@@ -21,7 +21,6 @@ interface SettingsScreenProps {
   visible: boolean;
   onClose: () => void;
 }
-}
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose }) => {
   const { 
@@ -50,7 +49,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
   const getCurrentLanguageName = () => {
     const currentLang = SUPPORTED_LANGUAGES.find(lang => lang.code === language);
-    return currentLang?.nativeName || 'English';
+    return currentLang ? `${currentLang.flag} ${currentLang.nativeName}` : '🇺🇸 English';
   };
 
   // Handle hardware back button
@@ -290,6 +289,60 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     </SafeAreaView>
   </View>
   </Modal>
+
+  {/* Language Picker Modal */}
+  <Modal
+    visible={showLanguagePicker}
+    transparent={true}
+    animationType="fade"
+    onRequestClose={() => setShowLanguagePicker(false)}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.languageModal}>
+        <View style={styles.languageModalHeader}>
+          <Text style={styles.languageModalTitle}>Select Language</Text>
+          <TouchableOpacity 
+            onPress={() => setShowLanguagePicker(false)}
+            style={styles.modalCloseButton}
+          >
+            <Text style={styles.modalCloseText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <ScrollView style={styles.languageList}>
+          {SUPPORTED_LANGUAGES.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              style={[
+                styles.languageOption,
+                language === lang.code && styles.selectedLanguageOption
+              ]}
+              onPress={() => handleLanguageSelect(lang.code)}
+            >
+              <View style={styles.languageInfo}>
+                <Text style={styles.languageFlag}>{lang.flag}</Text>
+                <View style={styles.languageNames}>
+                  <Text style={[
+                    styles.languageOptionText,
+                    language === lang.code && styles.selectedLanguageText
+                  ]}>
+                    {lang.nativeName}
+                  </Text>
+                  <Text style={styles.languageEnglishName}>
+                    {lang.name}
+                  </Text>
+                </View>
+              </View>
+              {language === lang.code && (
+                <Text style={styles.checkMark}>✓</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
+  </Modal>
+
   </>
 );
 };
@@ -411,5 +464,88 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'rgba(255,255,255,0.5)',
     fontWeight: '300',
+  },
+  // Language Picker Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  languageModal: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    width: '85%',
+    maxHeight: '70%',
+    overflow: 'hidden',
+  },
+  languageModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  languageModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  modalCloseButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  modalCloseText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  languageList: {
+    maxHeight: 400,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+  },
+  selectedLanguageOption: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  languageInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  languageFlag: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  languageNames: {
+    flex: 1,
+  },
+  languageOptionText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  selectedLanguageText: {
+    color: theme.colors.primary,
+  },
+  languageEnglishName: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  checkMark: {
+    fontSize: 18,
+    color: theme.colors.primary,
+    fontWeight: 'bold',
   },
 });
