@@ -53,7 +53,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'body_250', category: 'body_focus_special', title: 'Titan Body', description: '250 sessions - become a titan', emoji: '⚡', requirement: 250 },
   { id: 'body_500', category: 'body_focus_special', title: 'Legendary Physique', description: '500 sessions of legendary training', emoji: '🔥', requirement: 500 },
   { id: 'body_750', category: 'body_focus_special', title: 'Godlike Form', description: '750 sessions - achieve divine form', emoji: '🌟', requirement: 750 },
-  { id: 'body_1000', category: 'body_focus_special', title: 'Body Focus Master', description: '1000 sessions of physical discipline', emoji: '🏛️', requirement: 1000 },
+  { id: 'body_1000', category: 'body_focus_special', title: 'Eternal Physique', description: '1000 sessions of eternal physical discipline', emoji: '🏛️', requirement: 1000 },
 
   // Meditation Focus Special Achievements
   { id: 'meditation_1', category: 'meditation_special', title: 'Inner Peace', description: 'Find peace in your first meditation', emoji: '🧘', requirement: 1 },
@@ -65,7 +65,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'meditation_250', category: 'meditation_special', title: 'Sage of Tranquility', description: '250 sessions of deep wisdom', emoji: '🌙', requirement: 250 },
   { id: 'meditation_500', category: 'meditation_special', title: 'Divine Consciousness', description: '500 sessions of divine awareness', emoji: '🔮', requirement: 500 },
   { id: 'meditation_750', category: 'meditation_special', title: 'Transcendent Spirit', description: '750 sessions - transcend reality', emoji: '🌌', requirement: 750 },
-  { id: 'meditation_1000', category: 'meditation_special', title: 'Meditation Master', description: '1000 sessions - achieve ultimate enlightenment', emoji: '🙏', requirement: 1000 },
+  { id: 'meditation_1000', category: 'meditation_special', title: 'Infinite Serenity', description: '1000 sessions - achieve infinite inner peace', emoji: '🙏', requirement: 1000 },
 
   // Journal Entries Achievements
   { id: 'journal_1', category: 'journal_entries', title: 'First Words', description: 'Write your first journal entry', emoji: '✍️', requirement: 1 },
