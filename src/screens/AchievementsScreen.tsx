@@ -26,6 +26,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
   const [stats, setStats] = useState({
     totalHours: 0,
     maxStreak: 0,
+    currentStreak: 0,
     bodyFocusSessions: 0,
     meditationSessions: 0,
     journalEntries: 0,
@@ -51,7 +52,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       loadAchievements();
       loadStats();
     }
-  }, [visible]);
+  }, [visible, selectedCategory]); // Reload when category changes too
 
   const loadAchievements = async () => {
     try {
@@ -84,6 +85,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       setStats({
         totalHours: Math.floor(sessionStats.totalMinutes / 60),
         maxStreak: sessionStats.bestStreak,
+        currentStreak: sessionStats.currentStreak,
         bodyFocusSessions,
         meditationSessions,
         journalEntries,
@@ -108,7 +110,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     switch (category) {
       case 'focus_hours': return stats.totalHours;
       case 'max_streak': return stats.maxStreak;
-      case 'current_streak': return stats.maxStreak; // Using max streak as proxy
+      case 'current_streak': return stats.currentStreak || 0; // Use current streak if available
       case 'body_focus_special': return stats.bodyFocusSessions;
       case 'meditation_special': return stats.meditationSessions;
       case 'journal_entries': return stats.journalEntries;

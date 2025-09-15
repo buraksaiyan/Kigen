@@ -113,10 +113,27 @@ class AchievementService {
   async getAchievements(): Promise<Achievement[]> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEY);
+      let achievements: Achievement[];
+      
       if (!data) {
-        return await this.initializeAchievements();
+        achievements = await this.initializeAchievements();
+      } else {
+        achievements = JSON.parse(data);
+        
+        // Check if we need to add new achievements (migration)
+        const existingIds = new Set(achievements.map(a => a.id));
+        const missingAchievements = ACHIEVEMENT_DEFINITIONS
+          .filter(def => !existingIds.has(def.id))
+          .map(def => ({ ...def, unlocked: false }));
+        
+        if (missingAchievements.length > 0) {
+          achievements.push(...missingAchievements);
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(achievements));
+          console.log(`Added ${missingAchievements.length} new achievements`);
+        }
       }
-      return JSON.parse(data);
+      
+      return achievements;
     } catch (error) {
       console.error('Error getting achievements:', error);
       return await this.initializeAchievements();
