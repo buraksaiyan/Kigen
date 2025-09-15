@@ -378,6 +378,10 @@ export class UserStatsService {
     // Update monthly accumulation
     await this.updateMonthlyStats();
     
+    // Check for new achievements
+    const { achievementService } = await import('./achievementService');
+    await achievementService.checkAchievements();
+    
     // Sync with leaderboard after completing a goal
     await this.syncUserToLeaderboard();
   }
@@ -513,6 +517,32 @@ export class UserStatsService {
       
     } catch (error) {
       console.error('❌ Error syncing user to leaderboard:', error);
+    }
+  }
+
+  // Get total completed goals across all time
+  static async getTotalCompletedGoals(): Promise<number> {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const activityKeys = keys.filter(key => key.startsWith(`${this.DAILY_ACTIVITY_KEY}_`));
+      
+      let totalGoals = 0;
+      for (const key of activityKeys) {
+        try {
+          const data = await AsyncStorage.getItem(key);
+          if (data) {
+            const activity: DailyActivity = JSON.parse(data);
+            totalGoals += activity.completedGoals;
+          }
+        } catch (error) {
+          console.error('Error parsing daily activity:', error);
+        }
+      }
+      
+      return totalGoals;
+    } catch (error) {
+      console.error('Error getting total completed goals:', error);
+      return 0;
     }
   }
 

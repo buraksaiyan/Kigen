@@ -29,7 +29,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0 });
+  const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0, points: 0 });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
@@ -84,7 +84,12 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const loadStats = async () => {
     try {
       const journalStats = await journalStorage.getStats();
-      setStats(journalStats);
+      // Get current rating to include JOU points
+      const currentRating = await UserStatsService.getCurrentRating();
+      setStats({
+        ...journalStats,
+        points: currentRating.stats.JOU // Add points from rating system
+      });
     } catch (error) {
       console.error('Error loading stats:', error);
     }
@@ -168,6 +173,10 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{stats.totalEntries}</Text>
             <Text style={styles.statLabel}>Total Entries</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{stats.points}</Text>
+            <Text style={styles.statLabel}>Points</Text>
           </View>
         </View>
 

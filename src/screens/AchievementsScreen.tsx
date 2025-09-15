@@ -29,6 +29,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     bodyFocusSessions: 0,
     meditationSessions: 0,
     journalEntries: 0,
+    totalCompletedGoals: 0,
   });
 
   // Handle hardware back button
@@ -73,12 +74,20 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       const bodyFocusSessions = allSessions.filter(s => s.mode.id === 'body' && s.completed).length;
       const meditationSessions = allSessions.filter(s => s.mode.id === 'meditation' && s.completed).length;
       
+      // Import services dynamically to avoid circular dependency
+      const { UserStatsService } = await import('../services/userStatsService');
+      const { journalStorage } = await import('../services/journalStorage');
+      
+      const totalCompletedGoals = await UserStatsService.getTotalCompletedGoals();
+      const journalEntries = (await journalStorage.getAllEntries()).length;
+      
       setStats({
         totalHours: Math.floor(sessionStats.totalMinutes / 60),
         maxStreak: sessionStats.bestStreak,
         bodyFocusSessions,
         meditationSessions,
-        journalEntries: 0, // TODO: Get from journal service
+        journalEntries,
+        totalCompletedGoals,
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -103,7 +112,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       case 'body_focus_special': return stats.bodyFocusSessions;
       case 'meditation_special': return stats.meditationSessions;
       case 'journal_entries': return stats.journalEntries;
-      case 'completed_goals': return 0; // TODO: Implement
+      case 'completed_goals': return stats.totalCompletedGoals;
       default: return 0;
     }
   };

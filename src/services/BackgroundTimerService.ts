@@ -1,4 +1,4 @@
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,23 +37,19 @@ class BackgroundTimerService {
       await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data, error, executionInfo }) => {
         if (error) {
           console.error('Background task error:', error);
-          return BackgroundFetch.BackgroundFetchResult.Failed;
+          return BackgroundTask.BackgroundTaskResult.Failed;
         }
         
         try {
           await this.checkTimerProgress();
-          return BackgroundFetch.BackgroundFetchResult.NewData;
+          return BackgroundTask.BackgroundTaskResult.Success;
         } catch (e) {
           console.error('Background timer check failed:', e);
-          return BackgroundFetch.BackgroundFetchResult.Failed;
+          return BackgroundTask.BackgroundTaskResult.Failed;
         }
       });
 
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_TIMER_TASK, {
-        minimumInterval: 15000, // 15 seconds
-        stopOnTerminate: false,
-        startOnBoot: true,
-      });
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TIMER_TASK);
 
       console.log('Background task registered successfully');
     } catch (error) {
@@ -137,7 +133,7 @@ class BackgroundTimerService {
       // Check if task is registered before trying to unregister
       const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TIMER_TASK);
       if (isRegistered) {
-        await BackgroundFetch.unregisterTaskAsync(BACKGROUND_TIMER_TASK);
+        await BackgroundTask.unregisterTaskAsync(BACKGROUND_TIMER_TASK);
       }
       
       console.log('Background timer stopped');

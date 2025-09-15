@@ -53,7 +53,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'body_250', category: 'body_focus_special', title: 'Titan Body', description: '250 sessions - become a titan', emoji: '⚡', requirement: 250 },
   { id: 'body_500', category: 'body_focus_special', title: 'Legendary Physique', description: '500 sessions of legendary training', emoji: '🔥', requirement: 500 },
   { id: 'body_750', category: 'body_focus_special', title: 'Godlike Form', description: '750 sessions - achieve divine form', emoji: '🌟', requirement: 750 },
-  { id: 'body_1000', category: 'body_focus_special', title: 'Olympian Body', description: '1000 sessions - achieve olympian perfection', emoji: '🏛️', requirement: 1000 },
+  { id: 'body_1000', category: 'body_focus_special', title: 'Body Focus Master', description: '1000 sessions of physical discipline', emoji: '🏛️', requirement: 1000 },
 
   // Meditation Focus Special Achievements
   { id: 'meditation_1', category: 'meditation_special', title: 'Inner Peace', description: 'Find peace in your first meditation', emoji: '🧘', requirement: 1 },
@@ -65,7 +65,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'meditation_250', category: 'meditation_special', title: 'Sage of Tranquility', description: '250 sessions of deep wisdom', emoji: '🌙', requirement: 250 },
   { id: 'meditation_500', category: 'meditation_special', title: 'Divine Consciousness', description: '500 sessions of divine awareness', emoji: '🔮', requirement: 500 },
   { id: 'meditation_750', category: 'meditation_special', title: 'Transcendent Spirit', description: '750 sessions - transcend reality', emoji: '🌌', requirement: 750 },
-  { id: 'meditation_1000', category: 'meditation_special', title: 'Ascended Master', description: '1000 sessions - achieve ultimate enlightenment', emoji: '🙏', requirement: 1000 },
+  { id: 'meditation_1000', category: 'meditation_special', title: 'Meditation Master', description: '1000 sessions - achieve ultimate enlightenment', emoji: '🙏', requirement: 1000 },
 
   // Journal Entries Achievements
   { id: 'journal_1', category: 'journal_entries', title: 'First Words', description: 'Write your first journal entry', emoji: '✍️', requirement: 1 },
@@ -81,6 +81,18 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'journal_500', category: 'journal_entries', title: 'Legendary Scribe', description: '500 entries - legendary documentation', emoji: '🏺', requirement: 500 },
   { id: 'journal_750', category: 'journal_entries', title: 'Timeless Author', description: '750 entries for all time', emoji: '⏳', requirement: 750 },
   { id: 'journal_1000', category: 'journal_entries', title: 'Infinite Writer', description: '1000 entries of infinite stories', emoji: '♾️', requirement: 1000 },
+
+  // Completed Goals Achievements
+  { id: 'goals_1', category: 'completed_goals', title: 'First Victory', description: 'Complete your first goal', emoji: '🎯', requirement: 1 },
+  { id: 'goals_5', category: 'completed_goals', title: 'Goal Crusher', description: 'Complete 5 goals successfully', emoji: '💪', requirement: 5 },
+  { id: 'goals_10', category: 'completed_goals', title: 'Achievement Hunter', description: '10 goals conquered', emoji: '🏆', requirement: 10 },
+  { id: 'goals_25', category: 'completed_goals', title: 'Master Achiever', description: '25 goals mastered', emoji: '👑', requirement: 25 },
+  { id: 'goals_50', category: 'completed_goals', title: 'Goal Legend', description: '50 legendary accomplishments', emoji: '🔥', requirement: 50 },
+  { id: 'goals_100', category: 'completed_goals', title: 'Century Champion', description: '100 goals completed', emoji: '💎', requirement: 100 },
+  { id: 'goals_250', category: 'completed_goals', title: 'Ultimate Victor', description: '250 goals of ultimate victory', emoji: '⚡', requirement: 250 },
+  { id: 'goals_500', category: 'completed_goals', title: 'Transcendent Achiever', description: '500 goals transcending limits', emoji: '🌟', requirement: 500 },
+  { id: 'goals_750', category: 'completed_goals', title: 'Divine Conqueror', description: '750 goals of divine conquest', emoji: '🕊️', requirement: 750 },
+  { id: 'goals_1000', category: 'completed_goals', title: 'Infinite Champion', description: '1000 goals - infinite champion', emoji: '♾️', requirement: 1000 },
 ];
 
 const STORAGE_KEY = '@kigen_achievements';
@@ -186,11 +198,13 @@ class AchievementService {
     }
   }
 
-  // Check journal achievements (placeholder - implement when journal service is ready)
+  // Check journal achievements
   private async checkJournalAchievements(): Promise<void> {
     try {
-      // TODO: Get journal entries count from journal service
-      const journalCount = 0; // Placeholder
+      // Import journalStorage dynamically to avoid circular dependency
+      const { journalStorage } = await import('../services/journalStorage');
+      const entries = await journalStorage.getAllEntries();
+      const journalCount = entries.length;
       
       const journalAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'journal_entries');
       for (const achievement of journalAchievements) {
@@ -200,6 +214,24 @@ class AchievementService {
       }
     } catch (error) {
       console.error('Error checking journal achievements:', error);
+    }
+  }
+
+  // Check goal achievements
+  private async checkGoalAchievements(): Promise<void> {
+    try {
+      // Import UserStatsService dynamically to avoid circular dependency
+      const { UserStatsService } = await import('./userStatsService');
+      const totalGoals = await UserStatsService.getTotalCompletedGoals();
+      
+      const goalAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'completed_goals');
+      for (const achievement of goalAchievements) {
+        if (totalGoals >= achievement.requirement) {
+          await this.unlockAchievement(achievement.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking goal achievements:', error);
     }
   }
 
@@ -214,6 +246,7 @@ class AchievementService {
         this.checkStreakAchievements(sessionStats.bestStreak, sessionStats.currentStreak),
         this.checkSpecialModeAchievements(),
         this.checkJournalAchievements(),
+        this.checkGoalAchievements(),
       ]);
     } catch (error) {
       console.error('Error checking achievements:', error);
