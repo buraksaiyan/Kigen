@@ -159,7 +159,11 @@ export const DashboardScreen: React.FC = () => {
             <KigenLogo size="medium" variant="image" />
           </View>
           
-          <View style={styles.headerRight}></View>
+          <View style={styles.headerRight}>
+            <TouchableOpacity onPress={() => {/* TODO: Show notifications */}} style={styles.notificationsButton}>
+              <Text style={styles.notificationsButtonText}>🔔</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.topNavContainer}>
@@ -484,7 +488,7 @@ const styles = StyleSheet.create({
   },
   menuButtonText: {
     color: theme.colors.text.primary,
-    fontSize: 20,
+    fontSize: 24,
   },
   outlinedActionButton: {
     borderColor: '#888691',
@@ -532,5 +536,14 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyLarge,
     color: theme.colors.text.secondary,
     fontWeight: '600',
+  },
+  notificationsButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.sm,
+  },
+  notificationsButtonText: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
   },
 });
