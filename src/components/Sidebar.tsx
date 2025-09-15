@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -59,13 +60,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   });
 
   const menuItems = [
-    { id: 'dashboard', title: t('sidebar.dashboard'), icon: '🏠' },
-    { id: 'journals', title: t('sidebar.pastJournals'), icon: '📖' },
-    { id: 'goals', title: t('sidebar.pastGoals'), icon: '🎯' },
-    { id: 'progress', title: t('sidebar.progress'), icon: '📊' },
-    { id: 'achievements', title: t('sidebar.achievements'), icon: '🏆' },
-    { id: 'profile', title: t('sidebar.profile'), icon: '👤' },
-    { id: 'settings', title: t('sidebar.settings'), icon: '⚙️' },
+    { id: 'dashboard', title: t('sidebar.dashboard'), icon: require('../../assets/images/profile-icon.png') }, // Using profile as placeholder for dashboard
+    { id: 'journals', title: t('sidebar.pastJournals'), icon: require('../../assets/images/pastjournals-icon.png') },
+    { id: 'goals', title: t('sidebar.pastGoals'), icon: require('../../assets/images/pastgoals-icon.png') },
+    { id: 'progress', title: t('sidebar.progress'), icon: require('../../assets/images/progress-icon.png') },
+    { id: 'achievements', title: t('sidebar.achievements'), icon: require('../../assets/images/achievements-icon.png') },
+    { id: 'profile', title: t('sidebar.profile'), icon: require('../../assets/images/profile-icon.png') },
+    { id: 'settings', title: t('sidebar.settings'), icon: require('../../assets/images/settings-icon.png') },
   ];
 
   const handleItemPress = (screenId: string) => {
@@ -111,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
                 onPress={() => handleItemPress(item.id)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.menuIcon}>{item.icon}</Text>
+                <Image source={item.icon} style={styles.menuIcon} />
                 <Text style={styles.menuTitle}>{item.title}</Text>
               </TouchableOpacity>
             ))}
@@ -229,11 +230,10 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.sm,
   },
   menuIcon: {
-    color: '#888691',
-    fontSize: 20,
-    marginRight: theme.spacing.md,
-    textAlign: 'center',
     width: 24,
+    height: 24,
+    marginRight: theme.spacing.md,
+    tintColor: '#888691',
   },
   menuItem: {
     alignItems: 'center',
