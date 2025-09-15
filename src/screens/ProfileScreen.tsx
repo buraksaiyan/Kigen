@@ -545,56 +545,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
             Make sure it's appropriate and follows our community guidelines.
           </Text>
         </View>
-
-        {/* Account Information */}
-        <View style={[styles.section, { borderColor: theme.colors.border }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>
-            Account Information
-          </Text>
-          
-          <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
-              Member Since
-            </Text>
-            <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
-              {formatDate(profile.createdAt)}
-            </Text>
-          </View>
-          
-          <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
-              Last Updated
-            </Text>
-            <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
-              {formatDate(profile.lastUpdated)}
-            </Text>
-          </View>
-        </View>
-
-        {/* Debug Stats Validation */}
-        <TouchableOpacity 
-          style={{
-            backgroundColor: 'rgba(0, 255, 0, 0.2)',
-            padding: 15,
-            borderRadius: 8,
-            marginVertical: 10,
-            borderWidth: 1,
-            borderColor: '#00ff00'
-          }}
-          onPress={() => StatsValidator.validateStatsConsistency()}
-        >
-          <Text style={{ color: '#00ff00', textAlign: 'center', fontWeight: 'bold' }}>
-            🔍 Debug Stats (Check Console)
-          </Text>
-        </TouchableOpacity>
-
-        {/* Privacy Notice */}
-        <View style={styles.privacyNotice}>
-          <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
-            Your username is visible to other users on the leaderboard. 
-            Make sure it's appropriate and follows our community guidelines.
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   </Modal>
