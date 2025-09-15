@@ -59,13 +59,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   });
 
   const menuItems = [
-    { id: 'dashboard', title: t('sidebar.dashboard'), icon: 'D' },
-    { id: 'journals', title: t('sidebar.pastJournals'), icon: 'J' },
-    { id: 'goals', title: t('sidebar.pastGoals'), icon: 'G' },
-    { id: 'progress', title: t('sidebar.progress'), icon: 'P' },
-    { id: 'achievements', title: t('sidebar.achievements'), icon: 'A' },
-    { id: 'profile', title: t('sidebar.profile'), icon: 'U' },
-    { id: 'settings', title: t('sidebar.settings'), icon: 'S' },
+    { id: 'dashboard', title: t('sidebar.dashboard'), icon: '🏠' },
+    { id: 'journals', title: t('sidebar.pastJournals'), icon: '📖' },
+    { id: 'goals', title: t('sidebar.pastGoals'), icon: '🎯' },
+    { id: 'progress', title: t('sidebar.progress'), icon: '📊' },
+    { id: 'achievements', title: t('sidebar.achievements'), icon: '🏆' },
+    { id: 'profile', title: t('sidebar.profile'), icon: '👤' },
+    { id: 'settings', title: t('sidebar.settings'), icon: '⚙️' },
   ];
 
   const handleItemPress = (screenId: string) => {
