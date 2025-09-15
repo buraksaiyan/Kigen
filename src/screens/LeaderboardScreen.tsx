@@ -256,7 +256,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: theme.spacing.md,
     marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.md,
     padding: 4,
   },
   tabText: {

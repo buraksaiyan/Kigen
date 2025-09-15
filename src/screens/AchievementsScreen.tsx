@@ -25,6 +25,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalHours: 0,
+    totalMinutes: 0,
     maxStreak: 0,
     currentStreak: 0,
     bodyFocusSessions: 0,
@@ -84,6 +85,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       
       setStats({
         totalHours: Math.floor(sessionStats.totalMinutes / 60),
+        totalMinutes: sessionStats.totalMinutes,
         maxStreak: sessionStats.bestStreak,
         currentStreak: sessionStats.currentStreak,
         bodyFocusSessions,
@@ -129,8 +131,16 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
   ];
 
   const renderAchievement = (achievement: Achievement) => {
-    const currentValue = getCurrentValue(achievement.category);
-    const progress = Math.min(100, (currentValue / achievement.requirement) * 100);
+    let currentValue = getCurrentValue(achievement.category);
+    let requirement = achievement.requirement;
+    
+    // Convert focus hours to minutes for accurate progress calculation
+    if (achievement.category === 'focus_hours') {
+      currentValue = stats.totalMinutes;
+      requirement = requirement * 60; // Convert hours to minutes
+    }
+    
+    const progress = Math.min(100, (currentValue / requirement) * 100);
     const isUnlocked = achievement.unlocked;
 
     return (
@@ -186,7 +196,10 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
               styles.progressText,
               { color: theme.colors.text.tertiary }
             ]}>
-              {currentValue} / {achievement.requirement}
+              {achievement.category === 'focus_hours' 
+                ? `${Math.floor(currentValue)} / ${requirement} min`
+                : `${currentValue} / ${achievement.requirement}`
+              }
             </Text>
           </View>
         </View>

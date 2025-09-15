@@ -517,7 +517,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
     flexDirection: 'row',
-    marginBottom: theme.spacing.md,
     marginHorizontal: theme.spacing.lg,
     padding: 4,
   },
