@@ -552,17 +552,18 @@ export class UserStatsService {
       // Get all keys
       const keys = await AsyncStorage.getAllKeys();
       
-      // Filter for Kigen-related keys but EXCLUDE user profile (to keep username)
+      // Filter for Kigen-related keys but EXCLUDE important user data
       const kigenKeys = keys.filter(key => 
         (key.includes('@kigen') || 
          key.includes('daily_activity') ||
          key.includes('monthly_records')) &&
-        !key.includes('user_profile') // Keep user profile (username, etc)
+        !key.includes('user_profile') && // Keep user profile (username, etc)
+        !key.includes('goals') // Keep goals data
       );
       
-      // Remove selected Kigen data but preserve user profile
+      // Remove selected Kigen data but preserve user profile and goals
       await AsyncStorage.multiRemove(kigenKeys);
-      console.log('🗑️ Cleared Kigen stats data from AsyncStorage (preserved username)');
+      console.log('🗑️ Cleared Kigen stats data from AsyncStorage (preserved username and goals)');
       
     } catch (error) {
       console.error('Error clearing data:', error);

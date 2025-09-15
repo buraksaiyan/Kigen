@@ -29,7 +29,7 @@ export async function clearAllOldData(): Promise<void> {
       '@kigen_user_stats', 
       '@kigen_monthly_records',
       '@kigen_daily_activity',
-      '@kigen_goals',
+      '@kigen_goals', // Keep goals data
       'usage_permission_granted',
       'hasUsagePermission'
     ];
