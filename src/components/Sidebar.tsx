@@ -60,10 +60,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
 
   const menuItems = [
     { id: 'dashboard', title: t('sidebar.dashboard'), icon: '⌂' },
-    { id: 'journals', title: t('sidebar.pastJournals'), icon: '📖' },
-    { id: 'goals', title: t('sidebar.pastGoals'), icon: '🎯' },
-    { id: 'progress', title: t('sidebar.progress'), icon: '📊' },
-    { id: 'achievements', title: t('sidebar.achievements'), icon: '🏆' },
+    { id: 'journals', title: t('sidebar.pastJournals'), icon: '�' },
+    { id: 'goals', title: t('sidebar.pastGoals'), icon: '◯' },
+    { id: 'progress', title: t('sidebar.progress'), icon: '�' },
+    { id: 'achievements', title: t('sidebar.achievements'), icon: '★' },
     { id: 'profile', title: t('sidebar.profile'), icon: '👤' },
     { id: 'settings', title: t('sidebar.settings'), icon: '⚙' },
   ];
@@ -111,9 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
                 onPress={() => handleItemPress(item.id)}
                 activeOpacity={0.7}
               >
-                <View style={styles.iconContainer}>
-                  <Text style={styles.menuIcon}>{item.icon}</Text>
-                </View>
+                <Text style={styles.menuIcon}>{item.icon}</Text>
                 <Text style={styles.menuTitle}>{item.title}</Text>
               </TouchableOpacity>
             ))}
@@ -226,23 +224,16 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.sm,
     paddingTop: theme.spacing.lg,
   },
-  iconContainer: {
-    alignItems: 'center',
-    backgroundColor: '#888691',
-    borderRadius: 20,
-    height: 32,
-    justifyContent: 'center',
-    marginRight: theme.spacing.md,
-    width: 32,
-  },
   menuContainer: {
     flex: 1,
     paddingTop: theme.spacing.sm,
   },
   menuIcon: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#888691',
+    fontSize: 20,
+    marginRight: theme.spacing.md,
+    textAlign: 'center',
+    width: 24,
   },
   menuItem: {
     alignItems: 'center',
