@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
   RefreshControl,
   StatusBar
 } from 'react-native';
@@ -16,7 +15,7 @@ import { RatingSystem, CardTier } from '../services/ratingSystem';
 import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
-const { width } = Dimensions.get('window');
+// width not needed currently
 
 interface LeaderboardEntry {
   userId: string;
