@@ -273,8 +273,88 @@ class AchievementService {
         this.checkJournalAchievements(),
         this.checkGoalAchievements(),
       ]);
+
+      // Reconcile stored achievements with actual computed values in case
+      // earlier logic or migrations left incorrect unlocked flags.
+      await this.reconcileAchievements();
     } catch (error) {
       console.error('Error checking achievements:', error);
+    }
+  }
+
+  // Recompute which achievements should be unlocked based on current data
+  // and persist fixes to AsyncStorage. This will correct cases where an
+  // achievement was incorrectly marked as unlocked (e.g. 'First Step').
+  async reconcileAchievements(): Promise<void> {
+    try {
+      const achievements = await this.getAchievements();
+
+      // Compute focus totals from completed sessions
+      const allSessions = await focusSessionService.getFocusSessions();
+      const completedSessions = allSessions.filter(s => s.completed);
+      const totalCompletedMinutes = completedSessions.reduce((sum, s) => sum + (s.actualDuration || s.duration || 0), 0);
+      const totalHours = Math.floor(totalCompletedMinutes / 60);
+
+      // Compute streaks
+      const sessionStats = await focusSessionService.getSessionStats();
+
+      // Compute special mode counts
+      const bodyCount = completedSessions.filter(s => s.mode.id === 'body').length;
+      const meditationCount = completedSessions.filter(s => s.mode.id === 'meditation').length;
+
+      // Compute journal and goals
+      const { journalStorage } = await import('../services/journalStorage');
+      const journalCount = (await journalStorage.getAllEntries()).length;
+      const totalGoals = await UserStatsService.getTotalCompletedGoals();
+
+      const updates: string[] = [];
+
+      for (const def of ACHIEVEMENT_DEFINITIONS) {
+        const stored = achievements.find(a => a.id === def.id);
+        if (!stored) continue;
+
+        let shouldBeUnlocked = false;
+        switch (def.category) {
+          case 'focus_hours':
+            shouldBeUnlocked = totalHours >= def.requirement;
+            break;
+          case 'max_streak':
+            shouldBeUnlocked = sessionStats.bestStreak >= def.requirement;
+            break;
+          case 'current_streak':
+            shouldBeUnlocked = sessionStats.currentStreak >= def.requirement;
+            break;
+          case 'body_focus_special':
+            shouldBeUnlocked = bodyCount >= def.requirement;
+            break;
+          case 'meditation_special':
+            shouldBeUnlocked = meditationCount >= def.requirement;
+            break;
+          case 'journal_entries':
+            shouldBeUnlocked = journalCount >= def.requirement;
+            break;
+          case 'completed_goals':
+            shouldBeUnlocked = totalGoals >= def.requirement;
+            break;
+          default:
+            shouldBeUnlocked = stored.unlocked;
+        }
+
+        if (shouldBeUnlocked !== stored.unlocked) {
+          stored.unlocked = shouldBeUnlocked;
+          stored.unlockedAt = shouldBeUnlocked ? new Date().toISOString() : undefined;
+          updates.push(`${stored.id}: ${shouldBeUnlocked ? 'locked->unlocked' : 'unlocked->locked'}`);
+        }
+      }
+
+      if (updates.length > 0) {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(achievements));
+        console.log('Achievement reconciliation applied:', updates);
+      } else {
+        console.log('Achievement reconciliation: no changes needed');
+      }
+    } catch (error) {
+      console.error('Error reconciling achievements:', error);
     }
   }
 
