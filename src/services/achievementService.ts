@@ -256,7 +256,15 @@ class AchievementService {
   async checkAchievements(): Promise<void> {
     try {
       const sessionStats = await focusSessionService.getSessionStats();
-      const totalHours = Math.floor(sessionStats.totalMinutes / 60);
+
+      // Use completed sessions' actual durations to calculate focus hours
+      // This avoids counting planned durations or aborted sessions toward hour-based achievements
+      const allSessions = await focusSessionService.getFocusSessions();
+      const totalCompletedMinutes = allSessions
+        .filter(s => s.completed)
+        .reduce((sum, s) => sum + (s.actualDuration || s.duration || 0), 0);
+
+      const totalHours = Math.floor(totalCompletedMinutes / 60);
 
       await Promise.all([
         this.checkFocusHoursAchievements(totalHours),
