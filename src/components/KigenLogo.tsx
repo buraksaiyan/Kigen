@@ -21,7 +21,7 @@ export const KigenLogo: React.FC<KigenLogoProps> = ({
       <View style={styles.container}>
         <Image 
           // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
-          source={require('../../assets/kigen-logo.png')} 
+          source={require('../../assets/images/kigen-newlogo.png')} 
           style={styles.logoImage}
           resizeMode="contain"
         />

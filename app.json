@@ -5,10 +5,10 @@
     "scheme": "kigen",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/kigen-logo.png",
+    "icon": "./assets/images/kigen-newlogo.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/kigen-logo.png",
+      "image": "./assets/images/kigen-newlogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
