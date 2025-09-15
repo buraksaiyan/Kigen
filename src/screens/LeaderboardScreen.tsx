@@ -172,7 +172,9 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
 const styles = StyleSheet.create({
   activeTab: {
     backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
+    // Keep a visible outline regardless of theme primary color (e.g., midnight purple)
+    borderColor: '#888691',
+    borderWidth: 1,
   },
   activeTabText: {
     color: '#FFFFFF',
