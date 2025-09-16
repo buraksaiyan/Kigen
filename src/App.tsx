@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, BackHandler, Platform } from 'react-native';
 import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
 import { I18nProvider } from './i18n/I18nProvider';
+import { NotificationsProvider } from './contexts/NotificationsContext';
 import { clearOldFocusData } from './utils/clearOldData';
 
 // Conditional import for web compatibility
@@ -41,7 +42,9 @@ export default function App() {
       <View style={styles.container}>
         <I18nProvider>
           <AuthProvider>
-            <Navigation />
+            <NotificationsProvider>
+              <Navigation />
+            </NotificationsProvider>
           </AuthProvider>
         </I18nProvider>
       </View>

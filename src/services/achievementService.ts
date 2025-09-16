@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusSessionService } from './FocusSessionService';
 import { UserStatsService } from './userStatsService';
+import { showAchievementNotification } from './notificationService';
 
 export interface Achievement {
   id: string;
@@ -154,7 +155,8 @@ class AchievementService {
         
         console.log(`🏆 Achievement Unlocked: ${achievement.title} - ${achievement.description}`);
         
-        // TODO: Show achievement notification to user
+        // Show achievement notification to user
+        showAchievementNotification(achievement.title, achievement.description);
       }
     } catch (error) {
       console.error('Error unlocking achievement:', error);

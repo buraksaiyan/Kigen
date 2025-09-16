@@ -23,6 +23,8 @@ import { ProgressScreen } from '../../screens/ProgressScreen';
 import { SettingsScreen } from '../../screens/SettingsScreen';
 import { ProfileScreen } from '../../screens/ProfileScreen';
 import { AchievementsScreen } from '../../screens/AchievementsScreen';
+import { useNotifications } from '../../contexts/NotificationsContext';
+import { NotificationsDropdown } from '../../components/NotificationsDropdown';
 import { achievementService } from '../../services/achievementService';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
@@ -45,6 +47,9 @@ export const DashboardScreen: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showSupabaseDebug, setShowSupabaseDebug] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     maybePromptForRating();
@@ -160,8 +165,15 @@ export const DashboardScreen: React.FC = () => {
           </View>
           
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => {/* TODO: Show notifications */}} style={styles.notificationsButton}>
+            <TouchableOpacity onPress={() => setIsNotificationsOpen(true)} style={styles.notificationsButton}>
               <Image source={require('../../../assets/images/notification-icon.png')} style={styles.notificationsIcon} />
+              {unreadCount > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>
+                    {unreadCount > 99 ? '99+' : unreadCount.toString()}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -312,6 +324,11 @@ export const DashboardScreen: React.FC = () => {
           onNavigate={handleSidebarNavigation}
           currentScreen={currentScreen}
           onShowAdmin={() => setIsAdminPanelOpen(true)}
+        />
+
+        <NotificationsDropdown
+          visible={isNotificationsOpen}
+          onClose={() => setIsNotificationsOpen(false)}
         />
         
         <GoalsScreen
@@ -546,5 +563,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     tintColor: theme.colors.text.primary,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: theme.colors.danger,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
