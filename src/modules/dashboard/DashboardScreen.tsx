@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { useTranslation } from '../../i18n/I18nProvider';
@@ -161,7 +161,7 @@ export const DashboardScreen: React.FC = () => {
           
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={() => {/* TODO: Show notifications */}} style={styles.notificationsButton}>
-              <Text style={styles.notificationsButtonText}>🔔</Text>
+              <Image source={require('../../../assets/images/notification-icon.png')} style={styles.notificationsIcon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -542,8 +542,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: theme.spacing.sm,
   },
-  notificationsButtonText: {
-    color: theme.colors.text.primary,
-    fontSize: 20,
+  notificationsIcon: {
+    width: 24,
+    height: 24,
+    tintColor: theme.colors.text.primary,
   },
 });
