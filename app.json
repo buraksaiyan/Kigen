@@ -50,11 +50,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kigen.app",
-      "backgroundModes": [
-        "background-processing",
-        "background-fetch"
-      ]
+      "bundleIdentifier": "com.kigen.app"
     },
     "android": {
       "package": "com.kigen.app",
