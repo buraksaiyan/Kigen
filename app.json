@@ -29,7 +29,8 @@
             "minSdkVersion": 24,
             "newArchEnabled": false,
             "enableProguardInReleaseBuilds": true,
-            "enableSeparateBuildPerCPUArchitecture": false
+            "enableSeparateBuildPerCPUArchitecture": false,
+            "enableMinifyInReleaseBuilds": true
           },
           "ios": {
             "deploymentTarget": "15.1",
@@ -61,11 +62,15 @@
         "android.permission.PACKAGE_USAGE_STATS",
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.FOREGROUND_SERVICE",
-        "android.permission.WAKE_LOCK"
+        "android.permission.WAKE_LOCK",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "70bd1c16-5d71-403e-bb26-e1e5a8800474"
+      }
     }
   }
 }
