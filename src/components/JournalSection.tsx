@@ -30,7 +30,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0, points: 0 });
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -40,21 +39,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     Keyboard.dismiss();
     onClose();
   };
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-    });
-
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardHeight(0);
-    });
-
-    return () => {
-      keyboardDidShowListener?.remove();
-      keyboardDidHideListener?.remove();
-    };
-  }, []);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -72,8 +56,15 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const loadEntries = async () => {
     try {
       setIsLoading(true);
-      const loadedEntries = await journalStorage.getAllEntries();
-      setEntries(loadedEntries); // Show all entries, not just 10
+      const allEntries = await journalStorage.getAllEntries();
+      // Filter to show only today's entries
+      const today = new Date();
+      const todayString = today.toDateString();
+      const todayEntries = allEntries.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate.toDateString() === todayString;
+      });
+      setEntries(todayEntries);
     } catch (error) {
       console.error('Error loading entries:', error);
     } finally {
@@ -145,7 +136,12 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <SafeAreaView style={styles.journalCard}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+      >
+        <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
           <KigenKanjiBackground />
           
@@ -160,8 +156,15 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             <View style={styles.placeholder} />
           </View>
           
-          {/* Stats */}
-        <View style={styles.statsContainer}>
+          {/* Scrollable Content */}
+          <ScrollView 
+            style={styles.scrollableContent}
+            contentContainerStyle={styles.scrollableContentContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Stats */}
+            <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{stats.streak}</Text>
             <Text style={styles.statLabel}>Day Streak</Text>
@@ -180,106 +183,95 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           </View>
         </View>
 
-        {/* Recent Entries - Scrollable */}
-        <View style={[styles.contentContainer, { marginBottom: keyboardHeight > 0 ? keyboardHeight + 140 : 0 }]}>
-          <ScrollView style={styles.entriesContainer} showsVerticalScrollIndicator={false}>
-            <Text style={styles.entriesTitle}>Recent Entries</Text>
-            {entries.length === 0 ? (
-              <Text style={styles.emptyText}>Start your discipline journal today!</Text>
-            ) : (
-              entries.map((entry) => (
-                <View key={entry.id} style={styles.entryCard}>
-                  <View style={styles.entryHeader}>
-                    <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                  </View>
-                  <Text style={styles.entryContent}>{entry.content}</Text>
+            {/* Journal Entries */}
+            <View style={styles.entriesContainer}>
+              <Text style={styles.sectionTitle}>Recent Entries</Text>
+              {entries.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateText}>
+                    No journal entries yet. Start writing about your discipline journey!
+                  </Text>
                 </View>
-              ))
-            )}
+              ) : (
+                entries.slice(0, 5).map((entry) => (
+                  <View key={entry.id} style={styles.entryCard}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
+                      <Text style={styles.entryTime}>
+                        {new Date(entry.date).toLocaleTimeString('en-US', { 
+                          hour: 'numeric', 
+                          minute: '2-digit',
+                          hour12: true 
+                        })}
+                      </Text>
+                    </View>
+                    <Text style={styles.entryContent} numberOfLines={3}>
+                      {entry.content}
+                    </Text>
+                  </View>
+                ))
+              )}
+            </View>
           </ScrollView>
-        </View>
 
-        {/* Input Section - Fixed at bottom with keyboard awareness */}
-        <View 
-          style={[
-            styles.inputSection, 
-            keyboardHeight > 0 && {
-              position: 'absolute',
-              bottom: keyboardHeight + 60, // Add space above navigation
-              left: 0,
-              right: 0,
-              backgroundColor: theme.colors.background, // Pure black background
-              borderTopWidth: 1,
-              borderTopColor: theme.colors.border,
-            }
-          ]}
-        >
-          <Text style={styles.inputLabel}>Write about your discipline journey</Text>
-          
-          <TextInput
-            ref={(ref) => {
-              // Store ref for programmatic focus management
-              if (ref) {
-                ref.setNativeProps({ 
-                  selection: undefined // Clear selection to prevent issues
-                });
-              }
-            }}
-            style={[
-              styles.textInput,
-              {
-                minHeight: 100,
-                maxHeight: 200,
-              }
-            ]}
-            value={newEntry}
-            onChangeText={setNewEntry}
-            placeholder="Write about your discipline progress, challenges, wins..."
-            placeholderTextColor={theme.colors.text.tertiary}
-            multiline
-            textAlignVertical="top"
-            blurOnSubmit={false} // Keep input focused for multiline
-            returnKeyType="default" // Better for multiline
-            keyboardType="default"
-            autoCorrect={true}
-            autoCapitalize="sentences"
-            onFocus={() => {
-              // Ensure stable focus state
-            }}
-            onBlur={() => {
-              // Handle blur if needed
-            }}
-          />
-          
-          {/* Button Row - Always visible */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => {
-                setNewEntry('');
-                handleClose(); // Close the journal section
-              }}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+          {/* Input Section - Fixed at bottom */}
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>Write about your discipline journey</Text>
             
-            <TouchableOpacity
-              style={[styles.addButton, (!newEntry.trim() || isLoading) && styles.addButtonDisabled]}
-              onPress={handleAddEntry}
-              disabled={!newEntry.trim() || isLoading}
-            >
-              <Text style={styles.addButtonText}>
-                {isLoading ? 'Saving...' : 'Add Entry'}
-              </Text>
-            </TouchableOpacity>
+            <TextInput
+              style={[
+                styles.textInput,
+                {
+                  minHeight: 100,
+                  maxHeight: 200,
+                }
+              ]}
+              value={newEntry}
+              onChangeText={setNewEntry}
+              placeholder="Write about your discipline progress, challenges, wins..."
+              placeholderTextColor={theme.colors.text.tertiary}
+              multiline
+              textAlignVertical="top"
+              blurOnSubmit={false}
+              returnKeyType="default"
+              keyboardType="default"
+              autoCorrect={true}
+              autoCapitalize="sentences"
+            />
+            
+            {/* Button Row */}
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setNewEntry('');
+                  handleClose();
+                }}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.addButton, (!newEntry.trim() || isLoading) && styles.addButtonDisabled]}
+                onPress={handleAddEntry}
+                disabled={!newEntry.trim() || isLoading}
+              >
+                <Text style={styles.addButtonText}>
+                  {isLoading ? 'Saving...' : 'Add Entry'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
       </SafeAreaView>
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   addButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
@@ -376,6 +368,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: theme.spacing.sm,
   },
+  entryTime: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xl,
+  },
+  emptyStateText: {
+    ...theme.typography.body,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
+  },
   header: {
     alignItems: 'flex-start',
     borderBottomColor: theme.colors.border,
@@ -455,6 +462,18 @@ const styles = StyleSheet.create({
   subtitle: {
     ...theme.typography.caption,
     color: theme.colors.text.secondary,
+  },
+  scrollableContent: {
+    flex: 1,
+  },
+  scrollableContentContainer: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.lg,
+  },
+  sectionTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
   },
   textInput: {
     ...theme.typography.body,

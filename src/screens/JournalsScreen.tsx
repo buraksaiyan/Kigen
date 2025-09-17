@@ -29,8 +29,11 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [allEntries, setAllEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0 });
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     loadData();
@@ -57,13 +60,28 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
         journalStorage.getAllEntries(),
         journalStorage.getStats(),
       ]);
-      setEntries(entriesData);
+      setAllEntries(entriesData);
       setStats(statsData);
+      filterEntriesByMonth(entriesData, selectedMonth, selectedYear);
     } catch (error) {
       console.error('Error loading journal data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterEntriesByMonth = (allEntries: JournalEntry[], month: number, year: number) => {
+    const filteredEntries = allEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate.getMonth() === month && entryDate.getFullYear() === year;
+    });
+    setEntries(filteredEntries);
+  };
+
+  const handleMonthChange = (month: number, year: number) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+    filterEntriesByMonth(allEntries, month, year);
   };
 
   const deleteEntry = async (entryId: string) => {
@@ -159,6 +177,31 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
                 <Text style={styles.statNumber}>{stats.totalEntries}</Text>
                 <Text style={styles.statLabel}>{t('journal.totalEntries')}</Text>
               </View>
+            </View>
+          </Card>
+
+          {/* Month Selector */}
+          <Card style={styles.monthSelectorCard}>
+            <Text style={styles.monthSelectorTitle}>Select Month</Text>
+            <View style={styles.monthButtons}>
+              {Array.from({ length: 12 }, (_, i) => {
+                const monthNames = [
+                  'January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                const isSelected = i === selectedMonth && selectedYear === new Date().getFullYear();
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[styles.monthButton, isSelected && styles.monthButtonSelected]}
+                    onPress={() => handleMonthChange(i, selectedYear)}
+                  >
+                    <Text style={[styles.monthButtonText, isSelected && styles.monthButtonTextSelected]}>
+                      {monthNames[i]?.slice(0, 3) || ''}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </Card>
 
@@ -364,5 +407,40 @@ const styles = StyleSheet.create({
     ...theme.typography.h1,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.xs,
+  },
+  monthSelectorCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  monthSelectorTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+    textAlign: 'center',
+  },
+  monthButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  monthButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: theme.borderRadius.sm,
+    justifyContent: 'center',
+    margin: theme.spacing.xs,
+    minWidth: 60,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  monthButtonSelected: {
+    backgroundColor: theme.colors.primary,
+  },
+  monthButtonText: {
+    ...theme.typography.small,
+    color: theme.colors.text.secondary,
+    fontWeight: '500',
+  },
+  monthButtonTextSelected: {
+    color: theme.colors.text.primary,
   },
 });

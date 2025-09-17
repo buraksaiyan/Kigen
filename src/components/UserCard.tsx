@@ -42,26 +42,19 @@ export const UserCard: React.FC<UserCardProps> = ({
       'Update Profile Picture',
       'Choose an option',
       [
-        { text: 'Camera', onPress: () => pickImage('camera') },
-        { text: 'Gallery', onPress: () => pickImage('library') },
+        { text: 'Gallery', onPress: () => pickImage() },
         { text: 'Cancel', style: 'cancel' }
       ]
     );
   };
 
-  const pickImage = async (source: 'camera' | 'library') => {
+  const pickImage = async () => {
     try {
-      const result = source === 'camera' 
-        ? await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-          })
-        : await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-          });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
 
       if (!result.canceled && result.assets[0]) {
         const imageUri = result.assets[0].uri;

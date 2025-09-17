@@ -118,8 +118,14 @@ export class RatingSystem {
   // Calculate usage points
   static calculateUsagePoints(
     dailyPhoneMinutes: number,
-    noPhoneFocusMinutes: number
+    noPhoneFocusMinutes: number,
+    hasUsageAccess: boolean = false
   ): number {
+    // Don't award usage points if usage access is not granted
+    if (!hasUsageAccess) {
+      return 0;
+    }
+
     let points = 0;
     const dailyPhoneHours = dailyPhoneMinutes / 60;
     

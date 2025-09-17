@@ -25,16 +25,21 @@
           "icon": "./assets/icon.png",
           "color": "#14B8A6"
         }
-      ],
-      "expo-audio",
-      "expo-video"
+      ]
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kigen.app"
+      "bundleIdentifier": "com.kigen.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you upload profile pictures."
+      }
     },
     "android": {
-      "package": "com.kigen.app"
+      "package": "com.kigen.app",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "extra": {
       "eas": {

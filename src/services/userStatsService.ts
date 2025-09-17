@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStats, UserRating, CardTier, RatingSystem } from './ratingSystem';
 import LeaderboardService from './LeaderboardService';
 import { generateUniqueId } from '../utils/uniqueId';
+import { nativeUsageTracker } from './nativeUsageTracker';
 
 interface UserProfile {
   id: string;
@@ -179,7 +180,7 @@ export class UserStatsService {
         ),
         FOC: RatingSystem.calculateFocusPoints(totalFocusMinutes, flowFocusMinutes),
         JOU: RatingSystem.calculateJournalingPoints(today.journalEntries),
-        USA: RatingSystem.calculateUsagePoints(today.phoneUsageMinutes, noPhoneFocusMinutes),
+        USA: RatingSystem.calculateUsagePoints(today.phoneUsageMinutes, noPhoneFocusMinutes, await this.hasUsageAccess()),
         MEN: RatingSystem.calculateMentalityPoints(meditationMinutes),
         PHY: RatingSystem.calculatePhysicalPoints(bodyFocusMinutes)
       };
@@ -355,16 +356,18 @@ export class UserStatsService {
   static async recordJournalEntry(): Promise<void> {
     // Ensure user profile exists
     await this.ensureUserProfile();
-    
+
     const today = await this.getTodayActivity();
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
-    
+
     // Update monthly accumulation
     await this.updateMonthlyStats();
-    
-    // Sync with leaderboard after updating journal entry
-    await this.syncUserToLeaderboard();
+
+    // Sync with leaderboard asynchronously (don't block journal saving)
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
   }
 
   static async recordGoalCompletion(): Promise<void> {
@@ -382,8 +385,14 @@ export class UserStatsService {
     const { achievementService } = await import('./achievementService');
     await achievementService.checkAchievements();
     
-    // Sync with leaderboard after completing a goal
-    await this.syncUserToLeaderboard();
+    // Sync with leaderboard asynchronously (don't block goal completion)
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async hasUsageAccess(): Promise<boolean> {
+    return await nativeUsageTracker.hasUsageAccessPermission();
   }
 
   static async updatePhoneUsage(minutes: number, socialMediaMinutes: number = 0): Promise<void> {
