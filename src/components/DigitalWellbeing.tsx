@@ -207,6 +207,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
                 The app accesses this data solely for the purpose of displaying it to you and providing feedback on your usage patterns.
               </Text>
             </View>
+          </View>
         </ScrollView>
       </View>
     );
