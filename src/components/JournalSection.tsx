@@ -33,6 +33,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
   const inputBottomAnim = React.useRef(new Animated.Value(0)).current;
+  const [inputHeight, setInputHeight] = useState<number>(64);
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
@@ -242,26 +243,25 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           </ScrollView>
 
           {/* Input Section - Fixed at bottom with keyboard overlay */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.inputSection,
-              {
-                bottom: inputBottomAnim,
-              }
+              // animate the bottom position directly so the input rises above the keyboard
+              { bottom: inputBottomAnim },
             ]}
           >
             <Text style={styles.inputLabel}>Write about your discipline journey</Text>
             
             <TextInput
-              style={[
-                styles.textInput,
-                {
-                  minHeight: 100,
-                  maxHeight: 200,
-                }
-              ]}
+              style={[styles.textInput, { height: inputHeight }]}
               value={newEntry}
               onChangeText={setNewEntry}
+              onContentSizeChange={(e) => {
+                const h = e.nativeEvent.contentSize.height || 64;
+                // keep height within the same bounds as the style max/min
+                const clamped = Math.min(140, Math.max(64, h));
+                setInputHeight(clamped);
+              }}
               placeholder="Write about your discipline progress, challenges, wins..."
               placeholderTextColor={theme.colors.text.tertiary}
               multiline
@@ -360,6 +360,15 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
   },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xl,
+  },
+  emptyStateText: {
+    ...theme.typography.body,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
+  },
   emptyText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
@@ -404,15 +413,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: theme.spacing.xl,
-  },
-  emptyStateText: {
-    ...theme.typography.body,
-    color: theme.colors.text.tertiary,
-    textAlign: 'center',
-  },
   header: {
     alignItems: 'flex-start',
     borderBottomColor: theme.colors.border,
@@ -438,9 +438,13 @@ const styles = StyleSheet.create({
   inputSection: {
     backgroundColor: theme.colors.background, // Pure black background
     padding: theme.spacing.md,
-    paddingBottom: theme.spacing.xl, // More space to avoid navigation overlap
+    paddingBottom: theme.spacing.md, // reduced to avoid oversized input height
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 20,
   },
   journalCard: {
     backgroundColor: theme.colors.background,
@@ -463,12 +467,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     paddingTop: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.md,
-    paddingBottom: theme.spacing.md,
   },
   placeholder: {
     width: 60, // Same width as close button area
+  },
+  scrollableContent: {
+    flex: 1,
+  },
+  scrollableContentContainer: {
+  paddingHorizontal: theme.spacing.lg,
+  // Make space for the fixed input area so entries are not hidden
+  paddingBottom: 180,
+  },
+  sectionTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
   },
   statItem: {
     alignItems: 'center',
@@ -494,18 +511,6 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.text.secondary,
   },
-  scrollableContent: {
-    flex: 1,
-  },
-  scrollableContentContainer: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.spacing.lg,
-  },
-  sectionTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-  },
   textInput: {
     ...theme.typography.body,
     backgroundColor: theme.colors.background,
@@ -515,6 +520,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: 16,
     marginBottom: theme.spacing.md,
+    maxHeight: 140,
+    minHeight: 64,
     padding: theme.spacing.md,
     textAlignVertical: 'top', // Prevent zoom on iOS
   },

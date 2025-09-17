@@ -442,6 +442,17 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
     paddingHorizontal: 20, // Add bottom padding to avoid home button collision
   },
+  privacyNotice: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderRadius: 8,
+    marginTop: 16,
+    padding: 12,
+  },
+  privacyText: {
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: 'center',
+  },
   refreshButton: {
     borderRadius: 8,
     borderWidth: 2,
@@ -496,16 +507,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
-  },
-  privacyNotice: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 8,
-  },
-  privacyText: {
-    fontSize: 12,
-    lineHeight: 16,
-    textAlign: 'center',
   },
 });

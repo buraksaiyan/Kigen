@@ -518,6 +518,33 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: 24,
   },
+  notificationBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.danger,
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    minWidth: 20,
+    paddingHorizontal: 4,
+    position: 'absolute',
+    right: -5,
+    top: -5,
+  },
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  notificationsButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.sm,
+  },
+  notificationsIcon: {
+    height: 40,
+    tintColor: theme.colors.text.primary,
+    width: 40,
+  },
   outlinedActionButton: {
     borderColor: '#888691',
     borderWidth: 1, // Match outline variant border width
@@ -565,32 +592,5 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyLarge,
     color: theme.colors.text.secondary,
     fontWeight: '600',
-  },
-  notificationsButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing.sm,
-  },
-  notificationsIcon: {
-    width: 40,
-    height: 40,
-    tintColor: theme.colors.text.primary,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    backgroundColor: theme.colors.danger,
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  notificationBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
 });

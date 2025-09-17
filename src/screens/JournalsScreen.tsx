@@ -383,6 +383,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15, // Use theme border color
   },
+  monthNavButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
+  },
+  monthNavButtonInline: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.md,
+    justifyContent: 'center',
+    marginHorizontal: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: theme.spacing.xs,
+    width: 32,
+  },
+  monthNavText: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  monthNavTextDisabled: {
+    color: theme.colors.text.tertiary,
+  },
+  monthSelector: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  monthSelectorCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  monthText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
   placeholder: {
     width: 60,
   },
@@ -425,40 +460,5 @@ const styles = StyleSheet.create({
     ...theme.typography.h1,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.xs,
-  },
-  monthSelectorCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  monthSelector: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  monthText: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
-  monthNavButtonInline: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: theme.borderRadius.md,
-    justifyContent: 'center',
-    marginHorizontal: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.xs,
-    paddingVertical: theme.spacing.xs,
-    width: 32,
-  },
-  monthNavButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    opacity: 0.5,
-  },
-  monthNavText: {
-    color: theme.colors.text.primary,
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  monthNavTextDisabled: {
-    color: theme.colors.text.tertiary,
   },
 });

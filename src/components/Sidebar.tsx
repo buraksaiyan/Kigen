@@ -229,10 +229,10 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.sm,
   },
   menuIcon: {
-    width: 40,
     height: 40,
     marginRight: theme.spacing.md,
     tintColor: '#888691',
+    width: 40,
   },
   menuItem: {
     alignItems: 'center',

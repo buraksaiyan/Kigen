@@ -173,49 +173,6 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-  },
-  dropdown: {
-    backgroundColor: theme.colors.surface,
-    borderBottomLeftRadius: theme.borderRadius.lg,
-    borderBottomRightRadius: theme.borderRadius.lg,
-    marginTop: 60, // Account for status bar and header
-    maxHeight: '80%',
-    width: SCREEN_WIDTH,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-  },
-  headerButton: {
-    padding: theme.spacing.sm,
-  },
-  headerButtonText: {
-    color: theme.colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
   closeButton: {
     padding: theme.spacing.sm,
   },
@@ -224,8 +181,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  notificationsList: {
-    flex: 1,
+  deleteButton: {
+    marginLeft: theme.spacing.sm,
+    padding: theme.spacing.xs,
+  },
+  deleteButtonText: {
+    color: theme.colors.text.tertiary,
+    fontSize: 14,
+  },
+  dropdown: {
+    backgroundColor: theme.colors.surface,
+    borderBottomLeftRadius: theme.borderRadius.lg,
+    borderBottomRightRadius: theme.borderRadius.lg,
+    marginTop: 60, // Account for status bar and header
+    maxHeight: '80%',
+    width: SCREEN_WIDTH,
   },
   emptyState: {
     alignItems: 'center',
@@ -237,30 +207,48 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
     opacity: 0.5,
   },
-  emptyStateTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.sm,
-  },
   emptyStateMessage: {
     ...theme.typography.body,
     color: theme.colors.text.tertiary,
     textAlign: 'center',
   },
-  notificationItem: {
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+  emptyStateTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.sm,
   },
-  unreadNotification: {
-    backgroundColor: theme.colors.surfaceSecondary,
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: theme.spacing.lg,
+  },
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  headerButton: {
+    padding: theme.spacing.sm,
+  },
+  headerButtonText: {
+    color: theme.colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
   },
   notificationContent: {
     flex: 1,
   },
   notificationHeader: {
-    flexDirection: 'row',
     alignItems: 'flex-start',
+    flexDirection: 'row',
     marginBottom: theme.spacing.sm,
   },
   notificationIcon: {
@@ -268,8 +256,21 @@ const styles = StyleSheet.create({
     marginRight: theme.spacing.md,
     marginTop: 2,
   },
+  notificationItem: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    padding: theme.spacing.lg,
+  },
+  notificationMessage: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+  },
   notificationText: {
     flex: 1,
+  },
+  notificationTime: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
   },
   notificationTitle: {
     ...theme.typography.bodyLarge,
@@ -277,20 +278,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: theme.spacing.xs,
   },
-  notificationMessage: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
+  notificationsList: {
+    flex: 1,
   },
-  notificationTime: {
-    ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
+  overlay: {
+    alignItems: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+    justifyContent: 'flex-start',
   },
-  deleteButton: {
-    padding: theme.spacing.xs,
-    marginLeft: theme.spacing.sm,
+  safeArea: {
+    flex: 1,
   },
-  deleteButtonText: {
-    color: theme.colors.text.tertiary,
-    fontSize: 14,
+  unreadNotification: {
+    backgroundColor: theme.colors.surfaceSecondary,
   },
 });

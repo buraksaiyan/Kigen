@@ -101,42 +101,42 @@ export const AsyncStorageDebug: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#000',
+    flex: 1,
     padding: 20,
-  },
-  header: {
-    marginBottom: 20,
-    gap: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-  },
-  loading: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
   },
   content: {
     gap: 20,
   },
+  header: {
+    gap: 10,
+    marginBottom: 20,
+  },
+  loading: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   section: {
     backgroundColor: '#1a1a1a',
-    padding: 15,
     borderRadius: 8,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginBottom: 10,
+    padding: 15,
   },
   sectionContent: {
-    fontSize: 12,
     color: '#fff',
     fontFamily: 'monospace',
+    fontSize: 12,
+  },
+  sectionTitle: {
+    color: '#4CAF50',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

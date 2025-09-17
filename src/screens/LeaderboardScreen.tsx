@@ -233,17 +233,6 @@ const styles = StyleSheet.create({
   medalEmoji: {
     fontSize: 24,
   },
-  monthSelector: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  monthText: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
   monthNavButton: {
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -253,6 +242,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
     width: 40,
+  },
+  monthNavButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
   },
   monthNavButtonInline: {
     alignItems: 'center',
@@ -264,10 +257,6 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xs,
     width: 32,
   },
-  monthNavButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    opacity: 0.5,
-  },
   monthNavText: {
     color: theme.colors.text.primary,
     fontSize: 20,
@@ -275,6 +264,17 @@ const styles = StyleSheet.create({
   },
   monthNavTextDisabled: {
     color: theme.colors.text.tertiary,
+  },
+  monthSelector: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.md,
+  },
+  monthText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
   },
   pointsContainer: {
     alignItems: 'flex-end',
