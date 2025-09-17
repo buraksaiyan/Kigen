@@ -209,20 +209,21 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
       if (isHorizontalSwipe && isSwipeGesture.current && !hasFlippedThisGesture.current) {
-        // Single flip based on swipe direction: left = back (lifetime), right = front (monthly)
+        // Any swipe toggles the card state, direction determines animation rotation
         hasFlippedThisGesture.current = true; // Prevent multiple flips per gesture
         const swipeLeft = dx < 0; // negative dx = left swipe
-        const targetFlipped = swipeLeft; // left swipe shows back (lifetime)
-        const toValue = targetFlipped ? 1 : 0;
+        const targetFlipped = !isFlipped; // Always toggle to opposite side
+        const targetRotation = swipeLeft ? -180 : 180; // Left swipe = counter-clockwise, right swipe = clockwise
         
         setIsFlipped(targetFlipped);
         
         Animated.timing(flipAnimation, {
-          toValue,
+          toValue: targetRotation,
           duration: 600,
           useNativeDriver: true,
         }).start(() => {
-          // Update display text only after animation is fully complete
+          // Reset animation value and update display text
+          flipAnimation.setValue(0);
           setDisplayFlipped(targetFlipped);
         });
       } else if (isQuickTap && !isSwipeGesture.current) {
@@ -259,13 +260,13 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   };
 
   const frontRotation = flipAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
+    inputRange: [-180, 0, 180],
+    outputRange: ['-180deg', '0deg', '180deg'],
   });
 
   const backRotation = flipAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['180deg', '360deg'],
+    inputRange: [-180, 0, 180],
+    outputRange: ['0deg', '180deg', '360deg'],
   });
 
   const currentRating = displayFlipped ? lifetimeRating : monthlyRating;
