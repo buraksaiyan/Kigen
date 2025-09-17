@@ -20,25 +20,6 @@
     ],
     "plugins": [
       [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "35.0.0",
-            "minSdkVersion": 24,
-            "newArchEnabled": false,
-            "enableProguardInReleaseBuilds": true,
-            "enableSeparateBuildPerCPUArchitecture": false,
-            "enableMinifyInReleaseBuilds": true
-          },
-          "ios": {
-            "deploymentTarget": "15.1",
-            "newArchEnabled": false
-          }
-        }
-      ],
-      [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
@@ -53,15 +34,7 @@
       "bundleIdentifier": "com.kigen.app"
     },
     "android": {
-      "package": "com.kigen.app",
-      "permissions": [
-        "android.permission.PACKAGE_USAGE_STATS",
-        "android.permission.SYSTEM_ALERT_WINDOW",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.WAKE_LOCK",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+      "package": "com.kigen.app"
     },
     "extra": {
       "eas": {

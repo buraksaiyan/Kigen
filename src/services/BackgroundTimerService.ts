@@ -2,8 +2,12 @@ import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 const BACKGROUND_TIMER_TASK = 'background-timer-task';
+
+// Check if we're running in Expo Go (which doesn't support background tasks)
+const isExpoGo = Constants.appOwnership === 'expo';
 
 interface TimerState {
   id: string;
@@ -31,15 +35,20 @@ Notifications.setNotificationHandler({
 class BackgroundTimerService {
   private static STORAGE_KEY = '@kigen_background_timer';
 
-  // Register background task
+  // Register background task (only works in development builds, not Expo Go)
   static async registerBackgroundTask() {
+    if (isExpoGo) {
+      console.log('📱 Background tasks not available in Expo Go - using foreground timer');
+      return;
+    }
+
     try {
       await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data, error, executionInfo }) => {
         if (error) {
           console.error('Background task error:', error);
           return BackgroundTask.BackgroundTaskResult.Failed;
         }
-        
+
         try {
           await this.checkTimerProgress();
           return BackgroundTask.BackgroundTaskResult.Success;
@@ -61,11 +70,16 @@ class BackgroundTimerService {
   static async startTimer(timer: TimerState) {
     try {
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(timer));
-      await this.registerBackgroundTask();
-      
+
+      if (!isExpoGo) {
+        await this.registerBackgroundTask();
+      } else {
+        console.log('📱 Using Expo Go compatible timer (foreground only)');
+      }
+
       // Schedule completion notification
       await this.scheduleCompletionNotification(timer);
-      
+
       console.log('Background timer started:', timer.id);
     } catch (error) {
       console.error('Failed to start background timer:', error);
