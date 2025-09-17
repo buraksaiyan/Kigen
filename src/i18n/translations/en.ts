@@ -227,7 +227,7 @@ export const en = {
 
   sidebar: {
     dashboard: 'Dashboard',
-    pastJournals: 'Past Journals',
+    pastJournals: 'Journaling History',
     pastGoals: 'Past Goals',
     progress: 'Progress',
     achievements: 'Achievements',

@@ -39,6 +39,12 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (visible) {
+      loadData();
+    }
+  }, [visible]);
+
   // Handle hardware back button
   useEffect(() => {
     if (!visible || !onClose) return;
@@ -182,26 +188,38 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 
           {/* Month Selector */}
           <Card style={styles.monthSelectorCard}>
-            <Text style={styles.monthSelectorTitle}>Select Month</Text>
-            <View style={styles.monthButtons}>
-              {Array.from({ length: 12 }, (_, i) => {
-                const monthNames = [
-                  'January', 'February', 'March', 'April', 'May', 'June',
-                  'July', 'August', 'September', 'October', 'November', 'December'
-                ];
-                const isSelected = i === selectedMonth && selectedYear === new Date().getFullYear();
-                return (
-                  <TouchableOpacity
-                    key={i}
-                    style={[styles.monthButton, isSelected && styles.monthButtonSelected]}
-                    onPress={() => handleMonthChange(i, selectedYear)}
-                  >
-                    <Text style={[styles.monthButtonText, isSelected && styles.monthButtonTextSelected]}>
-                      {monthNames[i]?.slice(0, 3) || ''}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+            <View style={styles.monthSelector}>
+              <TouchableOpacity
+                style={styles.monthNavButtonInline}
+                onPress={() => {
+                  const currentDate = new Date(selectedYear, selectedMonth - 1, 1);
+                  currentDate.setMonth(currentDate.getMonth() - 1);
+                  const newMonth = currentDate.getMonth();
+                  const newYear = currentDate.getFullYear();
+                  handleMonthChange(newMonth, newYear);
+                }}
+              >
+                <Text style={styles.monthNavText}>‹</Text>
+              </TouchableOpacity>
+              <Text style={styles.monthText}>
+                {new Date(selectedYear, selectedMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </Text>
+              <TouchableOpacity
+                style={[styles.monthNavButtonInline, (selectedMonth >= new Date().getMonth() && selectedYear >= new Date().getFullYear()) && styles.monthNavButtonDisabled]}
+                onPress={() => {
+                  const currentDate = new Date(selectedYear, selectedMonth + 1, 1);
+                  currentDate.setMonth(currentDate.getMonth() + 1);
+                  const newMonth = currentDate.getMonth();
+                  const newYear = currentDate.getFullYear();
+                  // Don't allow selecting future months
+                  if (newYear < new Date().getFullYear() || (newYear === new Date().getFullYear() && newMonth <= new Date().getMonth())) {
+                    handleMonthChange(newMonth, newYear);
+                  }
+                }}
+                disabled={selectedMonth >= new Date().getMonth() && selectedYear >= new Date().getFullYear()}
+              >
+                <Text style={[styles.monthNavText, (selectedMonth >= new Date().getMonth() && selectedYear >= new Date().getFullYear()) && styles.monthNavTextDisabled]}>›</Text>
+              </TouchableOpacity>
             </View>
           </Card>
 
@@ -411,36 +429,36 @@ const styles = StyleSheet.create({
   monthSelectorCard: {
     marginBottom: theme.spacing.lg,
   },
-  monthSelectorTitle: {
+  monthSelector: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  monthText: {
     ...theme.typography.h4,
     color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-    textAlign: 'center',
+    fontWeight: '700',
   },
-  monthButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  monthButton: {
+  monthNavButtonInline: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: theme.borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.md,
     justifyContent: 'center',
-    margin: theme.spacing.xs,
-    minWidth: 60,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.sm,
+    marginHorizontal: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: theme.spacing.xs,
+    width: 32,
   },
-  monthButtonSelected: {
-    backgroundColor: theme.colors.primary,
+  monthNavButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
   },
-  monthButtonText: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-    fontWeight: '500',
-  },
-  monthButtonTextSelected: {
+  monthNavText: {
     color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  monthNavTextDisabled: {
+    color: theme.colors.text.tertiary,
   },
 });

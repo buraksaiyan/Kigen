@@ -434,7 +434,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingTop: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.md,
+    paddingBottom: theme.spacing.md,
   },
   placeholder: {
     width: 60, // Same width as close button area
