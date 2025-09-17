@@ -170,15 +170,17 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   }, [refreshTrigger]);
 
   const handleFlip = () => {
-    const toValue = displayFlipped ? 0 : 1;
-    setIsFlipped(!displayFlipped);
+    const targetFlipped = !displayFlipped;
+    const toValue = targetFlipped ? 1 : 0;
+    setIsFlipped(targetFlipped);
     
     Animated.timing(flipAnimation, {
       toValue,
       duration: 600,
       useNativeDriver: true,
     }).start(() => {
-      setDisplayFlipped(!displayFlipped);
+      // Update display text only after animation is fully complete
+      setDisplayFlipped(targetFlipped);
     });
   };
 
@@ -207,17 +209,20 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
       if (isHorizontalSwipe && isSwipeGesture.current) {
-        // Single flip: left swipe shows back, right swipe shows front
-        const shouldFlipToBack = dx < 0;
-        const toValue = shouldFlipToBack ? 1 : 0;
-        setIsFlipped(shouldFlipToBack);
+        // Single flip based on swipe direction: left = back (lifetime), right = front (monthly)
+        const swipeLeft = dx < 0; // negative dx = left swipe
+        const targetFlipped = swipeLeft; // left swipe shows back (lifetime)
+        const toValue = targetFlipped ? 1 : 0;
+        
+        setIsFlipped(targetFlipped);
         
         Animated.timing(flipAnimation, {
           toValue,
           duration: 600,
           useNativeDriver: true,
         }).start(() => {
-          setDisplayFlipped(shouldFlipToBack);
+          // Update display text only after animation is fully complete
+          setDisplayFlipped(targetFlipped);
         });
       } else if (isQuickTap && !isSwipeGesture.current) {
         // Tap to expand - only if not swiping
@@ -302,9 +307,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { color: textColor }]}>
-                  {displayFlipped ? 'LIFETIME' : 'MONTHLY'}
-                </Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>MONTHLY</Text>
               </View>
               
               {/* Main Content Section */}
@@ -371,7 +374,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { color: textColor }]}>ALL TIME</Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>LIFETIME</Text>
               </View>
               
               {/* Main Content Section */}
