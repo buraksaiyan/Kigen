@@ -37,12 +37,11 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const [userName, setUserName] = useState('User Name');
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
-  const rotationDirection = useRef(1).current; // 1 for clockwise, -1 for counter-clockwise
   
   // Add refs for gesture tracking
   const gestureStartTime = useRef(0);
   const isSwipeGesture = useRef(false);
-  const lastRotationValue = useRef(0);
+  const hasFlippedThisGesture = useRef(false); // Prevent multiple flips per gesture
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -170,13 +169,11 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   }, [refreshTrigger]);
 
   const handleFlip = () => {
-    // For tap-to-flip, rotate 180 degrees in the current direction
-    const currentRotation = lastRotationValue.current;
-    const targetRotation = currentRotation + (180 * rotationDirection);
-    lastRotationValue.current = targetRotation;
+    const toValue = isFlipped ? 0 : 1;
+    setIsFlipped(!isFlipped);
 
     Animated.timing(flipAnimation, {
-      toValue: targetRotation,
+      toValue,
       duration: 600,
       useNativeDriver: true,
     }).start();
@@ -191,6 +188,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     onPanResponderGrant: () => {
       gestureStartTime.current = Date.now();
       isSwipeGesture.current = false;
+      hasFlippedThisGesture.current = false; // Reset flip flag for new gesture
     },
     onPanResponderMove: (_, gestureState) => {
       const { dx, dy } = gestureState;
@@ -201,34 +199,20 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     },
     onPanResponderRelease: (_, gestureState) => {
       const gestureDuration = Date.now() - gestureStartTime.current;
-      const { dx, dy, vx } = gestureState;
+      const { dx, dy } = gestureState;
       const isHorizontalSwipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5;
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
-      if (isHorizontalSwipe && isSwipeGesture.current) {
-        // Continuous rotation based on swipe direction and velocity
-        const swipeDirection = dx > 0 ? 1 : -1; // 1 for right, -1 for left
-        const swipeDistance = Math.abs(dx);
-        const swipeVelocity = Math.abs(vx);
+      if (isHorizontalSwipe && isSwipeGesture.current && !hasFlippedThisGesture.current) {
+        // Single flip per gesture: left swipe shows back, right swipe shows front
+        const shouldFlipToBack = dx < 0;
+        const toValue = shouldFlipToBack ? 1 : 0;
+        setIsFlipped(shouldFlipToBack);
+        hasFlippedThisGesture.current = true; // Prevent multiple flips
         
-        // Calculate rotation amount based on swipe distance and velocity
-        const baseRotation = swipeDistance * 0.5; // 0.5 degrees per pixel
-        const velocityBonus = swipeVelocity * 100; // Additional rotation based on velocity
-        const totalRotation = (baseRotation + velocityBonus) * swipeDirection;
-        
-        const currentRotation = lastRotationValue.current;
-        const targetRotation = currentRotation + totalRotation;
-        lastRotationValue.current = targetRotation;
-        
-        // Update flip state based on net rotation (odd/even 180-degree increments)
-        const netFlips = Math.floor(Math.abs(targetRotation) / 180) % 2;
-        setIsFlipped(netFlips === 1);
-        
-        // Animate with momentum
-        Animated.spring(flipAnimation, {
-          toValue: targetRotation,
-          friction: 8,
-          tension: 40,
+        Animated.timing(flipAnimation, {
+          toValue,
+          duration: 600,
           useNativeDriver: true,
         }).start();
       } else if (isQuickTap && !isSwipeGesture.current) {
@@ -264,22 +248,18 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     return statNames[statKey as keyof typeof statNames] || statKey;
   };
 
-  // Continuous rotation interpolation
   const frontRotation = flipAnimation.interpolate({
-    inputRange: [-360, 0, 360],
-    outputRange: ['-360deg', '0deg', '360deg'],
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
   });
 
   const backRotation = flipAnimation.interpolate({
-    inputRange: [-360, 0, 360],
-    outputRange: ['-180deg', '180deg', '540deg'],
+    inputRange: [0, 1],
+    outputRange: ['180deg', '360deg'],
   });
 
-  // Determine which side is showing based on current rotation
-  const currentRotation = lastRotationValue.current;
-  const isShowingBack = Math.floor(Math.abs(currentRotation) / 180) % 2 === 1;
-  const currentRating = isShowingBack ? lifetimeRating : monthlyRating;
-  const cardTitle = isShowingBack ? 'LIFETIME STATS' : 'MONTHLY STATS';
+  const currentRating = isFlipped ? lifetimeRating : monthlyRating;
+  const cardTitle = isFlipped ? 'LIFETIME STATS' : 'MONTHLY STATS';
 
   if (isLoading || !currentRating) {
     return (
@@ -319,7 +299,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
                 <Text style={[styles.timePeriod, { color: textColor }]}>
-                  {isShowingBack ? 'LIFETIME' : 'MONTHLY'}
+                  {isFlipped ? 'LIFETIME' : 'MONTHLY'}
                 </Text>
               </View>
               
@@ -513,7 +493,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 8,
     height: 200,
+    margin: 16, // Increased margin to prevent border cutoff during rotation
     overflow: 'hidden',
+    padding: 8, // Increased padding to give more space around the card
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

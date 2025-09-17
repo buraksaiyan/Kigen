@@ -5,15 +5,17 @@ import { theme } from '../config/theme';
 interface KigenLogoProps {
   size?: 'small' | 'medium' | 'large';
   showJapanese?: boolean;
+  showText?: boolean; // New prop to show/hide the "Kigen" text
   variant?: 'text' | 'image'; // New prop to switch between text and image versions
 }
 
 export const KigenLogo: React.FC<KigenLogoProps> = ({ 
   size = 'medium', 
   showJapanese = true,
+  showText = true, // Default to showing text for backward compatibility
   variant = 'text' // Default to text for backward compatibility
 }) => {
-  const styles = getStyles(size);
+  const styles = getStyles(size, showText);
   
   // If using image variant, show the logo image
   if (variant === 'image') {
@@ -35,32 +37,34 @@ export const KigenLogo: React.FC<KigenLogoProps> = ({
       {showJapanese && (
         <Text style={styles.japanese}>起源</Text>
       )}
-      <View style={styles.logoContainer}>
-        <Text style={styles.capitalK}>K</Text>
-        <Text style={styles.lowercase}>igen</Text>
-      </View>
+      {showText && (
+        <View style={styles.logoContainer}>
+          <Text style={styles.capitalK}>K</Text>
+          <Text style={styles.lowercase}>igen</Text>
+        </View>
+      )}
     </View>
   );
 };
 
-const getStyles = (size: 'small' | 'medium' | 'large') => {
-  const sizeConfig = {
+const getStyles = (size: 'small' | 'medium' | 'large', showText: boolean = true) => {
+  const baseConfig = {
     small: { 
-      japanese: 20, 
+      japanese: showText ? 20 : 32, 
       main: 24, 
       capitalK: 24,
       spacing: 4,
       imageSize: 80
     },
     medium: { 
-      japanese: 26, 
+      japanese: showText ? 26 : 52, 
       main: 32, 
       capitalK: 32,
       spacing: 6,
       imageSize: 100
     },
     large: { 
-      japanese: 30, 
+      japanese: showText ? 30 : 48, 
       main: 42, 
       capitalK: 42,
       spacing: 8,
@@ -68,7 +72,7 @@ const getStyles = (size: 'small' | 'medium' | 'large') => {
     },
   };
   
-  const config = sizeConfig[size];
+  const config = baseConfig[size];
   
   return StyleSheet.create({
     capitalK: {

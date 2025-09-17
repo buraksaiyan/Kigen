@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
   },
   activeTopNavTab: {
     backgroundColor: theme.colors.primary,
-    borderColor: '#888691',
+    borderColor: theme.colors.primary, // Match border color to background for seamless look
   },
   activeTopNavText: {
     color: '#FFFFFF',
@@ -509,7 +509,8 @@ const styles = StyleSheet.create({
   },
   outlinedActionButton: {
     borderColor: '#888691',
-    borderWidth: 2,
+    borderWidth: 1, // Match outline variant border width
+    borderStyle: 'solid',
     flex: 1,
   },
   scrollContent: {
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: '#888691',
     borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
+    borderWidth: 0.5, // Reduced from 1 to 0.5 for more subtle appearance
     flex: 1,
     paddingVertical: theme.spacing.sm,
   },

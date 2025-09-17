@@ -99,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <View style={styles.header}>
-            <KigenLogo size="medium" variant="text" showJapanese={true} />
+            <KigenLogo size="medium" variant="text" showJapanese={true} showText={false} />
           </View>
 
           {/* Menu Items */}
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.3, // Further reduced for sleeker look
     flexDirection: 'row',
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   sidebar: {
     backgroundColor: theme.colors.surface,
     borderRightColor: theme.colors.border,
-    borderRightWidth: 1,
+    borderRightWidth: 0.5, // Reduced for sleeker look
     bottom: 0,
     left: 0,
     position: 'absolute',
