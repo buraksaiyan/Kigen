@@ -208,8 +208,9 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isHorizontalSwipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5;
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
-      if (isHorizontalSwipe && isSwipeGesture.current) {
+      if (isHorizontalSwipe && isSwipeGesture.current && !hasFlippedThisGesture.current) {
         // Single flip based on swipe direction: left = back (lifetime), right = front (monthly)
+        hasFlippedThisGesture.current = true; // Prevent multiple flips per gesture
         const swipeLeft = dx < 0; // negative dx = left swipe
         const targetFlipped = swipeLeft; // left swipe shows back (lifetime)
         const toValue = targetFlipped ? 1 : 0;
@@ -268,7 +269,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   });
 
   const currentRating = displayFlipped ? lifetimeRating : monthlyRating;
-  const cardTitle = displayFlipped ? 'LIFETIME STATS' : 'MONTHLY STATS';
 
   if (isLoading || !currentRating) {
     return (
@@ -374,7 +374,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { color: textColor }]}>LIFETIME</Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>ALL-TIME</Text>
               </View>
               
               {/* Main Content Section */}
