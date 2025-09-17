@@ -46,21 +46,21 @@ export const KigenLogo: React.FC<KigenLogoProps> = ({
 const getStyles = (size: 'small' | 'medium' | 'large') => {
   const sizeConfig = {
     small: { 
-      japanese: 16, 
+      japanese: 20, 
       main: 24, 
       capitalK: 24,
       spacing: 4,
       imageSize: 80
     },
     medium: { 
-      japanese: 20, 
+      japanese: 26, 
       main: 32, 
       capitalK: 32,
       spacing: 6,
       imageSize: 100
     },
     large: { 
-      japanese: 24, 
+      japanese: 30, 
       main: 42, 
       capitalK: 42,
       spacing: 8,

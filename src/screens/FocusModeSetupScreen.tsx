@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ interface FocusModeSetupScreenProps {
   onClose: () => void;
   mode: FocusMode | null;
   onStartSession: (mode: FocusMode, hours: number, minutes: number) => void;
+  defaultDuration?: number; // in minutes
 }
 
 export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
@@ -34,9 +35,21 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   onClose,
   mode,
   onStartSession,
+  defaultDuration = 30,
 }) => {
-  const [hours, setHours] = useState('0');
-  const [minutes, setMinutes] = useState('30');
+  const defaultHours = Math.floor(defaultDuration / 60);
+  const defaultMinutes = defaultDuration % 60;
+  
+  const [hours, setHours] = useState(defaultHours.toString());
+  const [minutes, setMinutes] = useState(defaultMinutes.toString());
+
+  // Reset to default duration when modal becomes visible
+  useEffect(() => {
+    if (visible) {
+      setHours(defaultHours.toString());
+      setMinutes(defaultMinutes.toString());
+    }
+  }, [visible, defaultHours, defaultMinutes]);
 
   const handleStartSession = () => {
     if (!mode) return;

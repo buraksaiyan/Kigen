@@ -17,6 +17,7 @@ import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
 import { GoalSelectionScreen } from './GoalSelectionScreen';
 import { focusSessionService } from '../services/FocusSessionService';
+import { useSettings } from '../hooks/useSettings';
 
 interface FocusMode {
   id: string;
@@ -93,6 +94,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [showCountdown, setShowCountdown] = useState(false);
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
+
+  const { settings } = useSettings();
 
   // Handle hardware back button
   useEffect(() => {
@@ -326,6 +329,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           mode={selectedMode}
           onClose={handleSetupClose}
           onStartSession={handleStartSession}
+          defaultDuration={settings.defaultFocusDuration}
         />
 
         {/* Goal Selection Screen for Executioner Mode */}

@@ -114,7 +114,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
         {activeTab === 'monthly' && (
           <View style={styles.monthSelector}>
             <TouchableOpacity 
-              style={styles.monthNavButton}
+              style={styles.monthNavButtonInline}
               onPress={() => {
                 const currentDate = new Date(selectedMonth + '-01');
                 currentDate.setMonth(currentDate.getMonth() - 1);
@@ -126,7 +126,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
             </TouchableOpacity>
             <Text style={styles.monthText}>{formatMonthYear(selectedMonth)}</Text>
             <TouchableOpacity 
-              style={[styles.monthNavButton, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
+              style={[styles.monthNavButtonInline, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
               onPress={() => {
                 const currentDate = new Date(selectedMonth + '-01');
                 currentDate.setMonth(currentDate.getMonth() + 1);
@@ -235,6 +235,8 @@ const styles = StyleSheet.create({
   },
   monthSelector: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: theme.spacing.md,
   },
   monthText: {
@@ -251,6 +253,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
     width: 40,
+  },
+  monthNavButtonInline: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.md,
+    justifyContent: 'center',
+    marginHorizontal: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: theme.spacing.xs,
+    width: 32,
   },
   monthNavButtonDisabled: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
