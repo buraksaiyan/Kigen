@@ -290,15 +290,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             </TouchableOpacity>
           </View>
             
-            <View style={styles.settingRow}>
-              <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>Kigen Focus App</Text>
-                <Text style={styles.settingDescription}>
-                  Version 1.0.0 - Focus modes with mindful productivity
-                </Text>
-              </View>
-            </View>
-
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>ABOUT</Text>
             

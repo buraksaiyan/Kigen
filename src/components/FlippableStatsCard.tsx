@@ -31,6 +31,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   const [monthlyRating, setMonthlyRating] = useState<UserRating | null>(null);
   const [lifetimeRating, setLifetimeRating] = useState<UserRating | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [displayFlipped, setDisplayFlipped] = useState(false); // Separate state for display timing
   const [isLoading, setIsLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -169,14 +170,16 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   }, [refreshTrigger]);
 
   const handleFlip = () => {
-    const toValue = isFlipped ? 0 : 1;
-    setIsFlipped(!isFlipped);
-
+    const toValue = displayFlipped ? 0 : 1;
+    setIsFlipped(!displayFlipped);
+    
     Animated.timing(flipAnimation, {
       toValue,
       duration: 600,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      setDisplayFlipped(!displayFlipped);
+    });
   };
 
   const panResponder = PanResponder.create({
@@ -203,18 +206,19 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isHorizontalSwipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5;
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
-      if (isHorizontalSwipe && isSwipeGesture.current && !hasFlippedThisGesture.current) {
-        // Single flip per gesture: left swipe shows back, right swipe shows front
+      if (isHorizontalSwipe && isSwipeGesture.current) {
+        // Single flip: left swipe shows back, right swipe shows front
         const shouldFlipToBack = dx < 0;
         const toValue = shouldFlipToBack ? 1 : 0;
         setIsFlipped(shouldFlipToBack);
-        hasFlippedThisGesture.current = true; // Prevent multiple flips
         
         Animated.timing(flipAnimation, {
           toValue,
           duration: 600,
           useNativeDriver: true,
-        }).start();
+        }).start(() => {
+          setDisplayFlipped(shouldFlipToBack);
+        });
       } else if (isQuickTap && !isSwipeGesture.current) {
         // Tap to expand - only if not swiping
         console.log('Tapped card to expand');
@@ -258,13 +262,13 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     outputRange: ['180deg', '360deg'],
   });
 
-  const currentRating = isFlipped ? lifetimeRating : monthlyRating;
-  const cardTitle = isFlipped ? 'LIFETIME STATS' : 'MONTHLY STATS';
+  const currentRating = displayFlipped ? lifetimeRating : monthlyRating;
+  const cardTitle = displayFlipped ? 'LIFETIME STATS' : 'MONTHLY STATS';
 
   if (isLoading || !currentRating) {
     return (
       <View style={styles.card}>
-        <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.cardContent}>
+        <LinearGradient colors={['#2d1b69', '#1a103d']} style={styles.cardContent}>
           <Text style={styles.loadingText}>Loading User Stats...</Text>
         </LinearGradient>
       </View>
@@ -299,7 +303,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
                 <Text style={[styles.timePeriod, { color: textColor }]}>
-                  {isFlipped ? 'LIFETIME' : 'MONTHLY'}
+                  {displayFlipped ? 'LIFETIME' : 'MONTHLY'}
                 </Text>
               </View>
               
@@ -493,9 +497,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 8,
     height: 200,
-    margin: 16, // Increased margin to prevent border cutoff during rotation
+    margin: 16, // Reverted to original spacing
     overflow: 'hidden',
-    padding: 8, // Increased padding to give more space around the card
+    padding: 8, // Reverted to original spacing
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
