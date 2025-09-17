@@ -30,8 +30,42 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0, points: 0 });
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
+
+  const inputSlideAnim = React.useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+        Animated.timing(inputSlideAnim, {
+          toValue: e.endCoordinates.height - 20,
+          duration: 250,
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+        Animated.timing(inputSlideAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, []);
 
   const handleClose = () => {
     console.log('📱 JournalSection close button pressed');
@@ -138,8 +172,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     >
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+        behavior="height"
+        keyboardVerticalOffset={0}
       >
         <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
@@ -214,8 +248,18 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             </View>
           </ScrollView>
 
-          {/* Input Section - Fixed at bottom */}
-          <View style={styles.inputSection}>
+          {/* Input Section - Fixed at bottom with keyboard overlay */}
+          <Animated.View 
+            style={[
+              styles.inputSection,
+              {
+                transform: [{ translateY: inputSlideAnim.interpolate({
+                  inputRange: [0, Dimensions.get('window').height],
+                  outputRange: [0, -Dimensions.get('window').height + 100],
+                }) }],
+              }
+            ]}
+          >
             <Text style={styles.inputLabel}>Write about your discipline journey</Text>
             
             <TextInput
@@ -261,7 +305,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
       </SafeAreaView>
       </KeyboardAvoidingView>
     </Animated.View>

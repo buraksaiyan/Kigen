@@ -11,6 +11,7 @@ import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
 import { KigenKanjiBackground } from '../../components/KigenKanjiBackground';
 import { GoalsScreen } from '../../screens/GoalsScreen';
+import { GoalsHistoryScreen } from '../../screens/GoalsHistoryScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
 import { RatingsScreen } from '../../screens/RatingsScreen';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
@@ -37,6 +38,7 @@ export const DashboardScreen: React.FC = () => {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(false);
+  const [isGoalsHistoryOpen, setIsGoalsHistoryOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -92,8 +94,9 @@ export const DashboardScreen: React.FC = () => {
         setIsProfileOpen(false);
         setIsAchievementsOpen(false);
         break;
-      case 'goals':
-        setIsGoalsOpen(true);
+      case 'goalsHistory':
+        setIsGoalsHistoryOpen(true);
+        setIsGoalsOpen(false);
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
@@ -335,6 +338,14 @@ export const DashboardScreen: React.FC = () => {
           visible={isGoalsOpen || currentScreen === 'goals'}
           onClose={() => {
             setIsGoalsOpen(false);
+            setCurrentScreen('dashboard');
+          }}
+        />
+
+        <GoalsHistoryScreen
+          visible={isGoalsHistoryOpen || currentScreen === 'goalsHistory'}
+          onClose={() => {
+            setIsGoalsHistoryOpen(false);
             setCurrentScreen('dashboard');
           }}
         />

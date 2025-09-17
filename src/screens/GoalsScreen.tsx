@@ -238,17 +238,13 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: theme.colors.success }]}>
-                  {completedGoals.length}
-                </Text>
-                <Text style={styles.statLabel}>Completed</Text>
+                <Text style={styles.statNumber}>{completedGoals.length + failedGoals.length}</Text>
+                <Text style={styles.statLabel}>History</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: theme.colors.danger }]}>
-                  {failedGoals.length}
-                </Text>
-                <Text style={styles.statLabel}>Failed</Text>
+                <Text style={styles.statNumber}>{goals.length}</Text>
+                <Text style={styles.statLabel}>Total</Text>
               </View>
             </View>
           </Card>
@@ -335,62 +331,12 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
             </>
           )}
 
-          {/* Completed Goals */}
-          {completedGoals.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>Completed Goals ({completedGoals.length})</Text>
-              {completedGoals.map(goal => (
-                <Card key={goal.id} style={[styles.goalCard, styles.completedCard] as any}>
-                  <View style={styles.goalHeader}>
-                    <Text style={[styles.goalTitle, styles.completedTitle]}>
-                      [COMPLETED] {goal.title}
-                    </Text>
-                    <Text style={styles.goalDate}>
-                      Completed {goal.completedAt ? formatDate(goal.completedAt) : 'Unknown'}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => deleteGoal(goal.id)}
-                    style={styles.smallDeleteButton}
-                  >
-                    <Text style={styles.smallDeleteText}>×</Text>
-                  </TouchableOpacity>
-                </Card>
-              ))}
-            </>
-          )}
-
-          {/* Failed Goals */}
-          {failedGoals.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>Failed Goals ({failedGoals.length})</Text>
-              {failedGoals.map(goal => (
-                <Card key={goal.id} style={[styles.goalCard, styles.failedCard] as any}>
-                  <View style={styles.goalHeader}>
-                    <Text style={[styles.goalTitle, styles.failedTitle]}>
-                      [FAILED] {goal.title}
-                    </Text>
-                    <Text style={styles.goalDate}>
-                      Failed {goal.failedAt ? formatDate(goal.failedAt) : 'Unknown'}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => deleteGoal(goal.id)}
-                    style={styles.smallDeleteButton}
-                  >
-                    <Text style={styles.smallDeleteText}>×</Text>
-                  </TouchableOpacity>
-                </Card>
-              ))}
-            </>
-          )}
-
           {/* Empty State */}
-          {goals.length === 0 && (
+          {activeGoals.length === 0 && (
             <Card style={styles.emptyCard}>
-              <Text style={styles.emptyTitle}>No Goals Yet</Text>
+              <Text style={styles.emptyTitle}>No Active Goals</Text>
               <Text style={styles.emptyText}>
-                Start adding discipline goals from the main screen!
+                Start adding discipline goals to track your progress!
               </Text>
             </Card>
           )}
