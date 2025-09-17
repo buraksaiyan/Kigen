@@ -202,10 +202,11 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
       if (isHorizontalSwipe && isSwipeGesture.current) {
-        // Smooth flip animation
-        console.log('Flipping card with improved animation');
-        const toValue = isFlipped ? 0 : 1;
-        setIsFlipped(!isFlipped);
+        // Flip based on swipe direction: left swipe shows back, right swipe shows front
+        console.log('Flipping card based on swipe direction, dx:', dx);
+        const shouldFlipToBack = dx < 0; // Left swipe shows back, right swipe shows front
+        const toValue = shouldFlipToBack ? 1 : 0;
+        setIsFlipped(shouldFlipToBack);
         Animated.timing(flipAnimation, {
           toValue,
           duration: 750, // Smoother, longer animation

@@ -177,6 +177,7 @@ export const en = {
     usernameNotSet: 'Username not set',
     email: 'Email',
     memberSince: 'Member Since',
+    lastUpdated: 'Last Updated',
     statistics: 'Statistics',
     totalFocusTime: 'Total Focus Time',
     sessionsThisWeek: 'Sessions This Week',

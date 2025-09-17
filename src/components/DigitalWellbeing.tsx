@@ -200,7 +200,13 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
             <Text style={[styles.helpText, { color: theme.colors.text.secondary }]}>
               Pull down to check if permission was granted
             </Text>
-          </View>
+
+            <View style={styles.privacyNotice}>
+              <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
+                We do not process or use any of the information we access with this permission.
+                The app accesses this data solely for the purpose of displaying it to you and providing feedback on your usage patterns.
+              </Text>
+            </View>
         </ScrollView>
       </View>
     );
@@ -489,5 +495,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
+  },
+  privacyNotice: {
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderRadius: 8,
+  },
+  privacyText: {
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: 'center',
   },
 });

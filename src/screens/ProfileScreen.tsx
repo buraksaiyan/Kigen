@@ -351,7 +351,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Profile Picture Section */}
         <View style={styles.profileImageSection}>
           <TouchableOpacity style={styles.profileImageContainer} onPress={handleProfileImageChange}>
@@ -513,7 +518,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
           
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.text.secondary }]}>
-              {t('profile.lastUpdated') || 'Last Updated'}
+              {t('profile.lastUpdated')}
             </Text>
             <Text style={[styles.infoValue, { color: theme.colors.text.primary }]}>
               {formatDate(profile.lastUpdated)}
@@ -521,22 +526,24 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
           </View>
         </View>
 
-        {/* Debug Stats Validation */}
-        <TouchableOpacity 
-          style={{
-            backgroundColor: 'rgba(0, 255, 0, 0.2)',
-            padding: 15,
-            borderRadius: 8,
-            marginVertical: 10,
-            borderWidth: 1,
-            borderColor: '#00ff00'
-          }}
-          onPress={() => StatsValidator.validateStatsConsistency()}
-        >
-          <Text style={{ color: '#00ff00', textAlign: 'center', fontWeight: 'bold' }}>
-            🔍 Debug Stats (Check Console)
-          </Text>
-        </TouchableOpacity>
+        {/* Debug Stats Validation - Only in development */}
+        {__DEV__ && (
+          <TouchableOpacity 
+            style={{
+              backgroundColor: 'rgba(0, 255, 0, 0.2)',
+              padding: 15,
+              borderRadius: 8,
+              marginVertical: 10,
+              borderWidth: 1,
+              borderColor: '#00ff00'
+            }}
+            onPress={() => StatsValidator.validateStatsConsistency()}
+          >
+            <Text style={{ color: '#00ff00', textAlign: 'center', fontWeight: 'bold' }}>
+              🔍 Debug Stats (Check Console)
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Privacy Notice */}
         <View style={styles.privacyNotice}>
@@ -607,6 +614,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   profileImageSection: {
     alignItems: 'center',

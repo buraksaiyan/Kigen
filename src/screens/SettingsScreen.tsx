@@ -15,6 +15,7 @@ import { theme } from '../config/theme';
 import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { useSettings } from '../hooks/useSettings';
 import { useTranslation } from '../i18n/I18nProvider';
+import { UserStatsService } from '../services/userStatsService';
 // import { SUPPORTED_LANGUAGES, Language } from '../i18n';
 
 interface SettingsScreenProps {
@@ -30,6 +31,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     toggleFocusReminders,
     toggleDigitalWellbeingAlerts,
     toggleKeepScreenOn,
+    updateDefaultFocusDuration,
     // updateLanguage,
   } = useSettings();
   const { t } = useTranslation();
@@ -37,6 +39,42 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
   // const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
   const volumeSteps = [0.1, 0.3, 0.5, 0.7, 1.0];
+  const [showDurationPicker, setShowDurationPicker] = useState(false);
+
+  // Handlers for settings actions
+  const handleFocusDurationPress = () => {
+    setShowDurationPicker(true);
+  };
+
+  const handleResetDataPress = () => {
+    Alert.alert(
+      'Reset All Data',
+      'This will permanently delete all your focus sessions, goals, and preferences. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await UserStatsService.clearAllData();
+              Alert.alert('Success', 'All data has been reset.');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to reset data. Please try again.');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handlePrivacyPolicyPress = () => {
+    Alert.alert(
+      'Privacy Policy',
+      'We respect your privacy. Your focus data is stored locally on your device and is never transmitted to external servers. Usage statistics are only used to provide you with insights about your productivity patterns.',
+      [{ text: 'OK' }]
+    );
+  };
 
   /*
   const handleLanguageSelect = async (languageCode: Language) => {
@@ -92,7 +130,11 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             <View style={styles.placeholder} />
           </View>
           
-          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            style={styles.scrollView} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
             <View style={styles.header}>
               <Text style={styles.subtitle}>{t('settings.customize')}</Text>
             </View>
@@ -195,7 +237,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             <Text style={styles.sectionTitle}>FOCUS PREFERENCES</Text>
             
             {/* Default Session Duration */}
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity style={styles.settingRow} onPress={handleFocusDurationPress}>
               <View style={styles.settingContent}>
                 <Text style={styles.settingTitle}>{t('settings.defaultFocusDuration')}</Text>
                 <Text style={styles.settingDescription}>
@@ -226,7 +268,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             <Text style={styles.sectionTitle}>PRIVACY & DATA</Text>
             
             {/* Reset Data */}
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity style={styles.settingRow} onPress={handleResetDataPress}>
               <View style={styles.settingContent}>
                 <Text style={styles.settingTitle}>Reset All Data</Text>
                 <Text style={styles.settingDescription}>
@@ -237,7 +279,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             </TouchableOpacity>
 
             {/* Privacy Policy */}
-            <TouchableOpacity style={styles.settingRow}>
+            <TouchableOpacity style={styles.settingRow} onPress={handlePrivacyPolicyPress}>
               <View style={styles.settingContent}>
                 <Text style={styles.settingTitle}>Privacy Policy</Text>
                 <Text style={styles.settingDescription}>
@@ -273,6 +315,51 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       </ScrollView>
     </SafeAreaView>
       </View>
+  </Modal>
+
+  {/* Duration Picker Modal */}
+  <Modal
+    visible={showDurationPicker}
+    transparent={true}
+    animationType="fade"
+    onRequestClose={() => setShowDurationPicker(false)}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.durationModal}>
+        <View style={styles.durationModalHeader}>
+          <Text style={styles.durationModalTitle}>Select Focus Duration</Text>
+          <TouchableOpacity 
+            onPress={() => setShowDurationPicker(false)}
+            style={styles.modalCloseButton}
+          >
+            <Text style={styles.modalCloseText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.durationOptions}>
+          {[15, 25, 30, 45, 60, 90, 120].map((duration) => (
+            <TouchableOpacity
+              key={duration}
+              style={[
+                styles.durationOption,
+                settings.defaultFocusDuration === duration && styles.durationOptionSelected
+              ]}
+              onPress={() => {
+                updateDefaultFocusDuration(duration);
+                setShowDurationPicker(false);
+              }}
+            >
+              <Text style={[
+                styles.durationOptionText,
+                settings.defaultFocusDuration === duration && styles.durationOptionTextSelected
+              ]}>
+                {duration} minutes
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </View>
   </Modal>
 
   {/* Language Picker Modal - Commented out for now
@@ -367,6 +454,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   content: {
     padding: theme.spacing.lg,
@@ -533,5 +624,50 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  // Duration Picker Modal Styles
+  durationModal: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    maxHeight: '60%',
+    overflow: 'hidden',
+    width: '85%',
+  },
+  durationModalHeader: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  durationModalTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  durationOptions: {
+    padding: 16,
+  },
+  durationOption: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 8,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  durationOptionSelected: {
+    backgroundColor: theme.colors.primary,
+  },
+  durationOptionText: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  durationOptionTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });

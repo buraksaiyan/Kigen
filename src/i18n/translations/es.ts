@@ -177,6 +177,7 @@ export const es = {
     usernameNotSet: 'Nombre de usuario no establecido',
     email: 'Correo Electrónico',
     memberSince: 'Miembro Desde',
+    lastUpdated: 'Última Actualización',
     statistics: 'Estadísticas',
     totalFocusTime: 'Tiempo Total de Concentración',
     sessionsThisWeek: 'Sesiones Esta Semana',

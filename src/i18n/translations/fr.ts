@@ -201,6 +201,7 @@ export const fr = {
     usernameNotSet: 'Nom d\'utilisateur non défini',
     email: 'Email',
     memberSince: 'Membre Depuis',
+    lastUpdated: 'Dernière Mise à Jour',
     statistics: 'Statistiques',
     totalFocusTime: 'Temps Total de Concentration',
     sessionsThisWeek: 'Sessions Cette Semaine',

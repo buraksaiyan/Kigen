@@ -113,7 +113,33 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
         {/* Month selector for monthly view */}
         {activeTab === 'monthly' && (
           <View style={styles.monthSelector}>
+            <TouchableOpacity 
+              style={styles.monthNavButton}
+              onPress={() => {
+                const currentDate = new Date(selectedMonth + '-01');
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                const newMonth = currentDate.toISOString().slice(0, 7);
+                setSelectedMonth(newMonth);
+              }}
+            >
+              <Text style={styles.monthNavText}>‹</Text>
+            </TouchableOpacity>
             <Text style={styles.monthText}>{formatMonthYear(selectedMonth)}</Text>
+            <TouchableOpacity 
+              style={[styles.monthNavButton, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
+              onPress={() => {
+                const currentDate = new Date(selectedMonth + '-01');
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                const newMonth = currentDate.toISOString().slice(0, 7);
+                // Don't allow selecting future months
+                if (newMonth <= new Date().toISOString().slice(0, 7)) {
+                  setSelectedMonth(newMonth);
+                }
+              }}
+              disabled={selectedMonth >= new Date().toISOString().slice(0, 7)}
+            >
+              <Text style={[styles.monthNavText, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavTextDisabled]}>›</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -215,6 +241,28 @@ const styles = StyleSheet.create({
     ...theme.typography.h4,
     color: theme.colors.text.primary,
     fontWeight: '700',
+  },
+  monthNavButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.md,
+    justifyContent: 'center',
+    marginHorizontal: theme.spacing.md,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    width: 40,
+  },
+  monthNavButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
+  },
+  monthNavText: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  monthNavTextDisabled: {
+    color: theme.colors.text.tertiary,
   },
   pointsContainer: {
     alignItems: 'flex-end',

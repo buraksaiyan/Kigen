@@ -99,8 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <View style={styles.header}>
-            <KigenLogo size="medium" variant="image" showJapanese={false} />
-            <Text style={styles.subtitle}>Discipline & Focus</Text>
+            <KigenLogo size="medium" variant="text" showJapanese={true} />
           </View>
 
           {/* Menu Items */}
