@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
-  KeyboardAvoidingView,
   Platform,
   Keyboard,
   Dimensions,
@@ -33,18 +32,17 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
-
-  const inputSlideAnim = React.useRef(new Animated.Value(0)).current;
+  const inputBottomAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-        Animated.timing(inputSlideAnim, {
-          toValue: e.endCoordinates.height - 20,
+        Animated.timing(inputBottomAnim, {
+          toValue: e.endCoordinates.height,
           duration: 250,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       }
     );
@@ -53,10 +51,10 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
         setKeyboardHeight(0);
-        Animated.timing(inputSlideAnim, {
+        Animated.timing(inputBottomAnim, {
           toValue: 0,
           duration: 250,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       }
     );
@@ -170,12 +168,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior="height"
-        keyboardVerticalOffset={0}
-      >
-        <SafeAreaView style={styles.journalCard}>
+      <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
           <KigenKanjiBackground />
           
@@ -253,10 +246,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             style={[
               styles.inputSection,
               {
-                transform: [{ translateY: inputSlideAnim.interpolate({
-                  inputRange: [0, Dimensions.get('window').height],
-                  outputRange: [0, -Dimensions.get('window').height + 100],
-                }) }],
+                bottom: inputBottomAnim,
               }
             ]}
           >
@@ -307,15 +297,11 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             </View>
           </Animated.View>
       </SafeAreaView>
-      </KeyboardAvoidingView>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  keyboardAvoidingView: {
-    flex: 1,
-  },
   addButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
