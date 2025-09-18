@@ -140,7 +140,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
       >
         <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
@@ -454,12 +454,13 @@ const styles = StyleSheet.create({
   statItem: {
     alignItems: 'center',
     flex: 1,
+    paddingVertical: theme.spacing.sm,
   },
   statLabel: {
     ...theme.typography.small,
     color: theme.colors.text.tertiary,
     letterSpacing: 1,
-    marginTop: theme.spacing.xs,
+    marginTop: theme.spacing.sm,
     textTransform: 'uppercase',
   },
   statNumber: {
@@ -470,6 +471,7 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     marginBottom: theme.spacing.lg,
+    paddingTop: theme.spacing.lg,
   },
   subtitle: {
     ...theme.typography.caption,
