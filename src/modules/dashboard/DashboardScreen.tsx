@@ -98,6 +98,10 @@ export const DashboardScreen: React.FC = () => {
           setIsJournalOpen(false);
           return true;
         }
+        if (isNotificationsOpen) {
+          setIsNotificationsOpen(false);
+          return true;
+        }
         if (isSidebarOpen) {
           setIsSidebarOpen(false);
           return true;
@@ -107,13 +111,19 @@ export const DashboardScreen: React.FC = () => {
           return true;
         }
         
-        // If no modals are open, allow default back behavior (exit app)
+        // Handle view switches
+        if (currentView === 'leaderboard') {
+          setCurrentView('dashboard');
+          return true;
+        }
+        
+        // If no modals are open and we're on dashboard view, allow default back behavior (exit app)
         return false;
       });
 
       return () => backHandler.remove();
     }
-  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isProgressOpen, isFocusSessionOpen, isGoalsHistoryOpen, isGoalsOpen, isJournalOpen, isSidebarOpen, isAdminPanelOpen]);
+  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isProgressOpen, isFocusSessionOpen, isGoalsHistoryOpen, isGoalsOpen, isJournalOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
