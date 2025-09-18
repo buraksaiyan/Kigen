@@ -149,7 +149,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           >
             {/* Journal Entries */}
             <View style={styles.entriesContainer}>
-              <Text style={styles.sectionTitle}>Recent Entries</Text>
               {entries.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyStateText}>
