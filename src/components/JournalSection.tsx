@@ -31,7 +31,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [isLoading, setIsLoading] = useState(false);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
-  const [inputHeight, setInputHeight] = useState<number>(64);
+  const [inputHeight, setInputHeight] = useState<number>(96);
 
   const handleClose = () => {
     console.log('📱 JournalSection close button pressed');
@@ -152,7 +152,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               {entries.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyStateText}>
-                    No journal entries yet. Start writing about your discipline journey!
+                    No journal entries yet. Start writing about your journey!
                   </Text>
                 </View>
               ) : (
@@ -186,9 +186,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               value={newEntry}
               onChangeText={setNewEntry}
               onContentSizeChange={(e) => {
-                const h = e.nativeEvent.contentSize.height || 64;
+                const h = e.nativeEvent.contentSize.height || 96;
                 // keep height within the same bounds as the style max/min
-                const clamped = Math.min(140, Math.max(64, h));
+                const clamped = Math.min(140, Math.max(96, h));
                 setInputHeight(clamped);
               }}
               placeholder="Write about your discipline progress, challenges, wins..."
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: theme.spacing.md,
     maxHeight: 140,
-    minHeight: 64,
+    minHeight: 96,
     padding: theme.spacing.md,
     textAlignVertical: 'top', // Prevent zoom on iOS
   },
