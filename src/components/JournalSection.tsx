@@ -9,6 +9,7 @@ import {
   Animated,
   Platform,
   Keyboard,
+  KeyboardAvoidingView,
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,42 +30,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0, points: 0 });
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
-  const inputBottomAnim = React.useRef(new Animated.Value(0)).current;
   const [inputHeight, setInputHeight] = useState<number>(64);
-
-  useEffect(() => {
-    const keyboardWillShowListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      (e) => {
-        setKeyboardHeight(e.endCoordinates.height);
-        Animated.timing(inputBottomAnim, {
-          toValue: e.endCoordinates.height,
-          duration: 250,
-          useNativeDriver: false,
-        }).start();
-      }
-    );
-
-    const keyboardWillHideListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        setKeyboardHeight(0);
-        Animated.timing(inputBottomAnim, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: false,
-        }).start();
-      }
-    );
-
-    return () => {
-      keyboardWillShowListener.remove();
-      keyboardWillHideListener.remove();
-    };
-  }, []);
 
   const handleClose = () => {
     console.log('📱 JournalSection close button pressed');
@@ -169,7 +137,12 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       ]}
       pointerEvents={isExpanded ? 'auto' : 'none'}
     >
-      <SafeAreaView style={styles.journalCard}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
           <KigenKanjiBackground />
           
@@ -193,23 +166,23 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           >
             {/* Stats */}
             <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.streak}</Text>
-            <Text style={styles.statLabel}>Day Streak</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.thisMonth}</Text>
-            <Text style={styles.statLabel}>This Month</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.totalEntries}</Text>
-            <Text style={styles.statLabel}>Total Entries</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.points}</Text>
-            <Text style={styles.statLabel}>Points</Text>
-          </View>
-        </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.streak}</Text>
+                <Text style={styles.statLabel}>Day Streak</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.thisMonth}</Text>
+                <Text style={styles.statLabel}>This Month</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.totalEntries}</Text>
+                <Text style={styles.statLabel}>Total Entries</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.points}</Text>
+                <Text style={styles.statLabel}>Points</Text>
+              </View>
+            </View>
 
             {/* Journal Entries */}
             <View style={styles.entriesContainer}>
@@ -242,14 +215,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             </View>
           </ScrollView>
 
-          {/* Input Section - Fixed at bottom with keyboard overlay */}
-          <Animated.View
-            style={[
-              styles.inputSection,
-              // animate the bottom position directly so the input rises above the keyboard
-              { bottom: inputBottomAnim },
-            ]}
-          >
+          {/* Input Section - Now properly integrated with KeyboardAvoidingView */}
+          <View style={styles.inputSection}>
             <Text style={styles.inputLabel}>Write about your discipline journey</Text>
             
             <TextInput
@@ -295,8 +262,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
                 </Text>
               </TouchableOpacity>
             </View>
-          </Animated.View>
-      </SafeAreaView>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 };
@@ -441,10 +409,6 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.md, // reduced to avoid oversized input height
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 20,
   },
   journalCard: {
     backgroundColor: theme.colors.background,
@@ -479,8 +443,8 @@ const styles = StyleSheet.create({
   },
   scrollableContentContainer: {
   paddingHorizontal: theme.spacing.lg,
-  // Make space for the fixed input area so entries are not hidden
-  paddingBottom: 180,
+  // Reduced padding since input is now part of the normal flow
+  paddingBottom: theme.spacing.lg,
   },
   sectionTitle: {
     ...theme.typography.h4,
