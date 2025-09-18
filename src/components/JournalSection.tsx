@@ -123,7 +123,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 150 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
@@ -371,6 +371,7 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.md, // reduced to avoid oversized input height
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+    marginTop: theme.spacing.lg, // Add space to move text box down from header
   },
   journalCard: {
     backgroundColor: theme.colors.background,
@@ -405,8 +406,8 @@ const styles = StyleSheet.create({
   },
   scrollableContentContainer: {
   paddingHorizontal: theme.spacing.lg,
-  // Reduced padding since input is now part of the normal flow
-  paddingBottom: theme.spacing.lg,
+  // Reduced padding since input section now has marginTop
+  paddingBottom: theme.spacing.md,
   },
   sectionTitle: {
     ...theme.typography.h4,
