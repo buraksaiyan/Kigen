@@ -140,7 +140,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
       >
         <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
@@ -217,7 +217,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
           {/* Input Section - Now properly integrated with KeyboardAvoidingView */}
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>Write about your discipline journey</Text>
+            <Text style={styles.inputLabel} numberOfLines={1}>Write about your discipline journey</Text>
             
             <TextInput
               style={[styles.textInput, { height: inputHeight }]}
