@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image, BackHandler } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
 import { useTranslation } from '../../i18n/I18nProvider';
@@ -58,6 +58,62 @@ export const DashboardScreen: React.FC = () => {
     // Ensure profile exists when dashboard loads
     UserStatsService.ensureUserProfile().catch(console.error);
   }, []);
+
+  // Handle Android back button
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        // Close modals in order of priority (most recent first)
+        if (isAchievementsOpen) {
+          setIsAchievementsOpen(false);
+          return true;
+        }
+        if (isProfileOpen) {
+          setIsProfileOpen(false);
+          return true;
+        }
+        if (isSettingsOpen) {
+          setIsSettingsOpen(false);
+          return true;
+        }
+        if (isProgressOpen) {
+          setIsProgressOpen(false);
+          return true;
+        }
+        if (isFocusSessionOpen) {
+          setIsFocusSessionOpen(false);
+          return true;
+        }
+        if (isGoalsHistoryOpen) {
+          setIsGoalsHistoryOpen(false);
+          setCurrentScreen('dashboard');
+          return true;
+        }
+        if (isGoalsOpen) {
+          setIsGoalsOpen(false);
+          setCurrentScreen('dashboard');
+          return true;
+        }
+        if (isJournalOpen) {
+          setIsJournalOpen(false);
+          return true;
+        }
+        if (isSidebarOpen) {
+          setIsSidebarOpen(false);
+          return true;
+        }
+        if (isAdminPanelOpen) {
+          setIsAdminPanelOpen(false);
+          return true;
+        }
+        
+        // If no modals are open, allow default back behavior (exit app)
+        return false;
+      });
+
+      return () => backHandler.remove();
+    }
+  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isProgressOpen, isFocusSessionOpen, isGoalsHistoryOpen, isGoalsOpen, isJournalOpen, isSidebarOpen, isAdminPanelOpen]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -339,6 +395,10 @@ export const DashboardScreen: React.FC = () => {
           onClose={() => {
             setIsGoalsOpen(false);
             setCurrentScreen('dashboard');
+          }}
+          onGoalComplete={() => {
+            // Refresh stats card when a goal is completed
+            setRefreshTrigger(prev => prev + 1);
           }}
         />
 

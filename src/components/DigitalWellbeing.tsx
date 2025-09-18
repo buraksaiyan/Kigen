@@ -82,12 +82,38 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
       await digitalWellbeingService.requestUsageAccess();
       Alert.alert(
         'Usage Access Required',
-        'Please find and enable usage access for this app in the settings that just opened. Return here when done.',
-        [{ text: 'OK' }]
+        'Please follow these steps:\n\n1. Look for "Kigen" in the app list\n2. Tap on "Kigen"\n3. Enable "Permit usage access"\n4. Return to the app\n\nIf you don\'t see the toggle, tap the app name again to expand the options.',
+        [
+          {
+            text: 'Try Again',
+            onPress: () => {
+              // Try opening settings again
+              digitalWellbeingService.requestUsageAccess().catch(() => {
+                Alert.alert('Error', 'Could not open settings. Please manually go to Settings > Apps > Kigen > Usage Access');
+              });
+            }
+          },
+          {
+            text: 'Manual Instructions',
+            onPress: () => {
+              Alert.alert(
+                'Manual Setup',
+                'Go to:\nSettings > Apps > [All Apps] > Kigen > Usage Access\n\nEnable "Permit usage access" for Kigen'
+              );
+            }
+          },
+          { text: 'OK' }
+        ]
       );
     } catch (error) {
       console.error('Error requesting permission:', error);
-      Alert.alert('Error', 'Failed to open usage access settings');
+      Alert.alert(
+        'Settings Not Opened',
+        'Please manually go to:\n\nSettings > Apps > Kigen > Usage Access\n\nEnable "Permit usage access" for this app.',
+        [
+          { text: 'OK' }
+        ]
+      );
     } finally {
       setIsRequestingPermission(false);
     }

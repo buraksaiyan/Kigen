@@ -518,6 +518,9 @@ class FocusSessionService {
       // Save the updated activity
       await UserStatsService.updateTodayActivity(today);
       
+      // Update monthly accumulation
+      await UserStatsService.updateMonthlyStats();
+      
       console.log(`UserStatsService updated: ${session.mode.id} +${actualMinutes} minutes`);
     } catch (error) {
       console.error('Error updating UserStatsService:', error);

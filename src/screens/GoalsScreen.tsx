@@ -35,11 +35,13 @@ const GOALS_STORAGE_KEY = '@kigen_goals';
 interface GoalsScreenProps {
   visible?: boolean;
   onClose?: () => void;
+  onGoalComplete?: () => void;
 }
 
 export const GoalsScreen: React.FC<GoalsScreenProps> = ({
   visible = true,
   onClose,
+  onGoalComplete,
 }) => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,6 +130,9 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
             
             // Record goal completion in rating system
             await UserStatsService.recordGoalCompletion();
+            
+            // Notify parent component to refresh stats
+            onGoalComplete?.();
           },
         },
       ]

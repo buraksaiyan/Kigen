@@ -54,21 +54,21 @@ const getStyles = (size: 'small' | 'medium' | 'large', showText: boolean = true)
       main: 24, 
       capitalK: 24,
       spacing: 4,
-      imageSize: 80
+      imageSize: 60
     },
     medium: { 
       japanese: showText ? 26 : 52, 
       main: 32, 
       capitalK: 32,
       spacing: 6,
-      imageSize: 100
+      imageSize: 70
     },
     large: { 
       japanese: showText ? 30 : 48, 
       main: 42, 
       capitalK: 42,
       spacing: 8,
-      imageSize: 120
+      imageSize: 80
     },
   };
   

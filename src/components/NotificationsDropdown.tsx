@@ -78,11 +78,12 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
+      <View style={styles.modalContainer}>
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <View style={styles.dropdown}>
           <SafeAreaView style={styles.safeArea}>
             {/* Header */}
@@ -167,7 +168,7 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             </ScrollView>
           </SafeAreaView>
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
@@ -196,6 +197,10 @@ const styles = StyleSheet.create({
     marginTop: 60, // Account for status bar and header
     maxHeight: '80%',
     width: SCREEN_WIDTH,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
   },
   emptyState: {
     alignItems: 'center',
@@ -243,6 +248,9 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '700',
   },
+  modalContainer: {
+    flex: 1,
+  },
   notificationContent: {
     flex: 1,
   },
@@ -286,6 +294,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     flex: 1,
     justifyContent: 'flex-start',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   safeArea: {
     flex: 1,
