@@ -29,7 +29,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState({ totalEntries: 0, streak: 0, thisMonth: 0, points: 0 });
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
   const [inputHeight, setInputHeight] = useState<number>(64);
@@ -50,7 +49,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
     if (isExpanded) {
       loadEntries();
-      loadStats();
     }
   }, [isExpanded]);
 
@@ -73,20 +71,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     }
   };
 
-  const loadStats = async () => {
-    try {
-      const journalStats = await journalStorage.getStats();
-      // Get current rating to include JOU points
-      const currentRating = await UserStatsService.getCurrentRating();
-      setStats({
-        ...journalStats,
-        points: currentRating.stats.JOU // Add points from rating system
-      });
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    }
-  };
-
   const handleAddEntry = async () => {
     if (!newEntry.trim()) return;
 
@@ -99,7 +83,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       
       setNewEntry('');
       await loadEntries();
-      await loadStats();
     } catch (error) {
       console.error('Failed to save journal entry:', error);
     } finally {
@@ -140,7 +123,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 150 : 0}
       >
         <SafeAreaView style={styles.journalCard}>
           {/* Kanji background like Goals page */}
@@ -164,26 +147,6 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            {/* Stats */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{stats.streak}</Text>
-                <Text style={styles.statLabel}>Day Streak</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{stats.thisMonth}</Text>
-                <Text style={styles.statLabel}>This Month</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{stats.totalEntries}</Text>
-                <Text style={styles.statLabel}>Total Entries</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{stats.points}</Text>
-                <Text style={styles.statLabel}>Points</Text>
-              </View>
-            </View>
-
             {/* Journal Entries */}
             <View style={styles.entriesContainer}>
               <Text style={styles.sectionTitle}>Recent Entries</Text>
@@ -450,28 +413,6 @@ const styles = StyleSheet.create({
     ...theme.typography.h4,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-  },
-  statLabel: {
-    ...theme.typography.small,
-    color: theme.colors.text.tertiary,
-    letterSpacing: 1,
-    marginTop: theme.spacing.sm,
-    textTransform: 'uppercase',
-  },
-  statNumber: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary, // Use theme color instead of fixed gray
-    fontWeight: '700',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    marginBottom: theme.spacing.lg,
-    paddingTop: theme.spacing.lg,
   },
   subtitle: {
     ...theme.typography.caption,
