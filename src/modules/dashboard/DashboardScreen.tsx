@@ -434,9 +434,8 @@ export const DashboardScreen: React.FC = () => {
         />
         
         <JournalsScreen
-          visible={isJournalOpen || currentScreen === 'journals'}
+          visible={currentScreen === 'journals'}
           onClose={() => {
-            setIsJournalOpen(false);
             setCurrentScreen('dashboard');
           }}
         />
