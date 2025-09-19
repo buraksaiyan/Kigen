@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image, BackHandler } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthProvider';
 import { useTranslation } from '../../i18n/I18nProvider';
 import { maybePromptForRating } from '../../services/rating';
@@ -8,20 +9,12 @@ import { theme } from '../../config/theme';
 import { Button, Card } from '../../components/UI';
 import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
-import { GoalsScreen } from '../../screens/GoalsScreen';
-import { GoalsHistoryScreen } from '../../screens/GoalsHistoryScreen';
-import { JournalsScreen } from '../../screens/JournalsScreen';
 import { RatingsScreen } from '../../screens/RatingsScreen';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { UserStatsService } from '../../services/userStatsService';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
-import { FocusSessionScreen } from '../../screens/FocusSessionScreen';
-import { ProgressScreen } from '../../screens/ProgressScreen';
-import { SettingsScreen } from '../../screens/SettingsScreen';
-import { ProfileScreen } from '../../screens/ProfileScreen';
-import { AchievementsScreen } from '../../screens/AchievementsScreen';
 import { useNotifications } from '../../contexts/NotificationsContext';
 import { NotificationsDropdown } from '../../components/NotificationsDropdown';
 import { achievementService } from '../../services/achievementService';
@@ -32,17 +25,10 @@ export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard');
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isGoalsOpen, setIsGoalsOpen] = useState(false);
-  const [isGoalsHistoryOpen, setIsGoalsHistoryOpen] = useState(false);
-  const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
-  const [isProgressOpen, setIsProgressOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -54,36 +40,6 @@ export const DashboardScreen: React.FC = () => {
   // Memoized close handlers to prevent BackHandler re-registration issues
   const handleCloseJournal = useCallback(() => {
     setIsJournalOpen(false);
-  }, []);
-
-  const handleCloseGoals = useCallback(() => {
-    setIsGoalsOpen(false);
-    setCurrentScreen('dashboard');
-  }, []);
-
-  const handleCloseFocusSession = useCallback(() => {
-    setIsFocusSessionOpen(false);
-  }, []);
-
-  const handleCloseProgress = useCallback(() => {
-    setIsProgressOpen(false);
-  }, []);
-
-  const handleCloseSettings = useCallback(() => {
-    setIsSettingsOpen(false);
-  }, []);
-
-  const handleCloseProfile = useCallback(() => {
-    setIsProfileOpen(false);
-  }, []);
-
-  const handleCloseAchievements = useCallback(() => {
-    setIsAchievementsOpen(false);
-  }, []);
-
-  const handleCloseGoalsHistory = useCallback(() => {
-    setIsGoalsHistoryOpen(false);
-    setCurrentScreen('dashboard');
   }, []);
 
   const handleCloseNotifications = useCallback(() => {
@@ -107,28 +63,10 @@ export const DashboardScreen: React.FC = () => {
   // Handle Android back button
   useEffect(() => {
     if (Platform.OS === 'android') {
-      // Don't register BackHandler if main modal screens are open (they handle their own back buttons)
-      if (isGoalsOpen || currentScreen === 'goals' || 
-          isJournalOpen || currentScreen === 'journals' ||
-          isFocusSessionOpen || 
-          isProgressOpen || 
-          isGoalsHistoryOpen) {
-        return;
-      }
-
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
         // Close modals in order of priority (most recent first)
-        // Note: Goals, Journals, FocusSession, Progress, and GoalsHistory have their own BackHandlers
-        if (isAchievementsOpen) {
-          setIsAchievementsOpen(false);
-          return true;
-        }
-        if (isProfileOpen) {
-          setIsProfileOpen(false);
-          return true;
-        }
-        if (isSettingsOpen) {
-          setIsSettingsOpen(false);
+        if (isJournalOpen) {
+          setIsJournalOpen(false);
           return true;
         }
         if (isNotificationsOpen) {
@@ -156,7 +94,7 @@ export const DashboardScreen: React.FC = () => {
 
       return () => backHandler.remove();
     }
-  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView, isGoalsOpen, isJournalOpen, isFocusSessionOpen, isProgressOpen, isGoalsHistoryOpen, currentScreen]);
+  }, [isJournalOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -173,68 +111,38 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const handleSidebarNavigation = (screen: string) => {
-    setCurrentScreen(screen);
     setIsSidebarOpen(false);
     
     switch(screen) {
       case 'dashboard':
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
+        // Stay on dashboard
         break;
       case 'journals':
-        setIsGoalsOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
-        setIsAchievementsOpen(false);
+        navigation.navigate('Journals' as never);
         break;
       case 'goalsHistory':
-        setIsGoalsHistoryOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
-        setIsAchievementsOpen(false);
+        navigation.navigate('GoalsHistory' as never);
+        break;
+      case 'goals':
+        navigation.navigate('Goals' as never);
+        break;
+      case 'focusSession':
+        navigation.navigate('FocusSession' as never);
+        break;
+      case 'progress':
+        navigation.navigate('Progress' as never);
         break;
       case 'settings':
-        setIsSettingsOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsProfileOpen(false);
-        setIsAchievementsOpen(false);
-        break;
-      case 'achievements':
-        setIsAchievementsOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
+        navigation.navigate('Settings' as never);
         break;
       case 'profile':
-        console.log('📱 Profile navigation triggered');
-        // Switch to dashboard view when opening profile
-        setCurrentView('dashboard');
-        setIsProfileOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
-        setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsAchievementsOpen(false);
+        navigation.navigate('Profile' as never);
+        break;
+      case 'achievements':
+        navigation.navigate('Achievements' as never);
         break;
       default:
-        console.log('Navigate to:', screen);
+        console.log('Unknown screen:', screen);
     }
   };
 
@@ -271,13 +179,8 @@ export const DashboardScreen: React.FC = () => {
             style={[styles.topNavTab, currentView === 'dashboard' && styles.activeTopNavTab]}
             onPress={() => {
               setCurrentView('dashboard');
-              // Close all modals when switching to dashboard
-              setIsProfileOpen(false);
-              setIsSettingsOpen(false);
-              setIsProgressOpen(false);
-              setIsGoalsOpen(false);
+              // Close journal modal when switching to dashboard
               setIsJournalOpen(false);
-              setIsFocusSessionOpen(false);
             }}
           >
             <Text style={[styles.topNavText, currentView === 'dashboard' && styles.activeTopNavText]}>
@@ -288,13 +191,8 @@ export const DashboardScreen: React.FC = () => {
             style={[styles.topNavTab, currentView === 'leaderboard' && styles.activeTopNavTab]}
             onPress={() => {
               setCurrentView('leaderboard');
-              // Close all modals when switching to leaderboard
-              setIsProfileOpen(false);
-              setIsSettingsOpen(false);
-              setIsProgressOpen(false);
-              setIsGoalsOpen(false);
+              // Close journal modal when switching to leaderboard
               setIsJournalOpen(false);
-              setIsFocusSessionOpen(false);
             }}
           >
             <Text style={[styles.topNavText, currentView === 'leaderboard' && styles.activeTopNavText]}>
@@ -330,7 +228,7 @@ export const DashboardScreen: React.FC = () => {
               <View style={styles.actionGrid}>
                 <Button
                   title="Goals"
-                  onPress={() => setCurrentScreen('goals')}
+                  onPress={() => navigation.navigate('Goals' as never)}
                   variant="primary"
                   style={styles.outlinedActionButton}
                 />
@@ -345,13 +243,13 @@ export const DashboardScreen: React.FC = () => {
               <View style={styles.actionGrid}>
                 <Button
                   title="Focus Session"
-                  onPress={() => setIsFocusSessionOpen(true)}
+                  onPress={() => navigation.navigate('FocusSession' as never)}
                   variant="primary"
                   style={styles.outlinedActionButton}
                 />
                 <Button
                   title="View Progress"
-                  onPress={() => setIsProgressOpen(true)}
+                  onPress={() => navigation.navigate('Progress' as never)}
                   variant="primary"
                   style={styles.outlinedActionButton}
                 />
@@ -410,7 +308,6 @@ export const DashboardScreen: React.FC = () => {
           isOpen={isSidebarOpen}
           onClose={handleCloseSidebar}
           onNavigate={handleSidebarNavigation}
-          currentScreen={currentScreen}
           onShowAdmin={() => setIsAdminPanelOpen(true)}
         />
 
@@ -419,73 +316,9 @@ export const DashboardScreen: React.FC = () => {
           onClose={() => setIsNotificationsOpen(false)}
         />
         
-        <GoalsScreen
-          visible={isGoalsOpen || currentScreen === 'goals'}
-          onClose={handleCloseGoals}
-          onGoalComplete={() => {
-            // Refresh stats card when a goal is completed
-            setRefreshTrigger(prev => prev + 1);
-          }}
-        />
-
-        <GoalsHistoryScreen
-          visible={isGoalsHistoryOpen || currentScreen === 'goalsHistory'}
-          onClose={handleCloseGoalsHistory}
-        />
-        
-        <JournalsScreen
-          visible={currentScreen === 'journals'}
-          onClose={() => {
-            setCurrentScreen('dashboard');
-          }}
-        />
-
-        <FocusSessionScreen
-          visible={isFocusSessionOpen}
-          onClose={handleCloseFocusSession}
-          onOpenGoals={() => {
-            setIsFocusSessionOpen(false);
-            setIsGoalsOpen(true);
-          }}
-          onSessionComplete={() => {
-            // Force refresh of stats card when a session completes
-            // Add slight delay to ensure data is saved before refreshing
-            globalThis.setTimeout(() => {
-              setRefreshTrigger(prev => prev + 1);
-            }, 500);
-            
-            // Check for new achievements after session completion
-            globalThis.setTimeout(async () => {
-              try {
-                await achievementService.checkAchievements();
-                console.log('✅ Achievement check completed after session');
-              } catch (error) {
-                console.error('❌ Error checking achievements after session:', error);
-              }
-            }, 1000);
-          }}
-        />
-
-        <ProgressScreen
-          visible={isProgressOpen}
-          onClose={handleCloseProgress}
-        />
-
-        <SettingsScreen
-          visible={isSettingsOpen}
-          onClose={handleCloseSettings}
-        />
-
-        {currentView === 'dashboard' && (
-          <ProfileScreen
-            visible={isProfileOpen}
-            onClose={handleCloseProfile}
-          />
-        )}
-
-        <AchievementsScreen
-          visible={isAchievementsOpen}
-          onClose={handleCloseAchievements}
+        <JournalSection 
+          isExpanded={isJournalOpen}
+          onClose={() => setIsJournalOpen(false)}
         />
 
         {showSupabaseDebug && (

@@ -7,6 +7,47 @@ import { DashboardScreen } from '../modules/dashboard/DashboardScreen';
 import { JournalListScreen } from '../modules/journal/JournalListScreen';
 import { JournalEditScreen } from '../modules/journal/JournalEditScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { GoalsScreen } from '../screens/GoalsScreen';
+import { GoalsHistoryScreen } from '../screens/GoalsHistoryScreen';
+import { FocusSessionScreen } from '../screens/FocusSessionScreen';
+import { ProgressScreen } from '../screens/ProgressScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { AchievementsScreen } from '../screens/AchievementsScreen';
+import { JournalsScreen } from '../screens/JournalsScreen';
+
+// Wrapper components for screens that need navigation props
+const GoalsScreenWrapper = ({ navigation }: any) => (
+  <GoalsScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const GoalsHistoryScreenWrapper = ({ navigation }: any) => (
+  <GoalsHistoryScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const FocusSessionScreenWrapper = ({ navigation }: any) => (
+  <FocusSessionScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const ProgressScreenWrapper = ({ navigation }: any) => (
+  <ProgressScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const SettingsScreenWrapper = ({ navigation }: any) => (
+  <SettingsScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const ProfileScreenWrapper = ({ navigation }: any) => (
+  <ProfileScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const AchievementsScreenWrapper = ({ navigation }: any) => (
+  <AchievementsScreen visible={true} onClose={() => navigation.goBack()} />
+);
+
+const JournalsScreenWrapper = ({ navigation }: any) => (
+  <JournalsScreen visible={true} onClose={() => navigation.goBack()} />
+);
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +104,70 @@ export const Navigation: React.FC = () => {
             name="Dashboard" 
             component={DashboardScreen} 
             options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Goals" 
+            component={GoalsScreenWrapper}
+            options={{ 
+              title: 'Goals',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="GoalsHistory" 
+            component={GoalsHistoryScreenWrapper}
+            options={{ 
+              title: 'Goals History',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="FocusSession" 
+            component={FocusSessionScreenWrapper}
+            options={{ 
+              title: 'Focus Session',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="Progress" 
+            component={ProgressScreenWrapper}
+            options={{ 
+              title: 'Progress',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="Settings" 
+            component={SettingsScreenWrapper}
+            options={{ 
+              title: 'Settings',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="Profile" 
+            component={ProfileScreenWrapper}
+            options={{ 
+              title: 'Profile',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="Achievements" 
+            component={AchievementsScreenWrapper}
+            options={{ 
+              title: 'Achievements',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
+          />
+          <Stack.Screen 
+            name="Journals" 
+            component={JournalsScreenWrapper}
+            options={{ 
+              title: 'Journal History',
+              headerTitleStyle: { color: theme.colors.text.primary }
+            }} 
           />
           <Stack.Screen 
             name="JournalList" 
