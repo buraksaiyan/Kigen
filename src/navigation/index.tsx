@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Modal, View, Text, StyleSheet, BackHandler, Platform } from 'react-native';
+import { Modal, View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../modules/auth/AuthProvider';
 import { DashboardScreen } from '../modules/dashboard/DashboardScreen';
 import { JournalListScreen } from '../modules/journal/JournalListScreen';
@@ -33,21 +33,6 @@ const theme = {
 
 export const Navigation: React.FC = () => {
   const { session, loading, isLoginScreenVisible, hideLoginScreen } = useAuth();
-
-  // Handle Android back button
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        () => {
-          // Allow default back behavior for navigation
-          return false;
-        }
-      );
-
-      return () => backHandler.remove();
-    }
-  }, []);
 
   if (loading) {
     return (

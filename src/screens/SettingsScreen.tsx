@@ -98,6 +98,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
     const backAction = () => {
       console.log('📱 Hardware back button pressed in SettingsScreen');
+      
+      // Close sub-modals first
+      if (showDurationPicker) {
+        setShowDurationPicker(false);
+        return true;
+      }
+      
+      // Close main modal
       onClose();
       return true; // Prevent default behavior
     };
@@ -105,7 +113,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [visible, onClose]);
+  }, [visible, onClose, showDurationPicker]);
 
   return (
     <>
