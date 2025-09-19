@@ -109,6 +109,7 @@ export const DashboardScreen: React.FC = () => {
     if (Platform.OS === 'android') {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
         // Close modals in order of priority (most recent first)
+        // Note: Goals, Journals, FocusSession, Progress, and GoalsHistory have their own BackHandlers
         if (isAchievementsOpen) {
           setIsAchievementsOpen(false);
           return true;
@@ -119,28 +120,6 @@ export const DashboardScreen: React.FC = () => {
         }
         if (isSettingsOpen) {
           setIsSettingsOpen(false);
-          return true;
-        }
-        if (isProgressOpen) {
-          setIsProgressOpen(false);
-          return true;
-        }
-        if (isFocusSessionOpen) {
-          setIsFocusSessionOpen(false);
-          return true;
-        }
-        if (isGoalsHistoryOpen) {
-          setIsGoalsHistoryOpen(false);
-          setCurrentScreen('dashboard');
-          return true;
-        }
-        if (isGoalsOpen) {
-          setIsGoalsOpen(false);
-          setCurrentScreen('dashboard');
-          return true;
-        }
-        if (isJournalOpen) {
-          setIsJournalOpen(false);
           return true;
         }
         if (isNotificationsOpen) {
@@ -168,7 +147,7 @@ export const DashboardScreen: React.FC = () => {
 
       return () => backHandler.remove();
     }
-  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isProgressOpen, isFocusSessionOpen, isGoalsHistoryOpen, isGoalsOpen, isJournalOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
+  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -446,8 +425,11 @@ export const DashboardScreen: React.FC = () => {
         />
         
         <JournalsScreen
-          visible={currentScreen === 'journals' && !isJournalOpen}
-          onClose={() => setCurrentScreen('dashboard')}
+          visible={isJournalOpen || currentScreen === 'journals'}
+          onClose={() => {
+            setIsJournalOpen(false);
+            setCurrentScreen('dashboard');
+          }}
         />
 
         <FocusSessionScreen

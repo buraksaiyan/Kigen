@@ -45,9 +45,9 @@ export const GoalsHistoryScreen: React.FC<GoalsHistoryScreenProps> = ({
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible || !onClose) return;
-
     const backAction = () => {
+      if (!visible || !onClose) return false;
+
       console.log('📱 Hardware back button pressed in GoalsHistoryScreen');
       onClose();
       return true; // Prevent default behavior
@@ -56,7 +56,7 @@ export const GoalsHistoryScreen: React.FC<GoalsHistoryScreenProps> = ({
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [visible, onClose]);
+  }, []);
 
   const loadGoals = async () => {
     try {

@@ -45,9 +45,9 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible || !onClose) return;
-
     const backAction = () => {
+      if (!visible || !onClose) return false;
+
       console.log('📱 Hardware back button pressed in JournalsScreen');
       onClose();
       return true; // Prevent default behavior
@@ -56,7 +56,7 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [visible, onClose]);
+  }, []);
 
   const loadData = async () => {
     try {

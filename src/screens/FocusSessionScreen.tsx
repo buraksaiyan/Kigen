@@ -97,9 +97,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible) return;
-
     const backAction = () => {
+      if (!visible) return false;
+
       console.log('📱 Hardware back button pressed in FocusSessionScreen');
       // If we're in a sub-screen, go back to main screen instead of closing
       if (showCountdown) {
@@ -122,7 +122,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [visible, onClose, showCountdown, showSetup, showGoalSelection]);
+  }, []);
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
