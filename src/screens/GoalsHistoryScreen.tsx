@@ -316,8 +316,6 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     alignItems: 'center',
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.lg,

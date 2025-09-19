@@ -419,8 +419,6 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     alignItems: 'center',
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
@@ -547,8 +545,6 @@ const styles = StyleSheet.create({
   },
   languageModalHeader: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
@@ -624,8 +620,6 @@ const styles = StyleSheet.create({
   },
   durationModalHeader: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,

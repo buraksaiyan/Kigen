@@ -484,8 +484,6 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     alignItems: 'center',
-    borderBottomColor: '#374151',
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
