@@ -107,6 +107,15 @@ export const DashboardScreen: React.FC = () => {
   // Handle Android back button
   useEffect(() => {
     if (Platform.OS === 'android') {
+      // Don't register BackHandler if main modal screens are open (they handle their own back buttons)
+      if (isGoalsOpen || currentScreen === 'goals' || 
+          isJournalOpen || currentScreen === 'journals' ||
+          isFocusSessionOpen || 
+          isProgressOpen || 
+          isGoalsHistoryOpen) {
+        return;
+      }
+
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
         // Close modals in order of priority (most recent first)
         // Note: Goals, Journals, FocusSession, Progress, and GoalsHistory have their own BackHandlers
@@ -147,7 +156,7 @@ export const DashboardScreen: React.FC = () => {
 
       return () => backHandler.remove();
     }
-  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
+  }, [isAchievementsOpen, isProfileOpen, isSettingsOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView, isGoalsOpen, isJournalOpen, isFocusSessionOpen, isProgressOpen, isGoalsHistoryOpen, currentScreen]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);

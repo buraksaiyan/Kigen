@@ -50,29 +50,20 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
     loadGoals();
   }, []);
 
-  const visibleRef = useRef(visible);
-  const onCloseRef = useRef(onClose);
-
-  // Update refs when props change
-  useEffect(() => {
-    visibleRef.current = visible;
-    onCloseRef.current = onClose;
-  }, [visible, onClose]);
-
   // Handle hardware back button
   useEffect(() => {
+    if (!visible || !onClose) return;
+
     const backAction = () => {
-      if (!visibleRef.current || !onCloseRef.current) return false;
-      
       console.log('📱 Hardware back button pressed in GoalsScreen');
-      onCloseRef.current();
+      onClose();
       return true; // Prevent default behavior
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, []);
+  }, [visible, onClose]);
 
   const loadGoals = async () => {
     try {

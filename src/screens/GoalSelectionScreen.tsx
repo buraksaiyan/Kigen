@@ -53,15 +53,6 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const visibleRef = useRef(visible);
-  const onCloseRef = useRef(onClose);
-
-  // Update refs when props change
-  useEffect(() => {
-    visibleRef.current = visible;
-    onCloseRef.current = onClose;
-  }, [visible, onClose]);
-
   useEffect(() => {
     if (visible) {
       loadGoals();
@@ -70,17 +61,17 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
 
   // Handle Android back button
   useEffect(() => {
-    const backAction = () => {
-      if (!visibleRef.current) return false;
+    if (!visible) return;
 
-      onCloseRef.current();
+    const backAction = () => {
+      onClose();
       return true; // Prevent default back behavior
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, []);
+  }, [visible, onClose]);
 
   const loadGoals = async () => {
     setLoading(true);

@@ -50,28 +50,19 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     }
   }, [visible, defaultHours, defaultMinutes]);
 
-  const visibleRef = useRef(visible);
-  const onCloseRef = useRef(onClose);
-
-  // Update refs when props change
-  useEffect(() => {
-    visibleRef.current = visible;
-    onCloseRef.current = onClose;
-  }, [visible, onClose]);
-
   // Handle Android back button
   useEffect(() => {
-    const backAction = () => {
-      if (!visibleRef.current) return false;
+    if (!visible) return;
 
-      onCloseRef.current();
+    const backAction = () => {
+      onClose();
       return true; // Prevent default back behavior
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, []);
+  }, [visible, onClose]);
 
   const handleStartSession = () => {
     if (!mode) return;

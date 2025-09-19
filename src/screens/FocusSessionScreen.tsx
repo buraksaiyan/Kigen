@@ -95,32 +95,17 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   const { settings } = useSettings();
 
-  const visibleRef = useRef(visible);
-  const onCloseRef = useRef(onClose);
-  const showCountdownRef = useRef(showCountdown);
-  const showSetupRef = useRef(showSetup);
-  const showGoalSelectionRef = useRef(showGoalSelection);
-
-  // Update refs when props/state change
-  useEffect(() => {
-    visibleRef.current = visible;
-    onCloseRef.current = onClose;
-    showCountdownRef.current = showCountdown;
-    showSetupRef.current = showSetup;
-    showGoalSelectionRef.current = showGoalSelection;
-  }, [visible, onClose, showCountdown, showSetup, showGoalSelection]);
-
   // Handle hardware back button
   useEffect(() => {
-    const backAction = () => {
-      if (!visibleRef.current) return false;
+    if (!visible || !onClose) return;
 
+    const backAction = () => {
       console.log('📱 Hardware back button pressed in FocusSessionScreen');
       // If we're in a sub-screen, go back to main screen instead of closing
-      if (showCountdownRef.current) {
+      if (showCountdown) {
         // Don't allow back button during countdown - user should use proper buttons
         return true;
-      } else if (showSetupRef.current || showGoalSelectionRef.current) {
+      } else if (showSetup || showGoalSelection) {
         // Go back to focus mode selection
         setShowSetup(false);
         setShowGoalSelection(false);
@@ -129,7 +114,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         return true;
       } else {
         // Close the focus session screen
-        onCloseRef.current();
+        onClose();
         return true;
       }
     };
@@ -137,7 +122,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, []);
+  }, [visible, onClose, showCountdown, showSetup, showGoalSelection]);
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);

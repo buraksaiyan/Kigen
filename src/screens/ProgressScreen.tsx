@@ -38,29 +38,20 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
     }
   }, [visible]);
 
-  const visibleRef = useRef(visible);
-  const onCloseRef = useRef(onClose);
-
-  // Update refs when props change
-  useEffect(() => {
-    visibleRef.current = visible;
-    onCloseRef.current = onClose;
-  }, [visible, onClose]);
-
   // Handle hardware back button
   useEffect(() => {
-    const backAction = () => {
-      if (!visibleRef.current) return false;
+    if (!visible) return;
 
+    const backAction = () => {
       console.log('📱 Hardware back button pressed in ProgressScreen');
-      onCloseRef.current();
+      onClose();
       return true; // Prevent default behavior
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, []);
+  }, [visible, onClose]);
 
   const loadData = async () => {
     setLoading(true);
