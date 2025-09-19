@@ -7,6 +7,7 @@ import {
   ScrollView,
   Modal,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -57,6 +58,21 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
       loadGoals();
     }
   }, [visible]);
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (visible) {
+        onClose();
+        return true; // Prevent default back behavior
+      }
+      return false; // Allow default back behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [visible, onClose]);
 
   const loadGoals = async () => {
     setLoading(true);

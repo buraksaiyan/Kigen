@@ -493,16 +493,59 @@ export class UserStatsService {
     try {
       const profile = await this.getUserProfile();
       const rating = await this.getCurrentRating();
-      
+
       if (!profile) {
         console.warn('No user profile found, cannot sync to leaderboard');
         return;
       }
 
+      // Calculate lifetime points properly (same logic as FlippableStatsCard)
+      const monthlyRecords = await this.getMonthlyRecords();
+      let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+      let lifetimeTotalPoints = 0;
+
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
+
+      if (currentMonthRecord) {
+        // Current month is already saved, use all monthly records (including current)
+        monthlyRecords.forEach(record => {
+          lifetimeStats.DIS += record.stats.DIS;
+          lifetimeStats.FOC += record.stats.FOC;
+          lifetimeStats.JOU += record.stats.JOU;
+          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.MEN += record.stats.MEN;
+          lifetimeStats.PHY += record.stats.PHY;
+        });
+      } else {
+        // Current month not saved yet, use historical records + current month's live stats
+        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
+
+        // Add historical months
+        historicalRecords.forEach(record => {
+          lifetimeStats.DIS += record.stats.DIS;
+          lifetimeStats.FOC += record.stats.FOC;
+          lifetimeStats.JOU += record.stats.JOU;
+          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.MEN += record.stats.MEN;
+          lifetimeStats.PHY += record.stats.PHY;
+        });
+
+        // Add current month's live stats
+        lifetimeStats.DIS += rating.stats.DIS;
+        lifetimeStats.FOC += rating.stats.FOC;
+        lifetimeStats.JOU += rating.stats.JOU;
+        lifetimeStats.USA += rating.stats.USA;
+        lifetimeStats.MEN += rating.stats.MEN;
+        lifetimeStats.PHY += rating.stats.PHY;
+      }
+
+      lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
+
       const userData = {
         username: profile.username,
-        totalPoints: rating.totalPoints,
-        monthlyPoints: rating.monthlyPoints,
+        totalPoints: lifetimeTotalPoints, // Use calculated lifetime points
+        monthlyPoints: rating.totalPoints, // Monthly points from current rating
         weeklyPoints: rating.totalPoints, // TODO: Calculate proper weekly points
         overallRating: rating.overallRating,
         cardTier: rating.cardTier,
@@ -511,7 +554,7 @@ export class UserStatsService {
 
       await LeaderboardService.updateUserData(userData);
       console.log('✅ Synced user data to leaderboard:', userData);
-      
+
     } catch (error) {
       console.error('❌ Error syncing user to leaderboard:', error);
     }

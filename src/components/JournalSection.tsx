@@ -11,6 +11,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -48,6 +49,21 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     if (isExpanded) {
       loadEntries();
     }
+  }, [isExpanded]);
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (isExpanded) {
+        handleClose();
+        return true; // Prevent default back behavior
+      }
+      return false; // Allow default back behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
   }, [isExpanded]);
 
   const loadEntries = async () => {

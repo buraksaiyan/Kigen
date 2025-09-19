@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   ImageBackground,
+  BackHandler,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { UserStatsService } from '../services/userStatsService';
@@ -168,6 +169,21 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
   useEffect(() => {
     fetchRatings();
   }, [refreshTrigger]);
+
+  // Handle Android back button for expanded modal
+  useEffect(() => {
+    const backAction = () => {
+      if (isExpanded) {
+        setIsExpanded(false);
+        return true; // Prevent default back behavior
+      }
+      return false; // Allow default back behavior
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [isExpanded]);
 
   const handleFlip = () => {
     const targetFlipped = !displayFlipped;
