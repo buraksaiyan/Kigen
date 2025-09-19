@@ -9,6 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 import { useAuth } from '../modules/auth/AuthProvider';
 import { useTranslation } from '../i18n/I18nProvider';
@@ -24,6 +25,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen, onShowAdmin }) => {
   const { session, signOut, showLoginScreen } = useAuth();
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const slideAnim = React.useRef(new Animated.Value(-300)).current;
 
   React.useEffect(() => {
@@ -61,6 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   const menuItems = [
     { id: 'dashboard', title: t('sidebar.dashboard'), icon: require('../../assets/images/home-icon.png') },
     { id: 'journals', title: t('sidebar.pastJournals'), icon: require('../../assets/images/pastjournals-icon.png') },
+    { id: 'supabaseJournals', title: 'Supabase Journals', icon: require('../../assets/images/pastjournals-icon.png') },
     { id: 'goalsHistory', title: t('sidebar.pastGoals'), icon: require('../../assets/images/pastgoals-icon.png') },
     { id: 'achievements', title: t('sidebar.achievements'), icon: require('../../assets/images/achievements-icon.png') },
     { id: 'profile', title: t('sidebar.profile'), icon: require('../../assets/images/profile-icon.png') },
@@ -68,8 +71,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   ];
 
   const handleItemPress = (screenId: string) => {
-    onNavigate(screenId);
-    onClose();
+    if (screenId === 'supabaseJournals') {
+      // Navigate to Supabase journal system
+      navigation.navigate('JournalList' as never);
+      onClose();
+    } else {
+      onNavigate(screenId);
+      onClose();
+    }
   };
 
   return (
