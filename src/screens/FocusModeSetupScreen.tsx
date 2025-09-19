@@ -11,8 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 
 interface FocusMode {
   id: string;
@@ -78,15 +76,11 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Back</Text>
           </TouchableOpacity>
-          <View style={styles.logoContainer}>
-            <KigenLogo size="small" variant="image" showJapanese={false} />
-          </View>
           <View style={styles.placeholder} />
         </View>
 

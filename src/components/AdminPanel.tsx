@@ -11,7 +11,6 @@ import {
   RefreshControl
 } from 'react-native';
 import { userManagementService, User, UserStats } from '../services/userManagementService';
-import { KigenKanjiBackground } from './KigenKanjiBackground';
 
 interface AdminPanelProps {
   theme: {
@@ -176,7 +175,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <KigenKanjiBackground />
       
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>

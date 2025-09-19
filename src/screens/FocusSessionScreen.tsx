@@ -11,8 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
 import { GoalSelectionScreen } from './GoalSelectionScreen';
@@ -263,7 +261,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         {/* Show Countdown Screen if active */}
         {showCountdown && selectedMode ? (
@@ -284,16 +281,13 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
-              <View style={styles.logoContainer}>
-                <KigenLogo size="small" variant="image" showJapanese={false} />
-              </View>
               <View style={styles.placeholder} />
             </View>
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
               <View style={styles.content}>
                 <View style={styles.contentHeader}>
-                  <Text style={styles.title}>Choose Your 起源 Focus Mode</Text>
+                  <Text style={styles.title}>Select your focus mode</Text>
                   <Text style={styles.subtitle}>Select the type of focus session to begin</Text>
                 </View>
 

@@ -11,8 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 import { focusSessionService, type FocusSession, type SessionStats } from '../services/FocusSessionService';
 
 interface ProgressScreenProps {
@@ -62,7 +60,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
         focusSessionService.getFocusSessions(20), // Get last 20 sessions
         focusSessionService.getSessionStats(),
         focusSessionService.getTodaysSummary(),
-        focusSessionService.getKigenStatsLogs(20), // Get last 20 Kigen stats logs
+        focusSessionService.getCombinedKigenStatsLogs(20), // Get last 20 combined Kigen stats logs (focus + goals)
       ]);
 
       console.log('📊 Loaded focus sessions for progress:', logs.length, 'sessions');
@@ -121,15 +119,11 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <View style={styles.logoContainer}>
-            <KigenLogo size="small" variant="image" showJapanese={false} />
-          </View>
           <View style={styles.placeholder} />
         </View>
 

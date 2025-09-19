@@ -16,8 +16,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 import { Button, Card } from '../components/UI';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 import { generateUniqueId } from '../utils/uniqueId';
 
 interface Goal {
@@ -115,21 +113,28 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
         {
           text: 'Complete',
           onPress: async () => {
-            const updated = goals.map(goal =>
-              goal.id === goalId
+            const goal = goals.find(g => g.id === goalId);
+            const updated = goals.map(g =>
+              g.id === goalId
                 ? {
-                    ...goal,
+                    ...g,
                     completed: true,
                     failed: false,
                     completedAt: new Date().toISOString(),
                   }
-                : goal
+                : g
             );
             setGoals(updated);
             await saveGoals(updated);
             
             // Record goal completion in rating system
             await UserStatsService.recordGoalCompletion();
+            
+            // Log goal completion for stats display
+            if (goal) {
+              const { focusSessionService } = await import('../services/FocusSessionService');
+              await focusSessionService.saveGoalCompletionLog(goal.title);
+            }
             
             // Notify parent component to refresh stats
             onGoalComplete?.();
@@ -213,15 +218,11 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <View style={styles.logoContainer}>
-            <KigenLogo size="small" variant="image" showJapanese={false} />
-          </View>
           <View style={styles.placeholder} />
         </View>
 

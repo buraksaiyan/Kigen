@@ -14,7 +14,6 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import * as Notifications from 'expo-notifications';
 import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../config/theme';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import { useSettings } from '../hooks/useSettings';
@@ -652,7 +651,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: '#000000' }]}>
-      <KigenKanjiBackground />
       
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}

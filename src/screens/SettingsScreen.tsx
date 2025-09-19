@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { useSettings } from '../hooks/useSettings';
 import { useTranslation } from '../i18n/I18nProvider';
 import { UserStatsService } from '../services/userStatsService';
@@ -117,7 +116,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <KigenKanjiBackground />
         
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.modalHeader}>

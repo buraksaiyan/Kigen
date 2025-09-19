@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 import { achievementService, Achievement } from '../services/achievementService';
 import { focusSessionService } from '../services/FocusSessionService';
 
@@ -219,7 +218,6 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <KigenKanjiBackground />
         
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}

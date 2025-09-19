@@ -25,7 +25,9 @@
           "icon": "./assets/icon.png",
           "color": "#14B8A6"
         }
-      ]
+      ],
+      "expo-background-task",
+      "expo-build-properties"
     ],
     "ios": {
       "supportsTablet": true,

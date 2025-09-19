@@ -14,8 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 import { useTranslation } from '../i18n/I18nProvider';
 
 interface JournalsScreenProps {
@@ -145,15 +143,11 @@ export const JournalsScreen: React.FC<JournalsScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>{t('common.close')}</Text>
           </TouchableOpacity>
-          <View style={styles.logoContainer}>
-            <KigenLogo size="small" variant="image" showJapanese={false} />
-          </View>
           <View style={styles.placeholder} />
         </View>
 

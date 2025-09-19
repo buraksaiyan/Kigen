@@ -14,8 +14,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabase';
 import { env } from '../config/env';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
-import { KigenLogo } from '../components/KigenLogo';
 import { UserStatsService } from '../services/userStatsService';
 import { useTranslation } from '../i18n/I18nProvider';
 
@@ -194,7 +192,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <KigenKanjiBackground />
       
       {/* Header with Close Button */}
       <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
@@ -218,7 +215,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
         <View style={styles.form}>
           {/* Title */}
           <View style={styles.titleContainer}>
-            <KigenLogo size="large" variant="image" />
             <Text style={[styles.title, { color: theme.colors.text.primary }]}>
               {isSignUp ? t('login.createYourAccount') : t('login.signInToYourAccount')}
             </Text>

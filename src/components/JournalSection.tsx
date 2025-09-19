@@ -17,8 +17,6 @@ import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { UserStatsService } from '../services/userStatsService';
 import { Card } from './UI';
-import { KigenKanjiBackground } from './KigenKanjiBackground';
-import { KigenLogo } from './KigenLogo';
 
 interface JournalSectionProps {
   isExpanded: boolean;
@@ -126,17 +124,11 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <SafeAreaView style={styles.journalCard}>
-          {/* Kanji background like Goals page */}
-          <KigenKanjiBackground />
-          
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
-            <View style={styles.logoContainer}>
-              <KigenLogo size="small" variant="image" showJapanese={false} />
-            </View>
             <View style={styles.placeholder} />
           </View>
           

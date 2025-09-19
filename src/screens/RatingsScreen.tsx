@@ -12,7 +12,6 @@ import { UserCard } from '../components/UserCard';
 import { Leaderboard } from '../components/Leaderboard';
 import { UserStatsService } from '../services/userStatsService';
 import { UserRating } from '../services/ratingSystem';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 type ViewMode = 'card' | 'leaderboard';
 type CardMode = 'monthly' | 'lifetime';
@@ -116,7 +115,6 @@ export const RatingsScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <KigenKanjiBackground />
         <Text style={styles.loadingText}>Loading stats...</Text>
       </View>
     );
@@ -125,7 +123,6 @@ export const RatingsScreen: React.FC = () => {
   if (!userProfile || !userRating) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <KigenKanjiBackground />
         <Text style={styles.errorText}>Failed to load profile</Text>
         <TouchableOpacity style={styles.retryButton} onPress={loadUserData}>
           <Text style={styles.retryButtonText}>Retry</Text>
@@ -136,7 +133,6 @@ export const RatingsScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <KigenKanjiBackground />
       
       {/* Header */}
       <View style={styles.header}>

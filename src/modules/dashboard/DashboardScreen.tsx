@@ -6,10 +6,8 @@ import { useTranslation } from '../../i18n/I18nProvider';
 import { maybePromptForRating } from '../../services/rating';
 import { theme } from '../../config/theme';
 import { Button, Card } from '../../components/UI';
-import { KigenLogo } from '../../components/KigenLogo';
 import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
-import { KigenKanjiBackground } from '../../components/KigenKanjiBackground';
 import { GoalsScreen } from '../../screens/GoalsScreen';
 import { GoalsHistoryScreen } from '../../screens/GoalsHistoryScreen';
 import { JournalsScreen } from '../../screens/JournalsScreen';
@@ -218,7 +216,6 @@ export const DashboardScreen: React.FC = () => {
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         <View style={styles.topHeader}>
           <View style={styles.headerLeft}>
@@ -227,10 +224,6 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.menuButtonText}>☰</Text>
               </TouchableOpacity>
             )}
-          </View>
-          
-          <View style={styles.logoContainer}>
-            <KigenLogo size="medium" variant="image" />
           </View>
           
           <View style={styles.headerRight}>

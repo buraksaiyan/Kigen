@@ -43,6 +43,7 @@ const STORAGE_KEYS = {
   SESSION_STATS: '@kigen_session_stats',
   DAILY_POINTS: '@kigen_daily_points',
   LAST_SESSION_DATE: '@kigen_last_session_date',
+  GOAL_COMPLETION_LOGS: '@kigen_goal_completion_logs',
 };
 
 class FocusSessionService {
@@ -524,6 +525,92 @@ class FocusSessionService {
       console.log(`UserStatsService updated: ${session.mode.id} +${actualMinutes} minutes`);
     } catch (error) {
       console.error('Error updating UserStatsService:', error);
+    }
+  }
+
+  // Save a goal completion log
+  async saveGoalCompletionLog(goalTitle: string, pointsEarned: number = 10): Promise<void> {
+    try {
+      const goalLog = {
+        id: `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        goalTitle,
+        pointsEarned,
+        timestamp: new Date().toISOString(),
+        type: 'goal_completion' as const
+      };
+
+      const existingLogs = await this.getGoalCompletionLogs();
+      const updatedLogs = [goalLog, ...existingLogs];
+
+      // Keep only last 100 goal completion logs
+      const limitedLogs = updatedLogs.slice(0, 100);
+
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.GOAL_COMPLETION_LOGS,
+        JSON.stringify(limitedLogs)
+      );
+
+      console.log('🎯 Goal completion logged:', goalLog);
+    } catch (error) {
+      console.error('Error saving goal completion log:', error);
+    }
+  }
+
+  // Get goal completion logs
+  async getGoalCompletionLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    goalTitle: string;
+    pointsEarned: number;
+    timestamp: string;
+    type: 'goal_completion';
+  }>> {
+    try {
+      const logsData = await AsyncStorage.getItem(STORAGE_KEYS.GOAL_COMPLETION_LOGS);
+      if (!logsData) return [];
+
+      const logs = JSON.parse(logsData);
+      return logs.slice(0, limit);
+    } catch (error) {
+      console.error('Error getting goal completion logs:', error);
+      return [];
+    }
+  }
+
+  // Get combined Kigen stats logs (focus sessions + goal completions)
+  async getCombinedKigenStatsLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    action: string;
+    points: string;
+    date: string;
+    type: 'gain' | 'loss';
+  }>> {
+    try {
+      const [focusLogs, goalLogs] = await Promise.all([
+        this.getKigenStatsLogs(limit),
+        this.getGoalCompletionLogs(limit)
+      ]);
+
+      // Combine and sort by date (newest first)
+      const combinedLogs = [
+        ...focusLogs.map(log => ({
+          ...log,
+          sortDate: new Date(log.date).getTime()
+        })),
+        ...goalLogs.map(log => ({
+          id: log.id,
+          action: `Goal completed: ${log.goalTitle}`,
+          points: `+${log.pointsEarned}`,
+          date: this.formatDate(log.timestamp),
+          type: 'gain' as const,
+          sortDate: new Date(log.timestamp).getTime()
+        }))
+      ].sort((a, b) => b.sortDate - a.sortDate);
+
+      // Remove sortDate and limit results
+      return combinedLogs.slice(0, limit).map(({ sortDate, ...log }) => log);
+    } catch (error) {
+      console.error('Error getting combined Kigen stats logs:', error);
+      return [];
     }
   }
 }

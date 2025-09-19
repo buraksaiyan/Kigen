@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
-import { KigenLogo } from './KigenLogo';
 import { useAuth } from '../modules/auth/AuthProvider';
 import { useTranslation } from '../i18n/I18nProvider';
 
@@ -99,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <View style={styles.header}>
-            <KigenLogo size="medium" variant="text" showJapanese={true} showText={false} />
+            
           </View>
 
           {/* Menu Items */}

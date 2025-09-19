@@ -13,7 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { UserStatsService } from '../services/userStatsService';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
 import { theme } from '../config/theme';
-import { KigenKanjiBackground } from '../components/KigenKanjiBackground';
 
 // width not needed currently
 
@@ -88,7 +87,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
       <SafeAreaView style={styles.container}>
-        <KigenKanjiBackground />
         
         {/* Tab Selection - Monthly vs All-Time */}
         <View style={styles.tabContainer}>
