@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -38,13 +38,22 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
     }
   }, [visible]);
 
+  const visibleRef = useRef(visible);
+  const onCloseRef = useRef(onClose);
+
+  // Update refs when props change
+  useEffect(() => {
+    visibleRef.current = visible;
+    onCloseRef.current = onClose;
+  }, [visible, onClose]);
+
   // Handle hardware back button
   useEffect(() => {
     const backAction = () => {
-      if (!visible) return false;
+      if (!visibleRef.current) return false;
 
       console.log('📱 Hardware back button pressed in ProgressScreen');
-      onClose();
+      onCloseRef.current();
       return true; // Prevent default behavior
     };
 

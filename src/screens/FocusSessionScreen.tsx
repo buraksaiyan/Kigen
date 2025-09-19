@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -95,17 +95,32 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   const { settings } = useSettings();
 
+  const visibleRef = useRef(visible);
+  const onCloseRef = useRef(onClose);
+  const showCountdownRef = useRef(showCountdown);
+  const showSetupRef = useRef(showSetup);
+  const showGoalSelectionRef = useRef(showGoalSelection);
+
+  // Update refs when props/state change
+  useEffect(() => {
+    visibleRef.current = visible;
+    onCloseRef.current = onClose;
+    showCountdownRef.current = showCountdown;
+    showSetupRef.current = showSetup;
+    showGoalSelectionRef.current = showGoalSelection;
+  }, [visible, onClose, showCountdown, showSetup, showGoalSelection]);
+
   // Handle hardware back button
   useEffect(() => {
     const backAction = () => {
-      if (!visible) return false;
+      if (!visibleRef.current) return false;
 
       console.log('📱 Hardware back button pressed in FocusSessionScreen');
       // If we're in a sub-screen, go back to main screen instead of closing
-      if (showCountdown) {
+      if (showCountdownRef.current) {
         // Don't allow back button during countdown - user should use proper buttons
         return true;
-      } else if (showSetup || showGoalSelection) {
+      } else if (showSetupRef.current || showGoalSelectionRef.current) {
         // Go back to focus mode selection
         setShowSetup(false);
         setShowGoalSelection(false);
@@ -114,7 +129,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
         return true;
       } else {
         // Close the focus session screen
-        onClose();
+        onCloseRef.current();
         return true;
       }
     };

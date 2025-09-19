@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -53,6 +53,15 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const visibleRef = useRef(visible);
+  const onCloseRef = useRef(onClose);
+
+  // Update refs when props change
+  useEffect(() => {
+    visibleRef.current = visible;
+    onCloseRef.current = onClose;
+  }, [visible, onClose]);
+
   useEffect(() => {
     if (visible) {
       loadGoals();
@@ -62,9 +71,9 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
   // Handle Android back button
   useEffect(() => {
     const backAction = () => {
-      if (!visible) return false;
+      if (!visibleRef.current) return false;
 
-      onClose();
+      onCloseRef.current();
       return true; // Prevent default back behavior
     };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -50,12 +50,21 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     }
   }, [visible, defaultHours, defaultMinutes]);
 
+  const visibleRef = useRef(visible);
+  const onCloseRef = useRef(onClose);
+
+  // Update refs when props change
+  useEffect(() => {
+    visibleRef.current = visible;
+    onCloseRef.current = onClose;
+  }, [visible, onClose]);
+
   // Handle Android back button
   useEffect(() => {
     const backAction = () => {
-      if (!visible) return false;
+      if (!visibleRef.current) return false;
 
-      onClose();
+      onCloseRef.current();
       return true; // Prevent default back behavior
     };
 

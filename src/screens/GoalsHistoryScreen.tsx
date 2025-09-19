@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -43,13 +43,22 @@ export const GoalsHistoryScreen: React.FC<GoalsHistoryScreenProps> = ({
     loadGoals();
   }, []);
 
+  const visibleRef = useRef(visible);
+  const onCloseRef = useRef(onClose);
+
+  // Update refs when props change
+  useEffect(() => {
+    visibleRef.current = visible;
+    onCloseRef.current = onClose;
+  }, [visible, onClose]);
+
   // Handle hardware back button
   useEffect(() => {
     const backAction = () => {
-      if (!visible || !onClose) return false;
+      if (!visibleRef.current || !onCloseRef.current) return false;
 
       console.log('📱 Hardware back button pressed in GoalsHistoryScreen');
-      onClose();
+      onCloseRef.current();
       return true; // Prevent default behavior
     };
 
