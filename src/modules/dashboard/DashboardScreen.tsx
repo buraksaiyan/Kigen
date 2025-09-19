@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image, BackHandler } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthProvider';
@@ -50,6 +50,53 @@ export const DashboardScreen: React.FC = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const { unreadCount } = useNotifications();
+
+  // Memoized close handlers to prevent BackHandler re-registration issues
+  const handleCloseJournal = useCallback(() => {
+    setIsJournalOpen(false);
+  }, []);
+
+  const handleCloseGoals = useCallback(() => {
+    setIsGoalsOpen(false);
+    setCurrentScreen('dashboard');
+  }, []);
+
+  const handleCloseFocusSession = useCallback(() => {
+    setIsFocusSessionOpen(false);
+  }, []);
+
+  const handleCloseProgress = useCallback(() => {
+    setIsProgressOpen(false);
+  }, []);
+
+  const handleCloseSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+  }, []);
+
+  const handleCloseProfile = useCallback(() => {
+    setIsProfileOpen(false);
+  }, []);
+
+  const handleCloseAchievements = useCallback(() => {
+    setIsAchievementsOpen(false);
+  }, []);
+
+  const handleCloseGoalsHistory = useCallback(() => {
+    setIsGoalsHistoryOpen(false);
+    setCurrentScreen('dashboard');
+  }, []);
+
+  const handleCloseNotifications = useCallback(() => {
+    setIsNotificationsOpen(false);
+  }, []);
+
+  const handleCloseSidebar = useCallback(() => {
+    setIsSidebarOpen(false);
+  }, []);
+
+  const handleCloseAdminPanel = useCallback(() => {
+    setIsAdminPanelOpen(false);
+  }, []);
 
   useEffect(() => {
     maybePromptForRating();
@@ -164,15 +211,6 @@ export const DashboardScreen: React.FC = () => {
         setIsJournalOpen(false);
         setIsFocusSessionOpen(false);
         setIsProgressOpen(false);
-        setIsSettingsOpen(false);
-        setIsProfileOpen(false);
-        setIsAchievementsOpen(false);
-        break;
-      case 'progress':
-        setIsProgressOpen(true);
-        setIsGoalsOpen(false);
-        setIsJournalOpen(false);
-        setIsFocusSessionOpen(false);
         setIsSettingsOpen(false);
         setIsProfileOpen(false);
         setIsAchievementsOpen(false);
@@ -382,7 +420,7 @@ export const DashboardScreen: React.FC = () => {
         
         <Sidebar 
           isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+          onClose={handleCloseSidebar}
           onNavigate={handleSidebarNavigation}
           currentScreen={currentScreen}
           onShowAdmin={() => setIsAdminPanelOpen(true)}
@@ -395,10 +433,7 @@ export const DashboardScreen: React.FC = () => {
         
         <GoalsScreen
           visible={isGoalsOpen || currentScreen === 'goals'}
-          onClose={() => {
-            setIsGoalsOpen(false);
-            setCurrentScreen('dashboard');
-          }}
+          onClose={handleCloseGoals}
           onGoalComplete={() => {
             // Refresh stats card when a goal is completed
             setRefreshTrigger(prev => prev + 1);
@@ -407,10 +442,7 @@ export const DashboardScreen: React.FC = () => {
 
         <GoalsHistoryScreen
           visible={isGoalsHistoryOpen || currentScreen === 'goalsHistory'}
-          onClose={() => {
-            setIsGoalsHistoryOpen(false);
-            setCurrentScreen('dashboard');
-          }}
+          onClose={handleCloseGoalsHistory}
         />
         
         <JournalsScreen
@@ -420,7 +452,7 @@ export const DashboardScreen: React.FC = () => {
 
         <FocusSessionScreen
           visible={isFocusSessionOpen}
-          onClose={() => setIsFocusSessionOpen(false)}
+          onClose={handleCloseFocusSession}
           onOpenGoals={() => {
             setIsFocusSessionOpen(false);
             setIsGoalsOpen(true);
@@ -446,27 +478,24 @@ export const DashboardScreen: React.FC = () => {
 
         <ProgressScreen
           visible={isProgressOpen}
-          onClose={() => setIsProgressOpen(false)}
+          onClose={handleCloseProgress}
         />
 
         <SettingsScreen
           visible={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
+          onClose={handleCloseSettings}
         />
 
         {currentView === 'dashboard' && (
           <ProfileScreen
             visible={isProfileOpen}
-            onClose={() => {
-              console.log('📱 ProfileScreen closing');
-              setIsProfileOpen(false);
-            }}
+            onClose={handleCloseProfile}
           />
         )}
 
         <AchievementsScreen
           visible={isAchievementsOpen}
-          onClose={() => setIsAchievementsOpen(false)}
+          onClose={handleCloseAchievements}
         />
 
         {showSupabaseDebug && (
@@ -485,7 +514,7 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.fullScreenModal}>
             <AdminPanel 
               theme={theme} 
-              onClose={() => setIsAdminPanelOpen(false)} 
+              onClose={handleCloseAdminPanel} 
             />
           </View>
         )}
