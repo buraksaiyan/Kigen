@@ -576,7 +576,22 @@ class FocusSessionService {
     }
   }
 
-  // Get combined Kigen stats logs (focus sessions + goal completions)
+  // Get journal entry logs for stats display
+  async getJournalLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    action: string;
+    points: string;
+    date: string;
+    type: 'gain' | 'loss';
+  }>> {
+    try {
+      const { UserStatsService } = await import('./userStatsService');
+      return await UserStatsService.getJournalLogs(limit);
+    } catch (error) {
+      console.error('Error getting journal logs:', error);
+      return [];
+    }
+  }
   async getCombinedKigenStatsLogs(limit: number = 50): Promise<Array<{
     id: string;
     action: string;
@@ -585,10 +600,17 @@ class FocusSessionService {
     type: 'gain' | 'loss';
   }>> {
     try {
-      const [focusLogs, goalLogs] = await Promise.all([
+      const [focusLogs, goalLogs, journalLogs] = await Promise.all([
         this.getKigenStatsLogs(limit),
-        this.getGoalCompletionLogs(limit)
+        this.getGoalCompletionLogs(limit),
+        this.getJournalLogs(limit)
       ]);
+
+      console.log('📊 Combined stats logs:', {
+        focusLogs: focusLogs.length,
+        goalLogs: goalLogs.length,
+        journalLogs: journalLogs.length
+      });
 
       // Combine and sort by date (newest first)
       const combinedLogs = [
@@ -603,11 +625,17 @@ class FocusSessionService {
           date: this.formatDate(log.timestamp),
           type: 'gain' as const,
           sortDate: new Date(log.timestamp).getTime()
+        })),
+        ...journalLogs.map(log => ({
+          ...log,
+          sortDate: new Date(log.date).getTime()
         }))
       ].sort((a, b) => b.sortDate - a.sortDate);
 
       // Remove sortDate and limit results
-      return combinedLogs.slice(0, limit).map(({ sortDate, ...log }) => log);
+      const result = combinedLogs.slice(0, limit).map(({ sortDate, ...log }) => log);
+      console.log('📊 Final combined logs count:', result.length);
+      return result;
     } catch (error) {
       console.error('Error getting combined Kigen stats logs:', error);
       return [];

@@ -610,4 +610,43 @@ export class UserStatsService {
       throw error;
     }
   }
+
+  // Get journal entry logs for stats display
+  static async getJournalLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    action: string;
+    points: string;
+    date: string;
+    type: 'gain' | 'loss';
+  }>> {
+    try {
+      const { journalStorage } = await import('../services/journalStorage');
+      const entries = await journalStorage.getAllEntries();
+      
+      console.log('📔 Found journal entries:', entries.length);
+      
+      // Sort by date (newest first) and limit
+      const recentEntries = entries
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, limit);
+      
+      console.log('📔 Recent journal entries for logs:', recentEntries.length);
+      
+      return recentEntries.map(entry => ({
+        id: entry.id,
+        action: 'Journal entry written',
+        points: '+20', // Journal entries award 20 points each
+        date: new Date(entry.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        type: 'gain' as const
+      }));
+    } catch (error) {
+      console.error('Error getting journal logs:', error);
+      return [];
+    }
+  }
 }
