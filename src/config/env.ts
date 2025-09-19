@@ -17,7 +17,7 @@ export const env: EnvShape = {
   supabaseUrl,
   supabaseAnonKey,
   oneSignalAppId: read('EXPO_PUBLIC_ONESIGNAL_APP_ID') || read('ONESIGNAL_APP_ID'),
-  isDevelopment: supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('demo')
+  isDevelopment: supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('demo') || supabaseUrl.includes('your-project-ref')
 };
 
 if (env.isDevelopment) {

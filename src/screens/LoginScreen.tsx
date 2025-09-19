@@ -201,40 +201,43 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      
-      {/* Header with Close Button */}
-      <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={onClose}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="close" size={24} color={theme.colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
-          {isSignUp ? t('login.createAccount') : t('login.welcomeBack')}
-        </Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-        <View style={styles.form}>
-          {/* Title */}
-          <View style={styles.titleContainer}>
-            <Text style={[styles.title, { color: theme.colors.text.primary }]}>
-              {isSignUp ? t('login.createYourAccount') : t('login.signInToYourAccount')}
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
-              {isSignUp ? t('login.joinKigen') : t('login.welcomeBackPleaseSignIn')}
-            </Text>
-          </View>
+        {/* Header with Close Button */}
+        <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onClose}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="close" size={24} color={theme.colors.text.primary} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
+            {isSignUp ? t('login.createAccount') : t('login.welcomeBack')}
+          </Text>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.form}>
+            {/* Title */}
+            <View style={styles.titleContainer}>
+              <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+                {isSignUp ? t('login.createYourAccount') : t('login.signInToYourAccount')}
+              </Text>
+              <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
+                {isSignUp ? t('login.joinKigen') : t('login.welcomeBackPleaseSignIn')}
+              </Text>
+            </View>
 
           {/* Sign Up - Username Field */}
           {isSignUp && (
@@ -390,6 +393,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -400,15 +404,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
   disabledButton: {
     opacity: 0.7,
   },
   form: {
     alignSelf: 'center',
-    flex: 1,
-    justifyContent: 'center',
     maxWidth: 400,
     width: '100%',
+    paddingBottom: 20,
   },
   header: {
     alignItems: 'center',
@@ -468,7 +477,8 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   submitButton: {
     alignItems: 'center',

@@ -30,7 +30,7 @@ class NativeUsageTracker {
   // Check if we have usage access permission
   async hasUsageAccessPermission(): Promise<boolean> {
     if (Platform.OS !== 'android') return false;
-    
+
     try {
       // Try native module first (will work in standalone builds)
       if (usageStatsService.isAvailable()) {
@@ -39,7 +39,10 @@ class NativeUsageTracker {
         console.log('Native module not available, using fallback for Expo Go');
         // Fallback to AsyncStorage for Expo Go development
         const hasPermission = await AsyncStorage.getItem('usage_permission_granted');
-        return hasPermission === 'true';
+        const manualGrant = await AsyncStorage.getItem('usage_permission_manual_grant');
+
+        // Consider permission granted if either automatic detection or manual grant is set
+        return hasPermission === 'true' || manualGrant === 'true';
       }
     } catch (error) {
       console.log('Error checking usage permission:', error);
@@ -105,7 +108,17 @@ class NativeUsageTracker {
       Alert.alert(
         'Enable Usage Access',
         'In the settings that just opened:\n\n1. Find "Expo Go" or your app in the list\n2. Toggle the switch to enable usage access\n3. Return to this app\n\nWe\'ll automatically detect when you grant permission.',
-        [{ text: 'Got it' }]
+        [
+          { text: 'Got it' },
+          {
+            text: 'I Already Granted It',
+            onPress: async () => {
+              // User claims they already granted permission
+              await this.setPermissionGranted();
+              this.stopPermissionMonitoring();
+            }
+          }
+        ]
       );
       
     } catch (error) {
@@ -117,6 +130,14 @@ class NativeUsageTracker {
         'Please manually go to:\n\nSettings > Apps > Special app access > Usage access\n\nThen find "Expo Go" and enable usage access.',
         [
           { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'I Already Granted It',
+            onPress: async () => {
+              // User claims they already granted permission
+              await this.setPermissionGranted();
+              Alert.alert('Permission Set', 'Usage access permission has been manually confirmed. You may need to restart the app for changes to take effect.');
+            }
+          },
           { 
             text: 'Open Settings', 
             onPress: () => {
@@ -159,6 +180,17 @@ class NativeUsageTracker {
       await AsyncStorage.removeItem('opened_usage_settings');
       this.stopPermissionMonitoring();
     }
+  }
+
+  // Manually set permission status (for when users grant permission manually)
+  async setPermissionGranted(): Promise<void> {
+    await AsyncStorage.setItem('usage_permission_manual_grant', 'true');
+  }
+
+  // Check if permission was manually granted
+  async isPermissionManuallyGranted(): Promise<boolean> {
+    const manualGrant = await AsyncStorage.getItem('usage_permission_manual_grant');
+    return manualGrant === 'true';
   }
 
   private stopPermissionMonitoring(): void {
@@ -204,45 +236,69 @@ class NativeUsageTracker {
       } else {
         console.log('Native module not available, using development data');
         
-        // For development, return sample structure that shows it's working
+        // Generate more realistic and varied mock data based on time of day
+        const now = Date.now();
+        const hour = new Date().getHours();
+        const isWorkDay = new Date().getDay() !== 0 && new Date().getDay() !== 6; // Not weekend
+        
+        // Base screen time varies by time of day and day type
+        let baseScreenTime = 2 * 60 * 60 * 1000; // 2 hours base
+        if (hour >= 9 && hour <= 17 && isWorkDay) {
+          baseScreenTime = 4 * 60 * 60 * 1000; // 4 hours during work hours
+        } else if (hour >= 18 && hour <= 22) {
+          baseScreenTime = 3 * 60 * 60 * 1000; // 3 hours evening
+        }
+        
+        // Add some randomness
+        const screenTimeVariation = (Math.random() - 0.5) * 0.5 * 60 * 60 * 1000; // ±30 min
+        const totalScreenTime = Math.max(30 * 60 * 1000, baseScreenTime + screenTimeVariation); // At least 30 min
+        
         return {
-          totalScreenTime: 4 * 60 * 60 * 1000, // 4 hours in milliseconds  
-          pickups: 89,
-          notifications: 42,
+          totalScreenTime,
+          pickups: Math.floor(Math.random() * 50) + 20, // 20-70 pickups
+          notifications: Math.floor(Math.random() * 30) + 10, // 10-40 notifications
           apps: [
-            {
-              id: generateUniqueId(),
-              packageName: 'com.expo.client',
-              appName: 'Expo Go',
-              timeInForeground: 2 * 60 * 60 * 1000, // 2 hours
-              lastTimeUsed: Date.now() - 30 * 60 * 1000, // 30 min ago
-              launchCount: 12
-            },
-            {
-              id: generateUniqueId(),
-              packageName: 'com.google.android.apps.messaging',
-              appName: 'Messages',
-              timeInForeground: 45 * 60 * 1000, // 45 minutes
-              lastTimeUsed: Date.now() - 5 * 60 * 1000, // 5 min ago
-              launchCount: 23
-            },
             {
               id: generateUniqueId(),
               packageName: 'com.android.chrome',
               appName: 'Chrome',
-              timeInForeground: 35 * 60 * 1000, // 35 minutes
-              lastTimeUsed: Date.now() - 15 * 60 * 1000, // 15 min ago
-              launchCount: 8
+              timeInForeground: Math.floor(totalScreenTime * (0.3 + Math.random() * 0.2)), // 30-50% of screen time
+              lastTimeUsed: now - Math.floor(Math.random() * 2 * 60 * 60 * 1000), // Within last 2 hours
+              launchCount: Math.floor(Math.random() * 15) + 5 // 5-20 launches
             },
             {
               id: generateUniqueId(),
               packageName: 'com.instagram.android',
               appName: 'Instagram',
-              timeInForeground: 25 * 60 * 1000, // 25 minutes
-              lastTimeUsed: Date.now() - 60 * 60 * 1000, // 1 hour ago
-              launchCount: 15
+              timeInForeground: Math.floor(totalScreenTime * (0.15 + Math.random() * 0.1)), // 15-25% of screen time
+              lastTimeUsed: now - Math.floor(Math.random() * 4 * 60 * 60 * 1000), // Within last 4 hours
+              launchCount: Math.floor(Math.random() * 10) + 3 // 3-13 launches
+            },
+            {
+              id: generateUniqueId(),
+              packageName: 'com.google.android.apps.messaging',
+              appName: 'Messages',
+              timeInForeground: Math.floor(totalScreenTime * (0.1 + Math.random() * 0.05)), // 10-15% of screen time
+              lastTimeUsed: now - Math.floor(Math.random() * 60 * 60 * 1000), // Within last hour
+              launchCount: Math.floor(Math.random() * 8) + 2 // 2-10 launches
+            },
+            {
+              id: generateUniqueId(),
+              packageName: 'com.whatsapp',
+              appName: 'WhatsApp',
+              timeInForeground: Math.floor(totalScreenTime * (0.08 + Math.random() * 0.05)), // 8-13% of screen time
+              lastTimeUsed: now - Math.floor(Math.random() * 3 * 60 * 60 * 1000), // Within last 3 hours
+              launchCount: Math.floor(Math.random() * 6) + 1 // 1-7 launches
+            },
+            {
+              id: generateUniqueId(),
+              packageName: 'com.expo.client',
+              appName: 'Expo Go',
+              timeInForeground: Math.floor(totalScreenTime * (0.05 + Math.random() * 0.03)), // 5-8% of screen time
+              lastTimeUsed: now - Math.floor(Math.random() * 30 * 60 * 1000), // Within last 30 min
+              launchCount: Math.floor(Math.random() * 4) + 1 // 1-5 launches
             }
-          ],
+          ].sort((a, b) => b.timeInForeground - a.timeInForeground), // Sort by usage time
           lastUpdated: Date.now()
         };
       }
