@@ -324,7 +324,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { color: textColor }]}>MONTHLY</Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>{displayFlipped ? 'ALL-TIME' : 'MONTHLY'}</Text>
               </View>
               
               {/* Main Content Section */}
@@ -346,15 +346,15 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Middle Column - OVR (moved up, X removed) */}
                 <View style={styles.middleColumn}>
-                  <Text style={[styles.ovrValue, { color: textColor }]}>{monthlyRating?.overallRating || 0}</Text>
+                  <Text style={[styles.ovrValue, { color: textColor }]}>{currentRating.overallRating}</Text>
                   <Text style={[styles.ovrLabel, { color: textColor }]}>OVR</Text>
                 </View>
                 
                 {/* Right Column - Stats with values */}
                 <View style={styles.rightColumn}>
                   <View style={styles.statsContainer}>
-                    {monthlyRating && Object.entries(monthlyRating.stats).map(([key, value]) => (
-                      <View key={`monthly-${key}`} style={styles.statRow}>
+                    {currentRating && Object.entries(currentRating.stats).map(([key, value]) => (
+                      <View key={`front-${key}`} style={styles.statRow}>
                         <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
                       </View>
                     ))}
@@ -364,7 +364,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Bottom Section - Rank (moved down) */}
               <View style={styles.bottomSection}>
-                <Text style={[styles.rankText, { color: textColor }]}>{monthlyRating?.cardTier.toUpperCase() || 'BRONZE'}</Text>
+                <Text style={[styles.rankText, { color: textColor }]}>{currentRating.cardTier.toUpperCase()}</Text>
               </View>
               
             </View>
@@ -391,7 +391,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Top Section - Time Period (moved higher) */}
               <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { color: textColor }]}>ALL-TIME</Text>
+                <Text style={[styles.timePeriod, { color: textColor }]}>{displayFlipped ? 'ALL-TIME' : 'MONTHLY'}</Text>
               </View>
               
               {/* Main Content Section */}
@@ -413,15 +413,15 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 
                 {/* Middle Column - OVR (moved up, X removed) */}
                 <View style={styles.middleColumn}>
-                  <Text style={[styles.ovrValue, { color: textColor }]}>{lifetimeRating?.overallRating || 0}</Text>
+                  <Text style={[styles.ovrValue, { color: textColor }]}>{currentRating.overallRating}</Text>
                   <Text style={[styles.ovrLabel, { color: textColor }]}>OVR</Text>
                 </View>
                 
                 {/* Right Column - Stats with values */}
                 <View style={styles.rightColumn}>
                   <View style={styles.statsContainer}>
-                    {lifetimeRating && Object.entries(lifetimeRating.stats).map(([key, value]) => (
-                      <View key={`lifetime-${key}`} style={styles.statRow}>
+                    {currentRating && Object.entries(currentRating.stats).map(([key, value]) => (
+                      <View key={`back-${key}`} style={styles.statRow}>
                         <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
                       </View>
                     ))}
@@ -431,7 +431,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
               
               {/* Bottom Section - Rank (moved down) */}
               <View style={styles.bottomSection}>
-                <Text style={[styles.rankText, { color: textColor }]}>{lifetimeRating?.cardTier.toUpperCase() || 'BRONZE'}</Text>
+                <Text style={[styles.rankText, { color: textColor }]}>{currentRating.cardTier.toUpperCase()}</Text>
               </View>
               
             </View>
