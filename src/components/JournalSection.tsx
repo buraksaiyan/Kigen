@@ -28,6 +28,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
   const [inputHeight, setInputHeight] = useState<number>(96);
@@ -65,6 +66,28 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
 
     return () => backHandler.remove();
   }, [isExpanded]);
+
+  // Handle keyboard events
+  useEffect(() => {
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      }
+    );
+
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, []);
 
   const loadEntries = async () => {
     try {
@@ -127,6 +150,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     <Animated.View
       style={[
         styles.container,
+        keyboardHeight > 0 && styles.containerWithKeyboard,
         {
           transform: [{ translateY }],
           opacity,
@@ -136,10 +160,11 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     >
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        enabled={Platform.OS === 'ios'}
       >
-        <SafeAreaView style={styles.journalCard}>
+        <SafeAreaView style={[styles.journalCard, keyboardHeight > 0 && styles.journalCardWithKeyboard]}>
           {/* Modal Header - matches GoalsScreen */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -154,6 +179,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
             contentContainerStyle={styles.scrollableContentContainer}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            keyboardDismissMode="interactive"
           >
             {/* Journal Entries */}
             <View style={styles.entriesContainer}>
@@ -186,7 +212,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
           </ScrollView>
 
           {/* Input Section - Now properly integrated with KeyboardAvoidingView */}
-          <View style={styles.inputSection}>
+          <View style={[styles.inputSection, keyboardHeight > 0 && styles.inputSectionWithKeyboard]}>
             <Text style={styles.inputLabel} numberOfLines={1}>Write about your discipline journey</Text>
             
             <TextInput
@@ -208,6 +234,8 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
               keyboardType="default"
               autoCorrect={true}
               autoCapitalize="sentences"
+              enablesReturnKeyAutomatically={true}
+              keyboardAppearance="dark"
             />
             
             {/* Button Row */}
@@ -295,6 +323,9 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
+  containerWithKeyboard: {
+    backgroundColor: 'rgba(0,0,0,0.7)', // Slightly more opaque when keyboard is open
+  },
   contentContainer: {
     flex: 1,
   },
@@ -381,6 +412,9 @@ const styles = StyleSheet.create({
     borderTopColor: theme.colors.border,
     marginTop: theme.spacing.lg, // Add space to move text box down from header
   },
+  inputSectionWithKeyboard: {
+    paddingBottom: theme.spacing.xl, // Extra padding when keyboard is open
+  },
   journalCard: {
     backgroundColor: theme.colors.background,
     borderRadius: 0,
@@ -388,6 +422,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: theme.borderRadius.lg,
     flex: 1,
     margin: 0, // Pure black background instead of surface
+  },
+  journalCardWithKeyboard: {
+    maxHeight: Dimensions.get('window').height * 0.8,
   },
   keyboardAvoid: {
     flex: 1,
