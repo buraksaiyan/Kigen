@@ -65,57 +65,55 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       }
 
       console.log('📊 FlippableStatsCard: Getting ratings');
-      // Use REAL data from the actual rating system
-      const monthlyRating = await UserStatsService.getCurrentRating();
       
-      // For lifetime, we need to get the total across all months
-      const monthlyRecords = await UserStatsService.getMonthlyRecords();
+      // Get monthly data using the same logic as leaderboard
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const monthlyLeaderboardData = await UserStatsService.getMonthlyLeaderboard(currentMonth);
+      
+      let monthlyRating: UserRating;
+      if (monthlyLeaderboardData.length > 0) {
+        const monthlyEntry = monthlyLeaderboardData[0];
+        if (monthlyEntry) {
+          // Create UserRating from leaderboard data
+          const monthlyStats = await UserStatsService.calculateCurrentMonthStats();
+          const monthlyPoints = monthlyEntry.monthlyPoints;
+          const cardTier = monthlyEntry.cardTier;
+          const overallRating = RatingSystem.calculateOverallRating(monthlyStats);
+          
+          monthlyRating = {
+            stats: monthlyStats,
+            overallRating,
+            totalPoints: monthlyPoints,
+            monthlyPoints,
+            cardTier
+          };
+          console.log('📊 Using leaderboard monthly data:', monthlyEntry);
+        } else {
+          monthlyRating = await UserStatsService.getCurrentRating();
+        }
+      } else {
+        // Fallback to direct calculation
+        monthlyRating = await UserStatsService.getCurrentRating();
+        console.log('📊 No monthly leaderboard data, using direct calculation');
+      }
+      
+      // Get lifetime data using the same logic as leaderboard
+      const lifetimeLeaderboardData = await UserStatsService.getLifetimeLeaderboard();
       let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
       
-      console.log('📊 Monthly records found:', monthlyRecords.length);
-      
-      if (monthlyRecords.length === 0) {
-        // Brand new app - no historical data, lifetime = current month
-        lifetimeStats = { ...monthlyRating.stats };
-        console.log('📊 New app: Using current month as lifetime stats');
-      } else {
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
-        
-        if (currentMonthRecord) {
-          // Current month is already saved, use all monthly records (including current)
-          monthlyRecords.forEach(record => {
-            lifetimeStats.DIS += record.stats.DIS;
-            lifetimeStats.FOC += record.stats.FOC;
-            lifetimeStats.JOU += record.stats.JOU;
-            lifetimeStats.USA += record.stats.USA;
-            lifetimeStats.MEN += record.stats.MEN;
-            lifetimeStats.PHY += record.stats.PHY;
-          });
-          console.log('📊 Using all saved monthly records for lifetime');
+      if (lifetimeLeaderboardData.length > 0) {
+        const lifetimeEntry = lifetimeLeaderboardData[0];
+        if (lifetimeEntry) {
+          // For consistency, use the same stats as monthly for new apps
+          lifetimeStats = { ...monthlyRating.stats };
+          console.log('📊 Using leaderboard lifetime data:', lifetimeEntry);
         } else {
-          // Current month not saved yet, use historical records + current month's live stats
-          const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
-          
-          // Add historical months
-          historicalRecords.forEach(record => {
-            lifetimeStats.DIS += record.stats.DIS;
-            lifetimeStats.FOC += record.stats.FOC;
-            lifetimeStats.JOU += record.stats.JOU;
-            lifetimeStats.USA += record.stats.USA;
-            lifetimeStats.MEN += record.stats.MEN;
-            lifetimeStats.PHY += record.stats.PHY;
-          });
-          
-          // Add current month's live stats
-          lifetimeStats.DIS += monthlyRating.stats.DIS;
-          lifetimeStats.FOC += monthlyRating.stats.FOC;
-          lifetimeStats.JOU += monthlyRating.stats.JOU;
-          lifetimeStats.USA += monthlyRating.stats.USA;
-          lifetimeStats.MEN += monthlyRating.stats.MEN;
-          lifetimeStats.PHY += monthlyRating.stats.PHY;
-          console.log('📊 Using historical + current month for lifetime');
+          lifetimeStats = { ...monthlyRating.stats };
         }
+      } else {
+        // Fallback to monthly stats
+        lifetimeStats = { ...monthlyRating.stats };
+        console.log('📊 No lifetime leaderboard data, using monthly stats');
       }
       
       const lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);

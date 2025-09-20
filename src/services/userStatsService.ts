@@ -576,16 +576,47 @@ export class UserStatsService {
     // This would typically fetch from a backend service
     // For now, return current user data
     const targetMonth = month || new Date().toISOString().slice(0, 7);
+    const currentMonth = new Date().toISOString().slice(0, 7);
     const profile = await this.getUserProfile();
-    const monthlyRecord = await this.getMonthlyRecord(targetMonth);
     
-    if (profile && monthlyRecord) {
-      return [{
-        userId: profile.id,
-        username: profile.username,
-        monthlyPoints: monthlyRecord.totalPoints,
-        cardTier: monthlyRecord.cardTier
-      }];
+    if (!profile) return [];
+    
+    // If requesting current month and no record exists, use live monthly stats
+    if (targetMonth === currentMonth) {
+      const monthlyRecord = await this.getMonthlyRecord(targetMonth);
+      
+      if (monthlyRecord) {
+        // Use saved record
+        return [{
+          userId: profile.id,
+          username: profile.username,
+          monthlyPoints: monthlyRecord.totalPoints,
+          cardTier: monthlyRecord.cardTier
+        }];
+      } else {
+        // No saved record, use live monthly stats
+        const monthlyStats = await this.calculateCurrentMonthStats();
+        const monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
+        const cardTier = RatingSystem.getCardTier(monthlyPoints);
+        
+        return [{
+          userId: profile.id,
+          username: profile.username,
+          monthlyPoints,
+          cardTier
+        }];
+      }
+    } else {
+      // For historical months, only return if record exists
+      const monthlyRecord = await this.getMonthlyRecord(targetMonth);
+      if (monthlyRecord) {
+        return [{
+          userId: profile.id,
+          username: profile.username,
+          monthlyPoints: monthlyRecord.totalPoints,
+          cardTier: monthlyRecord.cardTier
+        }];
+      }
     }
     
     return [];
