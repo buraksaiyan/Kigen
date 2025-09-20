@@ -98,6 +98,8 @@ export const Navigation: React.FC = () => {
             contentStyle: {
               backgroundColor: theme.colors.background,
             },
+            gestureEnabled: false, // Disable swipe gestures to prevent accidental navigation
+            animation: 'none', // Remove default slide animations
           }}
         >
           <Stack.Screen 

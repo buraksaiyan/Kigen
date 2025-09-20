@@ -424,41 +424,52 @@ export class UserStatsService {
       const monthlyRecords = await this.getMonthlyRecords();
       let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
       
-      const currentMonth = new Date().toISOString().slice(0, 7);
-      const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
+      console.log('📊 Leaderboard: Monthly records found:', monthlyRecords.length);
       
-      if (currentMonthRecord) {
-        // Current month is already saved, use all monthly records (including current)
-        monthlyRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-      } else {
-        // Current month not saved yet, use historical records + current month's live stats
-        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
-        
-        // Add historical months
-        historicalRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-        
-        // Add current month's live stats
+      if (monthlyRecords.length === 0) {
+        // Brand new app - no historical data, lifetime = current month
         const currentStats = await this.calculateCurrentStats();
-        lifetimeStats.DIS += currentStats.DIS;
-        lifetimeStats.FOC += currentStats.FOC;
-        lifetimeStats.JOU += currentStats.JOU;
-        lifetimeStats.USA += currentStats.USA;
-        lifetimeStats.MEN += currentStats.MEN;
-        lifetimeStats.PHY += currentStats.PHY;
+        lifetimeStats = { ...currentStats };
+        console.log('📊 Leaderboard: New app - Using current month as lifetime stats');
+      } else {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
+        
+        if (currentMonthRecord) {
+          // Current month is already saved, use all monthly records (including current)
+          monthlyRecords.forEach(record => {
+            lifetimeStats.DIS += record.stats.DIS;
+            lifetimeStats.FOC += record.stats.FOC;
+            lifetimeStats.JOU += record.stats.JOU;
+            lifetimeStats.USA += record.stats.USA;
+            lifetimeStats.MEN += record.stats.MEN;
+            lifetimeStats.PHY += record.stats.PHY;
+          });
+          console.log('📊 Leaderboard: Using all saved monthly records for lifetime');
+        } else {
+          // Current month not saved yet, use historical records + current month's live stats
+          const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
+          
+          // Add historical months
+          historicalRecords.forEach(record => {
+            lifetimeStats.DIS += record.stats.DIS;
+            lifetimeStats.FOC += record.stats.FOC;
+            lifetimeStats.JOU += record.stats.JOU;
+            lifetimeStats.USA += record.stats.USA;
+            lifetimeStats.MEN += record.stats.MEN;
+            lifetimeStats.PHY += record.stats.PHY;
+          });
+          
+          // Add current month's live stats
+          const currentStats = await this.calculateCurrentStats();
+          lifetimeStats.DIS += currentStats.DIS;
+          lifetimeStats.FOC += currentStats.FOC;
+          lifetimeStats.JOU += currentStats.JOU;
+          lifetimeStats.USA += currentStats.USA;
+          lifetimeStats.MEN += currentStats.MEN;
+          lifetimeStats.PHY += currentStats.PHY;
+          console.log('📊 Leaderboard: Using historical + current month for lifetime');
+        }
       }
       
       const totalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);

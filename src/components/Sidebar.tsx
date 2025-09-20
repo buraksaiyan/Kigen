@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    zIndex: 1000,
+    zIndex: 2500,
   },
   footer: {
     borderTopColor: theme.colors.border,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: 280,
-    zIndex: 1001,
+    zIndex: 2501,
   },
   subtitle: {
     ...theme.typography.caption,

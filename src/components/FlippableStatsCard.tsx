@@ -71,45 +71,54 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       // For lifetime, we need to get the total across all months
       const monthlyRecords = await UserStatsService.getMonthlyRecords();
       let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
-      let lifetimeTotalPoints = 0;
       
-      const currentMonth = new Date().toISOString().slice(0, 7);
-      const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
+      console.log('📊 Monthly records found:', monthlyRecords.length);
       
-      if (currentMonthRecord) {
-        // Current month is already saved, use all monthly records (including current)
-        monthlyRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
+      if (monthlyRecords.length === 0) {
+        // Brand new app - no historical data, lifetime = current month
+        lifetimeStats = { ...monthlyRating.stats };
+        console.log('📊 New app: Using current month as lifetime stats');
       } else {
-        // Current month not saved yet, use historical records + current month's live stats
-        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
         
-        // Add historical months
-        historicalRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-        
-        // Add current month's live stats
-        lifetimeStats.DIS += monthlyRating.stats.DIS;
-        lifetimeStats.FOC += monthlyRating.stats.FOC;
-        lifetimeStats.JOU += monthlyRating.stats.JOU;
-        lifetimeStats.USA += monthlyRating.stats.USA;
-        lifetimeStats.MEN += monthlyRating.stats.MEN;
-        lifetimeStats.PHY += monthlyRating.stats.PHY;
+        if (currentMonthRecord) {
+          // Current month is already saved, use all monthly records (including current)
+          monthlyRecords.forEach(record => {
+            lifetimeStats.DIS += record.stats.DIS;
+            lifetimeStats.FOC += record.stats.FOC;
+            lifetimeStats.JOU += record.stats.JOU;
+            lifetimeStats.USA += record.stats.USA;
+            lifetimeStats.MEN += record.stats.MEN;
+            lifetimeStats.PHY += record.stats.PHY;
+          });
+          console.log('📊 Using all saved monthly records for lifetime');
+        } else {
+          // Current month not saved yet, use historical records + current month's live stats
+          const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
+          
+          // Add historical months
+          historicalRecords.forEach(record => {
+            lifetimeStats.DIS += record.stats.DIS;
+            lifetimeStats.FOC += record.stats.FOC;
+            lifetimeStats.JOU += record.stats.JOU;
+            lifetimeStats.USA += record.stats.USA;
+            lifetimeStats.MEN += record.stats.MEN;
+            lifetimeStats.PHY += record.stats.PHY;
+          });
+          
+          // Add current month's live stats
+          lifetimeStats.DIS += monthlyRating.stats.DIS;
+          lifetimeStats.FOC += monthlyRating.stats.FOC;
+          lifetimeStats.JOU += monthlyRating.stats.JOU;
+          lifetimeStats.USA += monthlyRating.stats.USA;
+          lifetimeStats.MEN += monthlyRating.stats.MEN;
+          lifetimeStats.PHY += monthlyRating.stats.PHY;
+          console.log('📊 Using historical + current month for lifetime');
+        }
       }
       
-      lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
+      const lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
       
       const lifetimeOverallRating = RatingSystem.calculateOverallRating(lifetimeStats);
       const lifetimeCardTier = RatingSystem.getCardTier(lifetimeTotalPoints);
