@@ -22,9 +22,10 @@ import { Card } from './UI';
 interface JournalSectionProps {
   isExpanded: boolean;
   onClose: () => void;
+  onEntryAdded?: () => void;
 }
 
-export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onClose }) => {
+export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onClose, onEntryAdded }) => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [newEntry, setNewEntry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -120,6 +121,9 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
       
       setNewEntry('');
       await loadEntries();
+      
+      // Trigger refresh of stats card
+      onEntryAdded?.();
     } catch (error) {
       console.error('Failed to save journal entry:', error);
     } finally {

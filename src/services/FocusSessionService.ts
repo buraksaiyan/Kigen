@@ -80,7 +80,10 @@ class FocusSessionService {
     try {
       const sessionId = generateUniqueId();
       const startTime = new Date().toISOString();
-      const date = new Date().toISOString().split('T')[0] as string;
+      // Use local date instead of UTC
+      const today = new Date();
+      const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+      const date = localDate.toISOString().split('T')[0] as string;
 
       const session: FocusSession = {
         id: sessionId,
@@ -469,10 +472,13 @@ class FocusSessionService {
     completedSessions: number;
   }> {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      // Use local date instead of UTC
+      const today = new Date();
+      const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+      const todayString = localDate.toISOString().split('T')[0];
       const sessions = await this.getFocusSessions();
       
-      const todaySessions = sessions.filter(session => session.date === today);
+      const todaySessions = sessions.filter(session => session.date === todayString);
       const completedSessions = todaySessions.filter(session => session.completed);
       
       const summary = {

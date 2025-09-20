@@ -60,6 +60,16 @@ export const DashboardScreen: React.FC = () => {
     UserStatsService.ensureUserProfile().catch(console.error);
   }, []);
 
+  // Refresh stats when returning to dashboard from other screens
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('📊 Dashboard focused - refreshing stats');
+      setRefreshTrigger(prev => prev + 1);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   // Handle Android back button
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -302,6 +312,7 @@ export const DashboardScreen: React.FC = () => {
         <JournalSection 
           isExpanded={isJournalOpen}
           onClose={() => setIsJournalOpen(false)}
+          onEntryAdded={() => setRefreshTrigger(prev => prev + 1)}
         />
         
         <Sidebar 
@@ -319,6 +330,7 @@ export const DashboardScreen: React.FC = () => {
         <JournalSection 
           isExpanded={isJournalOpen}
           onClose={() => setIsJournalOpen(false)}
+          onEntryAdded={() => setRefreshTrigger(prev => prev + 1)}
         />
 
         {showSupabaseDebug && (

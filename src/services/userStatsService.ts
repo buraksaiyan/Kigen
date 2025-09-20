@@ -100,8 +100,11 @@ export class UserStatsService {
 
   // Daily Activity Tracking
   static async getTodayActivity(): Promise<DailyActivity> {
-    const today = new Date().toISOString().substring(0, 10); // YYYY-MM-DD
-    return this.getDailyActivity(today);
+    // Use local date instead of UTC to avoid timezone issues
+    const today = new Date();
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+    const dateString = localDate.toISOString().substring(0, 10);
+    return this.getDailyActivity(dateString);
   }
 
   static async getDailyActivity(date: string): Promise<DailyActivity> {
@@ -211,13 +214,16 @@ export class UserStatsService {
 
   // Method to properly update monthly stats when activities occur
   static async updateMonthlyStats(): Promise<void> {
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const today = new Date().toISOString().slice(0, 10);
+    // Use local date instead of UTC
+    const today = new Date();
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+    const currentMonth = localDate.toISOString().slice(0, 7);
+    const todayString = localDate.toISOString().slice(0, 10);
     const lastUpdateKey = `@kigen_monthly_last_update_${currentMonth}`;
     const lastUpdate = await AsyncStorage.getItem(lastUpdateKey);
     
     // Only update if we haven't updated today
-    if (lastUpdate !== today) {
+    if (lastUpdate !== todayString) {
       const todayStats = await this.calculateCurrentStats();
       const todayPoints = RatingSystem.calculateTotalPoints(todayStats);
       
@@ -254,7 +260,7 @@ export class UserStatsService {
       }
       
       await this.saveMonthlyRecord(monthlyRecord);
-      await AsyncStorage.setItem(lastUpdateKey, today);
+      await AsyncStorage.setItem(lastUpdateKey, todayString);
       console.log('📅 Updated monthly stats for', currentMonth, 'total points:', monthlyRecord.totalPoints);
     }
   }
