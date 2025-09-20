@@ -195,10 +195,96 @@ export class UserStatsService {
     }
   }
 
+  // Calculate stats for the entire current month (all days so far)
+  static async calculateCurrentMonthStats(): Promise<UserStats> {
+    try {
+      // Use local date to get current month
+      const today = new Date();
+      const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+      const currentMonth = localDate.toISOString().slice(0, 7); // YYYY-MM
+      const currentYear = localDate.getFullYear();
+      const currentMonthNum = localDate.getMonth(); // 0-based month
+      
+      // Get all days in current month
+      const daysInMonth = new Date(currentYear, currentMonthNum + 1, 0).getDate();
+      
+      let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+      let totalJournalEntries = 0;
+      let totalCompletedSessions = 0;
+      let totalAbortedSessions = 0;
+      let totalCompletedGoals = 0;
+      let totalFocusMinutes = {
+        flow: 0,
+        executioner: 0,
+        meditation: 0,
+        body: 0,
+        notech: 0
+      };
+      let totalPhoneUsageMinutes = 0;
+      let totalSocialMediaMinutes = 0;
+      let hasUsagePermission = await this.hasUsageAccess();
+
+      // Aggregate all days in current month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayString = `${currentMonth}-${day.toString().padStart(2, '0')}`;
+        
+        // Only process days up to today
+        if (dayString <= localDate.toISOString().slice(0, 10)) {
+          try {
+            const dayActivity = await this.getDailyActivity(dayString);
+            
+            totalJournalEntries += dayActivity.journalEntries;
+            totalCompletedSessions += dayActivity.completedSessions;
+            totalAbortedSessions += dayActivity.abortedSessions;
+            totalCompletedGoals += dayActivity.completedGoals;
+            totalPhoneUsageMinutes += dayActivity.phoneUsageMinutes;
+            totalSocialMediaMinutes += dayActivity.socialMediaMinutes;
+            
+            // Sum focus minutes by type
+            totalFocusMinutes.flow += dayActivity.focusMinutes.flow;
+            totalFocusMinutes.executioner += dayActivity.focusMinutes.executioner;
+            totalFocusMinutes.meditation += dayActivity.focusMinutes.meditation;
+            totalFocusMinutes.body += dayActivity.focusMinutes.body;
+            totalFocusMinutes.notech += dayActivity.focusMinutes.notech;
+          } catch (error) {
+            // Day might not exist yet, skip
+            console.log(`📅 No data for ${dayString}, skipping`);
+          }
+        }
+      }
+
+      // Calculate stats using aggregated monthly data
+      const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
+      
+      totalStats = {
+        DIS: RatingSystem.calculateDisciplinePoints(
+          totalCompletedSessions,
+          totalCompletedGoals,
+          totalJournalEntries,
+          totalFocusMinutes.executioner / 60,
+          totalFocusMinutes.body / 60,
+          totalAbortedSessions,
+          totalSocialMediaMinutes
+        ),
+        FOC: RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow),
+        JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries),
+        USA: RatingSystem.calculateUsagePoints(totalPhoneUsageMinutes, totalFocusMinutes.notech, hasUsagePermission),
+        MEN: RatingSystem.calculateMentalityPoints(totalFocusMinutes.meditation),
+        PHY: RatingSystem.calculatePhysicalPoints(totalFocusMinutes.body)
+      };
+
+      console.log('📅 Current month stats calculated:', totalStats);
+      return totalStats;
+    } catch (error) {
+      console.error('Error calculating current month stats:', error);
+      return { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+    }
+  }
+
   static async getCurrentRating(): Promise<UserRating> {
-    // Always use live current stats for the current month display
-    // The monthly record is only for historical/lifetime accumulation
-    const monthlyStats = await this.calculateCurrentStats();
+    // Use current month's stats (all days so far) for monthly display
+    // This ensures monthly and lifetime views match when no months have passed
+    const monthlyStats = await this.calculateCurrentMonthStats();
     const monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
     const cardTier = RatingSystem.getCardTier(monthlyPoints);
     const overallRating = RatingSystem.calculateOverallRating(monthlyStats);
@@ -428,7 +514,7 @@ export class UserStatsService {
       
       if (monthlyRecords.length === 0) {
         // Brand new app - no historical data, lifetime = current month
-        const currentStats = await this.calculateCurrentStats();
+        const currentStats = await this.calculateCurrentMonthStats();
         lifetimeStats = { ...currentStats };
         console.log('📊 Leaderboard: New app - Using current month as lifetime stats');
       } else {
@@ -461,7 +547,7 @@ export class UserStatsService {
           });
           
           // Add current month's live stats
-          const currentStats = await this.calculateCurrentStats();
+          const currentStats = await this.calculateCurrentMonthStats();
           lifetimeStats.DIS += currentStats.DIS;
           lifetimeStats.FOC += currentStats.FOC;
           lifetimeStats.JOU += currentStats.JOU;

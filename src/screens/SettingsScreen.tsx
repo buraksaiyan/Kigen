@@ -94,7 +94,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      console.log('📱 SettingsScreen BackHandler not set up - visible:', visible);
+      return;
+    }
 
     const backAction = () => {
       console.log('📱 Hardware back button pressed in SettingsScreen');
@@ -110,9 +113,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       return true; // Prevent default behavior
     };
 
+    console.log('📱 SettingsScreen BackHandler registered');
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove();
+    return () => {
+      console.log('📱 SettingsScreen BackHandler removed');
+      backHandler.remove();
+    };
   }, [visible, onClose, showDurationPicker]);
 
   return (

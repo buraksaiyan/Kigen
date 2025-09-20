@@ -52,7 +52,10 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible || !onClose) return;
+    if (!visible || !onClose) {
+      console.log('📱 GoalsScreen BackHandler not set up - visible:', visible, 'onClose:', !!onClose);
+      return;
+    }
 
     const backAction = () => {
       console.log('📱 Hardware back button pressed in GoalsScreen');
@@ -60,9 +63,13 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
       return true; // Prevent default behavior
     };
 
+    console.log('📱 GoalsScreen BackHandler registered');
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove();
+    return () => {
+      console.log('📱 GoalsScreen BackHandler removed');
+      backHandler.remove();
+    };
   }, [visible, onClose]);
 
   const loadGoals = async () => {

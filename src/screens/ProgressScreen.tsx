@@ -40,7 +40,10 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
 
   // Handle hardware back button
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      console.log('📱 ProgressScreen BackHandler not set up - visible:', visible);
+      return;
+    }
 
     const backAction = () => {
       console.log('📱 Hardware back button pressed in ProgressScreen');
@@ -48,9 +51,13 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
       return true; // Prevent default behavior
     };
 
+    console.log('📱 ProgressScreen BackHandler registered');
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove();
+    return () => {
+      console.log('📱 ProgressScreen BackHandler removed');
+      backHandler.remove();
+    };
   }, [visible, onClose]);
 
   const loadData = async () => {
