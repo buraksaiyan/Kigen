@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -94,35 +93,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [sessionMinutes, setSessionMinutes] = useState(0);
 
   const { settings } = useSettings();
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible || !onClose) return;
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in FocusSessionScreen');
-      // If we're in a sub-screen, go back to main screen instead of closing
-      if (showCountdown) {
-        // Don't allow back button during countdown - user should use proper buttons
-        return true;
-      } else if (showSetup || showGoalSelection) {
-        // Go back to focus mode selection
-        setShowSetup(false);
-        setShowGoalSelection(false);
-        setSelectedMode(null);
-        setSelectedGoal(null);
-        return true;
-      } else {
-        // Close the focus session screen
-        onClose();
-        return true;
-      }
-    };
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
-  }, [visible, onClose, showCountdown, showSetup, showGoalSelection]);
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);

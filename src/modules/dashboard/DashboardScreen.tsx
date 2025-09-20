@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthProvider';
@@ -37,7 +37,6 @@ export const DashboardScreen: React.FC = () => {
 
   const { unreadCount } = useNotifications();
 
-  // Memoized close handlers to prevent BackHandler re-registration issues
   const handleCloseJournal = useCallback(() => {
     setIsJournalOpen(false);
   }, []);
@@ -69,42 +68,6 @@ export const DashboardScreen: React.FC = () => {
 
     return unsubscribe;
   }, [navigation]);
-
-  // Handle Android back button
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-        // Close modals in order of priority (most recent first)
-        if (isJournalOpen) {
-          setIsJournalOpen(false);
-          return true;
-        }
-        if (isNotificationsOpen) {
-          setIsNotificationsOpen(false);
-          return true;
-        }
-        if (isSidebarOpen) {
-          setIsSidebarOpen(false);
-          return true;
-        }
-        if (isAdminPanelOpen) {
-          setIsAdminPanelOpen(false);
-          return true;
-        }
-        
-        // Handle view switches
-        if (currentView === 'leaderboard') {
-          setCurrentView('dashboard');
-          return true;
-        }
-        
-        // If no modals are open and we're on dashboard view, allow default back behavior (exit app)
-        return false;
-      });
-
-      return () => backHandler.remove();
-    }
-  }, [isJournalOpen, isNotificationsOpen, isSidebarOpen, isAdminPanelOpen, currentView]);
 
   const onRefresh = async () => {
     setIsRefreshing(true);

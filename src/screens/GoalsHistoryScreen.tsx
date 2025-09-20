@@ -8,7 +8,6 @@ import {
   Alert,
   StatusBar,
   Modal,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,21 +41,6 @@ export const GoalsHistoryScreen: React.FC<GoalsHistoryScreenProps> = ({
   useEffect(() => {
     loadGoals();
   }, []);
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible || !onClose) return;
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in GoalsHistoryScreen');
-      onClose();
-      return true; // Prevent default behavior
-    };
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
-  }, [visible, onClose]);
 
   const loadGoals = async () => {
     try {

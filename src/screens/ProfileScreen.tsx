@@ -10,7 +10,6 @@ import {
   Image,
   ActivityIndicator,
   Modal,
-  BackHandler,
   Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -125,22 +124,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
     Keyboard.dismiss();
     onClose();
   };
-
-  useEffect(() => {
-    if (!visible) return;
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in ProfileScreen');
-      // Dismiss keyboard before closing
-      Keyboard.dismiss();
-      onClose();
-      return true; // Prevent default behavior
-    };
-    
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
-  }, [visible, onClose]);
 
   const loadProfile = async () => {
     try {

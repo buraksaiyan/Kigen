@@ -7,7 +7,6 @@ import {
   ScrollView,
   Modal,
   TextInput,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -49,20 +48,6 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
       setMinutes(defaultMinutes.toString());
     }
   }, [visible, defaultHours, defaultMinutes]);
-
-  // Handle Android back button
-  useEffect(() => {
-    if (!visible) return;
-
-    const backAction = () => {
-      onClose();
-      return true; // Prevent default back behavior
-    };
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
-  }, [visible, onClose]);
 
   const handleStartSession = () => {
     if (!mode) return;

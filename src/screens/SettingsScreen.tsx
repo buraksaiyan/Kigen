@@ -8,7 +8,6 @@ import {
   ScrollView,
   Modal,
   Alert,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -91,36 +90,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     return currentLang ? `${currentLang.flag} ${currentLang.nativeName}` : '🇺🇸 English';
   };
   */
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible) {
-      console.log('📱 SettingsScreen BackHandler not set up - visible:', visible);
-      return;
-    }
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in SettingsScreen');
-      
-      // Close sub-modals first
-      if (showDurationPicker) {
-        setShowDurationPicker(false);
-        return true;
-      }
-      
-      // Close main modal
-      onClose();
-      return true; // Prevent default behavior
-    };
-
-    console.log('📱 SettingsScreen BackHandler registered');
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => {
-      console.log('📱 SettingsScreen BackHandler removed');
-      backHandler.remove();
-    };
-  }, [visible, onClose, showDurationPicker]);
 
   return (
     <>

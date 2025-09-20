@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -32,20 +31,6 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     journalEntries: 0,
     totalCompletedGoals: 0,
   });
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible) return;
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in AchievementsScreen');
-      onClose();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
-  }, [visible, onClose]);
 
   useEffect(() => {
     if (visible) {

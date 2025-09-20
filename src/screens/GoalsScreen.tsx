@@ -9,7 +9,6 @@ import {
   StatusBar,
   TextInput,
   Modal,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,28 +48,6 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({
   useEffect(() => {
     loadGoals();
   }, []);
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible || !onClose) {
-      console.log('📱 GoalsScreen BackHandler not set up - visible:', visible, 'onClose:', !!onClose);
-      return;
-    }
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in GoalsScreen');
-      onClose();
-      return true; // Prevent default behavior
-    };
-
-    console.log('📱 GoalsScreen BackHandler registered');
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => {
-      console.log('📱 GoalsScreen BackHandler removed');
-      backHandler.remove();
-    };
-  }, [visible, onClose]);
 
   const loadGoals = async () => {
     try {

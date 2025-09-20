@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -37,28 +36,6 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
       loadData();
     }
   }, [visible]);
-
-  // Handle hardware back button
-  useEffect(() => {
-    if (!visible) {
-      console.log('📱 ProgressScreen BackHandler not set up - visible:', visible);
-      return;
-    }
-
-    const backAction = () => {
-      console.log('📱 Hardware back button pressed in ProgressScreen');
-      onClose();
-      return true; // Prevent default behavior
-    };
-
-    console.log('📱 ProgressScreen BackHandler registered');
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => {
-      console.log('📱 ProgressScreen BackHandler removed');
-      backHandler.remove();
-    };
-  }, [visible, onClose]);
 
   const loadData = async () => {
     setLoading(true);
