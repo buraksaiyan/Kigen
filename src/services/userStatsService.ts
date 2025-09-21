@@ -797,7 +797,7 @@ export class UserStatsService {
       
       let streak = 0;
       const todayStr = new Date().toISOString().split('T')[0];
-      let currentDate = new Date(todayStr);
+      let currentDate = new Date(todayStr!);
       
       // Check if today has activity
       const todayActivity = activities.find(a => a.date === todayStr);
