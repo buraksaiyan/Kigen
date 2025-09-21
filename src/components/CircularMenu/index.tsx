@@ -151,13 +151,30 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     });
   });
 
+  // Handle backdrop press - only close if tap is outside menu orbit
+  const handleBackdropPress = (event: any) => {
+    const { locationX, locationY } = event.nativeEvent;
+    
+    // Calculate distance from tap to menu center
+    const tapX = locationX;
+    const tapY = locationY;
+    const distance = Math.sqrt(
+      Math.pow(tapX - centerX, 2) + Math.pow(tapY - centerY, 2)
+    );
+    
+    // Close menu only if tap is outside the menu orbit (radius of 120px)
+    if (distance > 120) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <View style={styles.overlay}>
       <TouchableOpacity 
         style={styles.backdrop} 
-        onPress={onClose}
+        onPress={handleBackdropPress}
         activeOpacity={1}
       />
       

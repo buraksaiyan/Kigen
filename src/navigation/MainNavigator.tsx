@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -48,9 +48,12 @@ export const MainNavigator: React.FC = () => {
     loadStreak();
   }, []);
 
-  // Calculate center position for circular menu
-  const centerX = 180; // Approximate center of screen width
-  const centerY = 600; // Approximate position above bottom bar
+  // Get screen dimensions
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+  // Calculate center position for circular menu - align with bottom bar streak button
+  const centerX = screenWidth / 2; // Center horizontally with streak button
+  const centerY = screenHeight - 84 - 42 - 60; // Bottom bar height (84) + half streak button (42) + menu spacing (60)
 
   const handleNavigate = (screen: string) => {
     if (screen === 'Sidebar') {
