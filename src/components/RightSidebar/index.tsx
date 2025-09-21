@@ -40,10 +40,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
   React.useEffect(() => {
     if (isOpen) {
-      translateX.value = withSpring(0, { damping: 15, stiffness: 100 });
+      translateX.value = withSpring(0, { damping: 20, stiffness: 150 });
       backdropOpacity.value = withTiming(1, { duration: 200 });
     } else {
-      translateX.value = withSpring(SIDEBAR_WIDTH, { damping: 15, stiffness: 100 });
+      translateX.value = withSpring(SIDEBAR_WIDTH, { damping: 20, stiffness: 150 });
       backdropOpacity.value = withTiming(0, { duration: 200 });
     }
   }, [isOpen]);

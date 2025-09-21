@@ -783,4 +783,68 @@ export class UserStatsService {
       return [];
     }
   }
+
+  static async getDailyStreak(): Promise<number> {
+    try {
+      const activities = await this.getAllDailyActivities();
+      
+      if (activities.length === 0) {
+        return 0;
+      }
+
+      // Sort activities by date (most recent first)
+      activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      let streak = 0;
+      const todayStr = new Date().toISOString().split('T')[0];
+      let currentDate = new Date(todayStr);
+      
+      // Check if today has activity
+      const todayActivity = activities.find(a => a.date === todayStr);
+      const hasTodayActivity = todayActivity && (
+        todayActivity.journalEntries > 0 ||
+        todayActivity.completedSessions > 0 ||
+        todayActivity.completedGoals > 0
+      );
+      
+      if (!hasTodayActivity) {
+        // If no activity today, check yesterday
+        currentDate.setDate(currentDate.getDate() - 1);
+      }
+      
+      // Count consecutive days with activity
+      while (true) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const activity = activities.find(a => a.date === dateStr);
+        
+        const hasActivity = activity && (
+          activity.journalEntries > 0 ||
+          activity.completedSessions > 0 ||
+          activity.completedGoals > 0
+        );
+        
+        if (hasActivity) {
+          streak++;
+          currentDate.setDate(currentDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      
+      return streak;
+    } catch (error) {
+      console.error('Error calculating daily streak:', error);
+      return 0;
+    }
+  }
+
+  private static async getAllDailyActivities(): Promise<DailyActivity[]> {
+    try {
+      const data = await AsyncStorage.getItem(this.DAILY_ACTIVITY_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Error getting daily activities:', error);
+      return [];
+    }
+  }
 }

@@ -131,7 +131,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
             {currentView === 'focus-logs' ? (
               <View>
@@ -319,6 +319,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100, // Extra padding to ensure content isn't cut off
   },
   content: {
     padding: theme.spacing.lg,

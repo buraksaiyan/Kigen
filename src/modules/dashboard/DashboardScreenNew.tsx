@@ -22,10 +22,13 @@ import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
   Gesture,
+  GestureDetector,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 import { useAuth } from '../auth/AuthProvider';
+import { UserStatsService } from '../../services/userStatsService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -66,54 +69,73 @@ export const DashboardScreen: React.FC = () => {
   const [isMonthly, setIsMonthly] = useState(true);
   const [isCardFlipping, setIsCardFlipping] = useState(false);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
-
-  // Mock data - replace with real data later
-  const monthlyStats: UserStats = {
-    discipline: 85,
-    focus: 78,
-    journaling: 92,
-    determination: 88,
-    productivity: 82,
-    mental: 75,
-    physical: 80,
-    social: 70,
-    overallRating: 82,
-  };
-
-  const allTimeStats: UserStats = {
-    discipline: 78,
-    focus: 82,
-    journaling: 95,
-    determination: 85,
-    productivity: 79,
-    mental: 77,
-    physical: 83,
-    social: 74,
-    overallRating: 81,
-  };
-
-  const activeGoals: ActiveGoal[] = [
-    { id: '1', title: 'Complete project documentation', progress: 0.7, deadline: '2025-09-30' },
-    { id: '2', title: 'Learn React Native animations', progress: 0.4, deadline: '2025-10-15' },
-    { id: '3', title: 'Exercise 5 times this week', progress: 0.6, deadline: '2025-09-27' },
-  ];
-
-  const activeHabits: ActiveHabit[] = [
-    { id: '1', title: 'Morning meditation', streak: 7, completedToday: true },
-    { id: '2', title: 'Read for 30 minutes', streak: 12, completedToday: false },
-    { id: '3', title: 'Drink 8 glasses of water', streak: 5, completedToday: true },
-  ];
-
-  const activeTodos: ActiveTodo[] = [
-    { id: '1', title: 'Review pull requests', completed: false },
-    { id: '2', title: 'Update project roadmap', completed: true },
-    { id: '3', title: 'Schedule team meeting', completed: false },
-    { id: '4', title: 'Write unit tests', completed: false },
-  ];
+  const [monthlyStats, setMonthlyStats] = useState<UserStats | null>(null);
+  const [allTimeStats, setAllTimeStats] = useState<UserStats | null>(null);
+  const [activeGoals, setActiveGoals] = useState<ActiveGoal[]>([]);
+  const [activeHabits, setActiveHabits] = useState<ActiveHabit[]>([]);
+  const [activeTodos, setActiveTodos] = useState<ActiveTodo[]>([]);
+  const [userRank, setUserRank] = useState('Bronze');
+  const [loading, setLoading] = useState(true);
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
-  const userRank = 'Diamond'; // Mock rank
   const username = session?.user?.email?.split('@')[0] || 'User';
+
+  // Load real data
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        
+        // Load monthly stats
+        const monthlyRating = await UserStatsService.getCurrentRating();
+        const mappedMonthlyStats: UserStats = {
+          discipline: monthlyRating.stats.DIS,
+          focus: monthlyRating.stats.FOC,
+          journaling: monthlyRating.stats.JOU,
+          determination: monthlyRating.stats.USA, // Using USA for determination
+          productivity: monthlyRating.stats.MEN, // Using MEN for productivity
+          mental: monthlyRating.stats.MEN,
+          physical: monthlyRating.stats.PHY,
+          social: monthlyRating.stats.USA, // Using USA for social
+          overallRating: monthlyRating.overallRating,
+        };
+        setMonthlyStats(mappedMonthlyStats);
+        
+        // Load all-time stats (simplified - using monthly for now)
+        setAllTimeStats(mappedMonthlyStats);
+        
+        // Load active goals
+        const goalsData = await AsyncStorage.getItem('@kigen_goals');
+        if (goalsData) {
+          const goals = JSON.parse(goalsData);
+          const activeGoalsData = goals
+            .filter((goal: any) => !goal.completed && !goal.failed)
+            .slice(0, 3) // Limit to 3
+            .map((goal: any) => ({
+              id: goal.id,
+              title: goal.title,
+              progress: 0.5, // Mock progress for now
+              deadline: '2025-12-31', // Mock deadline
+            }));
+          setActiveGoals(activeGoalsData);
+        }
+        
+        // For now, keep habits and todos empty
+        setActiveHabits([]);
+        setActiveTodos([]);
+        
+        // Set user rank based on rating
+        setUserRank(monthlyRating.cardTier);
+        
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   const flipRotation = useSharedValue(0);
   const carouselTranslateX = useSharedValue(0);
@@ -212,31 +234,39 @@ export const DashboardScreen: React.FC = () => {
           <Text style={styles.username}>{username}</Text>
         </View>
 
-        <View style={styles.ratingSection}>
-          <Text style={styles.overallRating}>{currentStats.overallRating}</Text>
-          <Text style={styles.ratingLabel}>Overall Rating</Text>
-        </View>
-
-        <View style={styles.statsSection}>
-          <View style={styles.statsColumn}>
-            <StatItem label="Discipline" value={currentStats.discipline} />
-            <StatItem label="Focus" value={currentStats.focus} />
-            <StatItem label="Journaling" value={currentStats.journaling} />
-            <StatItem label="Determination" value={currentStats.determination} />
+        {loading || !currentStats ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading stats...</Text>
           </View>
-          <View style={styles.statsColumn}>
-            <StatItem label="Productivity" value={currentStats.productivity} />
-            <StatItem label="Mental" value={currentStats.mental} />
-            <StatItem label="Physical" value={currentStats.physical} />
-            <StatItem label="Social" value={currentStats.social} />
-          </View>
-        </View>
+        ) : (
+          <>
+            <View style={styles.ratingSection}>
+              <Text style={styles.overallRating}>{currentStats.overallRating}</Text>
+              <Text style={styles.ratingLabel}>Overall Rating</Text>
+            </View>
 
-        <View style={styles.periodToggle}>
-          <Text style={styles.periodText}>
-            {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
-          </Text>
-        </View>
+            <View style={styles.statsSection}>
+              <View style={styles.statsColumn}>
+                <StatItem label="Discipline" value={currentStats.discipline} />
+                <StatItem label="Focus" value={currentStats.focus} />
+                <StatItem label="Journaling" value={currentStats.journaling} />
+                <StatItem label="Determination" value={currentStats.determination} />
+              </View>
+              <View style={styles.statsColumn}>
+                <StatItem label="Productivity" value={currentStats.productivity} />
+                <StatItem label="Mental" value={currentStats.mental} />
+                <StatItem label="Physical" value={currentStats.physical} />
+                <StatItem label="Social" value={currentStats.social} />
+              </View>
+            </View>
+
+            <View style={styles.periodToggle}>
+              <Text style={styles.periodText}>
+                {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
+              </Text>
+            </View>
+          </>
+        )}
       </Animated.View>
     </TouchableOpacity>
   );
@@ -364,11 +394,13 @@ export const DashboardScreen: React.FC = () => {
       >
         {renderUserCard()}
 
-        <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
-          {renderActiveGoals()}
-          {renderActiveHabits()}
-          {renderActiveTodos()}
-        </Animated.View>
+        <GestureDetector gesture={pan}>
+          <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
+            {renderActiveGoals()}
+            {renderActiveHabits()}
+            {renderActiveTodos()}
+          </Animated.View>
+        </GestureDetector>
 
         <View style={styles.carouselIndicator}>
           {[0, 1, 2].map((index) => (
@@ -709,6 +741,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: theme.colors.text.secondary,
+    fontSize: 16,
   },
   bottomSpacer: {
     height: 120, // Space for bottom navigation

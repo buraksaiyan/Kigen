@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,6 +11,7 @@ import { HistoryScreen } from '../modules/history/HistoryScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { FocusSessionScreen } from '../screens/FocusSessionScreen';
 
 // Import components
 import { BottomBar } from '../components/BottomBar';
@@ -20,6 +21,7 @@ import { RightSidebar } from '../components/RightSidebar';
 // Import services and utilities
 import { theme } from '../config/theme';
 import { AuthProvider } from '../modules/auth/AuthProvider';
+import { UserStatsService } from '../services/userStatsService';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,9 +29,24 @@ type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Pr
 
 export const MainNavigator: React.FC = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
-  const [streakCount, setStreakCount] = useState(7); // Mock streak count
+  const [streakCount, setStreakCount] = useState(0); // Will be loaded from real data
   const [isCircularMenuOpen, setIsCircularMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
+
+  // Load real streak data
+  useEffect(() => {
+    const loadStreak = async () => {
+      try {
+        const streak = await UserStatsService.getDailyStreak();
+        setStreakCount(streak);
+      } catch (error) {
+        console.error('Error loading streak:', error);
+      }
+    };
+    
+    loadStreak();
+  }, []);
 
   // Calculate center position for circular menu
   const centerX = 180; // Approximate center of screen width
@@ -50,7 +67,16 @@ export const MainNavigator: React.FC = () => {
 
   const handleCircularMenuSelect = (itemId: string) => {
     console.log(`Selected circular menu item: ${itemId}`);
-    // TODO: Navigate to input screens based on itemId
+    
+    switch (itemId) {
+      case 'focus':
+        setIsFocusSessionOpen(true);
+        break;
+      // TODO: Handle other menu items
+      default:
+        console.log(`Unhandled menu item: ${itemId}`);
+    }
+    
     setIsCircularMenuOpen(false);
   };
 
@@ -109,6 +135,11 @@ export const MainNavigator: React.FC = () => {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           onNavigate={handleSidebarNavigate}
+        />
+
+        <FocusSessionScreen
+          visible={isFocusSessionOpen}
+          onClose={() => setIsFocusSessionOpen(false)}
         />
       </AuthProvider>
     </GestureHandlerRootView>
