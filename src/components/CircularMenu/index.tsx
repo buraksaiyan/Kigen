@@ -95,7 +95,8 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     opacity: opacity.value,
   }));
 
-  const getItemPosition = (index: number) => {
+  // Create animated styles for each menu item
+  const itemStyles = menuItems.map((_, index) => {
     const baseAngle = -Math.PI / 2; // Start from top
     const angleStep = (Math.PI * 2) / menuItems.length;
     const angle = baseAngle + index * angleStep;
@@ -132,7 +133,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
         opacity: isVisible ? itemOpacity : 0,
       };
     });
-  };
+  });
 
   if (!isOpen) return null;
 
@@ -149,7 +150,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
           {menuItems.map((item, index) => (
             <Animated.View
               key={item.id}
-              style={[styles.menuItem, getItemPosition(index)]}
+              style={[styles.menuItem, itemStyles[index]]}
             >
               <TouchableOpacity
                 style={[styles.itemButton, { backgroundColor: item.color }]}
