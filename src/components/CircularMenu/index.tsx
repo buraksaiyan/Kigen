@@ -10,13 +10,12 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  useAnimatedGestureHandler,
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
 import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
+  Gesture,
+  GestureDetector,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
@@ -72,20 +71,22 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     }
   }, [isOpen]);
 
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onStart: (_, context) => {
-      context.startRotation = rotation.value;
-    },
-    onActive: (event, context) => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      // Store initial rotation
+    })
+    .onUpdate((event) => {
+      'worklet';
       const deltaX = event.translationX;
       const rotationDelta = (deltaX / screenWidth) * Math.PI * 2;
-      rotation.value = context.startRotation + rotationDelta;
-    },
-    onEnd: () => {
+      rotation.value = rotationDelta;
+    })
+    .onEnd(() => {
+      'worklet';
       // Add some friction and snap to positions if needed
       rotation.value = withSpring(rotation.value, { damping: 15, stiffness: 100 });
-    },
-  });
+    });
 
   const containerStyle = useAnimatedStyle(() => ({
     transform: [
@@ -143,7 +144,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
         activeOpacity={1}
       />
       
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.menuContainer, containerStyle]}>
           {menuItems.map((item, index) => (
             <Animated.View
@@ -157,11 +158,11 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
               >
                 <Icon name={item.icon} size={24} color="#FFFFFF" />
               </TouchableOpacity>
-              <Text style={styles.itemLabel}>{item.title}</Text>
+              <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>{item.title}</Text>
             </Animated.View>
           ))}
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 };
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     fontWeight: '600',
-    color: theme.colors.text,
+    color: '#FFFFFF',
     textAlign: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
