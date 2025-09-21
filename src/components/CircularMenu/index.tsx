@@ -100,44 +100,20 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     opacity: opacity.value,
   }));
 
-  // Create animated styles for each menu item based on your drawing pattern
+  // Create animated styles for each menu item arranged in a circle around streak button
   const itemStyles = menuItems.map((_, index) => {
     return useAnimatedStyle(() => {
-      let x, y;
+      // Arrange items in a circle around the center (streak button)
+      const radius = 100; // Distance from center to each item
+      const angleStep = (Math.PI * 2) / menuItems.length; // Evenly distribute around circle
+      const angle = index * angleStep - Math.PI / 2; // Start from top (-90 degrees)
       
-      // Position items according to the drawing pattern
-      switch (index) {
-        case 0: // Top left
-          x = centerX - 80 - ITEM_SIZE / 2;
-          y = centerY - 80 - ITEM_SIZE / 2;
-          break;
-        case 1: // Top center-left
-          x = centerX - 40 - ITEM_SIZE / 2;
-          y = centerY - 100 - ITEM_SIZE / 2;
-          break;
-        case 2: // Top center-right
-          x = centerX + 40 - ITEM_SIZE / 2;
-          y = centerY - 100 - ITEM_SIZE / 2;
-          break;
-        case 3: // Top right
-          x = centerX + 80 - ITEM_SIZE / 2;
-          y = centerY - 80 - ITEM_SIZE / 2;
-          break;
-        case 4: // Left of center (on the line)
-          x = centerX - 100 - ITEM_SIZE / 2;
-          y = centerY - ITEM_SIZE / 2;
-          break;
-        case 5: // Right of center (on the line)
-          x = centerX + 100 - ITEM_SIZE / 2;
-          y = centerY - ITEM_SIZE / 2;
-          break;
-        default:
-          x = centerX - ITEM_SIZE / 2;
-          y = centerY - ITEM_SIZE / 2;
-      }
+      // Calculate position based on angle and radius
+      const x = centerX + Math.cos(angle) * radius - ITEM_SIZE / 2;
+      const y = centerY + Math.sin(angle) * radius - ITEM_SIZE / 2;
 
       // Apply rotation effect from gestures
-      const rotatedX = x + (rotation.value * 10); // Subtle rotation effect
+      const rotatedX = x + (rotation.value * 10);
       const rotatedY = y;
 
       return {
@@ -153,16 +129,14 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
 
   // Handle backdrop press - only close if tap is outside menu orbit
   const handleBackdropPress = (event: any) => {
-    const { locationX, locationY } = event.nativeEvent;
+    const { pageX, pageY } = event.nativeEvent;
     
     // Calculate distance from tap to menu center
-    const tapX = locationX;
-    const tapY = locationY;
     const distance = Math.sqrt(
-      Math.pow(tapX - centerX, 2) + Math.pow(tapY - centerY, 2)
+      Math.pow(pageX - centerX, 2) + Math.pow(pageY - centerY, 2)
     );
     
-    // Close menu only if tap is outside the menu orbit (radius of 120px)
+    // Close menu only if tap is outside the menu orbit (radius of 120px to include item positions)
     if (distance > 120) {
       onClose();
     }
@@ -174,42 +148,18 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     <View style={styles.overlay}>
       <TouchableOpacity 
         style={styles.backdrop} 
-        onPress={handleBackdropPress}
+        onPress={onClose}
         activeOpacity={1}
       />
       
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.menuContainer, containerStyle]}>
-          {/* Horizontal line/bar as shown in the drawing */}
-          <View 
-            style={[
-              styles.horizontalBar, 
-              {
-                left: centerX - 120,
-                top: centerY - 2,
-                width: 240,
-                height: 4,
-              }
-            ]} 
-          />
-          
-          {/* Central circle on the line */}
-          <View 
-            style={[
-              styles.centralCircle,
-              {
-                left: centerX - 40,
-                top: centerY - 40,
-                width: 80,
-                height: 80,
-              }
-            ]}
-          />
-          
+          {/* Menu items arranged around the bottom bar streak button - no separate central circle */}
           {menuItems.map((item, index) => (
             <Animated.View
               key={item.id}
               style={[styles.menuItem, itemStyles[index]]}
+              pointerEvents="box-none"
             >
               <TouchableOpacity
                 style={[styles.itemButton, { backgroundColor: item.color }]}
@@ -278,26 +228,5 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-  },
-  horizontalBar: {
-    position: 'absolute',
-    backgroundColor: theme.colors.text.secondary,
-    borderRadius: 2,
-    opacity: 0.6,
-  },
-  centralCircle: {
-    position: 'absolute',
-    backgroundColor: theme.colors.primary,
-    borderRadius: 40,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
 });
