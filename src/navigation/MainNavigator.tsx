@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Import screens
@@ -21,7 +21,7 @@ import { RightSidebar } from '../components/RightSidebar';
 import { theme } from '../config/theme';
 import { AuthProvider } from '../modules/auth/AuthProvider';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings';
 
