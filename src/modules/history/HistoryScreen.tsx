@@ -1,0 +1,446 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { theme } from '../../config/theme';
+
+type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
+
+interface HistoryItem {
+  id: string;
+  date: string;
+  time: string;
+  title: string;
+  description?: string;
+  value?: number;
+  type: string;
+}
+
+const historyTabs = [
+  { id: 'journaling' as HistoryTab, title: 'Journaling', icon: 'book' },
+  { id: 'goals' as HistoryTab, title: 'Goals', icon: 'flag' },
+  { id: 'todo' as HistoryTab, title: 'To-Do', icon: 'check-circle' },
+  { id: 'habits' as HistoryTab, title: 'Habits', icon: 'repeat' },
+  { id: 'focus' as HistoryTab, title: 'Focus', icon: 'psychology' },
+  { id: 'points' as HistoryTab, title: 'Points', icon: 'star' },
+];
+
+// Mock data
+const mockHistoryData: Record<HistoryTab, HistoryItem[]> = {
+  journaling: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '09:30',
+      title: 'Morning Reflection',
+      description: 'Wrote about goals and daily intentions',
+      type: 'journal_entry',
+    },
+    {
+      id: '2',
+      date: '2025-09-20',
+      time: '20:15',
+      title: 'Evening Review',
+      description: 'Reflected on the day\'s achievements',
+      type: 'journal_entry',
+    },
+  ],
+  goals: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '14:22',
+      title: 'Complete project documentation',
+      description: 'Goal marked as completed',
+      type: 'goal_completed',
+    },
+    {
+      id: '2',
+      date: '2025-09-19',
+      time: '10:00',
+      title: 'Learn React Native animations',
+      description: 'New goal created',
+      type: 'goal_created',
+    },
+  ],
+  todo: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '16:45',
+      title: 'Review pull requests',
+      description: 'Task completed',
+      type: 'todo_completed',
+    },
+    {
+      id: '2',
+      date: '2025-09-21',
+      time: '11:30',
+      title: 'Update project roadmap',
+      description: 'Task added to list',
+      type: 'todo_created',
+    },
+  ],
+  habits: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '07:00',
+      title: 'Morning meditation',
+      description: 'Habit completed - 8 day streak',
+      type: 'habit_completed',
+    },
+    {
+      id: '2',
+      date: '2025-09-21',
+      time: '21:30',
+      title: 'Read for 30 minutes',
+      description: 'Habit completed - 13 day streak',
+      type: 'habit_completed',
+    },
+  ],
+  focus: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '14:00',
+      title: 'Deep Work Session',
+      description: '2 hours of focused work',
+      value: 120,
+      type: 'focus_session',
+    },
+    {
+      id: '2',
+      date: '2025-09-20',
+      time: '09:30',
+      title: 'Morning Focus',
+      description: '1.5 hours of coding',
+      value: 90,
+      type: 'focus_session',
+    },
+  ],
+  points: [
+    {
+      id: '1',
+      date: '2025-09-21',
+      time: '14:22',
+      title: 'Goal Completion Bonus',
+      description: 'Completed project documentation',
+      value: 25,
+      type: 'points_earned',
+    },
+    {
+      id: '2',
+      date: '2025-09-21',
+      time: '09:30',
+      title: 'Journal Entry',
+      description: 'Morning reflection completed',
+      value: 5,
+      type: 'points_earned',
+    },
+  ],
+};
+
+export const HistoryScreen: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<HistoryTab>('journaling');
+  const [selectedDateRange, setSelectedDateRange] = useState('week');
+
+  const currentData = mockHistoryData[activeTab] || [];
+
+  const renderTabButton = (tab: typeof historyTabs[0]) => (
+    <TouchableOpacity
+      key={tab.id}
+      style={[styles.tabButton, activeTab === tab.id && styles.activeTabButton]}
+      onPress={() => setActiveTab(tab.id)}
+    >
+      <Icon
+        name={tab.icon}
+        size={20}
+        color={activeTab === tab.id ? '#FFFFFF' : theme.colors.text.secondary}
+        style={styles.tabIcon}
+      />
+      <Text style={[
+        styles.tabText,
+        activeTab === tab.id && styles.activeTabText
+      ]}>
+        {tab.title}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const getHistoryItemIcon = (type: string) => {
+    switch (type) {
+      case 'journal_entry': return 'book';
+      case 'goal_completed': return 'flag';
+      case 'goal_created': return 'add-circle';
+      case 'todo_completed': return 'check-circle';
+      case 'todo_created': return 'add-task';
+      case 'habit_completed': return 'repeat';
+      case 'focus_session': return 'psychology';
+      case 'points_earned': return 'star';
+      default: return 'circle';
+    }
+  };
+
+  const getHistoryItemColor = (type: string) => {
+    switch (type) {
+      case 'journal_entry': return '#4ECDC4';
+      case 'goal_completed': return theme.colors.success;
+      case 'goal_created': return theme.colors.primary;
+      case 'todo_completed': return theme.colors.success;
+      case 'todo_created': return theme.colors.warning;
+      case 'habit_completed': return '#96CEB4';
+      case 'focus_session': return '#45B7D1';
+      case 'points_earned': return '#FFD93D';
+      default: return theme.colors.text.secondary;
+    }
+  };
+
+  const renderHistoryItem = ({ item }: { item: HistoryItem }) => (
+    <View style={styles.historyItem}>
+      <View style={[styles.historyItemIcon, { backgroundColor: getHistoryItemColor(item.type) }]}>
+        <Icon
+          name={getHistoryItemIcon(item.type)}
+          size={20}
+          color="#FFFFFF"
+        />
+      </View>
+      <View style={styles.historyItemContent}>
+        <View style={styles.historyItemHeader}>
+          <Text style={styles.historyItemTitle}>{item.title}</Text>
+          <Text style={styles.historyItemTime}>{item.time}</Text>
+        </View>
+        <Text style={styles.historyItemDate}>{item.date}</Text>
+        {item.description && (
+          <Text style={styles.historyItemDescription}>{item.description}</Text>
+        )}
+        {item.value && (
+          <Text style={styles.historyItemValue}>
+            {activeTab === 'focus' ? `${item.value} minutes` : `+${item.value} points`}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>History</Text>
+        <TouchableOpacity style={styles.filterButton}>
+          <Icon name="date-range" size={20} color={theme.colors.text.secondary} />
+          <Text style={styles.filterButtonText}>This Week</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        style={styles.tabsContainer}
+        contentContainerStyle={styles.tabsContent}
+      >
+        {historyTabs.map(renderTabButton)}
+      </ScrollView>
+
+      <View style={styles.contentContainer}>
+        {currentData.length > 0 ? (
+          <FlatList
+            data={currentData}
+            keyExtractor={(item) => item.id}
+            renderItem={renderHistoryItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+          />
+        ) : (
+          <View style={styles.emptyState}>
+            <Icon name="history" size={64} color={theme.colors.text.tertiary} />
+            <Text style={styles.emptyStateTitle}>No {historyTabs.find(t => t.id === activeTab)?.title} History</Text>
+            <Text style={styles.emptyStateDescription}>
+              Your {historyTabs.find(t => t.id === activeTab)?.title.toLowerCase()} activities will appear here
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <TouchableOpacity style={styles.exportButton}>
+        <Icon name="file-download" size={20} color="#FFFFFF" />
+        <Text style={styles.exportButtonText}>Export Data</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: theme.colors.text.primary,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 6,
+  },
+  filterButtonText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  tabsContainer: {
+    maxHeight: 60,
+  },
+  tabsContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  tabButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  activeTabButton: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  tabIcon: {
+    marginRight: 8,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: theme.colors.text.secondary,
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  listContent: {
+    paddingVertical: 16,
+    paddingBottom: 120, // Space for bottom navigation
+  },
+  historyItem: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  historyItemIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  historyItemContent: {
+    flex: 1,
+  },
+  historyItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
+  historyItemTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text.primary,
+    flex: 1,
+    marginRight: 8,
+  },
+  historyItemTime: {
+    fontSize: 12,
+    color: theme.colors.text.secondary,
+  },
+  historyItemDate: {
+    fontSize: 12,
+    color: theme.colors.text.tertiary,
+    marginBottom: 6,
+  },
+  historyItemDescription: {
+    fontSize: 14,
+    color: theme.colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+  historyItemValue: {
+    fontSize: 12,
+    color: theme.colors.primary,
+    fontWeight: '600',
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.text.primary,
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    fontSize: 14,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  exportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  exportButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
