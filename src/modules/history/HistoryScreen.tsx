@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
+import { focusSessionService } from '../../services/FocusSessionService';
+import { UserStatsService } from '../../services/userStatsService';
 
 type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
 
@@ -150,9 +152,115 @@ const mockHistoryData: Record<HistoryTab, HistoryItem[]> = {
 
 export const HistoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<HistoryTab>('journaling');
+  const [historyData, setHistoryData] = useState<Record<HistoryTab, HistoryItem[]>>({
+    journaling: [],
+    goals: [],
+    todo: [],
+    habits: [],
+    focus: [],
+    points: [],
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadHistoryData();
+  }, []);
+
+  const loadHistoryData = async () => {
+    try {
+      setLoading(true);
+
+      // Load journaling data
+      const journalLogs = await focusSessionService.getJournalLogs(50);
+      const journalingItems: HistoryItem[] = journalLogs.map(log => ({
+        id: log.id,
+        date: log.date,
+        time: '09:00', // Default time since journal logs don't have time
+        title: 'Journal Entry',
+        description: log.action,
+        type: 'journal_entry',
+      }));
+
+      // Load goal completion data
+      const goalLogs = await focusSessionService.getGoalCompletionLogs(50);
+      const goalItems: HistoryItem[] = goalLogs.map(log => {
+        const date = new Date(log.timestamp);
+        const dateStr = date.getFullYear() + '-' + 
+          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(date.getDate()).padStart(2, '0');
+        return {
+          id: log.id.toString(),
+          date: dateStr,
+          time: new Date(log.timestamp).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          }),
+          title: log.goalTitle,
+          description: 'Goal completed',
+          value: log.pointsEarned,
+          type: 'goal_completed',
+        };
+      });
+
+      // Load focus session data
+      const focusSessions = await focusSessionService.getFocusSessions(50);
+      const focusItems: HistoryItem[] = focusSessions.map(session => {
+        const date = new Date(session.startTime);
+        const dateStr = date.getFullYear() + '-' + 
+          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(date.getDate()).padStart(2, '0');
+        return {
+          id: session.id,
+          date: dateStr,
+          time: new Date(session.startTime).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          }),
+          title: `${session.mode.title} Session`,
+          description: session.completed ? 
+            `Completed ${Math.round(session.duration / 60)} minutes` : 
+            `Session interrupted after ${Math.round(session.duration / 60)} minutes`,
+          value: session.pointsEarned,
+          type: session.completed ? 'focus_completed' : 'focus_interrupted',
+        };
+      });
+
+      // Load combined stats logs for points and other activities
+      const statsLogs = await focusSessionService.getCombinedKigenStatsLogs(50);
+      const pointsItems: HistoryItem[] = statsLogs.map(log => ({
+        id: log.id,
+        date: log.date,
+        time: '12:00', // Default time since logs don't have specific time
+        title: log.action,
+        description: log.action,
+        value: parseInt(log.points.replace('+', '')) || 0,
+        type: 'points_earned',
+      }));
+
+      // For now, keep habits and todo as empty (they would need separate storage systems)
+      const habitItems: HistoryItem[] = [];
+      const todoItems: HistoryItem[] = [];
+
+      setHistoryData({
+        journaling: journalingItems,
+        goals: goalItems,
+        todo: todoItems,
+        habits: habitItems,
+        focus: focusItems,
+        points: pointsItems,
+      });
+
+    } catch (error) {
+      console.error('Error loading history data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const [selectedDateRange, setSelectedDateRange] = useState('week');
 
-  const currentData = mockHistoryData[activeTab] || [];
+  const currentData = historyData[activeTab] || [];
 
   const renderTabButton = (tab: typeof historyTabs[0]) => (
     <TouchableOpacity
@@ -250,7 +358,11 @@ export const HistoryScreen: React.FC = () => {
       </ScrollView>
 
       <View style={styles.contentContainer}>
-        {currentData.length > 0 ? (
+        {loading ? (
+          <View style={styles.loadingState}>
+            <Text style={styles.loadingText}>Loading history...</Text>
+          </View>
+        ) : currentData.length > 0 ? (
           <FlatList
             data={currentData}
             keyExtractor={(item) => item.id}
@@ -311,22 +423,25 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabsContainer: {
-    maxHeight: 60,
+    maxHeight: 80,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
   },
   tabsContent: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 16,
     gap: 12,
   },
   tabButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surfaceSecondary,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: theme.colors.border,
+    minWidth: 100,
   },
   activeTabButton: {
     backgroundColor: theme.colors.primary,
@@ -442,5 +557,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  loadingState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: theme.colors.text.secondary,
+    fontSize: 16,
   },
 });

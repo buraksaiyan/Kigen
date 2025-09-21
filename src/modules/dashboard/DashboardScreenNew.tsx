@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ImageBackground,
   Dimensions,
   Platform,
 } from 'react-native';
@@ -28,6 +29,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 import { useAuth } from '../auth/AuthProvider';
 import { UserStatsService } from '../../services/userStatsService';
+import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/digitalWellbeingService';
+import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -76,6 +79,8 @@ export const DashboardScreen: React.FC = () => {
   const [activeTodos, setActiveTodos] = useState<ActiveTodo[]>([]);
   const [userRank, setUserRank] = useState('Bronze');
   const [loading, setLoading] = useState(true);
+  const [usageStats, setUsageStats] = useState<DigitalWellbeingStats | null>(null);
+  const [hasUsagePermission, setHasUsagePermission] = useState(false);
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
   const username = session?.user?.email?.split('@')[0] || 'User';
@@ -126,6 +131,19 @@ export const DashboardScreen: React.FC = () => {
         
         // Set user rank based on rating
         setUserRank(monthlyRating.cardTier);
+        
+        // Load usage stats
+        try {
+          const permission = await digitalWellbeingService.canAccessUsageStats();
+          setHasUsagePermission(permission);
+          
+          if (permission) {
+            const stats = await digitalWellbeingService.getTodaysStats();
+            setUsageStats(stats);
+          }
+        } catch (error) {
+          console.error('Error loading usage stats:', error);
+        }
         
       } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -219,57 +237,69 @@ export const DashboardScreen: React.FC = () => {
     transform: [{ translateX: carouselTranslateX.value }],
   }));
 
-  const renderUserCard = () => (
-    <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
-      <Animated.View style={[styles.userCard, cardAnimatedStyle]}>
-        <View style={styles.rankBadge}>
-          <Text style={styles.rankText}>{userRank}</Text>
-        </View>
-        
-        <View style={styles.profileSection}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/80x80' }}
-            style={styles.profileImage}
-          />
-          <Text style={styles.username}>{username}</Text>
-        </View>
+  const renderUserCard = () => {
+    // Get background image based on current rank
+    const backgroundImage = RatingSystem.getCardBackgroundImage(userRank as any);
 
-        {loading || !currentStats ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading stats...</Text>
-          </View>
-        ) : (
-          <>
-            <View style={styles.ratingSection}>
-              <Text style={styles.overallRating}>{currentStats.overallRating}</Text>
-              <Text style={styles.ratingLabel}>Overall Rating</Text>
+    return (
+      <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
+        <Animated.View style={[styles.userCard, cardAnimatedStyle]}>
+          <ImageBackground
+            source={backgroundImage}
+            style={styles.userCardBackground}
+            imageStyle={{ borderRadius: 20 }}
+            resizeMode="cover"
+          >
+            <View style={styles.rankBadge}>
+              <Text style={styles.rankText}>{userRank}</Text>
+            </View>
+            
+            <View style={styles.profileSection}>
+              <Image
+                source={{ uri: 'https://via.placeholder.com/80x80' }}
+                style={styles.profileImage}
+              />
+              <Text style={styles.username}>{username}</Text>
             </View>
 
-            <View style={styles.statsSection}>
-              <View style={styles.statsColumn}>
-                <StatItem label="Discipline" value={currentStats.discipline} />
-                <StatItem label="Focus" value={currentStats.focus} />
-                <StatItem label="Journaling" value={currentStats.journaling} />
-                <StatItem label="Determination" value={currentStats.determination} />
+            {loading || !currentStats ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Loading stats...</Text>
               </View>
-              <View style={styles.statsColumn}>
-                <StatItem label="Productivity" value={currentStats.productivity} />
-                <StatItem label="Mental" value={currentStats.mental} />
-                <StatItem label="Physical" value={currentStats.physical} />
-                <StatItem label="Social" value={currentStats.social} />
-              </View>
-            </View>
+            ) : (
+              <>
+                <View style={styles.ratingSection}>
+                  <Text style={styles.overallRating}>{currentStats.overallRating}</Text>
+                  <Text style={styles.ratingLabel}>Overall Rating</Text>
+                </View>
 
-            <View style={styles.periodToggle}>
-              <Text style={styles.periodText}>
-                {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
-              </Text>
-            </View>
-          </>
-        )}
-      </Animated.View>
-    </TouchableOpacity>
-  );
+                <View style={styles.statsSection}>
+                  <View style={styles.statsColumn}>
+                    <StatItem label="Discipline" value={currentStats.discipline} />
+                    <StatItem label="Focus" value={currentStats.focus} />
+                    <StatItem label="Journaling" value={currentStats.journaling} />
+                    <StatItem label="Determination" value={currentStats.determination} />
+                  </View>
+                  <View style={styles.statsColumn}>
+                    <StatItem label="Productivity" value={currentStats.productivity} />
+                    <StatItem label="Mental" value={currentStats.mental} />
+                    <StatItem label="Physical" value={currentStats.physical} />
+                    <StatItem label="Social" value={currentStats.social} />
+                  </View>
+                </View>
+
+                <View style={styles.periodToggle}>
+                  <Text style={styles.periodText}>
+                    {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
+                  </Text>
+                </View>
+              </>
+            )}
+          </ImageBackground>
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
 
   const renderActiveGoals = () => (
     <View style={styles.carouselPanel}>
@@ -304,24 +334,31 @@ export const DashboardScreen: React.FC = () => {
     <View style={styles.carouselPanel}>
       <Text style={styles.sectionTitle}>Active Habits</Text>
       <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
-        {activeHabits.map((habit) => (
-          <View key={habit.id} style={styles.habitItem}>
-            <TouchableOpacity style={styles.habitCheckbox}>
-              <Icon
-                name={habit.completedToday ? 'check-box' : 'check-box-outline-blank'}
-                size={24}
-                color={habit.completedToday ? theme.colors.success : theme.colors.text.secondary}
-              />
-            </TouchableOpacity>
-            <View style={styles.habitContent}>
-              <Text style={styles.habitTitle}>{habit.title}</Text>
-              <View style={styles.habitStreak}>
-                <Icon name="local-fire-department" size={16} color="#FF6B35" />
-                <Text style={styles.habitStreakText}>{habit.streak} days</Text>
+        {activeHabits.length > 0 ? (
+          activeHabits.map((habit) => (
+            <View key={habit.id} style={styles.habitItem}>
+              <TouchableOpacity style={styles.habitCheckbox}>
+                <Icon
+                  name={habit.completedToday ? 'check-box' : 'check-box-outline-blank'}
+                  size={24}
+                  color={habit.completedToday ? theme.colors.success : theme.colors.text.secondary}
+                />
+              </TouchableOpacity>
+              <View style={styles.habitContent}>
+                <Text style={styles.habitTitle}>{habit.title}</Text>
+                <View style={styles.habitStreak}>
+                  <Icon name="local-fire-department" size={16} color="#FF6B35" />
+                  <Text style={styles.habitStreakText}>{habit.streak} days</Text>
+                </View>
               </View>
             </View>
+          ))
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>No active habits yet</Text>
+            <Text style={styles.emptyStateSubtext}>Build healthy routines by adding daily habits</Text>
           </View>
-        ))}
+        )}
       </ScrollView>
     </View>
   );
@@ -330,60 +367,127 @@ export const DashboardScreen: React.FC = () => {
     <View style={styles.carouselPanel}>
       <Text style={styles.sectionTitle}>Active To-Do Lists</Text>
       <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
-        {activeTodos.map((todo) => (
-          <View key={todo.id} style={styles.todoItem}>
-            <TouchableOpacity style={styles.todoCheckbox}>
-              <Icon
-                name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
-                size={24}
-                color={todo.completed ? theme.colors.success : theme.colors.text.secondary}
-              />
-            </TouchableOpacity>
-            <Text style={[
-              styles.todoTitle,
-              todo.completed && styles.todoTitleCompleted
-            ]}>
-              {todo.title}
-            </Text>
+        {activeTodos.length > 0 ? (
+          activeTodos.map((todo) => (
+            <View key={todo.id} style={styles.todoItem}>
+              <TouchableOpacity style={styles.todoCheckbox}>
+                <Icon
+                  name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
+                  size={24}
+                  color={todo.completed ? theme.colors.success : theme.colors.text.secondary}
+                />
+              </TouchableOpacity>
+              <Text style={[
+                styles.todoTitle,
+                todo.completed && styles.todoTitleCompleted
+              ]}>
+                {todo.title}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>No active tasks</Text>
+            <Text style={styles.emptyStateSubtext}>Stay organized by adding tasks to your to-do list</Text>
           </View>
-        ))}
+        )}
       </ScrollView>
     </View>
   );
 
-  const renderPhoneUsage = () => (
-    <View style={styles.usageSection}>
-      <Text style={styles.usageSectionTitle}>Phone Usage Today</Text>
-      <View style={styles.usageStats}>
-        <View style={styles.usageStat}>
-          <Text style={styles.usageValue}>4h 32m</Text>
-          <Text style={styles.usageLabel}>Total Screen Time</Text>
+  const renderPhoneUsage = () => {
+    if (!hasUsagePermission) {
+      return (
+        <View style={styles.usageSection}>
+          <Text style={styles.usageSectionTitle}>Phone Usage Today</Text>
+          <View style={styles.permissionPrompt}>
+            <Text style={styles.permissionTitle}>Enable Usage Tracking</Text>
+            <Text style={styles.permissionText}>
+              Get insights into your daily screen time and app usage patterns to build healthier digital habits.
+            </Text>
+            <TouchableOpacity 
+              style={styles.permissionButton}
+              onPress={async () => {
+                try {
+                  await digitalWellbeingService.requestUsageAccess();
+                  // Reload data after permission granted
+                  const permission = await digitalWellbeingService.canAccessUsageStats();
+                  setHasUsagePermission(permission);
+                  if (permission) {
+                    const stats = await digitalWellbeingService.getTodaysStats();
+                    setUsageStats(stats);
+                  }
+                } catch (error) {
+                  console.error('Error requesting permission:', error);
+                }
+              }}
+            >
+              <Text style={styles.permissionButtonText}>Enable Access</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.usageStat}>
-          <Text style={styles.usageValue}>127</Text>
-          <Text style={styles.usageLabel}>App Opens</Text>
+      );
+    }
+
+    if (!usageStats) {
+      return (
+        <View style={styles.usageSection}>
+          <Text style={styles.usageSectionTitle}>Phone Usage Today</Text>
+          <View style={styles.usageStats}>
+            <Text style={styles.loadingText}>Loading usage data...</Text>
+          </View>
         </View>
+      );
+    }
+
+    // Format time from milliseconds to hours and minutes
+    const formatTime = (milliseconds: number) => {
+      const totalMinutes = Math.floor(milliseconds / (1000 * 60));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}h ${minutes}m`;
+    };
+
+    // Get top 3 apps by usage time
+    const topApps = usageStats.apps
+      .sort((a, b) => b.timeInForeground - a.timeInForeground)
+      .slice(0, 3);
+
+    return (
+      <View style={styles.usageSection}>
+        <Text style={styles.usageSectionTitle}>Phone Usage Today</Text>
+        <View style={styles.usageStats}>
+          <View style={styles.usageStat}>
+            <Text style={styles.usageValue}>{formatTime(usageStats.totalScreenTime)}</Text>
+            <Text style={styles.usageLabel}>Total Screen Time</Text>
+          </View>
+          <View style={styles.usageStat}>
+            <Text style={styles.usageValue}>{usageStats.pickups}</Text>
+            <Text style={styles.usageLabel}>Phone Pickups</Text>
+          </View>
+        </View>
+        <View style={styles.topApps}>
+          <Text style={styles.topAppsTitle}>Top Apps</Text>
+          {topApps.map((app, index) => {
+            const maxTime = topApps[0]?.timeInForeground || 1;
+            const widthPercent = Math.max(20, (app.timeInForeground / maxTime) * 100);
+            
+            return (
+              <View key={app.packageName} style={styles.appUsageItem}>
+                <View style={[styles.appUsageBar, { width: `${widthPercent}%` }]} />
+                <Text style={styles.appUsageText}>
+                  {app.appName}: {formatTime(app.timeInForeground)}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+        <TouchableOpacity style={styles.improveButton}>
+          <Text style={styles.improveButtonText}>Improve Focus</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.topApps}>
-        <Text style={styles.topAppsTitle}>Top Apps</Text>
-        <View style={styles.appUsageItem}>
-          <View style={styles.appUsageBar} />
-          <Text style={styles.appUsageText}>Social Media: 1h 45m</Text>
-        </View>
-        <View style={styles.appUsageItem}>
-          <View style={[styles.appUsageBar, { width: '60%' }]} />
-          <Text style={styles.appUsageText}>Entertainment: 1h 12m</Text>
-        </View>
-        <View style={styles.appUsageItem}>
-          <View style={[styles.appUsageBar, { width: '40%' }]} />
-          <Text style={styles.appUsageText}>Productivity: 52m</Text>
-        </View>
-      </View>
-      <TouchableOpacity style={styles.improveButton}>
-        <Text style={styles.improveButtonText}>Improve Focus</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -439,6 +543,18 @@ const styles = StyleSheet.create({
   },
   userCard: {
     backgroundColor: theme.colors.surface,
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 8,
+    minHeight: 400,
+  },
+  userCardBackground: {
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 20,
@@ -751,6 +867,54 @@ const styles = StyleSheet.create({
   loadingText: {
     color: theme.colors.text.secondary,
     fontSize: 16,
+  },
+  permissionPrompt: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  permissionTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  permissionText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  permissionButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  permissionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  emptyStateText: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   bottomSpacer: {
     height: 120, // Space for bottom navigation

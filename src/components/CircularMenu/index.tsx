@@ -10,6 +10,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
@@ -48,7 +49,7 @@ const menuItems: CircularMenuItem[] = [
 
 const MENU_RADIUS = 120;
 const ITEM_SIZE = 64;
-const VISIBLE_ANGLE = Math.PI; // 180 degrees
+const VISIBLE_ANGLE = Math.PI / 2; // 90 degrees - only right side
 
 export const CircularMenu: React.FC<CircularMenuProps> = ({
   isOpen,
@@ -63,15 +64,16 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
 
   React.useEffect(() => {
     if (isOpen) {
-      scale.value = withSpring(1, { damping: 15, stiffness: 100 });
-      opacity.value = withSpring(1, { damping: 15, stiffness: 100 });
+      scale.value = withTiming(1, { duration: 300 });
+      opacity.value = withTiming(1, { duration: 300 });
     } else {
-      scale.value = withSpring(0, { damping: 15, stiffness: 100 });
-      opacity.value = withSpring(0, { damping: 15, stiffness: 100 });
+      scale.value = withTiming(0, { duration: 300 });
+      opacity.value = withTiming(0, { duration: 300 });
     }
   }, [isOpen]);
 
   const panGesture = Gesture.Pan()
+    .minDistance(5) // Require minimum movement to activate
     .onStart(() => {
       'worklet';
       // Store initial rotation
@@ -79,13 +81,16 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     .onUpdate((event) => {
       'worklet';
       const deltaX = event.translationX;
-      const rotationDelta = (deltaX / screenWidth) * Math.PI * 2;
+      // Make rotation more sensitive and smooth
+      const rotationDelta = (deltaX / (screenWidth * 0.5)) * Math.PI; // More sensitive
       rotation.value = rotationDelta;
     })
-    .onEnd(() => {
+    .onEnd((event) => {
       'worklet';
-      // Add some friction and snap to positions if needed
-      rotation.value = withSpring(rotation.value, { damping: 15, stiffness: 100 });
+      // Smooth snap back with velocity consideration
+      const velocity = Math.abs(event.velocityX);
+      const duration = Math.max(200, Math.min(500, 1000 / (velocity + 1))); // Faster with more velocity
+      rotation.value = withTiming(0, { duration });
     });
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -97,9 +102,9 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
 
   // Create animated styles for each menu item
   const itemStyles = menuItems.map((_, index) => {
-    const baseAngle = -Math.PI / 2; // Start from top
-    const angleStep = (Math.PI * 2) / menuItems.length;
-    const angle = baseAngle + index * angleStep;
+    const baseAngle = 0; // Start from right
+    const angleStep = VISIBLE_ANGLE / (menuItems.length - 1); // Distribute across visible angle
+    const angle = baseAngle - (index * angleStep); // Go counterclockwise from right
     
     return useAnimatedStyle(() => {
       const currentAngle = angle + rotation.value;
@@ -108,19 +113,19 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
       
       // Calculate visibility based on angle
       const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      const isVisible = normalizedAngle >= Math.PI / 4 && normalizedAngle <= (7 * Math.PI) / 4;
+      const isVisible = normalizedAngle >= (3 * Math.PI) / 2 || normalizedAngle <= Math.PI / 2; // Right side only
       
       const itemOpacity = interpolate(
         normalizedAngle,
-        [Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 2, (7 * Math.PI) / 4],
-        [0.3, 1, 1, 0.3],
+        [0, Math.PI / 4, Math.PI / 2],
+        [1, 1, 0.3],
         Extrapolate.CLAMP
       );
 
       const itemScale = interpolate(
         normalizedAngle,
-        [Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 2, (7 * Math.PI) / 4],
-        [0.7, 1, 1, 0.7],
+        [0, Math.PI / 4, Math.PI / 2],
+        [1, 1, 0.7],
         Extrapolate.CLAMP
       );
 

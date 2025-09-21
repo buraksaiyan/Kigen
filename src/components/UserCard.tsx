@@ -67,14 +67,8 @@ export const UserCard: React.FC<UserCardProps> = ({
   };
 
   const getCardBackgroundImage = () => {
-    // Different background patterns based on tier
-    switch (userRating.cardTier) {
-      case CardTier.Obsidian:
-      case CardTier.Carbon:
-        return null; // Use gradient only for highest tiers
-      default:
-        return null; // For now, use gradients for all
-    }
+    // Return the appropriate background image for the tier
+    return RatingSystem.getCardBackgroundImage(userRating.cardTier);
   };
 
   const renderStatBar = (label: string, value: number, maxValue: number = 100) => {

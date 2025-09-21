@@ -10,9 +10,9 @@ import {
   PanResponder,
   Modal,
   ScrollView,
-  Image,
   Alert,
   ImageBackground,
+  Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { UserStatsService } from '../services/userStatsService';
@@ -216,23 +216,11 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       const isQuickTap = gestureDuration < 250 && Math.abs(dx) < 15 && Math.abs(dy) < 15;
 
       if (isHorizontalSwipe && isSwipeGesture.current && !hasFlippedThisGesture.current) {
-        // Any swipe toggles the card state, direction determines animation rotation
+        // Simply toggle between monthly and all-time without animation
         hasFlippedThisGesture.current = true; // Prevent multiple flips per gesture
-        const swipeLeft = dx < 0; // negative dx = left swipe
-        const targetFlipped = !isFlipped; // Always toggle to opposite side
-        const targetRotation = swipeLeft ? -180 : 180; // Left swipe = counter-clockwise, right swipe = clockwise
-        
-        setIsFlipped(targetFlipped);
-        
-        Animated.timing(flipAnimation, {
-          toValue: targetRotation,
-          duration: 600,
-          useNativeDriver: true,
-        }).start(() => {
-          // Reset animation value and update display text
-          flipAnimation.setValue(0);
-          setDisplayFlipped(targetFlipped);
-        });
+        const newFlippedState = !isFlipped;
+        setIsFlipped(newFlippedState);
+        setDisplayFlipped(newFlippedState);
       } else if (isQuickTap && !isSwipeGesture.current) {
         // Tap to expand - only if not swiping
         console.log('Tapped card to expand');
