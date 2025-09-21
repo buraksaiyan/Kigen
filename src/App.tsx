@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
 import { I18nProvider } from './i18n/I18nProvider';
@@ -24,17 +25,19 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandler style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <I18nProvider>
-          <AuthProvider>
-            <NotificationsProvider>
-              <Navigation />
-            </NotificationsProvider>
-          </AuthProvider>
-        </I18nProvider>
-      </View>
-    </GestureHandler>
+    <SafeAreaProvider>
+      <GestureHandler style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <I18nProvider>
+            <AuthProvider>
+              <NotificationsProvider>
+                <Navigation />
+              </NotificationsProvider>
+            </AuthProvider>
+          </I18nProvider>
+        </View>
+      </GestureHandler>
+    </SafeAreaProvider>
   );
 }
 
