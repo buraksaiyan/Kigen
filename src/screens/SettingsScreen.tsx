@@ -137,8 +137,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
               <Switch
                 value={settings.timerSoundsEnabled}
                 onValueChange={toggleTimerSounds}
-                trackColor={{ false: '#333333', true: theme.colors.primary }}
-                thumbColor={settings.timerSoundsEnabled ? '#FFFFFF' : '#CCCCCC'}
+                trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
+                thumbColor={settings.timerSoundsEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
               />
             </View>
 
@@ -193,8 +193,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
               <Switch
                 value={settings.focusRemindersEnabled}
                 onValueChange={toggleFocusReminders}
-                trackColor={{ false: '#333333', true: theme.colors.primary }}
-                thumbColor={settings.focusRemindersEnabled ? '#FFFFFF' : '#CCCCCC'}
+                trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
+                thumbColor={settings.focusRemindersEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
               />
             </View>
 
@@ -209,8 +209,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
               <Switch
                 value={settings.digitalWellbeingAlertsEnabled}
                 onValueChange={toggleDigitalWellbeingAlerts}
-                trackColor={{ false: '#333333', true: theme.colors.primary }}
-                thumbColor={settings.digitalWellbeingAlertsEnabled ? '#FFFFFF' : '#CCCCCC'}
+                trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
+                thumbColor={settings.digitalWellbeingAlertsEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
               />
             </View>
           </View>
@@ -240,8 +240,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
               <Switch
                 value={settings.keepScreenOnEnabled}
                 onValueChange={toggleKeepScreenOn}
-                trackColor={{ false: '#333333', true: theme.colors.primary }}
-                thumbColor={settings.keepScreenOnEnabled ? '#FFFFFF' : '#CCCCCC'}
+                trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
+                thumbColor={settings.keepScreenOnEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
               />
             </View>
           </View>
@@ -395,7 +395,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
   safeArea: {
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: '#888691',
+    color: theme.colors.text.secondary,
     fontWeight: '600',
   },
   logoContainer: {
@@ -439,13 +439,13 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.md,
   },
   title: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: theme.spacing.xs,
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 16,
     paddingHorizontal: theme.spacing.lg,
     textAlign: 'center',
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    color: '#888691',
+    color: theme.colors.text.tertiary,
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 1.5,
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
   },
   settingRow: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+  borderBottomColor: 'rgba(255,255,255,0.06)',
     borderBottomWidth: 1,
     flexDirection: 'row',
     paddingVertical: theme.spacing.md,
@@ -473,13 +473,13 @@ const styles = StyleSheet.create({
     marginRight: theme.spacing.md,
   },
   settingTitle: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
     marginBottom: theme.spacing.xs,
   },
   settingDescription: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 14,
     lineHeight: 20,
   },
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   },
   volumeButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+  backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: theme.borderRadius.md,
     minWidth: 60,
     paddingHorizontal: theme.spacing.md,
@@ -501,15 +501,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   volumeButtonText: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 14,
     fontWeight: '600',
   },
   volumeButtonTextActive: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
   },
   chevron: {
-    color: 'rgba(255,255,255,0.5)',
+    color: theme.colors.text.secondary,
     fontSize: 24,
     fontWeight: '300',
   },
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   languageModal: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.colors.surface,
     borderRadius: 16,
     maxHeight: '70%',
     overflow: 'hidden',
@@ -535,17 +535,17 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   languageModalTitle: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '700',
   },
   modalCloseButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+  backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: 20,
     padding: 8,
   },
   modalCloseText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
   },
   languageOption: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+  borderBottomColor: 'rgba(255,255,255,0.04)',
     borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   selectedLanguageOption: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: theme.colors.surfaceSecondary,
   },
   languageInfo: {
     alignItems: 'center',
@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   languageOptionText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 2,
@@ -586,7 +586,7 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
   languageEnglishName: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 14,
   },
   checkMark: {
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
   },
   // Duration Picker Modal Styles
   durationModal: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.colors.surface,
     borderRadius: 16,
     maxHeight: '60%',
     overflow: 'hidden',
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   durationModalTitle: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
   },
   durationOption: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+  backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: 8,
     marginBottom: 8,
     paddingHorizontal: 16,
@@ -629,12 +629,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   durationOptionText: {
-    color: 'rgba(255,255,255,0.8)',
+    color: theme.colors.text.secondary,
     fontSize: 16,
     fontWeight: '500',
   },
   durationOptionTextSelected: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontWeight: '600',
   },
 });
