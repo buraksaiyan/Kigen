@@ -227,12 +227,16 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
-            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-              <MaterialIcons name="close" size={24} color={theme.colors.text.primary} />
-            </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
-              New Entry
-            </Text>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+                <MaterialIcons name="close" size={24} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.headerCenter}>
+              <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>New Entry</Text>
+            </View>
+
             <View style={styles.headerRight}> 
               <TouchableOpacity onPress={handleSave} style={styles.saveButtonTop}>
                 <Text style={[styles.saveButtonText, { color: '#FFFFFF' }]}>Save</Text>
@@ -450,7 +454,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -628,7 +632,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255,0,0,0.2)', // Temporary debug background
+    width: 120,
+  },
+  headerLeft: {
+    width: 40,
+    alignItems: 'flex-start',
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
   },
   saveButtonTop: {
     paddingHorizontal: 16,
