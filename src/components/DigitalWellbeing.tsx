@@ -214,11 +214,11 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.permissionButton, { backgroundColor: theme.colors.primary }]}
+              style={[styles.permissionButton, { backgroundColor: theme.colors.secondary }]}
               onPress={requestPermission}
               disabled={isRequestingPermission}
             >
-              <Text style={[styles.permissionButtonText, { color: theme.colors.text.primary }]}>
+              <Text style={[styles.permissionButtonText, { color: theme.colors.background }]}> 
                 {isRequestingPermission ? 'Opening Settings...' : 'Grant Usage Access'}
               </Text>
             </TouchableOpacity>
@@ -306,7 +306,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
                   onPress={onRefresh}
                 >
                   <Text style={[styles.refreshButtonText, { 
-                    color: '#888691',
+                    color: theme.colors.text.primary,
                   }]}>
                     Refresh Data
                   </Text>
@@ -357,7 +357,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
               onPress={onRefresh}
             >
               <Text style={[styles.refreshButtonText, { 
-                color: '#888691',
+                color: theme.colors.text.primary,
               }]}>
                 Retry
               </Text>

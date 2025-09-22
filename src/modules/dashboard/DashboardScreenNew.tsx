@@ -678,10 +678,7 @@ export const DashboardScreen: React.FC = () => {
         <View style={styles.topBarCenter} />
       </View>
 
-      {/* Small hint text between top bar and card */}
-      <View style={styles.tapHintContainer} pointerEvents="none">
-        <Text style={styles.tapHintText}>Tap to flip</Text>
-      </View>
+      {/* Small hint text between top bar and card - moved into scrollable content so it can scroll away */}
 
       <ScrollView 
         style={styles.scrollView}
@@ -689,6 +686,9 @@ export const DashboardScreen: React.FC = () => {
         bounces={true}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
       >
+        <View style={styles.topTapHintContainer}>
+          <Text style={styles.topTapHintText}>Tap to flip</Text>
+        </View>
         {renderUserCard()}
 
         <GestureDetector gesture={pan}>
@@ -1130,7 +1130,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   improveButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.secondary,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -1170,10 +1170,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   permissionButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.secondary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   permissionButtonText: {
     color: '#FFFFFF',

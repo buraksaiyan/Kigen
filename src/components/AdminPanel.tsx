@@ -243,7 +243,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
             style={[styles.actionButton, { backgroundColor: theme.colors.primary }]}
             onPress={handleExportUsers}
           >
-            <Text style={[styles.actionButtonText, { color: theme.colors.background }]}>
+            <Text style={[styles.actionButtonText, { color: theme.colors.background }]}> 
               Export Users
             </Text>
           </TouchableOpacity>
@@ -252,7 +252,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
             style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
             onPress={handleSendPromoEmail}
           >
-            <Text style={[styles.actionButtonText, { color: theme.colors.background }]}>
+            <Text style={[styles.actionButtonText, { color: theme.colors.background }]}> 
               Send Promo Email
             </Text>
           </TouchableOpacity>
