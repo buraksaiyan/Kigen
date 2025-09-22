@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Dimensions,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RefreshControl } from 'react-native';
@@ -300,10 +301,6 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
               </View>
 
-              <View style={styles.topTapHintContainer}>
-                <Text style={styles.topTapHintText}>Tap to flip</Text>
-              </View>
-
               <View style={styles.profileSection}>
                 <TouchableOpacity onPress={async () => {
                   try {
@@ -383,10 +380,6 @@ export const DashboardScreen: React.FC = () => {
 
               <View style={styles.periodTopLeft}>
                 <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
-              </View>
-
-              <View style={styles.topTapHintContainer}>
-                <Text style={styles.topTapHintText}>Tap to flip</Text>
               </View>
 
               <View style={styles.profileSection}>
@@ -642,6 +635,20 @@ export const DashboardScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
+      <View style={styles.topBarContainer}>
+        <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
+          <Text style={styles.topBarButtonText}>🔔</Text>
+        </TouchableOpacity>
+        {/* center area left empty for app name (to be added later) */}
+        <View style={styles.topBarCenter} />
+      </View>
+
+      {/* Small hint text between top bar and card */}
+      <View style={styles.tapHintContainer} pointerEvents="none">
+        <Text style={styles.tapHintText}>Tap to flip</Text>
+      </View>
+
       <ScrollView 
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -697,6 +704,44 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  // Top bar (slightly thicker than bottom bar)
+  topBarContainer: {
+    height: 48, // slightly thicker than typical bottom bar (~40)
+    backgroundColor: theme.colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  topBarLeftButton: {
+    height: 36,
+    width: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+  },
+  topBarButtonText: {
+    fontSize: 16,
+  },
+  topBarCenter: {
+    flex: 1,
+  },
+
+  // Small tap hint between top bar and card
+  tapHintContainer: {
+    alignSelf: 'center',
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  tapHintText: {
+    fontSize: 11,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+    opacity: 0.9,
   },
   userCard: {
     backgroundColor: 'transparent', // Remove background since we use ImageBackground
