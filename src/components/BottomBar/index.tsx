@@ -43,7 +43,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           <Icon
             name="home"
             size={24}
-            color={activeScreen === 'Dashboard' ? theme.colors.primary : theme.colors.text.secondary}
+            color={activeScreen === 'Dashboard' ? '#0000FF' : theme.colors.text.disabled}
           />
         </TouchableOpacity>
 
@@ -56,7 +56,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           <Icon 
             name="leaderboard" 
             size={24} 
-            color={activeScreen === 'Leaderboard' ? theme.colors.primary : theme.colors.text.secondary} 
+            color={activeScreen === 'Leaderboard' ? '#0000FF' : theme.colors.text.disabled} 
           />
         </TouchableOpacity>
       </View>
@@ -83,7 +83,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           <Icon 
             name="history" 
             size={24} 
-            color={activeScreen === 'History' ? theme.colors.primary : theme.colors.text.secondary} 
+            color={activeScreen === 'History' ? '#0000FF' : theme.colors.text.disabled} 
           />
         </TouchableOpacity>
 
@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   activeIconButton: {
-    backgroundColor: theme.colors.primary + '20',
+    // translucent blue background for selected state
+    backgroundColor: '#0000FF22',
   },
   centerButton: {
     width: 84,
