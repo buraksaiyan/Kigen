@@ -310,7 +310,20 @@ export class UserStatsService {
         PHY: RatingSystem.calculatePhysicalPoints(totalFocusMinutes.body)
       };
 
-      console.log('📅 Current month stats calculated:', totalStats);
+      // Derive additional, human-friendly metrics for logging: productivity points and social usage summary
+      const productivityPoints = RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow);
+      const socialSummary = {
+        totalSocialMediaMinutes,
+        penaltyPoints: Math.floor(totalSocialMediaMinutes / 10), // matches discipline penalty rule
+      };
+
+      console.log('📅 Current month stats calculated:', totalStats, {
+        productivityPoints,
+        social: socialSummary,
+        totalFocusMinutes,
+        totalPhoneUsageMinutes,
+      });
+
       return totalStats;
     } catch (error) {
       console.error('Error calculating current month stats:', error);

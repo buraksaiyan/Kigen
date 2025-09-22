@@ -1,23 +1,23 @@
 // The Deep Blue theme - inspired by deep ocean colors
 export const theme = {
   colors: {
-    primary: '#001F3F',      // Deep navy blue as main color
-    secondary: '#7FDBFF',    // Light sky blue for accents
+  primary: '#001428',      // Even deeper navy (less cyan)
+  secondary: '#5AAFCC',    // Muted sky blue for accents (less saturated)
     success: '#2ECC40',      // Emerald green for positive actions
     danger: '#FF4136',       // Bright red for warnings/mistakes
     warning: '#FFDC00',      // Bright yellow for moderate alerts
     
     // Deep blue theme with navy base
-    background: '#001122',   // Very deep navy background
-    surface: '#002244',      // Slightly lighter navy for cards
-    surfaceSecondary: '#003366', // Medium navy for sections
-    border: '#004488',       // Blue-tinted borders
+  background: '#000F1A',   // Darker, less saturated navy background
+  surface: '#001826',      // Subtle surface shade for cards
+  surfaceSecondary: '#002B3A', // Deeper section background
+  border: '#00374A',       // Muted blue-tinted borders
     
     text: {
       primary: '#FFFFFF',    // Pure white for main text
-      secondary: '#7FDBFF',  // Light blue for secondary text
-      tertiary: '#7FDBFF99', // Translucent light blue
-      disabled: '#336699',   // Muted blue for disabled
+      secondary: '#8FCFDF',  // Softer light blue for secondary text
+      tertiary: '#8FCFDFFF', // Translucent soft blue
+      disabled: '#274F63',   // Muted slate for disabled text
     }
   },
   
