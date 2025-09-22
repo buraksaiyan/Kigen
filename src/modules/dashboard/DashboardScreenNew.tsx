@@ -203,13 +203,18 @@ export const DashboardScreen: React.FC = () => {
 
   const pan = Gesture.Pan()
     .onUpdate((event) => {
-      carouselTranslateX.value = currentCarouselIndex * -screenWidth + event.translationX;
+      // Only track horizontal movement when it's clearly dominant to avoid interfering with vertical scroll
+      if (Math.abs(event.translationX) > Math.abs(event.translationY) * 1.2) {
+        carouselTranslateX.value = currentCarouselIndex * -screenWidth + event.translationX;
+      }
     })
     .onEnd((event) => {
       const velocity = event.velocityX;
-      const threshold = screenWidth * 0.3;
-      
-      if (Math.abs(event.translationX) > threshold || Math.abs(velocity) > 500) {
+      // Require a larger swipe to change panel so vertical scrolls don't trigger it accidentally
+      const threshold = screenWidth * 0.45;
+      const absX = Math.abs(event.translationX);
+
+      if ((absX > threshold && Math.abs(event.translationX) > Math.abs(event.translationY) * 1.2) || Math.abs(velocity) > 800) {
         if (event.translationX > 0) {
           // Swipe right - go to previous
           if (currentCarouselIndex > 0) {
@@ -251,13 +256,14 @@ export const DashboardScreen: React.FC = () => {
       runOnJS(handleCardFlip)();
     });
 
-    // Use activeOffsetX to avoid capturing vertical drags; only start when horizontal movement is clear
+    // Use stronger activeOffsetX and minDistance to avoid capturing vertical drags; require a clear horizontal swipe
     const horizontalPan = Gesture.Pan()
-      .activeOffsetX([-20, 20])
-      .minDistance(10)
+      .activeOffsetX([-40, 40])
+      .minDistance(20)
       .onEnd((ev) => {
         const absX = Math.abs(ev.translationX);
-        if (absX > 60) {
+        // require a more deliberate swipe to flip
+        if (absX > 120 && Math.abs(ev.translationX) > Math.abs(ev.translationY) * 1.2) {
           runOnJS(handleCardFlip)();
         }
       });
@@ -278,9 +284,6 @@ export const DashboardScreen: React.FC = () => {
             >
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{userRank}</Text>
-              </View>
-              <View style={styles.periodTopLeft}>
-                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
               </View>
 
               <View style={styles.profileSection}>
@@ -311,7 +314,6 @@ export const DashboardScreen: React.FC = () => {
                     </Text>
                     <View style={styles.ratingSubtextRow}>
                       <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>Overall Rating</Text>
-                      <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
                     </View>
                   </View>
 
@@ -343,9 +345,6 @@ export const DashboardScreen: React.FC = () => {
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{userRank}</Text>
               </View>
-              <View style={styles.periodTopLeft}>
-                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
-              </View>
 
               <View style={styles.profileSection}>
                 <Image
@@ -375,7 +374,6 @@ export const DashboardScreen: React.FC = () => {
                     </Text>
                     <View style={styles.ratingSubtextRow}>
                       <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>Overall Rating</Text>
-                      <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
                     </View>
                   </View>
 
@@ -703,12 +701,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  periodTopLeft: {
-    position: 'absolute',
-    top: 12,
-    left: 16,
-    backgroundColor: 'transparent',
-  },
   username: {
     fontSize: 16, // Made smaller
     fontWeight: '600',
@@ -768,10 +760,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 6,
-  },
-  periodTextSmall: {
-    fontSize: 12,
-    fontWeight: '500',
   },
   carousel: {
     flexDirection: 'row',

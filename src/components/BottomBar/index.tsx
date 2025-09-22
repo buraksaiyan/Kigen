@@ -42,7 +42,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           {/** Use uploaded home icon if present, otherwise fallback to vector icon */}
           <Image
             source={require('../../../assets/images/home-icon.png')}
-            style={{ width: 24, height: 24, tintColor: activeScreen === 'Dashboard' ? theme.colors.primary : theme.colors.text.secondary }}
+            style={{ width: 32, height: 32, tintColor: activeScreen === 'Dashboard' ? theme.colors.primary : theme.colors.text.secondary }}
             resizeMode="contain"
           />
         </TouchableOpacity>
