@@ -77,10 +77,10 @@ export const MainNavigator: React.FC = () => {
         setIsFocusSessionOpen(true);
         break;
       case 'goals':
-        setActiveScreen('Goals');
+        // Goals entry UI removed — do nothing (menu will close)
         break;
       case 'journaling':
-        setActiveScreen('Journals');
+        // Journals entry UI removed — do nothing (menu will close)
         break;
       default:
         console.log(`Unhandled menu item: ${itemId}`);
