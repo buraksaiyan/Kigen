@@ -3,6 +3,8 @@ import { View, TextInput, Button, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAppStore } from '../../state/store';
 import { journalStorage } from '../../services/journalStorage';
+import { theme } from '../../config/theme';
+import { TouchableOpacity, Text } from 'react-native';
 
 export const JournalEditScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -47,16 +49,33 @@ export const JournalEditScreen: React.FC = () => {
         value={title}
         onChangeText={setTitle}
         placeholder="Title"
-        style={{ fontSize: 18, fontWeight: '600', padding: 8, backgroundColor: '#111' }}
+        style={{ fontSize: 18, fontWeight: '600', padding: 8, backgroundColor: theme.colors.surface, color: theme.colors.text.primary, borderRadius: 8 }}
       />
       <TextInput
         value={body}
         onChangeText={setBody}
         placeholder="Write..."
         multiline
-        style={{ flex: 1, textAlignVertical: 'top', padding: 8, backgroundColor: '#111' }}
+        style={{ flex: 1, textAlignVertical: 'top', padding: 8, backgroundColor: theme.colors.surface, color: theme.colors.text.primary, borderRadius: 8 }}
       />
-      <Button title={saving ? 'Saving...' : 'Save'} disabled={saving} onPress={save} />
+
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <TouchableOpacity
+          style={{ flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 8, backgroundColor: theme.colors.surface }}
+          disabled={saving}
+          onPress={() => nav.goBack()}
+        >
+          <Text style={{ color: theme.colors.text.secondary, fontWeight: '600' }}>Cancel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 8, backgroundColor: theme.colors.secondary }}
+          disabled={saving}
+          onPress={save}
+        >
+          <Text style={{ color: theme.colors.background, fontWeight: '700' }}>{saving ? 'Saving...' : 'Save'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -329,6 +329,25 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
                 </Text>
               </View>
             </View>
+
+            {/* Action buttons: Cancel / Save */}
+            <View style={styles.actionBar}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { backgroundColor: theme.colors.surface }]}
+                onPress={handleClose}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.cancelButtonText, { color: theme.colors.text.secondary }]}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.saveButtonLarge, { backgroundColor: theme.colors.primary }]}
+                onPress={handleSave}
+                activeOpacity={0.9}
+              >
+                <Text style={[styles.saveButtonLargeText, { color: theme.colors.background }]}>Save</Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
@@ -489,5 +508,32 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  actionBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    gap: 12,
+    marginBottom: 40,
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  saveButtonLarge: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  saveButtonLargeText: {
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
