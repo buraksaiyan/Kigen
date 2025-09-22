@@ -127,14 +127,21 @@ export const DashboardScreen: React.FC = () => {
         setActiveGoals(activeGoalsData);
       }
 
-      // Load saved profile image and display name (if any)
+      // Load canonical user profile from UserStatsService (falls back to AsyncStorage keys)
       try {
-        const saved = await AsyncStorage.getItem('@kigen_profile_image');
-        if (saved) setProfileImageUri(saved);
-        const savedName = await AsyncStorage.getItem('@kigen_profile_name');
-        if (savedName) setDisplayName(savedName);
+        const userProfile = await UserStatsService.getUserProfile();
+        if (userProfile) {
+          if (userProfile.profileImage) setProfileImageUri(userProfile.profileImage);
+          if (userProfile.username) setDisplayName(userProfile.username);
+        } else {
+          // Fallback to legacy keys
+          const saved = await AsyncStorage.getItem('@kigen_profile_image');
+          if (saved) setProfileImageUri(saved);
+          const savedName = await AsyncStorage.getItem('@kigen_profile_name');
+          if (savedName) setDisplayName(savedName);
+        }
       } catch (e) {
-        console.error('Error reading profile image or name', e);
+        console.error('Error loading user profile', e);
       }
 
       setActiveHabits([]);
@@ -315,10 +322,15 @@ export const DashboardScreen: React.FC = () => {
                     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
                     if (!perm.granted) return;
                     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-                    // Newer ImagePicker returns { canceled, assets }
                     if ((result as any).canceled === false && (result as any).assets && (result as any).assets.length > 0) {
                       const uri = (result as any).assets[0].uri;
-                      await AsyncStorage.setItem('@kigen_profile_image', uri);
+                      // Save to canonical profile so Profile screen and other parts of app see the change
+                      try {
+                        await UserStatsService.updateUserProfile({ profileImage: uri });
+                      } catch (err) {
+                        // Fallback to AsyncStorage key if update fails
+                        await AsyncStorage.setItem('@kigen_profile_image', uri);
+                      }
                       setProfileImageUri(uri);
                     }
                   } catch (e) {
@@ -334,10 +346,7 @@ export const DashboardScreen: React.FC = () => {
 
               <View style={styles.usernameSection}>
                 <Text style={[styles.username, { color: textColor }]}> 
-                  {session?.user?.user_metadata?.full_name || 
-                   session?.user?.user_metadata?.name || 
-                   session?.user?.email?.split('@')[0] || 
-                   'User'}
+                  {username}
                 </Text>
               </View>
 
