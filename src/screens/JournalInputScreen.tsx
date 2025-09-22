@@ -235,11 +235,11 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
             </Text>
             <View style={styles.headerRight}> 
               <TouchableOpacity onPress={handleSave} style={styles.saveButtonTop}>
-                <Text style={[styles.saveButtonText, { color: theme.colors.text.primary }]}>Save</Text>
+                <Text style={[styles.saveButtonText, { color: '#FFFFFF' }]}>Save</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)} style={styles.menuToggle}>
-                <MaterialIcons name={menuOpen ? 'arrow-drop-up' : 'arrow-drop-down'} size={28} color={theme.colors.text.primary} />
+                <MaterialIcons name={menuOpen ? 'arrow-drop-up' : 'arrow-drop-down'} size={24} color={theme.colors.text.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -627,18 +627,25 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
+    backgroundColor: 'rgba(255,0,0,0.2)', // Temporary debug background
   },
   saveButtonTop: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#007AFF',
     borderWidth: 1,
-    borderColor: '#38383A',
+    borderColor: '#007AFF',
+    minWidth: 60,
   },
   menuToggle: {
-    padding: 4,
+    padding: 8,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#38383A',
+    minWidth: 30,
   },
   draftMenu: {
     position: 'relative',
