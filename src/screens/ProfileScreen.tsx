@@ -415,9 +415,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
                   disabled={isSaving || isCheckingUsername}
                 >
                   {isSaving || isCheckingUsername ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <ActivityIndicator size="small" color={theme.colors.text.primary} />
                   ) : (
-                    <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+                    <Text style={[styles.saveButtonText, { color: theme.colors.text.primary }]}>{t('common.save')}</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -455,7 +455,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
           
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <Text style={[styles.statNumber, { color: theme.colors.primary }]}>
+              <Text style={[styles.statNumber, { color: theme.colors.text.primary }]}>
                 {formatTime(stats.totalFocusTime)}
               </Text>
               <Text style={[styles.statLabel, { color: theme.colors.text.secondary }]}>{t('profile.totalFocusTime')}</Text>
