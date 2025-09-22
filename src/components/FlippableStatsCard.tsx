@@ -285,7 +285,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
         <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
-          <Text style={styles.topBarButtonText}>🔔</Text>
+          <Text style={[styles.topBarButtonText, { color: textColor }]}>🔔</Text>
         </TouchableOpacity>
         {/* center area left empty for app name (to be added later) */}
         <View style={styles.topBarCenter} />
@@ -293,7 +293,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
       {/* Small hint text between top bar and card */}
       <View style={styles.tapHintContainer} pointerEvents="none">
-        <Text style={styles.tapHintText}>Tap to flip</Text>
+        <Text style={[styles.tapHintText, { color: textColor }]}>Tap to flip</Text>
       </View>
 
       <View style={styles.card} {...panResponder.panHandlers}>
@@ -416,7 +416,8 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                   <View style={styles.statsContainer}>
                     {currentRating && Object.entries(currentRating.stats).map(([key, value]) => (
                       <View key={`back-${key}`} style={styles.statRow}>
-                        <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
+                        <Text style={[styles.statKey, { color: textColor }]}>{getStatName(key)}</Text>
+                        <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
                       </View>
                     ))}
                   </View>
@@ -510,10 +511,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 16,
     elevation: 8,
-    height: 200,
-    margin: 16, // Reverted to original spacing
+    height: 240,
+    marginVertical: 12,
+    marginHorizontal: 8,
     overflow: 'hidden',
-    padding: 8, // Reverted to original spacing
+    padding: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -525,7 +527,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flex: 1,
-    padding: 16,
+    padding: 14,
   },
   cardSide: {
     backfaceVisibility: 'hidden',
@@ -541,8 +543,8 @@ const styles = StyleSheet.create({
   // Top section for time period (moved higher)
   topSection: {
     alignItems: 'center',
-    marginBottom: 12,
-    marginTop: -4, // Move higher
+    marginBottom: 8,
+    marginTop: 6,
   },
   timePeriod: {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
