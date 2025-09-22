@@ -461,6 +461,67 @@ export class UserStatsService {
     }
   }
 
+  // Calculate all-time stats (aggregate of all monthly records plus current month if not saved)
+  static async calculateAllTimeStats(): Promise<UserStats> {
+    try {
+      const monthlyRecords = await this.getMonthlyRecords();
+      const currentMonth = new Date().toISOString().slice(0, 7);
+
+      // If no monthly records exist, return the current month's live stats
+      if (!monthlyRecords || monthlyRecords.length === 0) {
+        const currentStats = await this.calculateCurrentMonthStats();
+        return { ...currentStats };
+      }
+
+      // If current month record exists, use all saved monthly records
+      const currentMonthRecord = monthlyRecords.find(r => r.month === currentMonth);
+
+      let agg: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
+
+      if (currentMonthRecord) {
+        monthlyRecords.forEach(record => {
+          agg.DIS += record.stats.DIS;
+          agg.FOC += record.stats.FOC;
+          agg.JOU += record.stats.JOU;
+          agg.DET += record.stats.DET;
+          agg.MEN += record.stats.MEN;
+          agg.PHY += record.stats.PHY;
+          agg.SOC += (record.stats.SOC || 0);
+          agg.PRD += (record.stats.PRD || 0);
+        });
+      } else {
+        // Sum historical records (excluding current month) and add live current month stats
+        const historical = monthlyRecords.filter(r => r.month !== currentMonth);
+        historical.forEach(record => {
+          agg.DIS += record.stats.DIS;
+          agg.FOC += record.stats.FOC;
+          agg.JOU += record.stats.JOU;
+          agg.DET += record.stats.DET;
+          agg.MEN += record.stats.MEN;
+          agg.PHY += record.stats.PHY;
+          agg.SOC += (record.stats.SOC || 0);
+          agg.PRD += (record.stats.PRD || 0);
+        });
+
+        // Add live current month
+        const currentStats = await this.calculateCurrentMonthStats();
+        agg.DIS += currentStats.DIS;
+        agg.FOC += currentStats.FOC;
+        agg.JOU += currentStats.JOU;
+        agg.DET += currentStats.DET;
+        agg.MEN += currentStats.MEN;
+        agg.PHY += currentStats.PHY;
+        agg.SOC += (currentStats.SOC || 0);
+        agg.PRD += (currentStats.PRD || 0);
+      }
+
+      return agg;
+    } catch (error) {
+      console.error('Error calculating all-time stats:', error);
+      return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
+    }
+  }
+
   static async saveMonthlyRecord(record: MonthlyRecord): Promise<void> {
     try {
       const records = await this.getMonthlyRecords();
@@ -599,58 +660,8 @@ export class UserStatsService {
       const completedTodoBullets = await this.getTotalCompletedTodoBullets();
 
     if (profile) {
-      // Calculate lifetime stats using same logic as FlippableStatsCard
-      const monthlyRecords = await this.getMonthlyRecords();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
-      
-      console.log('📊 Leaderboard: Monthly records found:', monthlyRecords.length);
-      
-      if (monthlyRecords.length === 0) {
-        // Brand new app - no historical data, lifetime = current month
-        const currentStats = await this.calculateCurrentMonthStats();
-        lifetimeStats = { ...currentStats };
-        console.log('📊 Leaderboard: New app - Using current month as lifetime stats');
-      } else {
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
-        
-        if (currentMonthRecord) {
-          // Current month is already saved, use all monthly records (including current)
-          monthlyRecords.forEach(record => {
-            lifetimeStats.DIS += record.stats.DIS;
-            lifetimeStats.FOC += record.stats.FOC;
-            lifetimeStats.JOU += record.stats.JOU;
-            lifetimeStats.DET += record.stats.DET;
-            lifetimeStats.MEN += record.stats.MEN;
-            lifetimeStats.PHY += record.stats.PHY;
-          });
-          console.log('📊 Leaderboard: Using all saved monthly records for lifetime');
-        } else {
-          // Current month not saved yet, use historical records + current month's live stats
-          const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
-          
-          // Add historical months
-          historicalRecords.forEach(record => {
-            lifetimeStats.DIS += record.stats.DIS;
-            lifetimeStats.FOC += record.stats.FOC;
-            lifetimeStats.JOU += record.stats.JOU;
-            lifetimeStats.DET += record.stats.DET;
-            lifetimeStats.MEN += record.stats.MEN;
-            lifetimeStats.PHY += record.stats.PHY;
-          });
-          
-          // Add current month's live stats
-          const currentStats = await this.calculateCurrentMonthStats();
-          lifetimeStats.DIS += currentStats.DIS;
-          lifetimeStats.FOC += currentStats.FOC;
-          lifetimeStats.JOU += currentStats.JOU;
-          lifetimeStats.DET += currentStats.DET;
-          lifetimeStats.MEN += currentStats.MEN;
-          lifetimeStats.PHY += currentStats.PHY;
-          console.log('📊 Leaderboard: Using historical + current month for lifetime');
-        }
-      }
-      
+      // Calculate lifetime stats using centralized helper (includes saved months + live current month)
+      const lifetimeStats = await this.calculateAllTimeStats();
       const totalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
       const cardTier = RatingSystem.getCardTier(totalPoints);
 
@@ -726,48 +737,9 @@ export class UserStatsService {
         return;
       }
 
-      // Calculate lifetime points properly (same logic as FlippableStatsCard)
-      const monthlyRecords = await this.getMonthlyRecords();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
-      let lifetimeTotalPoints = 0;
-
-      const currentMonth = new Date().toISOString().slice(0, 7);
-      const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
-
-      if (currentMonthRecord) {
-        // Current month is already saved, use all monthly records (including current)
-        monthlyRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.DET += record.stats.DET;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-      } else {
-        // Current month not saved yet, use historical records + current month's live stats
-        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
-
-        // Add historical months
-        historicalRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.DET += record.stats.DET;
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-
-        // Add current month's live stats
-  lifetimeStats.DIS += rating.stats.DIS;
-  lifetimeStats.FOC += rating.stats.FOC;
-  lifetimeStats.JOU += rating.stats.JOU;
-  lifetimeStats.DET += rating.stats.DET;
-  lifetimeStats.MEN += rating.stats.MEN;
-  lifetimeStats.PHY += rating.stats.PHY;
-      }
-
-      lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
+      // Use centralized all-time calculation helper
+      const lifetimeStats = await this.calculateAllTimeStats();
+      const lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
 
       const userData = {
         username: profile.username,

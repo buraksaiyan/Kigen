@@ -96,27 +96,9 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
         console.log('📊 No monthly leaderboard data, using direct calculation');
       }
       
-      // Get lifetime data using the same logic as leaderboard
-      const lifetimeLeaderboardData = await UserStatsService.getLifetimeLeaderboard();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
-      
-      if (lifetimeLeaderboardData.length > 0) {
-        const lifetimeEntry = lifetimeLeaderboardData[0];
-        if (lifetimeEntry) {
-          // For consistency, use the same stats as monthly for new apps
-          lifetimeStats = { ...monthlyRating.stats };
-          console.log('📊 Using leaderboard lifetime data:', lifetimeEntry);
-        } else {
-          lifetimeStats = { ...monthlyRating.stats };
-        }
-      } else {
-        // Fallback to monthly stats
-        lifetimeStats = { ...monthlyRating.stats };
-        console.log('📊 No lifetime leaderboard data, using monthly stats');
-      }
-      
+      // Get centralized all-time stats (aggregated monthly records + live current month)
+      const lifetimeStats = await UserStatsService.calculateAllTimeStats();
       const lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
-      
       const lifetimeOverallRating = RatingSystem.calculateOverallRating(lifetimeStats);
       const lifetimeCardTier = RatingSystem.getCardTier(lifetimeTotalPoints);
 

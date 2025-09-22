@@ -19,45 +19,9 @@ export class StatsValidator {
       console.log('📋 Current month record:', currentMonthRecord?.stats || 'None');
       
       // Calculate lifetime stats using FlippableStatsCard logic
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
-      
-      if (currentMonthRecord) {
-        // Use all monthly records
-        monthlyRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.DET += record.stats.DET;
-          lifetimeStats.SOC += (record.stats.SOC || 0);
-          lifetimeStats.PRD += (record.stats.PRD || 0);
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-      } else {
-        // Use historical + current rating
-        const historicalRecords = monthlyRecords.filter(record => record.month !== currentMonth);
-        historicalRecords.forEach(record => {
-          lifetimeStats.DIS += record.stats.DIS;
-          lifetimeStats.FOC += record.stats.FOC;
-          lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.DET += record.stats.DET;
-          lifetimeStats.SOC += (record.stats.SOC || 0);
-          lifetimeStats.PRD += (record.stats.PRD || 0);
-          lifetimeStats.MEN += record.stats.MEN;
-          lifetimeStats.PHY += record.stats.PHY;
-        });
-        
-        lifetimeStats.DIS += currentRating.stats.DIS;
-        lifetimeStats.FOC += currentRating.stats.FOC;
-        lifetimeStats.JOU += currentRating.stats.JOU;
-  lifetimeStats.DET += currentRating.stats.DET;
-  lifetimeStats.SOC += (currentRating.stats.SOC || 0);
-  lifetimeStats.PRD += (currentRating.stats.PRD || 0);
-        lifetimeStats.MEN += currentRating.stats.MEN;
-        lifetimeStats.PHY += currentRating.stats.PHY;
-      }
-      
-      console.log('🌟 Calculated lifetime stats:', lifetimeStats);
+        // Calculate lifetime stats using centralized helper
+        const lifetimeStats = await UserStatsService.calculateAllTimeStats();
+        console.log('🌟 Calculated lifetime stats:', lifetimeStats);
       
       // Check for impossible values
       const errors: string[] = [];
