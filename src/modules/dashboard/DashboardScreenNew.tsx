@@ -716,16 +716,16 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
   },
   topBarLeftButton: {
-    height: 36,
-    width: 36,
-    borderRadius: 10,
+    height: 48,
+    width: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.surfaceSecondary,
   },
   topBarButtonIcon: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     tintColor: theme.colors.text.primary,
   },
   topBarCenter: {
@@ -736,8 +736,8 @@ const styles = StyleSheet.create({
   tapHintContainer: {
     alignSelf: 'center',
     marginHorizontal: 16,
-    marginTop: 2,
-    marginBottom: 2,
+    marginTop: 16,
+    marginBottom: 16,
   },
   tapHintText: {
     fontSize: 11,
@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
   userCard: {
     backgroundColor: 'transparent', // Remove background since we use ImageBackground
     marginHorizontal: 16,
-    marginTop: 16,
+    marginTop: 4,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
