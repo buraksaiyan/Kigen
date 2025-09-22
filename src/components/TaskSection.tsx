@@ -16,6 +16,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { Card } from './UI';
+import { UserStatsService } from '../services/userStatsService';
 
 interface Task {
   id: string;
@@ -131,6 +132,10 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
   };
 
   const toggleTask = async (taskId: string) => {
+    // Determine previous completed state to calculate delta
+    const prevTask = tasks.find(t => t.id === taskId);
+    const wasCompleted = !!prevTask?.completed;
+
     const updatedTasks = tasks.map(task => 
       task.id === taskId 
         ? { 
@@ -142,9 +147,23 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
     );
     setTasks(updatedTasks);
     await saveTasks(updatedTasks);
+
+    try {
+      const nowCompleted = updatedTasks.find(t => t.id === taskId)?.completed;
+      if (nowCompleted && !wasCompleted) {
+        await UserStatsService.incrementCompletedTodoBullets(1);
+      } else if (!nowCompleted && wasCompleted) {
+        await UserStatsService.incrementCompletedTodoBullets(-1);
+      }
+    } catch (error) {
+      console.error('Error updating todo bullets in stats:', error);
+    }
   };
 
   const markTaskAsFailed = async (taskId: string) => {
+    const prevTask = tasks.find(t => t.id === taskId);
+    const wasCompleted = !!prevTask?.completed;
+
     const updatedTasks = tasks.map(task => 
       task.id === taskId 
         ? { 
@@ -157,12 +176,31 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
     );
     setTasks(updatedTasks);
     await saveTasks(updatedTasks);
+
+    try {
+      if (wasCompleted) {
+        await UserStatsService.incrementCompletedTodoBullets(-1);
+      }
+    } catch (error) {
+      console.error('Error updating todo bullets in stats after marking failed:', error);
+    }
   };
 
   const deleteTask = async (taskId: string) => {
+    const taskToDelete = tasks.find(t => t.id === taskId);
+    const wasCompleted = !!taskToDelete?.completed;
+
     const updatedTasks = tasks.filter(task => task.id !== taskId);
     setTasks(updatedTasks);
     await saveTasks(updatedTasks);
+
+    try {
+      if (wasCompleted) {
+        await UserStatsService.incrementCompletedTodoBullets(-1);
+      }
+    } catch (error) {
+      console.error('Error updating todo bullets in stats after delete:', error);
+    }
   };
 
   const startFocusMode = (task: Task) => {

@@ -25,6 +25,10 @@ interface DailyActivity {
   completedSessions: number;
   abortedSessions: number;
   completedGoals: number;
+  // New counters needed for Determination (DET)
+  achievementsUnlocked?: number;
+  habitStreakWeeks?: number;
+  completedTodoBullets?: number;
   focusMinutes: {
     flow: number;
     executioner: number;
@@ -123,6 +127,9 @@ export class UserStatsService {
         completedSessions: 0,
         abortedSessions: 0,
         completedGoals: 0,
+        achievementsUnlocked: 0,
+        habitStreakWeeks: 0,
+        completedTodoBullets: 0,
         focusMinutes: {
           flow: 0,
           executioner: 0,
@@ -171,6 +178,11 @@ export class UserStatsService {
       const meditationMinutes = today.focusMinutes.meditation;
       const noPhoneFocusMinutes = today.focusMinutes.notech;
 
+      // Compute DET supporting inputs for today's stats
+      const achievementsUnlocked = await this.getTotalUnlockedAchievements();
+      const habitStreakWeeks = Math.floor((await this.getDailyStreak()) / 7);
+      const completedTodoBullets = await this.getTotalCompletedTodoBullets();
+
       const stats: UserStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
           today.completedSessions,
@@ -187,9 +199,9 @@ export class UserStatsService {
           today.completedGoals,
           today.journalEntries,
           today.completedSessions,
-          0, // achievements unlocked - placeholder (needs wiring)
-          0, // habit streak weeks - placeholder (needs wiring)
-          0, // completed todo bullets - placeholder (needs wiring)
+          achievementsUnlocked,
+          habitStreakWeeks,
+          completedTodoBullets,
           today.phoneUsageMinutes,
           noPhoneFocusMinutes,
           await this.hasUsageAccess()
@@ -214,11 +226,11 @@ export class UserStatsService {
       const currentMonth = localDate.toISOString().slice(0, 7); // YYYY-MM
       const currentYear = localDate.getFullYear();
       const currentMonthNum = localDate.getMonth(); // 0-based month
-      
+
       // Get all days in current month
       const daysInMonth = new Date(currentYear, currentMonthNum + 1, 0).getDate();
-      
-  let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+
+      let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
       let totalJournalEntries = 0;
       let totalCompletedSessions = 0;
       let totalAbortedSessions = 0;
@@ -237,19 +249,19 @@ export class UserStatsService {
       // Aggregate all days in current month
       for (let day = 1; day <= daysInMonth; day++) {
         const dayString = `${currentMonth}-${day.toString().padStart(2, '0')}`;
-        
+
         // Only process days up to today
         if (dayString <= localDate.toISOString().slice(0, 10)) {
           try {
             const dayActivity = await this.getDailyActivity(dayString);
-            
+
             totalJournalEntries += dayActivity.journalEntries;
             totalCompletedSessions += dayActivity.completedSessions;
             totalAbortedSessions += dayActivity.abortedSessions;
             totalCompletedGoals += dayActivity.completedGoals;
             totalPhoneUsageMinutes += dayActivity.phoneUsageMinutes;
             totalSocialMediaMinutes += dayActivity.socialMediaMinutes;
-            
+
             // Sum focus minutes by type
             totalFocusMinutes.flow += dayActivity.focusMinutes.flow;
             totalFocusMinutes.executioner += dayActivity.focusMinutes.executioner;
@@ -263,9 +275,14 @@ export class UserStatsService {
         }
       }
 
+      // Compute aggregated supporting inputs for DET over the month
+      const achievementsUnlocked = await this.getTotalUnlockedAchievements();
+      const habitStreakWeeks = Math.floor((await this.getDailyStreak()) / 7);
+      const completedTodoBullets = await this.getTotalCompletedTodoBullets();
+
       // Calculate stats using aggregated monthly data
       const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
-      
+
       totalStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
           totalCompletedSessions,
@@ -282,9 +299,9 @@ export class UserStatsService {
           totalCompletedGoals,
           totalJournalEntries,
           totalCompletedSessions,
-          0, // achievements placeholder
-          0, // habit streak weeks placeholder
-          0, // todo bullets placeholder
+          achievementsUnlocked,
+          habitStreakWeeks,
+          completedTodoBullets,
           totalPhoneUsageMinutes,
           totalFocusMinutes.notech,
           hasUsagePermission
@@ -297,7 +314,46 @@ export class UserStatsService {
       return totalStats;
     } catch (error) {
       console.error('Error calculating current month stats:', error);
-  return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+      return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+    }
+  }
+
+  // Helper: get total unlocked achievements using achievementService
+  static async getTotalUnlockedAchievements(): Promise<number> {
+    try {
+      const { achievementService } = await import('./achievementService');
+      return await achievementService.getUnlockedCount();
+    } catch (error) {
+      console.error('Error getting unlocked achievements count:', error);
+      return 0;
+    }
+  }
+
+  // Helper: count completed todo bullets from tasks storage (best-effort)
+  static async getTotalCompletedTodoBullets(): Promise<number> {
+    try {
+      const TASKS_STORAGE_KEY = '@kigen_tasks';
+      const data = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
+      if (!data) return 0;
+      const tasks = JSON.parse(data) as Array<{ completed?: boolean }>;
+      return tasks.filter(t => t.completed).length;
+    } catch (error) {
+      console.error('Error counting completed todo bullets:', error);
+      return 0;
+    }
+  }
+
+  // Helper: increment today's completed todo bullets counter (used when a task is marked complete)
+  static async incrementCompletedTodoBullets(count: number = 1): Promise<void> {
+    try {
+      const today = await this.getTodayActivity();
+      today.completedTodoBullets = (today.completedTodoBullets || 0) + count;
+      await this.saveDailyActivity(today);
+      await this.updateMonthlyStats();
+      // sync leaderboard asynchronously
+      this.syncUserToLeaderboard().catch(e => console.error('Background leaderboard sync failed:', e));
+    } catch (error) {
+      console.error('Error incrementing completed todo bullets:', error);
     }
   }
 
@@ -525,6 +581,10 @@ export class UserStatsService {
     // For now, return current user data with proper lifetime calculation
     const profile = await this.getUserProfile();
     
+      const achievementsUnlocked = await this.getTotalUnlockedAchievements();
+      const habitStreakWeeks = Math.floor((await this.getDailyStreak()) / 7);
+      const completedTodoBullets = await this.getTotalCompletedTodoBullets();
+
     if (profile) {
       // Calculate lifetime stats using same logic as FlippableStatsCard
       const monthlyRecords = await this.getMonthlyRecords();
