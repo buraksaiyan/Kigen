@@ -241,10 +241,9 @@ export const DashboardScreen: React.FC = () => {
     // Get background image based on current rank
     const backgroundImage = RatingSystem.getCardBackgroundImage(userRank as any);
     
-    // Get text colors based on rank background
-    const isLightBackground = ['Bronze', 'Silver', 'Gold'].includes(userRank);
-    const textColor = isLightBackground ? '#000000' : '#FFFFFF';
-    const secondaryTextColor = isLightBackground ? '#666666' : '#CCCCCC';
+  // Get text colors based on rank background using RatingSystem luminance helper
+  const textColor = RatingSystem.getCardTextColorFromTier(userRank as any);
+  const secondaryTextColor = textColor === '#000000' ? '#666666' : '#CCCCCC';
 
     return (
       <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>

@@ -56,6 +56,47 @@ export class RatingSystem {
     return darkTiers.includes(tier) ? '#FFFFFF' : '#000000';
   }
 
+  // Compute perceived luminance from an rgba/hex color string and return true if light
+  static isColorLight(color: string): boolean {
+    try {
+      // Normalize hex like #RRGGBB or rgba(r,g,b,a)
+      if (typeof color === 'string' && color.startsWith('#')) {
+        const hex = color.replace('#', '');
+        if (hex.length >= 6) {
+          const r = Number.parseInt(hex.substring(0, 2), 16) || 0;
+          const g = Number.parseInt(hex.substring(2, 4), 16) || 0;
+          const b = Number.parseInt(hex.substring(4, 6), 16) || 0;
+          // Perceived luminance formula
+          const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          return luminance > 0.6; // threshold: >0.6 considered light
+        }
+      }
+
+      if (typeof color === 'string' && (color.startsWith('rgba') || color.startsWith('rgb'))) {
+        const nums = color.replace(/rgba?\(|\)/g, '').split(',').map(s => parseFloat(s.trim()));
+        const r = nums[0] || 0;
+        const g = nums[1] || 0;
+        const b = nums[2] || 0;
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.6;
+      }
+    } catch (e) {
+      // fallthrough - return conservative default (dark)
+    }
+    return false;
+  }
+
+  // Choose text color based on the tier's primary color luminance when available
+  static getCardTextColorFromTier(tier: CardTier): string {
+    try {
+      const colors = this.getCardTierColors(tier);
+      if (this.isColorLight(colors.primary)) return '#000000';
+      return '#FFFFFF';
+    } catch (e) {
+      return this.getCardTextColor(tier);
+    }
+  }
+
   // Calculate discipline points
   static calculateDisciplinePoints(
     completedSessions: number,

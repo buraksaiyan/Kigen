@@ -39,9 +39,10 @@ interface CircularMenuProps {
 }
 
 const menuItems: CircularMenuItem[] = [
-  { id: 'goal', title: 'Goal', icon: 'flag', color: '#FF6B6B' },
-  { id: 'journal', title: 'Journal', icon: 'book', color: '#4ECDC4' },
+  { id: 'goals', title: 'Goals', icon: 'flag', color: '#FF6B6B' },
+  { id: 'journaling', title: 'Journals', icon: 'book', color: '#4ECDC4' },
   { id: 'focus', title: 'Focus', icon: 'psychology', color: '#45B7D1' },
+  { id: 'reminders', title: 'Reminders', icon: 'notifications', color: '#F6C85F' },
   { id: 'social', title: 'Social', icon: 'people', color: '#96CEB4' },
   { id: 'todo', title: 'To-Do', icon: 'check-circle', color: '#FFEAA7' },
   { id: 'habit', title: 'Habit', icon: 'repeat', color: '#DDA0DD' },
