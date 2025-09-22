@@ -123,6 +123,29 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
     }
   };
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleSaveAsDraft = () => {
+    if (!title.trim() && !content.trim()) {
+      Alert.alert('Error', 'Please write something for your journal entry');
+      return;
+    }
+
+    const draftEntry: JournalEntry = {
+      id: Date.now().toString(),
+      title: title.trim() || `Draft - ${new Date().toLocaleDateString()}`,
+      content: content.trim(),
+      mood: selectedMood,
+      tags,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Save via onSave but keep the editor open as a draft
+    onSave(draftEntry);
+    setMenuOpen(false);
+    Alert.alert('Saved', 'Entry saved as draft');
+  };
+
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim().toLowerCase()) && tags.length < 5) {
       setTags([...tags, currentTag.trim().toLowerCase()]);
@@ -166,12 +189,25 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
             <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>
               New Entry
             </Text>
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-              <Text style={[styles.saveButtonText, { color: theme.colors.primary }]}>
-                Save
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.headerRight}> 
+              <TouchableOpacity onPress={handleSave} style={styles.saveButtonTop}>
+                <Text style={[styles.saveButtonText, { color: theme.colors.primary }]}>Save</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)} style={styles.menuToggle}>
+                <MaterialIcons name={menuOpen ? 'arrow-drop-up' : 'arrow-drop-down'} size={28} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* Expandable draft menu (small) */}
+          {menuOpen && (
+            <View style={[styles.draftMenu, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <TouchableOpacity onPress={handleSaveAsDraft} style={styles.draftMenuItem}>
+                <Text style={{ color: theme.colors.text.primary, fontWeight: '600' }}>Save as draft</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
             {/* Title Input */}
@@ -536,5 +572,28 @@ const styles = StyleSheet.create({
   saveButtonLargeText: {
     fontSize: 16,
     fontWeight: '700',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  saveButtonTop: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  menuToggle: {
+    padding: 4,
+  },
+  draftMenu: {
+    position: 'relative',
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  draftMenuItem: {
+    padding: 12,
   },
 });
