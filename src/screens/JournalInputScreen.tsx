@@ -173,7 +173,7 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
             {/* Title Input */}
             <View style={styles.inputGroup}>
               <TextInput
@@ -330,25 +330,26 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
               </View>
             </View>
 
-            {/* Action buttons: Cancel / Save */}
-            <View style={styles.actionBar}>
-              <TouchableOpacity
-                style={[styles.cancelButton, { backgroundColor: theme.colors.surface }]}
-                onPress={handleClose}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.cancelButtonText, { color: theme.colors.text.secondary }]}>Cancel</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.saveButtonLarge, { backgroundColor: theme.colors.primary }]}
-                onPress={handleSave}
-                activeOpacity={0.9}
-              >
-                <Text style={[styles.saveButtonLargeText, { color: theme.colors.background }]}>Save</Text>
-              </TouchableOpacity>
-            </View>
           </ScrollView>
+
+          {/* Action buttons moved out of ScrollView so they remain accessible and the page can scroll */}
+          <View style={[styles.actionBar, { paddingHorizontal: 20, marginBottom: 20 }]}> 
+            <TouchableOpacity
+              style={[styles.cancelButton, { backgroundColor: theme.colors.surface }]}
+              onPress={handleClose}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.cancelButtonText, { color: theme.colors.text.secondary }]}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.saveButtonLarge, { backgroundColor: theme.colors.primary }]}
+              onPress={handleSave}
+              activeOpacity={0.9}
+            >
+              <Text style={[styles.saveButtonLargeText, { color: theme.colors.background }]}>Save</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -455,7 +456,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     fontSize: 16,
     lineHeight: 24,
-    minHeight: 200,
+    minHeight: 140,
   },
   tagInputContainer: {
     flexDirection: 'row',
