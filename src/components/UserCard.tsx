@@ -139,14 +139,14 @@ export const UserCard: React.FC<UserCardProps> = ({
         <View style={styles.statsSection}>
           <View style={styles.statsRow}>
             <View style={styles.statColumn}>
-              {renderStatBar('DIS', userRating.stats.DIS, 200)}
-              {renderStatBar('FOC', userRating.stats.FOC, 200)}
-              {renderStatBar('JOU', userRating.stats.JOU, 100)}
+              {renderStatBar('Discipline', userRating.stats.DIS, 200)}
+              {renderStatBar('Focus', userRating.stats.FOC, 200)}
+              {renderStatBar('Journaling', userRating.stats.JOU, 100)}
             </View>
             <View style={styles.statColumn}>
-              {renderStatBar('DET', userRating.stats.DET, 200)}
-              {renderStatBar('MEN', userRating.stats.MEN, 300)}
-              {renderStatBar('PHY', userRating.stats.PHY, 200)}
+              {renderStatBar('Determination', userRating.stats.DET, 200)}
+              {renderStatBar('Mentality', userRating.stats.MEN, 300)}
+              {renderStatBar('Physical', userRating.stats.PHY, 200)}
             </View>
           </View>
         </View>

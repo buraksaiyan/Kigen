@@ -244,12 +244,12 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
   const getStatName = (statKey: string): string => {
     const statNames = {
-      DIS: 'DISCIPLINE',
-      FOC: 'FOCUS', 
-      JOU: 'JOURNALING',
-      DET: 'DETERMINATION',
-      MEN: 'MENTALITY',
-      PHY: 'PHYSICAL'
+      DIS: 'Discipline',
+      FOC: 'Focus', 
+      JOU: 'Journaling',
+      DET: 'Determination',
+      MEN: 'Mentality',
+      PHY: 'Physical'
     };
     return statNames[statKey as keyof typeof statNames] || statKey;
   };
@@ -334,7 +334,8 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                   <View style={styles.statsContainer}>
                     {currentRating && Object.entries(currentRating.stats).map(([key, value]) => (
                       <View key={`front-${key}`} style={styles.statRow}>
-                        <Text style={[styles.statKey, { color: textColor }]}>{key} - {value}</Text>
+                        <Text style={[styles.statKey, { color: textColor }]}>{getStatName(key)}</Text>
+                        <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
                       </View>
                     ))}
                   </View>
@@ -393,7 +394,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
                 {/* Middle Column - OVR (moved up, X removed) */}
                 <View style={styles.middleColumn}>
                   <Text style={[styles.ovrValue, { color: textColor }]}>{currentRating.overallRating}</Text>
-                  <Text style={[styles.ovrLabel, { color: textColor }]}>OVR</Text>
+                  <Text style={[styles.ovrLabel, { color: textColor }]}>Overall</Text>
                 </View>
                 
                 {/* Right Column - Stats with values */}

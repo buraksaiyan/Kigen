@@ -62,27 +62,27 @@ export const StatsPreview: React.FC<StatsPreviewProps> = ({ onPress }) => {
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.DIS}</Text>
-            <Text style={styles.statLabel}>DIS</Text>
+            <Text style={styles.statLabel}>Discipline</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.FOC}</Text>
-            <Text style={styles.statLabel}>FOC</Text>
+            <Text style={styles.statLabel}>Focus</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.JOU}</Text>
-            <Text style={styles.statLabel}>JOU</Text>
+            <Text style={styles.statLabel}>Journaling</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.DET}</Text>
-            <Text style={styles.statLabel}>DET</Text>
+            <Text style={styles.statLabel}>Determination</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.MEN}</Text>
-            <Text style={styles.statLabel}>MEN</Text>
+            <Text style={styles.statLabel}>Mentality</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.PHY}</Text>
-            <Text style={styles.statLabel}>PHY</Text>
+            <Text style={styles.statLabel}>Physical</Text>
           </View>
         </View>
 
