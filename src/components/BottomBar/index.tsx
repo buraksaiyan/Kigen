@@ -35,7 +35,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
       <View style={styles.leftSection}>
         <TouchableOpacity
           onPress={() => onNavigate('Dashboard')}
-          style={[styles.iconButton, activeScreen === 'Dashboard' && styles.activeIconButton]}
+          style={styles.iconButton}
           accessibilityLabel="Dashboard"
           accessibilityRole="button"
         >
@@ -49,7 +49,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
 
         <TouchableOpacity
           onPress={() => onNavigate('Leaderboard')}
-          style={[styles.iconButton, activeScreen === 'Leaderboard' && styles.activeIconButton]}
+          style={styles.iconButton}
           accessibilityLabel="Leaderboard"
           accessibilityRole="button"
         >
@@ -76,7 +76,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
       <View style={styles.rightSection}>
         <TouchableOpacity
           onPress={() => onNavigate('History')}
-          style={[styles.iconButton, activeScreen === 'History' && styles.activeIconButton]}
+          style={styles.iconButton}
           accessibilityLabel="History"
           accessibilityRole="button"
         >
@@ -148,10 +148,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
-  },
-  activeIconButton: {
-    // translucent blue background for selected state
-    backgroundColor: '#0000FF22',
   },
   centerButton: {
     width: 84,
