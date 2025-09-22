@@ -191,7 +191,7 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
             </Text>
             <View style={styles.headerRight}> 
               <TouchableOpacity onPress={handleSave} style={styles.saveButtonTop}>
-                <Text style={[styles.saveButtonText, { color: theme.colors.primary }]}>Save</Text>
+                <Text style={[styles.saveButtonText, { color: theme.colors.text.primary }]}>Save</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)} style={styles.menuToggle}>
@@ -563,6 +563,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
+    backgroundColor: '#1C1C1E',
+    borderWidth: 1,
+    borderColor: '#38383A',
   },
   menuToggle: {
     padding: 4,
