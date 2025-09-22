@@ -282,6 +282,20 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
 
   return (
     <>
+      {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
+      <View style={styles.topBarContainer}>
+        <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
+          <Text style={styles.topBarButtonText}>🔔</Text>
+        </TouchableOpacity>
+        {/* center area left empty for app name (to be added later) */}
+        <View style={styles.topBarCenter} />
+      </View>
+
+      {/* Small hint text between top bar and card */}
+      <View style={styles.tapHintContainer} pointerEvents="none">
+        <Text style={styles.tapHintText}>Tap to flip</Text>
+      </View>
+
       <View style={styles.card} {...panResponder.panHandlers}>
         {/* Front Side */}
         <Animated.View 
@@ -680,6 +694,42 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 80,
     textAlign: 'center',
+  },
+  // Top bar (slightly thicker than bottom bar)
+  topBarContainer: {
+    alignSelf: 'stretch',
+    height: 48, // slightly thicker than typical bottom bar (~40)
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  topBarLeftButton: {
+    height: 36,
+    width: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topBarButtonText: {
+    fontSize: 16,
+  },
+  topBarCenter: {
+    flex: 1,
+  },
+
+  // Small tap hint between top bar and card
+  tapHintContainer: {
+    alignSelf: 'center',
+    marginHorizontal: 16,
+    marginTop: -4,
+    marginBottom: 6,
+  },
+  tapHintText: {
+    fontSize: 11,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+    opacity: 0.9,
   },
   
   // Expanded Modal Styles (keeping existing)
