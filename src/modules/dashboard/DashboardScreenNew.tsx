@@ -400,18 +400,34 @@ export const DashboardScreen: React.FC = () => {
               </View>
 
               <View style={styles.profileSection}>
-                <Image
-                  source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
-                  style={styles.profileImage}
-                />
+                <TouchableOpacity onPress={async () => {
+                  try {
+                    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (!perm.granted) return;
+                    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
+                    if ((result as any).canceled === false && (result as any).assets && (result as any).assets.length > 0) {
+                      const uri = (result as any).assets[0].uri;
+                      try {
+                        await UserStatsService.updateUserProfile({ profileImage: uri });
+                      } catch (err) {
+                        await AsyncStorage.setItem('@kigen_profile_image', uri);
+                      }
+                      setProfileImageUri(uri);
+                    }
+                  } catch (e) {
+                    console.error('Image pick error', e);
+                  }
+                }}>
+                  <Image
+                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                    style={styles.profileImage}
+                  />
+                </TouchableOpacity>
               </View>
 
               <View style={styles.usernameSection}>
                 <Text style={[styles.username, { color: textColor }]}> 
-                  {session?.user?.user_metadata?.full_name || 
-                   session?.user?.user_metadata?.name || 
-                   session?.user?.email?.split('@')[0] || 
-                   'User'}
+                  {username}
                 </Text>
               </View>
 
