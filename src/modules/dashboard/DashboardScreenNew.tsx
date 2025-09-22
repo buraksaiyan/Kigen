@@ -28,8 +28,8 @@ import {
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../auth/AuthProvider';
 import { UserStatsService } from '../../services/userStatsService';
 import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/digitalWellbeingService';
@@ -638,7 +638,8 @@ export const DashboardScreen: React.FC = () => {
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
         <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
-          <Image source={require('../../../assets/images/notification-icon.png')} style={styles.topBarButtonIcon} />
+          {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
+          <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
         {/* center area left empty for app name (to be added later) */}
         <View style={styles.topBarCenter} />
@@ -734,13 +735,12 @@ const styles = StyleSheet.create({
   },
 
   // Small tap hint between top bar and card
-  // Make the vertical spacing symmetric: distance from top bar bottom -> hint == hint -> card top
+  // Tight tap hint spacing: small gaps to keep it close to top bar and card
   tapHintContainer: {
     alignSelf: 'center',
     marginHorizontal: 16,
-    // We'll set the vertical gap to 12 so it's visually balanced with the card's small top margin
-    marginTop: 12,
-    marginBottom: 12,
+    marginTop: 6,
+    marginBottom: 6,
   },
   tapHintText: {
     fontSize: 11,
@@ -751,8 +751,8 @@ const styles = StyleSheet.create({
   userCard: {
     backgroundColor: 'transparent', // Remove background since we use ImageBackground
     marginHorizontal: 16,
-    // Reduce the top gap so the tap hint sits centered between the top bar and card.
-    marginTop: 8,
+  // Small top gap so the tap hint sits close to the card
+  marginTop: 4,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
