@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RefreshControl } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -80,6 +81,7 @@ export const DashboardScreen: React.FC = () => {
   const [activeTodos, setActiveTodos] = useState<ActiveTodo[]>([]);
   const [userRank, setUserRank] = useState('Bronze');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [usageStats, setUsageStats] = useState<DigitalWellbeingStats | null>(null);
   const [hasUsagePermission, setHasUsagePermission] = useState(false);
 
@@ -87,74 +89,71 @@ export const DashboardScreen: React.FC = () => {
   const username = session?.user?.email?.split('@')[0] || 'User';
 
   // Load real data
-  React.useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Load monthly stats
-        const monthlyRating = await UserStatsService.getCurrentRating();
-        const mappedMonthlyStats: UserStats = {
-          discipline: monthlyRating.stats.DIS,
-          focus: monthlyRating.stats.FOC,
-          journaling: monthlyRating.stats.JOU,
-          determination: monthlyRating.stats.USA, // Using USA for determination
-          productivity: monthlyRating.stats.MEN, // Using MEN for productivity
-          mental: monthlyRating.stats.MEN,
-          physical: monthlyRating.stats.PHY,
-          social: monthlyRating.stats.USA, // Using USA for social
-          overallRating: monthlyRating.overallRating,
-        };
-        setMonthlyStats(mappedMonthlyStats);
-        
-        // Load all-time stats (simplified - using monthly for now)
-        setAllTimeStats(mappedMonthlyStats);
-        
-        // Load active goals
-        const goalsData = await AsyncStorage.getItem('@kigen_goals');
-        if (goalsData) {
-          const goals = JSON.parse(goalsData);
-          const activeGoalsData = goals
-            .filter((goal: any) => !goal.completed && !goal.failed)
-            .slice(0, 3) // Limit to 3
-            .map((goal: any) => ({
-              id: goal.id,
-              title: goal.title,
-              progress: 0.5, // Mock progress for now
-              deadline: '2025-12-31', // Mock deadline
-            }));
-          setActiveGoals(activeGoalsData);
-        }
-        
-        // For now, keep habits and todos empty
-        setActiveHabits([]);
-        setActiveTodos([]);
-        
-        // Set user rank based on rating
-        setUserRank(monthlyRating.cardTier);
-        
-        // Load usage stats
-        try {
-          const permission = await digitalWellbeingService.canAccessUsageStats();
-          setHasUsagePermission(permission);
-          
-          if (permission) {
-            const stats = await digitalWellbeingService.getTodaysStats();
-            setUsageStats(stats);
-          }
-        } catch (error) {
-          console.error('Error loading usage stats:', error);
-        }
-        
-      } catch (error) {
-        console.error('Error loading dashboard data:', error);
-      } finally {
-        setLoading(false);
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      // Load monthly stats
+      const monthlyRating = await UserStatsService.getCurrentRating();
+      const mappedMonthlyStats: UserStats = {
+        discipline: monthlyRating.stats.DIS,
+        focus: monthlyRating.stats.FOC,
+        journaling: monthlyRating.stats.JOU,
+        determination: monthlyRating.stats.USA,
+        productivity: monthlyRating.stats.MEN,
+        mental: monthlyRating.stats.MEN,
+        physical: monthlyRating.stats.PHY,
+        social: monthlyRating.stats.USA,
+        overallRating: monthlyRating.overallRating,
+      };
+      setMonthlyStats(mappedMonthlyStats);
+      setAllTimeStats(mappedMonthlyStats);
+
+      const goalsData = await AsyncStorage.getItem('@kigen_goals');
+      if (goalsData) {
+        const goals = JSON.parse(goalsData);
+        const activeGoalsData = goals
+          .filter((goal: any) => !goal.completed && !goal.failed)
+          .slice(0, 3)
+          .map((goal: any) => ({ id: goal.id, title: goal.title, progress: 0.5, deadline: '2025-12-31' }));
+        setActiveGoals(activeGoalsData);
       }
-    };
-    
-    loadData();
+
+      setActiveHabits([]);
+      setActiveTodos([]);
+      setUserRank(monthlyRating.cardTier);
+
+      try {
+        const permission = await digitalWellbeingService.canAccessUsageStats();
+        setHasUsagePermission(permission);
+        if (permission) {
+          const stats = await digitalWellbeingService.getTodaysStats();
+          setUsageStats(stats);
+        }
+      } catch (error) {
+        console.error('Error loading usage stats:', error);
+      }
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadDashboardData();
   }, []);
+
+  const refreshData = async () => {
+    setRefreshing(true);
+    try {
+      await loadDashboardData();
+    } catch (e) {
+      console.error('Error refreshing dashboard', e);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const flipRotation = useSharedValue(0);
   const carouselTranslateX = useSharedValue(0);
@@ -252,12 +251,13 @@ export const DashboardScreen: React.FC = () => {
       runOnJS(handleCardFlip)();
     });
 
+    // Use activeOffsetX to avoid capturing vertical drags; only start when horizontal movement is clear
     const horizontalPan = Gesture.Pan()
-      .minDistance(30)
+      .activeOffsetX([-20, 20])
+      .minDistance(10)
       .onEnd((ev) => {
         const absX = Math.abs(ev.translationX);
-        const absY = Math.abs(ev.translationY);
-        if (absX > 80 && absX > absY) {
+        if (absX > 60) {
           runOnJS(handleCardFlip)();
         }
       });
@@ -278,6 +278,9 @@ export const DashboardScreen: React.FC = () => {
             >
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{userRank}</Text>
+              </View>
+              <View style={styles.periodTopLeft}>
+                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
               </View>
 
               <View style={styles.profileSection}>
@@ -339,6 +342,9 @@ export const DashboardScreen: React.FC = () => {
             >
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{userRank}</Text>
+              </View>
+              <View style={styles.periodTopLeft}>
+                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
               </View>
 
               <View style={styles.profileSection}>
@@ -598,6 +604,7 @@ export const DashboardScreen: React.FC = () => {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         bounces={true}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
       >
         {renderUserCard()}
 
@@ -659,7 +666,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 8,
-    minHeight: 500, // Made bigger to accommodate all stats vertically
+    minHeight: 580, // Increased to fit all stats
   },
   userCardBackground: {
     borderRadius: 20,
@@ -669,7 +676,7 @@ const styles = StyleSheet.create({
   },
   rankBadge: {
     position: 'absolute',
-    top: 16,
+    top: 12,
     right: 16,
     backgroundColor: theme.colors.primary,
     paddingHorizontal: 12,
@@ -695,6 +702,12 @@ const styles = StyleSheet.create({
   usernameSection: {
     alignItems: 'center',
     marginBottom: 8,
+  },
+  periodTopLeft: {
+    position: 'absolute',
+    top: 12,
+    left: 16,
+    backgroundColor: 'transparent',
   },
   username: {
     fontSize: 16, // Made smaller

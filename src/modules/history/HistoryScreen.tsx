@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -46,10 +47,18 @@ export const HistoryScreen: React.FC = () => {
     points: [],
   });
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     loadHistoryData();
   }, []);
+
+  // Reload when screen comes into focus (e.g., after creating a journal entry)
+  useFocusEffect(
+    React.useCallback(() => {
+      loadHistoryData();
+    }, [])
+  );
 
   const loadHistoryData = async () => {
     try {
@@ -207,7 +216,19 @@ export const HistoryScreen: React.FC = () => {
   };
 
   const renderHistoryItem = ({ item }: { item: HistoryItem }) => (
-    <View style={styles.historyItem}>
+    <TouchableOpacity
+      onLongPress={() => {
+        // Toggle selection on long press
+        setSelectedIds(prev => prev.includes(item.id) ? prev.filter(id => id !== item.id) : [...prev, item.id]);
+      }}
+      onPress={() => {
+        // If we have active selection, tap toggles selection
+        if (selectedIds.length > 0) {
+          setSelectedIds(prev => prev.includes(item.id) ? prev.filter(id => id !== item.id) : [...prev, item.id]);
+        }
+      }}
+      style={[styles.historyItem, selectedIds.includes(item.id) && styles.historyItemSelected]}
+    >
       <View style={[styles.historyItemIcon, { backgroundColor: getHistoryItemColor(item.type) }]}>
         <Icon
           name={getHistoryItemIcon(item.type)}
@@ -230,17 +251,38 @@ export const HistoryScreen: React.FC = () => {
           </Text>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>History</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Icon name="date-range" size={20} color={theme.colors.text.secondary} />
-          <Text style={styles.filterButtonText}>This Week</Text>
-        </TouchableOpacity>
+        {selectedIds.length > 0 ? (
+          <TouchableOpacity style={styles.filterButton} onPress={async () => {
+            // Delete selected entries (for now handle journal entries via journalStorage)
+            try {
+              const journals = historyData.journaling;
+              const toDelete = selectedIds.filter(id => journals.some(j => j.id === id));
+              for (const id of toDelete) {
+                await journalStorage.deleteEntry(id);
+              }
+              // Refresh local data
+              await loadHistoryData();
+              setSelectedIds([]);
+            } catch (e) {
+              console.error('Error deleting entries', e);
+            }
+          }}>
+            <Icon name="delete" size={20} color={theme.colors.text.secondary} />
+            <Text style={styles.filterButtonText}>Delete ({selectedIds.length})</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.filterButton}>
+            <Icon name="date-range" size={20} color={theme.colors.text.secondary} />
+            <Text style={styles.filterButtonText}>This Week</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView 
@@ -367,6 +409,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  historyItemSelected: {
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    backgroundColor: 'rgba(0,0,0,0.03)',
   },
   historyItemIcon: {
     width: 40,

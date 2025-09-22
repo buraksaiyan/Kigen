@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Image } from 'react-native';
 import { theme } from '../../config/theme';
 
 interface BottomBarProps {
@@ -38,10 +39,11 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           accessibilityLabel="Dashboard"
           accessibilityRole="button"
         >
-          <Icon 
-            name="dashboard" 
-            size={24} 
-            color={activeScreen === 'Dashboard' ? theme.colors.primary : theme.colors.text.secondary} 
+          {/** Use uploaded home icon if present, otherwise fallback to vector icon */}
+          <Image
+            source={require('../../../assets/images/home-icon.png')}
+            style={{ width: 24, height: 24, tintColor: activeScreen === 'Dashboard' ? theme.colors.primary : theme.colors.text.secondary }}
+            resizeMode="contain"
           />
         </TouchableOpacity>
 
