@@ -27,7 +27,7 @@ export class StatsDebugger {
       });
       
       // Calculate lifetime stats manually using the same logic as FlippableStatsCard
-      let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       const currentMonthRecord = monthlyRecords.find(record => record.month === currentMonth);
       
       console.log('🔍 Current month record found:', !!currentMonthRecord);
@@ -40,7 +40,9 @@ export class StatsDebugger {
           lifetimeStats.DIS += record.stats.DIS;
           lifetimeStats.FOC += record.stats.FOC;
           lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.DET += record.stats.DET;
+          lifetimeStats.SOC += (record.stats.SOC || 0);
+          lifetimeStats.PRD += (record.stats.PRD || 0);
           lifetimeStats.MEN += record.stats.MEN;
           lifetimeStats.PHY += record.stats.PHY;
         });
@@ -55,19 +57,23 @@ export class StatsDebugger {
           lifetimeStats.DIS += record.stats.DIS;
           lifetimeStats.FOC += record.stats.FOC;
           lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.DET += record.stats.DET;
+          lifetimeStats.SOC += (record.stats.SOC || 0);
+          lifetimeStats.PRD += (record.stats.PRD || 0);
           lifetimeStats.MEN += record.stats.MEN;
           lifetimeStats.PHY += record.stats.PHY;
         });
         
         // Add current month's live stats
         console.log('➕ Adding current month live stats:', currentStats);
-        lifetimeStats.DIS += currentStats.DIS;
-        lifetimeStats.FOC += currentStats.FOC;
-        lifetimeStats.JOU += currentStats.JOU;
-        lifetimeStats.USA += currentStats.USA;
-        lifetimeStats.MEN += currentStats.MEN;
-        lifetimeStats.PHY += currentStats.PHY;
+  lifetimeStats.DIS += currentStats.DIS;
+  lifetimeStats.FOC += currentStats.FOC;
+  lifetimeStats.JOU += currentStats.JOU;
+  lifetimeStats.DET += currentStats.DET;
+  lifetimeStats.SOC += (currentStats.SOC || 0);
+  lifetimeStats.PRD += (currentStats.PRD || 0);
+  lifetimeStats.MEN += currentStats.MEN;
+  lifetimeStats.PHY += currentStats.PHY;
       }
       
       const lifetimeTotalPoints = RatingSystem.calculateTotalPoints(lifetimeStats);
@@ -83,12 +89,14 @@ export class StatsDebugger {
       
       // Check for anomalies
       const anomalies: string[] = [];
-      if (lifetimeStats.DIS < currentRating.stats.DIS) anomalies.push(`DIS: lifetime(${lifetimeStats.DIS}) < monthly(${currentRating.stats.DIS})`);
-      if (lifetimeStats.FOC < currentRating.stats.FOC) anomalies.push(`FOC: lifetime(${lifetimeStats.FOC}) < monthly(${currentRating.stats.FOC})`);
-      if (lifetimeStats.JOU < currentRating.stats.JOU) anomalies.push(`JOU: lifetime(${lifetimeStats.JOU}) < monthly(${currentRating.stats.JOU})`);
-      if (lifetimeStats.USA < currentRating.stats.USA) anomalies.push(`USA: lifetime(${lifetimeStats.USA}) < monthly(${currentRating.stats.USA})`);
-      if (lifetimeStats.MEN < currentRating.stats.MEN) anomalies.push(`MEN: lifetime(${lifetimeStats.MEN}) < monthly(${currentRating.stats.MEN})`);
-      if (lifetimeStats.PHY < currentRating.stats.PHY) anomalies.push(`PHY: lifetime(${lifetimeStats.PHY}) < monthly(${currentRating.stats.PHY})`);
+  if (lifetimeStats.DIS < currentRating.stats.DIS) anomalies.push(`DIS: lifetime(${lifetimeStats.DIS}) < monthly(${currentRating.stats.DIS})`);
+  if (lifetimeStats.FOC < currentRating.stats.FOC) anomalies.push(`FOC: lifetime(${lifetimeStats.FOC}) < monthly(${currentRating.stats.FOC})`);
+  if (lifetimeStats.JOU < currentRating.stats.JOU) anomalies.push(`JOU: lifetime(${lifetimeStats.JOU}) < monthly(${currentRating.stats.JOU})`);
+  if (lifetimeStats.DET < currentRating.stats.DET) anomalies.push(`DET: lifetime(${lifetimeStats.DET}) < monthly(${currentRating.stats.DET})`);
+  if (lifetimeStats.SOC < (currentRating.stats.SOC || 0)) anomalies.push(`SOC: lifetime(${lifetimeStats.SOC}) < monthly(${currentRating.stats.SOC})`);
+  if (lifetimeStats.PRD < (currentRating.stats.PRD || 0)) anomalies.push(`PRD: lifetime(${lifetimeStats.PRD}) < monthly(${currentRating.stats.PRD})`);
+  if (lifetimeStats.MEN < currentRating.stats.MEN) anomalies.push(`MEN: lifetime(${lifetimeStats.MEN}) < monthly(${currentRating.stats.MEN})`);
+  if (lifetimeStats.PHY < currentRating.stats.PHY) anomalies.push(`PHY: lifetime(${lifetimeStats.PHY}) < monthly(${currentRating.stats.PHY})`);
       
       if (anomalies.length > 0) {
         console.log('\n🚨 ANOMALIES DETECTED:');

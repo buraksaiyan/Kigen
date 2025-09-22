@@ -98,7 +98,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
       
       // Get lifetime data using the same logic as leaderboard
       const lifetimeLeaderboardData = await UserStatsService.getLifetimeLeaderboard();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       
       if (lifetimeLeaderboardData.length > 0) {
         const lifetimeEntry = lifetimeLeaderboardData[0];

@@ -190,8 +190,7 @@ export class UserStatsService {
           today.journalEntries,
           executionMinutes / 60,
           bodyFocusMinutes / 60,
-          today.abortedSessions,
-          today.socialMediaMinutes
+          today.abortedSessions
         ),
         FOC: RatingSystem.calculateFocusPoints(totalFocusMinutes, flowFocusMinutes),
         JOU: RatingSystem.calculateJournalingPoints(today.journalEntries),
@@ -207,13 +206,15 @@ export class UserStatsService {
           await this.hasUsageAccess()
         ),
         MEN: RatingSystem.calculateMentalityPoints(meditationMinutes),
-        PHY: RatingSystem.calculatePhysicalPoints(bodyFocusMinutes)
+        PHY: RatingSystem.calculatePhysicalPoints(bodyFocusMinutes),
+        SOC: RatingSystem.calculateSocialPoints(today.socialMediaMinutes),
+        PRD: RatingSystem.calculateProductivityPoints(executionMinutes, bodyFocusMinutes)
       };
 
       return stats;
     } catch (error) {
       console.error('Error calculating current stats:', error);
-  return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
     }
   }
 
@@ -230,7 +231,7 @@ export class UserStatsService {
       // Get all days in current month
       const daysInMonth = new Date(currentYear, currentMonthNum + 1, 0).getDate();
 
-      let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       let totalJournalEntries = 0;
       let totalCompletedSessions = 0;
       let totalAbortedSessions = 0;
@@ -283,6 +284,9 @@ export class UserStatsService {
       // Calculate stats using aggregated monthly data
       const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
 
+      const productivityPoints = RatingSystem.calculateProductivityPoints(totalFocusMinutes.executioner, totalFocusMinutes.body);
+      const socialPoints = RatingSystem.calculateSocialPoints(totalSocialMediaMinutes);
+
       totalStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
           totalCompletedSessions,
@@ -290,8 +294,7 @@ export class UserStatsService {
           totalJournalEntries,
           totalFocusMinutes.executioner / 60,
           totalFocusMinutes.body / 60,
-          totalAbortedSessions,
-          totalSocialMediaMinutes
+          totalAbortedSessions
         ),
         FOC: RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow),
         JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries),
@@ -307,19 +310,14 @@ export class UserStatsService {
           hasUsagePermission
         ),
         MEN: RatingSystem.calculateMentalityPoints(totalFocusMinutes.meditation),
-        PHY: RatingSystem.calculatePhysicalPoints(totalFocusMinutes.body)
-      };
-
-      // Derive additional, human-friendly metrics for logging: productivity points and social usage summary
-      const productivityPoints = RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow);
-      const socialSummary = {
-        totalSocialMediaMinutes,
-        penaltyPoints: Math.floor(totalSocialMediaMinutes / 10), // matches discipline penalty rule
+        PHY: RatingSystem.calculatePhysicalPoints(totalFocusMinutes.body),
+        SOC: socialPoints,
+        PRD: productivityPoints
       };
 
       console.log('📅 Current month stats calculated:', totalStats, {
         productivityPoints,
-        social: socialSummary,
+        socialPoints,
         totalFocusMinutes,
         totalPhoneUsageMinutes,
       });
@@ -327,7 +325,7 @@ export class UserStatsService {
       return totalStats;
     } catch (error) {
       console.error('Error calculating current month stats:', error);
-      return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
     }
   }
 
@@ -421,7 +419,9 @@ export class UserStatsService {
           JOU: monthlyRecord.stats.JOU + todayStats.JOU,
           DET: monthlyRecord.stats.DET + todayStats.DET,
           MEN: monthlyRecord.stats.MEN + todayStats.MEN,
-          PHY: monthlyRecord.stats.PHY + todayStats.PHY
+          PHY: monthlyRecord.stats.PHY + todayStats.PHY,
+          SOC: (monthlyRecord.stats.SOC || 0) + (todayStats.SOC || 0),
+          PRD: (monthlyRecord.stats.PRD || 0) + (todayStats.PRD || 0)
         };
         
         const updatedTotalPoints = RatingSystem.calculateTotalPoints(updatedStats);
@@ -601,7 +601,7 @@ export class UserStatsService {
     if (profile) {
       // Calculate lifetime stats using same logic as FlippableStatsCard
       const monthlyRecords = await this.getMonthlyRecords();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       
       console.log('📊 Leaderboard: Monthly records found:', monthlyRecords.length);
       
@@ -728,7 +728,7 @@ export class UserStatsService {
 
       // Calculate lifetime points properly (same logic as FlippableStatsCard)
       const monthlyRecords = await this.getMonthlyRecords();
-  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0 };
+  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       let lifetimeTotalPoints = 0;
 
       const currentMonth = new Date().toISOString().slice(0, 7);

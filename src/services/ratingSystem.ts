@@ -5,6 +5,8 @@ interface UserStats {
   DET: number; // Determination (renamed from Usage)
   MEN: number; // Mentality
   PHY: number; // Physical
+  SOC: number; // Social
+  PRD: number; // Productivity
 }
 
 interface UserRating {
@@ -104,8 +106,7 @@ export class RatingSystem {
     journalEntriesToday: number,
     executionHours: number,
     bodyFocusHours: number,
-    abortedSessions: number,
-    socialMediaMinutes: number
+    abortedSessions: number
   ): number {
     let points = 0;
     
@@ -125,10 +126,24 @@ export class RatingSystem {
     // -5 pts per aborted focus session
     points -= abortedSessions * 5;
     
-    // -1 points per 10 minutes of social media app usage
-    points -= Math.floor(socialMediaMinutes / 10);
+    // social-media based penalties were removed; social is tracked as its own stat (SOC)
     
     return Math.max(0, points);
+  }
+
+  // Calculate social points (SOC). Positive metric representing healthy social interactions.
+  // Simple scale: +5 points per 10 minutes of social activity.
+  static calculateSocialPoints(socialMediaMinutes: number): number {
+    if (!socialMediaMinutes || socialMediaMinutes <= 0) return 0;
+    return Math.floor(socialMediaMinutes / 10) * 5;
+  }
+
+  // Calculate productivity points (PRD) from execution and body focus minutes.
+  // We award 15 points per productive hour (rounded up).
+  static calculateProductivityPoints(executionMinutes: number, bodyFocusMinutes: number): number {
+    const totalMinutes = (executionMinutes || 0) + (bodyFocusMinutes || 0);
+    const hours = Math.ceil(totalMinutes / 60);
+    return hours * 15;
   }
 
   // Calculate focus points
@@ -231,8 +246,8 @@ export class RatingSystem {
 
   // Calculate overall rating (mean of all stats)
   static calculateOverallRating(stats: UserStats): number {
-    const total = stats.DIS + stats.FOC + stats.JOU + stats.DET + stats.MEN + stats.PHY;
-    return Math.round(total / 6);
+    const total = stats.DIS + stats.FOC + stats.JOU + stats.DET + stats.MEN + stats.PHY + (stats.SOC || 0) + (stats.PRD || 0);
+    return Math.round(total / 8);
   }
 
   // Determine card tier based on total points
@@ -269,7 +284,16 @@ export class RatingSystem {
 
   // Calculate total points from all stats
   static calculateTotalPoints(stats: UserStats): number {
-    return stats.DIS + stats.FOC + stats.JOU + stats.DET + stats.MEN + stats.PHY;
+    return (
+      stats.DIS +
+      stats.FOC +
+      stats.JOU +
+      stats.DET +
+      stats.MEN +
+      stats.PHY +
+      (stats.SOC || 0) +
+      (stats.PRD || 0)
+    );
   }
 }
 

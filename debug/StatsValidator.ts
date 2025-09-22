@@ -19,7 +19,7 @@ export class StatsValidator {
       console.log('📋 Current month record:', currentMonthRecord?.stats || 'None');
       
       // Calculate lifetime stats using FlippableStatsCard logic
-      let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, USA: 0, MEN: 0, PHY: 0 };
+  let lifetimeStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
       
       if (currentMonthRecord) {
         // Use all monthly records
@@ -27,7 +27,9 @@ export class StatsValidator {
           lifetimeStats.DIS += record.stats.DIS;
           lifetimeStats.FOC += record.stats.FOC;
           lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.DET += record.stats.DET;
+          lifetimeStats.SOC += (record.stats.SOC || 0);
+          lifetimeStats.PRD += (record.stats.PRD || 0);
           lifetimeStats.MEN += record.stats.MEN;
           lifetimeStats.PHY += record.stats.PHY;
         });
@@ -38,7 +40,9 @@ export class StatsValidator {
           lifetimeStats.DIS += record.stats.DIS;
           lifetimeStats.FOC += record.stats.FOC;
           lifetimeStats.JOU += record.stats.JOU;
-          lifetimeStats.USA += record.stats.USA;
+          lifetimeStats.DET += record.stats.DET;
+          lifetimeStats.SOC += (record.stats.SOC || 0);
+          lifetimeStats.PRD += (record.stats.PRD || 0);
           lifetimeStats.MEN += record.stats.MEN;
           lifetimeStats.PHY += record.stats.PHY;
         });
@@ -46,7 +50,9 @@ export class StatsValidator {
         lifetimeStats.DIS += currentRating.stats.DIS;
         lifetimeStats.FOC += currentRating.stats.FOC;
         lifetimeStats.JOU += currentRating.stats.JOU;
-        lifetimeStats.USA += currentRating.stats.USA;
+  lifetimeStats.DET += currentRating.stats.DET;
+  lifetimeStats.SOC += (currentRating.stats.SOC || 0);
+  lifetimeStats.PRD += (currentRating.stats.PRD || 0);
         lifetimeStats.MEN += currentRating.stats.MEN;
         lifetimeStats.PHY += currentRating.stats.PHY;
       }
@@ -58,7 +64,9 @@ export class StatsValidator {
       if (lifetimeStats.DIS < currentRating.stats.DIS) errors.push(`DIS: lifetime(${lifetimeStats.DIS}) < monthly(${currentRating.stats.DIS})`);
       if (lifetimeStats.FOC < currentRating.stats.FOC) errors.push(`FOC: lifetime(${lifetimeStats.FOC}) < monthly(${currentRating.stats.FOC})`);
       if (lifetimeStats.JOU < currentRating.stats.JOU) errors.push(`JOU: lifetime(${lifetimeStats.JOU}) < monthly(${currentRating.stats.JOU})`);
-      if (lifetimeStats.USA < currentRating.stats.USA) errors.push(`USA: lifetime(${lifetimeStats.USA}) < monthly(${currentRating.stats.USA})`);
+  if (lifetimeStats.DET < currentRating.stats.DET) errors.push(`DET: lifetime(${lifetimeStats.DET}) < monthly(${currentRating.stats.DET})`);
+  if (lifetimeStats.SOC < (currentRating.stats.SOC || 0)) errors.push(`SOC: lifetime(${lifetimeStats.SOC}) < monthly(${currentRating.stats.SOC})`);
+  if (lifetimeStats.PRD < (currentRating.stats.PRD || 0)) errors.push(`PRD: lifetime(${lifetimeStats.PRD}) < monthly(${currentRating.stats.PRD})`);
       if (lifetimeStats.MEN < currentRating.stats.MEN) errors.push(`MEN: lifetime(${lifetimeStats.MEN}) < monthly(${currentRating.stats.MEN})`);
       if (lifetimeStats.PHY < currentRating.stats.PHY) errors.push(`PHY: lifetime(${lifetimeStats.PHY}) < monthly(${currentRating.stats.PHY})`);
       
@@ -76,12 +84,12 @@ export class StatsValidator {
       console.log('\n📱 CARD DISPLAY VALUES:');
       console.log('🔸 Monthly Card:');
       console.log('   DIS:', currentRating.stats.DIS, '| FOC:', currentRating.stats.FOC, '| JOU:', currentRating.stats.JOU);
-      console.log('   USA:', currentRating.stats.USA, '| MEN:', currentRating.stats.MEN, '| PHY:', currentRating.stats.PHY);
+  console.log('   DET:', currentRating.stats.DET, '| SOC:', currentRating.stats.SOC, '| PRD:', currentRating.stats.PRD, '| MEN:', currentRating.stats.MEN, '| PHY:', currentRating.stats.PHY);
       console.log('   OVR:', monthlyOverall);
       
       console.log('🔹 Lifetime Card:');
       console.log('   DIS:', lifetimeStats.DIS, '| FOC:', lifetimeStats.FOC, '| JOU:', lifetimeStats.JOU);
-      console.log('   USA:', lifetimeStats.USA, '| MEN:', lifetimeStats.MEN, '| PHY:', lifetimeStats.PHY);
+  console.log('   DET:', lifetimeStats.DET, '| SOC:', lifetimeStats.SOC, '| PRD:', lifetimeStats.PRD, '| MEN:', lifetimeStats.MEN, '| PHY:', lifetimeStats.PHY);
       console.log('   OVR:', lifetimeOverall);
       
     } catch (error) {
