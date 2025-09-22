@@ -638,7 +638,7 @@ export const DashboardScreen: React.FC = () => {
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
         <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
-          <Text style={styles.topBarButtonText}>🔔</Text>
+          <Image source={require('../../../assets/images/notification-icon.png')} style={styles.topBarButtonIcon} />
         </TouchableOpacity>
         {/* center area left empty for app name (to be added later) */}
         <View style={styles.topBarCenter} />
@@ -723,8 +723,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: theme.colors.surfaceSecondary,
   },
-  topBarButtonText: {
-    fontSize: 16,
+  topBarButtonIcon: {
+    width: 20,
+    height: 20,
+    tintColor: theme.colors.text.primary,
   },
   topBarCenter: {
     flex: 1,
@@ -734,8 +736,8 @@ const styles = StyleSheet.create({
   tapHintContainer: {
     alignSelf: 'center',
     marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 4,
+    marginTop: 2,
+    marginBottom: 2,
   },
   tapHintText: {
     fontSize: 11,
