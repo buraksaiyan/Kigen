@@ -158,42 +158,43 @@ export const DashboardScreen: React.FC = () => {
   const flipRotation = useSharedValue(0);
   const carouselTranslateX = useSharedValue(0);
 
+  // Toggle isMonthly after animation completes (runOnJS safe)
+  const finishFlip = useCallback(() => {
+    setIsMonthly(prev => !prev);
+    setIsCardFlipping(false);
+  }, []);
+
   const handleCardFlip = useCallback(() => {
     if (isCardFlipping) return;
-    
     setIsCardFlipping(true);
-    flipRotation.value = withSpring(
-      flipRotation.value + 180,
-      { damping: 15, stiffness: 100 },
-      () => {
-        setIsMonthly(!isMonthly);
-        setIsCardFlipping(false);
-      }
-    );
-  }, [isMonthly, isCardFlipping]);
+    const target = (flipRotation.value + 180) % 360;
+    flipRotation.value = withSpring(target, { damping: 15, stiffness: 100 }, () => {
+      // toggle the logical monthly/all-time after animation
+      runOnJS(finishFlip)();
+    });
+  }, [isCardFlipping, finishFlip]);
 
-  const cardAnimatedStyle = useAnimatedStyle(() => {
-    const rotateY = interpolate(
-      flipRotation.value,
-      [0, 90, 180],
-      [0, 90, 180],
-      Extrapolate.CLAMP
-    );
-    
-    const scaleX = interpolate(
-      flipRotation.value % 180,
-      [0, 90, 180],
-      [1, 0, 1],
-      Extrapolate.CLAMP
-    );
-
+  // Front and back animated styles to avoid mirroring. Use backfaceVisibility: 'hidden'.
+  const frontAnimatedStyle = useAnimatedStyle(() => {
+    const rotateY = interpolate(flipRotation.value % 360, [0, 180], [0, 180]);
     return {
       transform: [
         { perspective: 1000 },
         { rotateY: `${rotateY}deg` },
-        { scaleX },
       ],
-    };
+      backfaceVisibility: 'hidden',
+    } as any;
+  });
+
+  const backAnimatedStyle = useAnimatedStyle(() => {
+    const rotateY = interpolate(flipRotation.value % 360, [0, 180], [-180, 0]);
+    return {
+      transform: [
+        { perspective: 1000 },
+        { rotateY: `${rotateY}deg` },
+      ],
+      backfaceVisibility: 'hidden',
+    } as any;
   });
 
   const updateCarouselIndex = (index: number) => {
@@ -245,74 +246,154 @@ export const DashboardScreen: React.FC = () => {
   const textColor = RatingSystem.getCardTextColorFromTier(userRank as any);
   const secondaryTextColor = textColor === '#000000' ? '#666666' : '#CCCCCC';
 
+    // Gesture: horizontal swipe on the user card flips it
+    const cardPan = Gesture.Pan()
+      .minDistance(10)
+      .onEnd((ev) => {
+        const absX = Math.abs(ev.translationX);
+        const absY = Math.abs(ev.translationY);
+        // Only consider mostly-horizontal swipes with a decent velocity/translation
+        if (absX > 80 && absX > absY) {
+          // Trigger flip
+          runOnJS(handleCardFlip)();
+        }
+      });
+
+    // Render front (monthly) and back (all-time) faces stacked; touch flips card
     return (
-      <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
-        <Animated.View style={[styles.userCard, cardAnimatedStyle]}>
-          <ImageBackground
-            source={backgroundImage}
-            style={styles.userCardBackground}
-            imageStyle={{ borderRadius: 20 }}
-            resizeMode="cover"
-          >
-            <View style={styles.rankBadge}>
-              <Text style={styles.rankText}>{userRank}</Text>
-            </View>
-            
-            {/* Profile picture at the top */}
-            <View style={styles.profileSection}>
-              <Image
-                source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
-                style={styles.profileImage}
-              />
-            </View>
-
-            {/* Username closer to Overall Rating */}
-            <View style={styles.usernameSection}>
-              <Text style={[styles.username, { color: textColor }]}>
-                {session?.user?.user_metadata?.full_name || 
-                 session?.user?.user_metadata?.name || 
-                 session?.user?.email?.split('@')[0] || 
-                 'User'}
-              </Text>
-            </View>
-
-            {loading || !currentStats ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Loading stats...</Text>
+      <GestureDetector gesture={cardPan}>
+        <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
+          <View style={styles.userCard}>
+          {/* Front face */}
+          <Animated.View style={[styles.faceContainer, frontAnimatedStyle]}>
+            <ImageBackground
+              source={backgroundImage}
+              style={styles.userCardBackground}
+              imageStyle={{ borderRadius: 20 }}
+              resizeMode="cover"
+            >
+              <View style={styles.rankBadge}>
+                <Text style={styles.rankText}>{userRank}</Text>
               </View>
-            ) : (
-              <>
-                <View style={styles.ratingSection}>
-                  <Text style={[styles.overallRating, { color: textColor }]}>
-                    {currentStats.overallRating}
-                  </Text>
-                  <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>
-                    Overall Rating
-                  </Text>
-                </View>
 
-                {/* All stats in vertical layout */}
-                <View style={styles.statsSection}>
-                  <StatItem label="Discipline" value={currentStats.discipline} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Focus" value={currentStats.focus} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Journaling" value={currentStats.journaling} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Determination" value={currentStats.determination} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Productivity" value={currentStats.productivity} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Mental" value={currentStats.mental} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Physical" value={currentStats.physical} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                  <StatItem label="Social" value={currentStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
-                </View>
+              <View style={styles.profileSection}>
+                <Image
+                  source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                  style={styles.profileImage}
+                />
+              </View>
 
-                <View style={styles.periodToggle}>
-                  <Text style={[styles.periodText, { color: secondaryTextColor }]}>
-                    {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
-                  </Text>
+              <View style={styles.usernameSection}>
+                <Text style={[styles.username, { color: textColor }]}> 
+                  {session?.user?.user_metadata?.full_name || 
+                   session?.user?.user_metadata?.name || 
+                   session?.user?.email?.split('@')[0] || 
+                   'User'}
+                </Text>
+              </View>
+
+              {loading || !currentStats ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Loading stats...</Text>
                 </View>
-              </>
-            )}
-          </ImageBackground>
-        </Animated.View>
-      </TouchableOpacity>
+              ) : (
+                <>
+                  <View style={styles.ratingSection}>
+                    <Text style={[styles.overallRating, { color: textColor }]}> 
+                      {currentStats.overallRating}
+                    </Text>
+                    <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}> 
+                      Overall Rating
+                    </Text>
+                  </View>
+
+                  <View style={styles.statsSection}>
+                    <StatItem label="Discipline" value={currentStats.discipline} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Focus" value={currentStats.focus} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Journaling" value={currentStats.journaling} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Determination" value={currentStats.determination} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Productivity" value={currentStats.productivity} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Mental" value={currentStats.mental} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Physical" value={currentStats.physical} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Social" value={currentStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  </View>
+
+                  <View style={styles.periodToggle}>
+                    <Text style={[styles.periodText, { color: secondaryTextColor }]}> 
+                      {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </ImageBackground>
+          </Animated.View>
+
+          {/* Back face - show all-time stats explicitly */}
+          <Animated.View style={[styles.faceContainer, styles.backFace, backAnimatedStyle]}>
+            <ImageBackground
+              source={RatingSystem.getCardBackgroundImage(userRank as any)}
+              style={styles.userCardBackground}
+              imageStyle={{ borderRadius: 20 }}
+              resizeMode="cover"
+            >
+              <View style={styles.rankBadge}>
+                <Text style={styles.rankText}>{userRank}</Text>
+              </View>
+
+              <View style={styles.profileSection}>
+                <Image
+                  source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                  style={styles.profileImage}
+                />
+              </View>
+
+              <View style={styles.usernameSection}>
+                <Text style={[styles.username, { color: textColor }]}> 
+                  {session?.user?.user_metadata?.full_name || 
+                   session?.user?.user_metadata?.name || 
+                   session?.user?.email?.split('@')[0] || 
+                   'User'}
+                </Text>
+              </View>
+
+              {loading || !allTimeStats ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Loading stats...</Text>
+                </View>
+              ) : (
+                <>
+                  <View style={styles.ratingSection}>
+                    <Text style={[styles.overallRating, { color: textColor }]}> 
+                      {allTimeStats.overallRating}
+                    </Text>
+                    <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}> 
+                      Overall Rating (All-Time)
+                    </Text>
+                  </View>
+
+                  <View style={styles.statsSection}>
+                    <StatItem label="Discipline" value={allTimeStats.discipline} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Focus" value={allTimeStats.focus} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Journaling" value={allTimeStats.journaling} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Determination" value={allTimeStats.determination} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Productivity" value={allTimeStats.productivity} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Mental" value={allTimeStats.mental} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Physical" value={allTimeStats.physical} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                    <StatItem label="Social" value={allTimeStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  </View>
+
+                  <View style={styles.periodToggle}>
+                    <Text style={[styles.periodText, { color: secondaryTextColor }]}> 
+                      All-Time Stats
+                    </Text>
+                  </View>
+                </>
+              )}
+            </ImageBackground>
+          </Animated.View>
+        </View>
+          </TouchableOpacity>
+        </GestureDetector>
     );
   };
 
@@ -838,6 +919,19 @@ const styles = StyleSheet.create({
   },
   usageStat: {
     alignItems: 'center',
+  },
+  faceContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  backFace: {
+    // Place back face above front so rotation works; zIndex may not matter for animated 3D
+    zIndex: 0,
   },
   usageValue: {
     color: theme.colors.text.primary,
