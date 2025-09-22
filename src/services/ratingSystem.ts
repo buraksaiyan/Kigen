@@ -2,7 +2,7 @@ interface UserStats {
   DIS: number; // Discipline
   FOC: number; // Focus
   JOU: number; // Journaling
-  USA: number; // Usage
+  DET: number; // Determination (renamed from Usage)
   MEN: number; // Mentality
   PHY: number; // Physical
 }
@@ -27,7 +27,7 @@ export enum CardTier {
 
 export class RatingSystem {
   private static DAILY_JOURNAL_CAP = 1;
-  private static PHONE_USAGE_THRESHOLD = 3; // hours
+  private static PHONE_USAGE_THRESHOLD = 3; // hours (legacy threshold kept for backwards compatibility where needed)
 
   // Card background images for each tier
   static getCardBackgroundImage(tier: CardTier) {
@@ -156,38 +156,62 @@ export class RatingSystem {
     return Math.min(entriesCount, this.DAILY_JOURNAL_CAP) * 20;
   }
 
-  // Calculate usage points
-  static calculateUsagePoints(
-    dailyPhoneMinutes: number,
-    noPhoneFocusMinutes: number,
+  // Calculate Determination points (new stat replacing Usage)
+  // Determination aggregates multiple achievement/productivity signals:
+  // - Per 10 Goal completions -> +20 Points
+  // - Per 10 Journal entries -> +15 Points
+  // - Per 10 Focus Session completions -> +50 Points
+  // - Per Achievement unlock -> +5 Points
+  // - Per 7 days streak of habits -> +50 Points
+  // - Per completed To-Do List Bullet -> +5 Points
+  // It also inherits prior phone-usage related adjustments as a fallback.
+  static calculateDeterminationPoints(
+    totalCompletedGoals: number,
+    totalJournalEntries: number,
+    totalCompletedFocusSessions: number,
+    achievementsUnlocked: number,
+    habitStreakWeeks: number, // number of completed 7-day streaks
+    completedTodoBullets: number,
+    dailyPhoneMinutes: number = 0,
+    noPhoneFocusMinutes: number = 0,
     hasUsageAccess: boolean = false
   ): number {
-    // Don't award usage points if usage access is not granted
-    if (!hasUsageAccess) {
-      return 0;
+    let points = 0;
+
+    // Per 10 Goal completions -> +20
+    points += Math.floor(totalCompletedGoals / 10) * 20;
+
+    // Per 10 Journal entries -> +15
+    points += Math.floor(totalJournalEntries / 10) * 15;
+
+    // Per 10 Focus Session completions -> +50
+    points += Math.floor(totalCompletedFocusSessions / 10) * 50;
+
+    // Per Achievement unlock -> +5
+    points += achievementsUnlocked * 5;
+
+    // Per 7 days streak (each completed block of 7 days) -> +50
+    points += habitStreakWeeks * 50;
+
+    // Per completed To-Do List Bullet -> +5
+    points += completedTodoBullets * 5;
+
+    // Inherit/keep some legacy phone-usage incentives if permission granted
+    if (hasUsageAccess) {
+      const dailyPhoneHours = dailyPhoneMinutes / 60;
+      if (dailyPhoneHours <= this.PHONE_USAGE_THRESHOLD) {
+        points += 10; // small bonus for staying under threshold
+      } else {
+        const hoursAbove = dailyPhoneHours - this.PHONE_USAGE_THRESHOLD;
+        points -= Math.ceil(hoursAbove) * 5; // minor penalty
+      }
+
+      // +5 pts per no-phone focus hour
+      const noPhoneFocusHours = Math.ceil(noPhoneFocusMinutes / 60);
+      points += noPhoneFocusHours * 5;
     }
 
-    let points = 0;
-    const dailyPhoneHours = dailyPhoneMinutes / 60;
-    
-    if (dailyPhoneHours <= this.PHONE_USAGE_THRESHOLD) {
-      // +20 if daily phone usage is below 3 hours
-      points += 20;
-      
-      // Every hour below 3 hours grants additional +10 points
-      const hoursBelow = this.PHONE_USAGE_THRESHOLD - dailyPhoneHours;
-      points += Math.ceil(hoursBelow) * 10;
-    } else {
-      // -10 points for each hour above 3 hours
-      const hoursAbove = dailyPhoneHours - this.PHONE_USAGE_THRESHOLD;
-      points -= Math.ceil(hoursAbove) * 10;
-    }
-    
-    // +10 points per no phone focus mode hour
-    const noPhoneFocusHours = Math.ceil(noPhoneFocusMinutes / 60);
-    points += noPhoneFocusHours * 10;
-    
-    return Math.max(0, points);
+    return Math.max(0, Math.round(points));
   }
 
   // Calculate mentality points
@@ -207,7 +231,7 @@ export class RatingSystem {
 
   // Calculate overall rating (mean of all stats)
   static calculateOverallRating(stats: UserStats): number {
-    const total = stats.DIS + stats.FOC + stats.JOU + stats.USA + stats.MEN + stats.PHY;
+    const total = stats.DIS + stats.FOC + stats.JOU + stats.DET + stats.MEN + stats.PHY;
     return Math.round(total / 6);
   }
 
@@ -245,7 +269,7 @@ export class RatingSystem {
 
   // Calculate total points from all stats
   static calculateTotalPoints(stats: UserStats): number {
-    return stats.DIS + stats.FOC + stats.JOU + stats.USA + stats.MEN + stats.PHY;
+    return stats.DIS + stats.FOC + stats.JOU + stats.DET + stats.MEN + stats.PHY;
   }
 }
 

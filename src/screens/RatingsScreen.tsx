@@ -224,12 +224,14 @@ export const RatingsScreen: React.FC = () => {
               </View>
 
               <View style={styles.explanationSection}>
-                <Text style={styles.explanationHeader}>USAGE (USA)</Text>
+                <Text style={styles.explanationHeader}>DETERMINATION (DET)</Text>
                 <Text style={styles.explanationText}>
-                  • +20 pts if daily phone usage {'<'} 3 hours{'\n'}
-                  • +10 pts per hour below 3 hours{'\n'}
-                  • -10 pts per hour above 3 hours{'\n'}
-                  • +10 pts per no-phone focus hour
+                    • +20 pts per 10 goals completed{'\n'}
+                    • +15 pts per 10 journal entries{'\n'}
+                    • +50 pts per 10 focus session completions{'\n'}
+                    • +5 pts per achievement unlocked{'\n'}
+                    • +50 pts per completed 7-day habit streak{'\n'}
+                    • +5 pts per completed To-Do bullet
                 </Text>
               </View>
 

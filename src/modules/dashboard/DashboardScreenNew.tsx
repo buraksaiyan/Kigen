@@ -100,11 +100,11 @@ export const DashboardScreen: React.FC = () => {
         discipline: monthlyRating.stats.DIS,
         focus: monthlyRating.stats.FOC,
         journaling: monthlyRating.stats.JOU,
-        determination: monthlyRating.stats.USA,
+        determination: monthlyRating.stats.DET,
         productivity: monthlyRating.stats.MEN,
         mental: monthlyRating.stats.MEN,
         physical: monthlyRating.stats.PHY,
-        social: monthlyRating.stats.USA,
+        social: monthlyRating.stats.DET,
         overallRating: monthlyRating.overallRating,
       };
       setMonthlyStats(mappedMonthlyStats);
@@ -300,6 +300,10 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
               </View>
 
+              <View style={styles.topTapHintContainer}>
+                <Text style={styles.topTapHintText}>Tap to flip</Text>
+              </View>
+
               <View style={styles.profileSection}>
                 <TouchableOpacity onPress={async () => {
                   try {
@@ -361,9 +365,7 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
-              <View style={styles.tapToFlipContainer}>
-                <Text style={styles.tapToFlipText}>Tap to flip</Text>
-              </View>
+              {/* bottom hint removed - moved to top */}
             </ImageBackground>
           </Animated.View>
 
@@ -381,6 +383,10 @@ export const DashboardScreen: React.FC = () => {
 
               <View style={styles.periodTopLeft}>
                 <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
+              </View>
+
+              <View style={styles.topTapHintContainer}>
+                <Text style={styles.topTapHintText}>Tap to flip</Text>
               </View>
 
               <View style={styles.profileSection}>
@@ -428,9 +434,7 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
-              <View style={styles.tapToFlipContainer}>
-                <Text style={styles.tapToFlipText}>Tap to flip</Text>
-              </View>
+              {/* bottom hint removed - moved to top */}
             </ImageBackground>
           </Animated.View>
         </View>
@@ -817,6 +821,15 @@ const styles = StyleSheet.create({
   },
   tapToFlipText: {
     fontSize: 12,
+    color: theme.colors.text.tertiary,
+  },
+  topTapHintContainer: {
+    alignItems: 'center',
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  topTapHintText: {
+    fontSize: 10,
     color: theme.colors.text.tertiary,
   },
   carousel: {

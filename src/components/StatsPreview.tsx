@@ -73,8 +73,8 @@ export const StatsPreview: React.FC<StatsPreviewProps> = ({ onPress }) => {
             <Text style={styles.statLabel}>JOU</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userRating.stats.USA}</Text>
-            <Text style={styles.statLabel}>USA</Text>
+            <Text style={styles.statValue}>{userRating.stats.DET}</Text>
+            <Text style={styles.statLabel}>DET</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{userRating.stats.MEN}</Text>

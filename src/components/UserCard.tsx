@@ -144,7 +144,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               {renderStatBar('JOU', userRating.stats.JOU, 100)}
             </View>
             <View style={styles.statColumn}>
-              {renderStatBar('USA', userRating.stats.USA, 200)}
+              {renderStatBar('DET', userRating.stats.DET, 200)}
               {renderStatBar('MEN', userRating.stats.MEN, 300)}
               {renderStatBar('PHY', userRating.stats.PHY, 200)}
             </View>
