@@ -152,14 +152,13 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
         activeOpacity={1}
       />
       
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.menuContainer, containerStyle]}>
+      <View style={styles.menuContainer}>
+        <Animated.View style={containerStyle}>
           {/* Menu items arranged around the bottom bar streak button - no separate central circle */}
           {menuItems.map((item, index) => (
             <Animated.View
               key={item.id}
               style={[styles.menuItem, itemStyles[index]]}
-              pointerEvents="box-none"
             >
               <TouchableOpacity
                 style={[styles.itemButton, { backgroundColor: item.color }]}
@@ -172,7 +171,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
             </Animated.View>
           ))}
         </Animated.View>
-      </GestureDetector>
+      </View>
     </View>
   );
 };
@@ -187,8 +186,13 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   backdrop: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: -1, // Behind menu items but still clickable
   },
   menuContainer: {
     position: 'absolute',

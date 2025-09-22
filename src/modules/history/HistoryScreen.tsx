@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 import { focusSessionService } from '../../services/FocusSessionService';
 import { UserStatsService } from '../../services/userStatsService';
+import { journalStorage } from '../../services/journalStorage';
 
 type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
 
@@ -34,122 +35,6 @@ const historyTabs = [
   { id: 'points' as HistoryTab, title: 'Points', icon: 'star' },
 ];
 
-// Mock data
-const mockHistoryData: Record<HistoryTab, HistoryItem[]> = {
-  journaling: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '09:30',
-      title: 'Morning Reflection',
-      description: 'Wrote about goals and daily intentions',
-      type: 'journal_entry',
-    },
-    {
-      id: '2',
-      date: '2025-09-20',
-      time: '20:15',
-      title: 'Evening Review',
-      description: 'Reflected on the day\'s achievements',
-      type: 'journal_entry',
-    },
-  ],
-  goals: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '14:22',
-      title: 'Complete project documentation',
-      description: 'Goal marked as completed',
-      type: 'goal_completed',
-    },
-    {
-      id: '2',
-      date: '2025-09-19',
-      time: '10:00',
-      title: 'Learn React Native animations',
-      description: 'New goal created',
-      type: 'goal_created',
-    },
-  ],
-  todo: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '16:45',
-      title: 'Review pull requests',
-      description: 'Task completed',
-      type: 'todo_completed',
-    },
-    {
-      id: '2',
-      date: '2025-09-21',
-      time: '11:30',
-      title: 'Update project roadmap',
-      description: 'Task added to list',
-      type: 'todo_created',
-    },
-  ],
-  habits: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '07:00',
-      title: 'Morning meditation',
-      description: 'Habit completed - 8 day streak',
-      type: 'habit_completed',
-    },
-    {
-      id: '2',
-      date: '2025-09-21',
-      time: '21:30',
-      title: 'Read for 30 minutes',
-      description: 'Habit completed - 13 day streak',
-      type: 'habit_completed',
-    },
-  ],
-  focus: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '14:00',
-      title: 'Deep Work Session',
-      description: '2 hours of focused work',
-      value: 120,
-      type: 'focus_session',
-    },
-    {
-      id: '2',
-      date: '2025-09-20',
-      time: '09:30',
-      title: 'Morning Focus',
-      description: '1.5 hours of coding',
-      value: 90,
-      type: 'focus_session',
-    },
-  ],
-  points: [
-    {
-      id: '1',
-      date: '2025-09-21',
-      time: '14:22',
-      title: 'Goal Completion Bonus',
-      description: 'Completed project documentation',
-      value: 25,
-      type: 'points_earned',
-    },
-    {
-      id: '2',
-      date: '2025-09-21',
-      time: '09:30',
-      title: 'Journal Entry',
-      description: 'Morning reflection completed',
-      value: 5,
-      type: 'points_earned',
-    },
-  ],
-};
-
 export const HistoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<HistoryTab>('journaling');
   const [historyData, setHistoryData] = useState<Record<HistoryTab, HistoryItem[]>>({
@@ -170,16 +55,26 @@ export const HistoryScreen: React.FC = () => {
     try {
       setLoading(true);
 
-      // Load journaling data
-      const journalLogs = await focusSessionService.getJournalLogs(50);
-      const journalingItems: HistoryItem[] = journalLogs.map(log => ({
-        id: log.id,
-        date: log.date,
-        time: '09:00', // Default time since journal logs don't have time
-        title: 'Journal Entry',
-        description: log.action,
-        type: 'journal_entry',
-      }));
+      // Load real journal entries with full content
+      const journalEntries = await journalStorage.getAllEntries();
+      const journalingItems: HistoryItem[] = journalEntries.map(entry => {
+        const date = new Date(entry.date);
+        const dateStr = date.getFullYear() + '-' + 
+          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(date.getDate()).padStart(2, '0');
+        return {
+          id: entry.id,
+          date: dateStr,
+          time: date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          }),
+          title: 'Journal Entry',
+          description: entry.content, // Show actual journal content
+          type: 'journal_entry',
+        };
+      });
 
       // Load goal completion data
       const goalLogs = await focusSessionService.getGoalCompletionLogs(50);
@@ -373,18 +268,13 @@ export const HistoryScreen: React.FC = () => {
         ) : (
           <View style={styles.emptyState}>
             <Icon name="history" size={64} color={theme.colors.text.tertiary} />
-            <Text style={styles.emptyStateTitle}>No {historyTabs.find(t => t.id === activeTab)?.title} History</Text>
+            <Text style={styles.emptyStateTitle}>No entries yet</Text>
             <Text style={styles.emptyStateDescription}>
               Your {historyTabs.find(t => t.id === activeTab)?.title.toLowerCase()} activities will appear here
             </Text>
           </View>
         )}
       </View>
-
-      <TouchableOpacity style={styles.exportButton}>
-        <Icon name="file-download" size={20} color="#FFFFFF" />
-        <Text style={styles.exportButtonText}>Export Data</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -541,22 +431,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
     textAlign: 'center',
     lineHeight: 20,
-  },
-  exportButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.primary,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 8,
-  },
-  exportButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
   loadingState: {
     flex: 1,

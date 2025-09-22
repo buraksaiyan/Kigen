@@ -12,6 +12,8 @@ import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
+import { GoalsScreen } from '../screens/GoalsScreen';
+import { JournalsScreen } from '../screens/JournalsScreen';
 
 // Import components
 import { BottomBar } from '../components/BottomBar';
@@ -25,7 +27,7 @@ import { UserStatsService } from '../services/userStatsService';
 
 const Stack = createNativeStackNavigator();
 
-type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings';
+type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
 
 export const MainNavigator: React.FC = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
@@ -75,7 +77,12 @@ export const MainNavigator: React.FC = () => {
       case 'focus':
         setIsFocusSessionOpen(true);
         break;
-      // TODO: Handle other menu items
+      case 'goals':
+        setActiveScreen('Goals');
+        break;
+      case 'journaling':
+        setActiveScreen('Journals');
+        break;
       default:
         console.log(`Unhandled menu item: ${itemId}`);
     }
@@ -101,6 +108,10 @@ export const MainNavigator: React.FC = () => {
         return <ProfileScreen visible={true} onClose={() => setActiveScreen('Dashboard')} />;
       case 'Settings':
         return <SettingsScreen visible={true} onClose={() => setActiveScreen('Dashboard')} />;
+      case 'Goals':
+        return <GoalsScreen />;
+      case 'Journals':
+        return <JournalsScreen />;
       default:
         return <DashboardScreenNew />;
     }

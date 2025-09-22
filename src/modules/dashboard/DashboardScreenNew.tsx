@@ -240,6 +240,11 @@ export const DashboardScreen: React.FC = () => {
   const renderUserCard = () => {
     // Get background image based on current rank
     const backgroundImage = RatingSystem.getCardBackgroundImage(userRank as any);
+    
+    // Get text colors based on rank background
+    const isLightBackground = ['Bronze', 'Silver', 'Gold'].includes(userRank);
+    const textColor = isLightBackground ? '#000000' : '#FFFFFF';
+    const secondaryTextColor = isLightBackground ? '#666666' : '#CCCCCC';
 
     return (
       <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
@@ -254,12 +259,22 @@ export const DashboardScreen: React.FC = () => {
               <Text style={styles.rankText}>{userRank}</Text>
             </View>
             
+            {/* Profile picture at the top */}
             <View style={styles.profileSection}>
               <Image
-                source={{ uri: 'https://via.placeholder.com/80x80' }}
+                source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
                 style={styles.profileImage}
               />
-              <Text style={styles.username}>{username}</Text>
+            </View>
+
+            {/* Username closer to Overall Rating */}
+            <View style={styles.usernameSection}>
+              <Text style={[styles.username, { color: textColor }]}>
+                {session?.user?.user_metadata?.full_name || 
+                 session?.user?.user_metadata?.name || 
+                 session?.user?.email?.split('@')[0] || 
+                 'User'}
+              </Text>
             </View>
 
             {loading || !currentStats ? (
@@ -269,27 +284,28 @@ export const DashboardScreen: React.FC = () => {
             ) : (
               <>
                 <View style={styles.ratingSection}>
-                  <Text style={styles.overallRating}>{currentStats.overallRating}</Text>
-                  <Text style={styles.ratingLabel}>Overall Rating</Text>
+                  <Text style={[styles.overallRating, { color: textColor }]}>
+                    {currentStats.overallRating}
+                  </Text>
+                  <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>
+                    Overall Rating
+                  </Text>
                 </View>
 
+                {/* All stats in vertical layout */}
                 <View style={styles.statsSection}>
-                  <View style={styles.statsColumn}>
-                    <StatItem label="Discipline" value={currentStats.discipline} />
-                    <StatItem label="Focus" value={currentStats.focus} />
-                    <StatItem label="Journaling" value={currentStats.journaling} />
-                    <StatItem label="Determination" value={currentStats.determination} />
-                  </View>
-                  <View style={styles.statsColumn}>
-                    <StatItem label="Productivity" value={currentStats.productivity} />
-                    <StatItem label="Mental" value={currentStats.mental} />
-                    <StatItem label="Physical" value={currentStats.physical} />
-                    <StatItem label="Social" value={currentStats.social} />
-                  </View>
+                  <StatItem label="Discipline" value={currentStats.discipline} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Focus" value={currentStats.focus} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Journaling" value={currentStats.journaling} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Determination" value={currentStats.determination} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Productivity" value={currentStats.productivity} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Mental" value={currentStats.mental} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Physical" value={currentStats.physical} textColor={textColor} secondaryTextColor={secondaryTextColor} />
+                  <StatItem label="Social" value={currentStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
                 </View>
 
                 <View style={styles.periodToggle}>
-                  <Text style={styles.periodText}>
+                  <Text style={[styles.periodText, { color: secondaryTextColor }]}>
                     {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
                   </Text>
                 </View>
@@ -305,27 +321,34 @@ export const DashboardScreen: React.FC = () => {
     <View style={styles.carouselPanel}>
       <Text style={styles.sectionTitle}>Active Goals</Text>
       <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
-        {activeGoals.map((goal) => (
-          <View key={goal.id} style={styles.goalItem}>
-            <View style={styles.goalHeader}>
-              <Text style={styles.goalTitle}>{goal.title}</Text>
-              <Text style={styles.goalDeadline}>{goal.deadline}</Text>
+        {activeGoals.length > 0 ? (
+          activeGoals.map((goal) => (
+            <View key={goal.id} style={styles.goalItem}>
+              <View style={styles.goalHeader}>
+                <Text style={styles.goalTitle}>{goal.title}</Text>
+                <Text style={styles.goalDeadline}>{goal.deadline}</Text>
+              </View>
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: `${goal.progress * 100}%` }]} />
+              </View>
+              <View style={styles.goalActions}>
+                <TouchableOpacity style={styles.completeButton}>
+                  <Icon name="check" size={16} color="#FFFFFF" />
+                  <Text style={styles.actionButtonText}>Complete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.failButton}>
+                  <Icon name="close" size={16} color="#FFFFFF" />
+                  <Text style={styles.actionButtonText}>Fail</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${goal.progress * 100}%` }]} />
-            </View>
-            <View style={styles.goalActions}>
-              <TouchableOpacity style={styles.completeButton}>
-                <Icon name="check" size={16} color="#FFFFFF" />
-                <Text style={styles.actionButtonText}>Complete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.failButton}>
-                <Icon name="close" size={16} color="#FFFFFF" />
-                <Text style={styles.actionButtonText}>Fail</Text>
-              </TouchableOpacity>
-            </View>
+          ))
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>No active goals yet</Text>
+            <Text style={styles.emptyStateSubtext}>Set your first goal to get started!</Text>
           </View>
-        ))}
+        )}
       </ScrollView>
     </View>
   );
@@ -410,13 +433,16 @@ export const DashboardScreen: React.FC = () => {
               onPress={async () => {
                 try {
                   await digitalWellbeingService.requestUsageAccess();
-                  // Reload data after permission granted
-                  const permission = await digitalWellbeingService.canAccessUsageStats();
-                  setHasUsagePermission(permission);
-                  if (permission) {
-                    const stats = await digitalWellbeingService.getTodaysStats();
-                    setUsageStats(stats);
-                  }
+                  // Small delay to ensure permission is processed
+                  setTimeout(async () => {
+                    const permission = await digitalWellbeingService.canAccessUsageStats();
+                    setHasUsagePermission(permission);
+                    if (permission) {
+                      const stats = await digitalWellbeingService.getTodaysStats();
+                      setUsageStats(stats);
+                      console.log('Real usage stats loaded:', stats);
+                    }
+                  }, 1000);
                 } catch (error) {
                   console.error('Error requesting permission:', error);
                 }
@@ -526,10 +552,15 @@ export const DashboardScreen: React.FC = () => {
   );
 };
 
-const StatItem: React.FC<{ label: string; value: number }> = ({ label, value }) => (
+const StatItem: React.FC<{ 
+  label: string; 
+  value: number; 
+  textColor: string; 
+  secondaryTextColor: string; 
+}> = ({ label, value, textColor, secondaryTextColor }) => (
   <View style={styles.statItem}>
-    <Text style={styles.statLabel}>{label}</Text>
-    <Text style={styles.statValue}>{value}</Text>
+    <Text style={[styles.statLabel, { color: secondaryTextColor }]}>{label}</Text>
+    <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
   </View>
 );
 
@@ -542,29 +573,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userCard: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: 'transparent', // Remove background since we use ImageBackground
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 20,
-    padding: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 8,
-    minHeight: 400,
+    minHeight: 500, // Made bigger to accommodate all stats vertically
   },
   userCardBackground: {
-    marginHorizontal: 16,
-    marginTop: 16,
     borderRadius: 20,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-    minHeight: 400,
+    minHeight: 500, // Made bigger
+    justifyContent: 'flex-start',
   },
   rankBadge: {
     position: 'absolute',
@@ -582,17 +606,21 @@ const styles = StyleSheet.create({
   },
   profileSection: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 12, // Reduced spacing
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
+    width: 100, // Made bigger
+    height: 100, // Made bigger
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  usernameSection: {
+    alignItems: 'center',
+    marginBottom: 8,
   },
   username: {
-    color: theme.colors.text.primary,
-    fontSize: 20,
+    fontSize: 16, // Made smaller
     fontWeight: '600',
   },
   ratingSection: {
@@ -610,22 +638,21 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statsSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column', // Changed to column for vertical layout
     marginBottom: 20,
-  },
-  statsColumn: {
-    flex: 1,
+    paddingHorizontal: 8,
   },
   statItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginVertical: 2,
-    backgroundColor: theme.colors.background,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginVertical: 3,
+    backgroundColor: 'transparent', // Removed black background
     borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   statLabel: {
     color: theme.colors.text.secondary,
