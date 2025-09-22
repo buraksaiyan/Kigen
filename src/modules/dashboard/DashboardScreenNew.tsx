@@ -721,23 +721,26 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
+    backgroundColor: 'transparent',
   },
   topBarButtonIcon: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
     tintColor: theme.colors.text.primary,
+    resizeMode: 'contain',
   },
   topBarCenter: {
     flex: 1,
   },
 
   // Small tap hint between top bar and card
+  // Make the vertical spacing symmetric: distance from top bar bottom -> hint == hint -> card top
   tapHintContainer: {
     alignSelf: 'center',
     marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 16,
+    // We'll set the vertical gap to 12 so it's visually balanced with the card's small top margin
+    marginTop: 12,
+    marginBottom: 12,
   },
   tapHintText: {
     fontSize: 11,
@@ -748,7 +751,8 @@ const styles = StyleSheet.create({
   userCard: {
     backgroundColor: 'transparent', // Remove background since we use ImageBackground
     marginHorizontal: 16,
-    marginTop: 4,
+    // Reduce the top gap so the tap hint sits centered between the top bar and card.
+    marginTop: 8,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
