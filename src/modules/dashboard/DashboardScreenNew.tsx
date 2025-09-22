@@ -15,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
   interpolate,
   Extrapolate,
   runOnJS,
@@ -167,9 +168,9 @@ export const DashboardScreen: React.FC = () => {
   const handleCardFlip = useCallback(() => {
     if (isCardFlipping) return;
     setIsCardFlipping(true);
+    // Use a short timed animation to avoid spring bounce/shake
     const target = (flipRotation.value + 180) % 360;
-    flipRotation.value = withSpring(target, { damping: 15, stiffness: 100 }, () => {
-      // toggle the logical monthly/all-time after animation
+    flipRotation.value = withTiming(target, { duration: 350 }, () => {
       runOnJS(finishFlip)();
     });
   }, [isCardFlipping, finishFlip]);
@@ -246,24 +247,27 @@ export const DashboardScreen: React.FC = () => {
   const textColor = RatingSystem.getCardTextColorFromTier(userRank as any);
   const secondaryTextColor = textColor === '#000000' ? '#666666' : '#CCCCCC';
 
-    // Gesture: horizontal swipe on the user card flips it
-    const cardPan = Gesture.Pan()
-      .minDistance(10)
+    // Gesture: use Tap for taps and a horizontal Pan for swipes.
+    const tapGesture = Gesture.Tap().onEnd(() => {
+      runOnJS(handleCardFlip)();
+    });
+
+    const horizontalPan = Gesture.Pan()
+      .minDistance(30)
       .onEnd((ev) => {
         const absX = Math.abs(ev.translationX);
         const absY = Math.abs(ev.translationY);
-        // Only consider mostly-horizontal swipes with a decent velocity/translation
         if (absX > 80 && absX > absY) {
-          // Trigger flip
           runOnJS(handleCardFlip)();
         }
       });
 
-    // Render front (monthly) and back (all-time) faces stacked; touch flips card
+    const cardGesture = Gesture.Race(tapGesture, horizontalPan);
+
+    // Render front (monthly) and back (all-time) faces stacked; tap/fling flips card
     return (
-      <GestureDetector gesture={cardPan}>
-        <TouchableOpacity onPress={handleCardFlip} activeOpacity={0.9}>
-          <View style={styles.userCard}>
+      <GestureDetector gesture={cardGesture}>
+        <View style={styles.userCard}>
           {/* Front face */}
           <Animated.View style={[styles.faceContainer, frontAnimatedStyle]}>
             <ImageBackground
@@ -302,9 +306,10 @@ export const DashboardScreen: React.FC = () => {
                     <Text style={[styles.overallRating, { color: textColor }]}> 
                       {currentStats.overallRating}
                     </Text>
-                    <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}> 
-                      Overall Rating
-                    </Text>
+                    <View style={styles.ratingSubtextRow}>
+                      <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>Overall Rating</Text>
+                      <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
+                    </View>
                   </View>
 
                   <View style={styles.statsSection}>
@@ -318,11 +323,7 @@ export const DashboardScreen: React.FC = () => {
                     <StatItem label="Social" value={currentStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
                   </View>
 
-                  <View style={styles.periodToggle}>
-                    <Text style={[styles.periodText, { color: secondaryTextColor }]}> 
-                      {isMonthly ? 'Monthly Stats' : 'All-Time Stats'}
-                    </Text>
-                  </View>
+                  {/* period label moved into ratingSection */}
                 </>
               )}
             </ImageBackground>
@@ -366,9 +367,10 @@ export const DashboardScreen: React.FC = () => {
                     <Text style={[styles.overallRating, { color: textColor }]}> 
                       {allTimeStats.overallRating}
                     </Text>
-                    <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}> 
-                      Overall Rating (All-Time)
-                    </Text>
+                    <View style={styles.ratingSubtextRow}>
+                      <Text style={[styles.ratingLabel, { color: secondaryTextColor }]}>Overall Rating</Text>
+                      <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
+                    </View>
                   </View>
 
                   <View style={styles.statsSection}>
@@ -382,18 +384,13 @@ export const DashboardScreen: React.FC = () => {
                     <StatItem label="Social" value={allTimeStats.social} textColor={textColor} secondaryTextColor={secondaryTextColor} />
                   </View>
 
-                  <View style={styles.periodToggle}>
-                    <Text style={[styles.periodText, { color: secondaryTextColor }]}> 
-                      All-Time Stats
-                    </Text>
-                  </View>
+                  {/* period label moved into ratingSection */}
                 </>
               )}
             </ImageBackground>
           </Animated.View>
         </View>
-          </TouchableOpacity>
-        </GestureDetector>
+      </GestureDetector>
     );
   };
 
@@ -726,9 +723,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginVertical: 3,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginVertical: 2,
     backgroundColor: 'transparent', // Removed black background
     borderRadius: 8,
     borderBottomWidth: 1,
@@ -750,6 +747,16 @@ const styles = StyleSheet.create({
   },
   periodText: {
     color: theme.colors.text.secondary,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  ratingSubtextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 6,
+  },
+  periodTextSmall: {
     fontSize: 12,
     fontWeight: '500',
   },

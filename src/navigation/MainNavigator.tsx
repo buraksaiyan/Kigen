@@ -13,7 +13,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
 import { GoalsScreen } from '../screens/GoalsScreen';
-import { JournalsScreen } from '../screens/JournalsScreen';
+import { JournalsEntryScreen } from '../screens/JournalsEntryScreen';
 
 // Import components
 import { BottomBar } from '../components/BottomBar';
@@ -27,7 +27,7 @@ import { UserStatsService } from '../services/userStatsService';
 
 const Stack = createNativeStackNavigator();
 
-type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
+  type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
 
 export const MainNavigator: React.FC = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
@@ -111,7 +111,7 @@ export const MainNavigator: React.FC = () => {
       case 'Goals':
         return <GoalsScreen />;
       case 'Journals':
-        return <JournalsScreen />;
+        return <JournalsEntryScreen />;
       default:
         return <DashboardScreenNew />;
     }
