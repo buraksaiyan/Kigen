@@ -394,9 +394,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '700',
   },
-  placeholder: {
-    width: 60,
-  },
+  placeholder: { width: 60 },
   scrollView: {
     flex: 1,
   },

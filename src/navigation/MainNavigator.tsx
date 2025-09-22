@@ -12,7 +12,7 @@ import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
-import { JournalsEntryScreen } from '../screens/JournalsEntryScreen';
+// Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
 import { BottomBar } from '../components/BottomBar';
@@ -111,7 +111,8 @@ export const MainNavigator: React.FC = () => {
         // Goals screen removed; redirect to Dashboard for now
         return <DashboardScreenNew />;
       case 'Journals':
-        return <JournalsEntryScreen />;
+        // Redirect journaling circular menu to the History screen (journal history)
+        return <HistoryScreen />;
       default:
         return <DashboardScreenNew />;
     }
