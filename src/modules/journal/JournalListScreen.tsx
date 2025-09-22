@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, FlatList, Text, TouchableOpacity, RefreshControl } from 'react-native';
-import { supabase } from '../../services/supabase';
 import { useAppStore } from '../../state/store';
 import { JOURNAL_PAGE_SIZE } from '../../config/constants';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { journalStorage } from '../../services/journalStorage';
 
 export const JournalListScreen: React.FC = () => {
   const { journal, setJournal } = useAppStore();
@@ -12,12 +12,22 @@ export const JournalListScreen: React.FC = () => {
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('journal_entries')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(JOURNAL_PAGE_SIZE);
-    if (!error && data) setJournal(data);
+    try {
+      const entries = await journalStorage.getAllEntries();
+      // If the app store expects a richer shape, normalize minimally
+      setJournal(
+        entries.map((e) => ({
+          id: e.id,
+          user_id: 'local',
+          created_at: e.date,
+          updated_at: e.date,
+          title: e.content.split('\n\n')[0] || '',
+          body: e.content.split('\n\n').slice(1).join('\n\n') || '',
+        }))
+      );
+    } catch (err) {
+      console.warn('Failed to load local journal entries', err);
+    }
     setLoading(false);
   }
 

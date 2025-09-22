@@ -1,3 +1,4 @@
+// This file has been deleted as per user request.
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

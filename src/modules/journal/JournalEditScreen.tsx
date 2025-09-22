@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
-import { supabase } from '../../services/supabase';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAppStore } from '../../state/store';
+import { journalStorage } from '../../services/journalStorage';
 
 export const JournalEditScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -24,18 +24,19 @@ export const JournalEditScreen: React.FC = () => {
 
   async function save() {
     setSaving(true);
-    let payload: any = { title, body };
-    let result;
-    if (editingId === 'new') {
-      result = await supabase.from('journal_entries').insert(payload).select().single();
-    } else {
-      result = await supabase.from('journal_entries').update(payload).eq('id', editingId).select().single();
-    }
-    if (result.error) {
-      Alert.alert('Error', result.error.message);
-    } else if (result.data) {
-      upsertEntry(result.data);
+    try {
+      if (editingId === 'new') {
+        await journalStorage.addEntry(`${title}\n\n${body}`);
+        // Reload/notify via global store - upsertEntry will be called elsewhere when list reloads
+      } else {
+        await journalStorage.updateEntry(editingId, `${title}\n\n${body}`);
+        // Optionally update local store - provide minimal required shape
+        const now = new Date().toISOString();
+        upsertEntry({ id: editingId, user_id: 'local', created_at: now, updated_at: now, title, body });
+      }
       nav.goBack();
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'Failed to save entry');
     }
     setSaving(false);
   }
