@@ -88,8 +88,14 @@ export const DashboardScreen: React.FC = () => {
   const [hasUsagePermission, setHasUsagePermission] = useState(false);
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
-  const username = session?.user?.email?.split('@')[0] || 'User';
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
+  // Prefer an explicitly stored displayName, then Supabase metadata, then email prefix
+  const username = displayName
+    || session?.user?.user_metadata?.full_name
+    || session?.user?.user_metadata?.name
+    || session?.user?.email?.split('@')[0]
+    || 'User';
 
   // Load real data
   const loadDashboardData = async () => {
@@ -121,12 +127,14 @@ export const DashboardScreen: React.FC = () => {
         setActiveGoals(activeGoalsData);
       }
 
-      // Load saved profile image (if any)
+      // Load saved profile image and display name (if any)
       try {
         const saved = await AsyncStorage.getItem('@kigen_profile_image');
         if (saved) setProfileImageUri(saved);
+        const savedName = await AsyncStorage.getItem('@kigen_profile_name');
+        if (savedName) setDisplayName(savedName);
       } catch (e) {
-        console.error('Error reading profile image', e);
+        console.error('Error reading profile image or name', e);
       }
 
       setActiveHabits([]);
