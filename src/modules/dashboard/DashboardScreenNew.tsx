@@ -34,6 +34,7 @@ import { UserStatsService } from '../../services/userStatsService';
 import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/digitalWellbeingService';
 import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -87,6 +88,7 @@ export const DashboardScreen: React.FC = () => {
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
   const username = session?.user?.email?.split('@')[0] || 'User';
+  const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
 
   // Load real data
   const loadDashboardData = async () => {
@@ -116,6 +118,14 @@ export const DashboardScreen: React.FC = () => {
           .slice(0, 3)
           .map((goal: any) => ({ id: goal.id, title: goal.title, progress: 0.5, deadline: '2025-12-31' }));
         setActiveGoals(activeGoalsData);
+      }
+
+      // Load saved profile image (if any)
+      try {
+        const saved = await AsyncStorage.getItem('@kigen_profile_image');
+        if (saved) setProfileImageUri(saved);
+      } catch (e) {
+        console.error('Error reading profile image', e);
       }
 
       setActiveHabits([]);
@@ -268,7 +278,7 @@ export const DashboardScreen: React.FC = () => {
         }
       });
 
-    const cardGesture = Gesture.Race(tapGesture, horizontalPan);
+  const cardGesture = Gesture.Race(tapGesture, horizontalPan);
 
     // Render front (monthly) and back (all-time) faces stacked; tap/fling flips card
     return (
@@ -286,11 +296,31 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.rankText}>{userRank}</Text>
               </View>
 
+              <View style={styles.periodTopLeft}>
+                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>{isMonthly ? 'Monthly' : 'All-Time'}</Text>
+              </View>
+
               <View style={styles.profileSection}>
-                <Image
-                  source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
-                  style={styles.profileImage}
-                />
+                <TouchableOpacity onPress={async () => {
+                  try {
+                    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (!perm.granted) return;
+                    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
+                    // Newer ImagePicker returns { canceled, assets }
+                    if ((result as any).canceled === false && (result as any).assets && (result as any).assets.length > 0) {
+                      const uri = (result as any).assets[0].uri;
+                      await AsyncStorage.setItem('@kigen_profile_image', uri);
+                      setProfileImageUri(uri);
+                    }
+                  } catch (e) {
+                    console.error('Image pick error', e);
+                  }
+                }}>
+                  <Image
+                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                    style={styles.profileImage}
+                  />
+                </TouchableOpacity>
               </View>
 
               <View style={styles.usernameSection}>
@@ -331,6 +361,9 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
+              <View style={styles.tapToFlipContainer}>
+                <Text style={styles.tapToFlipText}>Tap to flip</Text>
+              </View>
             </ImageBackground>
           </Animated.View>
 
@@ -346,9 +379,13 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.rankText}>{userRank}</Text>
               </View>
 
+              <View style={styles.periodTopLeft}>
+                <Text style={[styles.periodTextSmall, { color: secondaryTextColor }]}>All-Time</Text>
+              </View>
+
               <View style={styles.profileSection}>
                 <Image
-                  source={{ uri: session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                  source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
                   style={styles.profileImage}
                 />
               </View>
@@ -391,6 +428,9 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
+              <View style={styles.tapToFlipContainer}>
+                <Text style={styles.tapToFlipText}>Tap to flip</Text>
+              </View>
             </ImageBackground>
           </Animated.View>
         </View>
@@ -699,7 +739,13 @@ const styles = StyleSheet.create({
   },
   usernameSection: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  periodTopLeft: {
+    position: 'absolute',
+    top: 12,
+    left: 16,
+    backgroundColor: 'transparent',
   },
   username: {
     fontSize: 16, // Made smaller
@@ -707,11 +753,11 @@ const styles = StyleSheet.create({
   },
   ratingSection: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   overallRating: {
     color: theme.colors.text.primary,
-    fontSize: 48,
+    fontSize: 44,
     fontWeight: '700',
   },
   ratingLabel: {
@@ -760,6 +806,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 6,
+  },
+  periodTextSmall: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  tapToFlipContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  tapToFlipText: {
+    fontSize: 12,
+    color: theme.colors.text.tertiary,
   },
   carousel: {
     flexDirection: 'row',

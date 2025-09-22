@@ -12,7 +12,6 @@ import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
-import { GoalsScreen } from '../screens/GoalsScreen';
 import { JournalsEntryScreen } from '../screens/JournalsEntryScreen';
 
 // Import components
@@ -109,7 +108,8 @@ export const MainNavigator: React.FC = () => {
       case 'Settings':
         return <SettingsScreen visible={true} onClose={() => setActiveScreen('Dashboard')} />;
       case 'Goals':
-        return <GoalsScreen />;
+        // Goals screen removed; redirect to Dashboard for now
+        return <DashboardScreenNew />;
       case 'Journals':
         return <JournalsEntryScreen />;
       default:
