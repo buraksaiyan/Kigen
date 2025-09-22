@@ -1059,7 +1059,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.text.tertiary,
   },
   indicatorDotActive: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#0000FF',
     width: 24,
   },
   usageSection: {
