@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface JournalInputScreenProps {
   visible: boolean;
@@ -38,6 +39,8 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
   const [selectedMood, setSelectedMood] = useState('');
   const [currentTag, setCurrentTag] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [drafts, setDrafts] = useState<JournalEntry[]>([]);
 
   const theme = {
     colors: {
@@ -75,6 +78,41 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
     'How am I feeling right now?',
     'What are my goals for tomorrow?',
   ];
+
+  // Load drafts when screen becomes visible
+  useEffect(() => {
+    const loadDrafts = async () => {
+      if (visible) {
+        try {
+          const existingDrafts = await AsyncStorage.getItem('journalDrafts');
+          if (existingDrafts) {
+            setDrafts(JSON.parse(existingDrafts));
+          }
+        } catch (error) {
+          console.log('Error loading drafts:', error);
+        }
+      }
+    };
+    loadDrafts();
+  }, [visible]);
+
+  const loadDraft = (draft: JournalEntry) => {
+    setTitle(draft.title);
+    setContent(draft.content);
+    setSelectedMood(draft.mood);
+    setTags(draft.tags);
+    setMenuOpen(false);
+  };
+
+  const deleteDraft = async (draftId: string) => {
+    try {
+      const updatedDrafts = drafts.filter(draft => draft.id !== draftId);
+      setDrafts(updatedDrafts);
+      await AsyncStorage.setItem('journalDrafts', JSON.stringify(updatedDrafts));
+    } catch (error) {
+      Alert.alert('Error', 'Failed to delete draft');
+    }
+  };
 
   const handleSave = () => {
     if (!title.trim() && !content.trim()) {
@@ -123,9 +161,7 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
     }
   };
 
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleSaveAsDraft = () => {
+  const handleSaveAsDraft = async () => {
     if (!title.trim() && !content.trim()) {
       Alert.alert('Error', 'Please write something for your journal entry');
       return;
@@ -140,10 +176,18 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
       createdAt: new Date().toISOString(),
     };
 
-    // Save via onSave but keep the editor open as a draft
-    onSave(draftEntry);
-    setMenuOpen(false);
-    Alert.alert('Saved', 'Entry saved as draft');
+    try {
+      // Save to AsyncStorage for persistence
+      const existingDrafts = await AsyncStorage.getItem('journalDrafts');
+      const drafts = existingDrafts ? JSON.parse(existingDrafts) : [];
+      drafts.push(draftEntry);
+      await AsyncStorage.setItem('journalDrafts', JSON.stringify(drafts));
+      
+      setMenuOpen(false);
+      Alert.alert('Saved', 'Entry saved as draft and will be available when you return');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save draft');
+    }
   };
 
   const addTag = () => {
@@ -206,6 +250,32 @@ export const JournalInputScreen: React.FC<JournalInputScreenProps> = ({
               <TouchableOpacity onPress={handleSaveAsDraft} style={styles.draftMenuItem}>
                 <Text style={{ color: theme.colors.text.primary, fontWeight: '600' }}>Save as draft</Text>
               </TouchableOpacity>
+              
+              {drafts.length > 0 && (
+                <>
+                  <View style={[styles.draftSeparator, { backgroundColor: theme.colors.border }]} />
+                  <Text style={[styles.draftSectionTitle, { color: theme.colors.text.secondary }]}>Saved Drafts:</Text>
+                  {drafts.map((draft) => (
+                    <View key={draft.id} style={styles.draftRow}>
+                      <TouchableOpacity 
+                        onPress={() => loadDraft(draft)} 
+                        style={styles.draftItemButton}
+                      >
+                        <Text style={[styles.draftItemTitle, { color: theme.colors.text.primary }]}>{draft.title}</Text>
+                        <Text style={[styles.draftItemPreview, { color: theme.colors.text.secondary }]}>
+                          {draft.content.substring(0, 40)}...
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        onPress={() => deleteDraft(draft.id)} 
+                        style={styles.deleteDraftButton}
+                      >
+                        <MaterialIcons name="delete" size={18} color={theme.colors.text.secondary} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </>
+              )}
             </View>
           )}
 
@@ -579,5 +649,36 @@ const styles = StyleSheet.create({
   },
   draftMenuItem: {
     padding: 12,
+  },
+  draftSeparator: {
+    height: 1,
+    marginHorizontal: 12,
+  },
+  draftSectionTitle: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  draftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  draftItemButton: {
+    flex: 1,
+    padding: 8,
+  },
+  draftItemTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  draftItemPreview: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  deleteDraftButton: {
+    padding: 8,
   },
 });
