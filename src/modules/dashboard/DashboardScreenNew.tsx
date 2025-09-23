@@ -850,58 +850,62 @@ export const DashboardScreen: React.FC = () => {
         </View>
         
         {/* Render sections in custom order with visibility control */}
-        {getSortedSections().map((section) => {
-          const sectionType = section.id;
+        {(() => {
+          const carouselSections = getSortedSections().filter((s) => 
+            ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
+          );
+          const hasCarouselSections = carouselSections.length > 0;
+          let carouselRendered = false;
           
-          switch (sectionType) {
-            case 'userCard':
-              return <View key={sectionType}>{renderUserCard()}</View>;
-            case 'phoneUsage':
-              return <View key={sectionType}>{renderPhoneUsage()}</View>;
-            case 'activeGoals':
-            case 'activeHabits':
-            case 'activeTodos':
-            case 'activeReminders':
-              // For carousel sections, render as a group
-              if (sectionType === 'activeGoals') {
-                const carouselSections = getSortedSections().filter((s) => 
-                  ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
-                );
-                
-                if (carouselSections.length === 0) return null;
-                
-                return (
-                  <View key="carousel-group">
-                    <GestureDetector gesture={pan}>
-                      <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
-                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
-                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
-                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
-                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
-                      </Animated.View>
-                    </GestureDetector>
+          return getSortedSections().map((section) => {
+            const sectionType = section.id;
+            
+            switch (sectionType) {
+              case 'userCard':
+                return <View key={sectionType}>{renderUserCard()}</View>;
+              case 'phoneUsage':
+                return <View key={sectionType}>{renderPhoneUsage()}</View>;
+              case 'activeGoals':
+              case 'activeHabits':
+              case 'activeTodos':
+              case 'activeReminders':
+                // Render carousel only once when we encounter the first carousel section
+                if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
+                  carouselRendered = true;
+                  return (
+                    <View key="carousel-group">
+                      <GestureDetector gesture={pan}>
+                        <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
+                          {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
+                          {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
+                          {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                          {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
+                        </Animated.View>
+                      </GestureDetector>
 
-                    {carouselSections.length > 1 && (
-                      <View style={styles.carouselIndicator}>
-                        {carouselSections.map((_, index: number) => (
-                          <View
-                            key={index}
-                            style={[
-                              styles.indicatorDot,
-                              currentCarouselIndex === index && styles.indicatorDotActive,
-                            ]}
-                          />
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                );
-              }
-              return null; // Already handled in the carousel group
-            default:
-              return null;
-          }
-        })}
+                      {carouselSections.length > 1 && (
+                        <View style={styles.carouselIndicator}>
+                          {carouselSections.map((_, index: number) => (
+                            <View
+                              key={index}
+                              style={[
+                                styles.indicatorDot,
+                                currentCarouselIndex === index && styles.indicatorDotActive,
+                              ]}
+                            />
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  );
+                }
+                // Skip other carousel sections since they're rendered in the carousel above
+                return null;
+              default:
+                return null;
+            }
+          }).filter(Boolean); // Remove null entries
+        })()}
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
