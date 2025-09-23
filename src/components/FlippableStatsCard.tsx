@@ -14,7 +14,13 @@ import {
   Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { UserStatsService } from '../services/userStatsService';
+import { UserStatsServi            {/* Card Layout matching your sketch exactly - FRONT SIDE */}
+            <View style={styles.cardLayout}>
+              
+              {/* Top Section - Time Period (moved higher) */}
+              <View style={styles.topSection}>
+                <Text style={[styles.timePeriod, { backgroundColor: 'rgba(0, 0, 0, 0.1)', color: textColor }]}>{displayFlipped ? 'ALL-TIME' : 'MONTHLY'}</Text>
+              </View>om '../services/userStatsService';
 import { UserRating, RatingSystem } from '../services/ratingSystem';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../config/theme';
@@ -502,9 +508,7 @@ const styles = StyleSheet.create({
     marginTop: -4, // Move higher
   },
   timePeriod: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 6,
-    color: theme.colors.text.dark,
     fontSize: 12,
     fontWeight: '600',
     paddingHorizontal: 12,

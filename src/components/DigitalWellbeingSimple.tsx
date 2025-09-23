@@ -206,8 +206,6 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
           <Text style={[styles.appListTitle, { color: theme.text }]}>App activity</Text>
           
           {usageData.map((app: any, index: number) => {
-            const _percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
-            
             return (
               <View key={app.packageName || `${app.appName}-${index}`} style={[styles.appRow, { borderBottomColor: 'rgba(255,255,255,0.1)' }]}>
                 <View style={styles.appInfo}>
@@ -357,12 +355,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   appIcon: {
-    height: 32,
-    width: 32, // Smaller icon
-    borderRadius: 6,
     alignItems: 'center',
+    borderRadius: 6,
+    height: 32,
     justifyContent: 'center',
     marginRight: 12,
+    width: 32, // Smaller icon
   },
   appIconText: {
     fontSize: 14,
