@@ -106,10 +106,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
         <Animated.View style={[styles.sidebar, sidebarStyle, { paddingTop: insets.top }]}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Menu</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="close" size={24} color={theme.colors.text.secondary} />
-            </TouchableOpacity>
+            <View style={styles.headerLeft}>
+              <Text style={styles.headerTitle}>Menu</Text>
+            </View>
+            <View style={styles.headerRight}>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Icon name="close" size={24} color={theme.colors.text.secondary} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.menuContainer}>
@@ -194,6 +198,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
+  headerLeft: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  headerRight: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: 80,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
@@ -210,11 +225,11 @@ const styles = StyleSheet.create({
   menuContainer: {
     flex: 1,
     paddingTop: 20,
+    paddingHorizontal: 20,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border + '20',
