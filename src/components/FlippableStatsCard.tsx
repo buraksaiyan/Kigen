@@ -259,14 +259,13 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
           style={[
             styles.cardSide,
             { transform: [{ rotateY: frontRotation }] },
-            { backfaceVisibility: 'hidden' },
-            { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }
+            styles.cardSideAbsolute
           ]}
         >
           <ImageBackground 
             source={backgroundImage}
             style={styles.cardContent}
-            imageStyle={{ borderRadius: 20 }}
+            imageStyle={styles.cardImageBorderRadius}
             resizeMode="cover"
           >
             {/* Card Layout matching your sketch exactly */}
@@ -327,14 +326,13 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
           style={[
             styles.cardSide,
             { transform: [{ rotateY: backRotation }] },
-            { backfaceVisibility: 'hidden' },
-            { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }
+            styles.cardSideAbsolute
           ]}
         >
           <ImageBackground 
             source={backgroundImage}
             style={styles.cardContent}
-            imageStyle={{ borderRadius: 20 }}
+            imageStyle={styles.cardImageBorderRadius}
             resizeMode="cover"
           >
             {/* Card Layout matching your sketch exactly - BACK SIDE */}
@@ -400,7 +398,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
           <ImageBackground 
             source={backgroundImage}
             style={styles.expandedHeader}
-            imageStyle={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+            imageStyle={styles.cardImageTopBorderRadius}
             resizeMode="cover"
           >
             <TouchableOpacity style={styles.closeButton} onPress={() => setIsExpanded(false)}>
@@ -463,6 +461,14 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
 };
 
 const styles = StyleSheet.create({
+  
+  // Bottom section for rank (moved down)
+  bottomSection: {
+    alignItems: 'center',
+    marginBottom: -4,
+    marginTop: 12, // Move down
+  },
+  
   card: {
     alignSelf: 'center',
     borderRadius: 16,
@@ -480,41 +486,48 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     width: width - 32,
   },
+  
   cardContent: {
     flex: 1,
     padding: 16,
   },
-
+  cardImageBorderRadius: {
+    borderRadius: 20,
+  },
+  cardImageTopBorderRadius: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  
   // Card layout matching the exact sketch
   cardLayout: {
     flex: 1,
     padding: 12,
   },
-
+  
+  cardProfileImage: {
+    height: '100%',
+    width: '100%',
+  },
+  
   cardSide: {
     backfaceVisibility: 'hidden',
     flex: 1,
   },
   
-  // Top section for time period (moved higher)
-  topSection: {
-    alignItems: 'center',
-    marginBottom: 12,
-    marginTop: -4, // Move higher
-  },
-  timePeriod: {
-    borderRadius: 6,
-    fontSize: 12,
-    fontWeight: '600',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+  cardSideAbsolute: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   
-  // Main content area with 3 columns
-  mainContent: {
-    alignItems: 'stretch',
-    flex: 1,
-    flexDirection: 'row',
+  cardUserName: {
+    color: theme.colors.text.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   
   // Left column - Picture and username
@@ -523,6 +536,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingRight: 8,
+  },
+  
+  // Loading state
+  loadingText: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 80,
+    textAlign: 'center',
+  },
+  
+  // Main content area with 3 columns
+  mainContent: {
+    alignItems: 'stretch',
+    flex: 1,
+    flexDirection: 'row',
   },
   
   // Middle column - OVR (moved up without X)
@@ -534,13 +563,82 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   
+  ovrLabel: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  
+  ovrValue: {
+    color: theme.colors.text.primary,
+    fontSize: 36,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  
+  pictureContainer: {
+    backgroundColor: theme.colors.overlayLight,
+    borderColor: theme.colors.border,
+    borderRadius: 4,
+    borderWidth: 2,
+    height: 90,
+    marginBottom: 8,
+    overflow: 'hidden',
+    width: 70,
+  },
+  
+  // eslint-disable-next-line react-native/no-color-literals
+  picturePlaceholder: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  
+  picturePlaceholderText: {
+    color: theme.colors.text.primary,
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  
+  rankText: {
+    backgroundColor: theme.colors.overlayLight,
+    borderRadius: 6,
+    color: theme.colors.text.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  
   // Right column - Stats list
   rightColumn: {
-    borderLeftColor: 'black',
+    borderLeftColor: theme.colors.border,
     borderLeftWidth: 2,
     flex: 1,
     justifyContent: 'center',
     paddingLeft: 8,
+  },
+  
+  statKey: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  
+  statRow: {
+    marginBottom: 2,
+  },
+  
+  statValue: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '700',
+    marginLeft: 'auto', // Push to right edge
+    minWidth: 40, // Ensure it's at the edge
+    textAlign: 'right',
   },
   
   // Stats container
@@ -549,101 +647,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   
-  // Bottom section for rank (moved down)
-  bottomSection: {
-    alignItems: 'center',
-    marginBottom: -4,
-    marginTop: 12, // Move down
+  // Small tap hint between top bar and card
+  tapHintContainer: {
+    alignSelf: 'center',
+    marginBottom: 4,
+    marginHorizontal: 16,
+    marginTop: 8,
   },
-  rankText: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  
+  // Top section for time period (moved higher)
+  timePeriod: {
     borderRadius: 6,
-    color: 'black',
     fontSize: 12,
     fontWeight: '600',
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
-  pictureContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    borderColor: 'black',
-    borderRadius: 4,
-    borderWidth: 2,
-    height: 90,
-    marginBottom: 8,
-    overflow: 'hidden',
-    width: 70,
-  },
-  cardProfileImage: {
-    height: '100%',
-    width: '100%',
-  },
-  picturePlaceholder: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  picturePlaceholderText: {
-    color: 'black',
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  cardUserName: {
-    color: 'black',
-    fontSize: 12,
-    fontWeight: '600',
+  
+  tapHintText: {
+    color: theme.colors.text.secondary,
+    fontSize: 11,
+    opacity: 0.9,
     textAlign: 'center',
-  },
-  ovrLabel: {
-    color: 'black',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  ovrValue: {
-    color: 'black',
-    fontSize: 36,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  statRow: {
-    marginBottom: 2,
-  },
-  statKey: {
-    color: 'black',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  statValue: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: 'black',
-    textAlign: 'right',
-    minWidth: 40, // Ensure it's at the edge
-    marginLeft: 'auto', // Push to right edge
   },
   
-  // Loading state
-  loadingText: {
-    color: theme.colors.text.primary,
+  topBarButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    marginTop: 80,
-    textAlign: 'center',
   },
+  
+  topBarCenter: {
+    flex: 1,
+  },
+  
   // Top bar (slightly thicker than bottom bar)
   topBarContainer: {
-    alignSelf: 'stretch',
-    height: 48, // slightly thicker than typical bottom bar (~40)
-    backgroundColor: theme.colors.surface,
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
+    alignSelf: 'stretch',
+    backgroundColor: theme.colors.surface,
     borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    height: 48, // slightly thicker than typical bottom bar (~40)
+    paddingHorizontal: 12,
   },
+  
   topBarLeftButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.surfaceSecondary,
@@ -652,25 +699,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 36,
   },
-  topBarButtonText: {
-    fontSize: 16,
-  },
-  topBarCenter: {
-    flex: 1,
-  },
-
-  // Small tap hint between top bar and card
-  tapHintContainer: {
-    alignSelf: 'center',
-    marginBottom: 4,
-    marginHorizontal: 16,
-    marginTop: 8,
-  },
-  tapHintText: {
-    color: theme.colors.text.secondary,
-    fontSize: 11,
-    opacity: 0.9,
-    textAlign: 'center',
+  
+  topSection: {
+    alignItems: 'center',
+    marginBottom: 12,
+    marginTop: -4, // Move higher
   },
   
   // Expanded Modal Styles (keeping existing)
@@ -686,6 +719,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 60,
   },
+  // eslint-disable-next-line react-native/no-color-literals
   closeButton: {
     alignItems: 'center',
     alignSelf: 'flex-end',
@@ -716,6 +750,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  // eslint-disable-next-line react-native/no-color-literals
   profilePlaceholder: {
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.2)',
