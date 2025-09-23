@@ -102,25 +102,25 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
           To enable screen time tracking:
         </Text>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: theme.accent }]}>1</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent, backgroundColor: 'rgba(139, 92, 246, 0.1)' }]}>1</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Tap &quot;Grant Permission&quot; below
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: theme.accent }]}>2</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent, backgroundColor: 'rgba(139, 92, 246, 0.1)' }]}>2</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Find &quot;Kigen&quot; in the Usage Access list
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: theme.accent }]}>3</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent, backgroundColor: 'rgba(139, 92, 246, 0.1)' }]}>3</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Toggle &quot;Allow usage access&quot; ON
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: theme.accent }]}>4</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent, backgroundColor: 'rgba(139, 92, 246, 0.1)' }]}>4</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Return to this app
           </Text>
@@ -131,7 +131,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
         style={[styles.permissionButton, { backgroundColor: theme.accent }]}
         onPress={requestPermission}
       >
-        <Text style={styles.permissionButtonText}>Grant Permission</Text>
+        <Text style={[styles.permissionButtonText, { color: theme.colors.text.primary }]}>Grant Permission</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -201,7 +201,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
       >
         {/* Chart Section */}
         <View style={[styles.chartSection, { backgroundColor: theme.cardBackground }]}>
-          <Text style={[styles.chartTitle, { color: theme.text }]}>Today's Screen Time</Text>
+          <Text style={[styles.chartTitle, { color: theme.text }]}>Today&apos;s Screen Time</Text>
           <UsageChart 
             data={chartData}
             totalTime={todayStats.totalScreenTime}
@@ -215,8 +215,8 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
         <View style={[styles.appsSection, { backgroundColor: theme.cardBackground }]}>
           <Text style={[styles.appsTitle, { color: theme.text }]}>App Usage</Text>
           
-          {appsWithPercentages.map((app, index) => (
-            <View key={app.packageName} style={styles.appItem}>
+          {appsWithPercentages.map((app, _index) => (
+            <View key={app.packageName} style={[styles.appItem, { borderBottomColor: 'rgba(255, 255, 255, 0.1)' }]}>
               <View style={styles.appInfo}>
                 <View style={[styles.appColorDot, { backgroundColor: app.color }]} />
                 <View style={styles.appDetails}>
@@ -270,16 +270,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
   iconContainer: {
     marginBottom: 16,
   },
   iconText: {
     fontSize: 48,
+  },
+  permissionDescription: {
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 24,
+    textAlign: 'center',
   },
   permissionTitle: {
     fontSize: 24,
@@ -287,11 +288,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  permissionDescription: {
-    fontSize: 16,
-    lineHeight: 22,
-    marginBottom: 24,
-    textAlign: 'center',
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   requirementsContainer: {
     marginBottom: 24,
@@ -308,7 +308,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   stepNumber: {
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
     borderRadius: 12,
     fontSize: 14,
     fontWeight: 'bold',
@@ -331,7 +330,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   permissionButtonText: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -378,7 +376,6 @@ const styles = StyleSheet.create({
   },
   appItem: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
     borderBottomWidth: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',

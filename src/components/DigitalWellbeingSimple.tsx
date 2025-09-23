@@ -125,10 +125,10 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
           </Text>
 
           <TouchableOpacity
-            style={styles.permissionButton}
+            style={[styles.permissionButton, { backgroundColor: theme.colors.accent }]}
             onPress={requestPermission}
           >
-            <Text style={styles.permissionButtonText}>Open Settings</Text>
+            <Text style={[styles.permissionButtonText, { color: theme.colors.text.primary }]}>Open Settings</Text>
           </TouchableOpacity>
 
           {__DEV__ && (
@@ -137,11 +137,11 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
                 style={[styles.demoButton, { backgroundColor: '#10B981' }]}
                 onPress={grantDemoPermission}
               >
-                <Text style={styles.permissionButtonText}>Demo: Grant Permission</Text>
+                <Text style={[styles.permissionButtonText, { color: theme.colors.text.primary }]}>Demo: Grant Permission</Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={styles.resetButton}
+                style={[styles.resetButton, { borderColor: 'rgba(255,255,255,0.2)' }]}
                 onPress={resetPermission}
               >
                 <Text style={[styles.resetButtonText, { color: theme.textSecondary }]}>
@@ -209,10 +209,10 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
             const _percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
             
             return (
-              <View key={app.packageName || `${app.appName}-${index}`} style={styles.appRow}>
+              <View key={app.packageName || `${app.appName}-${index}`} style={[styles.appRow, { borderBottomColor: 'rgba(255,255,255,0.1)' }]}>
                 <View style={styles.appInfo}>
                   <View style={[styles.appIcon, { backgroundColor: app.color }]}>
-                    <Text style={styles.appIconText}>
+                    <Text style={[styles.appIconText, { color: theme.colors.text.primary }]}>
                       {app.appName.substring(0, 1)}
                     </Text>
                   </View>
@@ -268,7 +268,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   permissionButton: {
-    backgroundColor: '#8B5CF6',
     borderRadius: 12,
     marginBottom: 12,
     minWidth: 200,
@@ -283,13 +282,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   permissionButtonText: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
   resetButton: {
-    borderColor: 'rgba(255,255,255,0.2)',
     borderRadius: 8,
     borderWidth: 1,
     paddingHorizontal: 24,
@@ -349,11 +346,10 @@ const styles = StyleSheet.create({
   // App List - Compact
   appRow: {
     alignItems: 'center',
+    borderBottomWidth: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10, // Reduced from 12
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   appInfo: {
     alignItems: 'center',
@@ -369,7 +365,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   appIconText: {
-    color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
   },

@@ -25,6 +25,10 @@ interface DigitalWellbeingProps {
       surface: string;
       surfaceSecondary: string;
       border: string;
+      shadow: string;
+      overlay: string;
+      overlayLight: string;
+      borderLight: string;
       text: {
         primary: string;
         secondary: string;
@@ -227,7 +231,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
               Pull down to check if permission was granted
             </Text>
 
-            <View style={styles.privacyNotice}>
+            <View style={[styles.privacyNotice, { backgroundColor: theme.colors.overlayLight }]}>
               <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
                 We do not process or use any of the information we access with this permission.
                 The app accesses this data solely for the purpose of displaying it to you and providing feedback on your usage patterns.
@@ -318,7 +322,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
                   Most used apps
                 </Text>
                 {usageStats.apps.map((app: any, _index: number) => (
-                  <View key={app.packageName} style={styles.appItem}>
+                  <View key={app.packageName} style={[styles.appItem, { borderBottomColor: theme.colors.borderLight }]}>
                     {app.icon ? (
                       <Image 
                         source={{ uri: `data:image/png;base64,${app.icon}` }}
@@ -393,7 +397,6 @@ const styles = StyleSheet.create({
   },
   appItem: {
     alignItems: 'center',
-    borderBottomColor: 'rgba(0,0,0,0.1)',
     borderBottomWidth: 1,
     flexDirection: 'row',
     paddingVertical: 12,
@@ -469,7 +472,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, // Add bottom padding to avoid home button collision
   },
   privacyNotice: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     borderRadius: 8,
     marginTop: 16,
     padding: 12,
