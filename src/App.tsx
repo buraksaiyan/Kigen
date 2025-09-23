@@ -11,7 +11,7 @@ import { theme } from './config/theme';
 // Conditional import for web compatibility
 let GestureHandler: any = View;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { GestureHandlerRootView } = require('react-native-gesture-handler');
   GestureHandler = GestureHandlerRootView;
 } catch {

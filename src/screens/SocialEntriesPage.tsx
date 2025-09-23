@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
 const SOCIAL_ENTRIES_STORAGE_KEY = '@kigen_social_entries';
@@ -33,7 +34,6 @@ interface SocialEntry {
 }
 
 interface SocialEntriesPageProps {
-  visible?: boolean;
   onClose?: () => void;
   onSave?: () => void;
 }
@@ -63,10 +63,10 @@ const moodEmojis = ['😢', '😕', '😐', '😊', '😄'];
 const moodLabels = ['Poor', 'Fair', 'Okay', 'Good', 'Great'];
 
 export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
-  visible = true,
   onClose,
   onSave,
 }) => {
+  const navigation = useNavigation();
   const [activity, setActivity] = useState<SocialActivity>('hangout');
   const [description, setDescription] = useState('');
   const [peopleCount, setPeopleCount] = useState(1);
@@ -120,8 +120,8 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       setQuality(3);
       setNotes('');
       
-      onSave?.();
       Alert.alert('Success', 'Social interaction logged successfully!');
+      navigation.goBack();
     } catch (error) {
       console.error('Error saving social entry:', error);
       Alert.alert('Error', 'Failed to log social interaction');
@@ -162,14 +162,10 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
     </View>
   );
 
-  if (!visible) {
-    return null;
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Social Interaction</Text>

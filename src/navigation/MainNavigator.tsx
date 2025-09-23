@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Import screens
@@ -30,19 +31,50 @@ import { theme } from '../config/theme';
 import { AuthProvider } from '../modules/auth/AuthProvider';
 import { UserStatsService } from '../services/userStatsService';
 
-  type ScreenName = 'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
+type ScreenName = 
+  'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
+
+type RootStackParamList = {
+  Main: undefined;
+  GoalEntry: undefined;
+  JournalEntry: undefined;
+  ReminderEntry: undefined;
+  TodoEntry: undefined;
+  SocialEntry: undefined;
+};
 
 export const MainNavigator: React.FC = () => {
+  const Stack = createNativeStackNavigator<RootStackParamList>();
+
+  return (
+    <NavigationContainer>
+      <GestureHandlerRootView style={styles.container}>
+        <AuthProvider>
+          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+          
+          <Stack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="GoalEntry" component={GoalEntryPage} />
+            <Stack.Screen name="JournalEntry" component={JournalEntryPage} />
+            <Stack.Screen name="ReminderEntry" component={RemindersCreationPage} />
+            <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
+            <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
+          </Stack.Navigator>
+          
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </NavigationContainer>
+  );
+};
+
+// Main Screen component that handles the custom navigation system
+const MainScreen: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
-  const [streakCount, setStreakCount] = useState(0); // Will be loaded from real data
+  const [streakCount, setStreakCount] = useState(0);
   const [isCircularMenuOpen, setIsCircularMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
-  const [isGoalEntryOpen, setIsGoalEntryOpen] = useState(false);
-  const [isJournalEntryOpen, setIsJournalEntryOpen] = useState(false);
-  const [isReminderEntryOpen, setIsReminderEntryOpen] = useState(false);
-  const [isTodoEntryOpen, setIsTodoEntryOpen] = useState(false);
-  const [isSocialEntryOpen, setIsSocialEntryOpen] = useState(false);
   const [isPointsHistoryOpen, setIsPointsHistoryOpen] = useState(false);
   const [isDashboardCustomizationOpen, setIsDashboardCustomizationOpen] = useState(false);
 
@@ -88,19 +120,19 @@ export const MainNavigator: React.FC = () => {
         setIsFocusSessionOpen(true);
         break;
       case 'goals':
-        setIsGoalEntryOpen(true);
+        navigation.navigate('GoalEntry');
         break;
       case 'journaling':
-        setIsJournalEntryOpen(true);
+        navigation.navigate('JournalEntry');
         break;
       case 'reminders':
-        setIsReminderEntryOpen(true);
+        navigation.navigate('ReminderEntry');
         break;
       case 'todo':
-        setIsTodoEntryOpen(true);
+        navigation.navigate('TodoEntry');
         break;
       case 'social':
-        setIsSocialEntryOpen(true);
+        navigation.navigate('SocialEntry');
         break;
       default:
         console.log(`Unhandled menu item: ${itemId}`);
@@ -145,28 +177,27 @@ export const MainNavigator: React.FC = () => {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <AuthProvider>
-        <StatusBar 
-          barStyle="light-content" 
-          backgroundColor={theme.colors.background} 
-          translucent={false}
-        />
-        
-        <View style={styles.screenContainer}>
-          {renderCurrentScreen()}
-        </View>
+    <View style={styles.screenContainer}>
+      <StatusBar 
+        barStyle="light-content" 
+        backgroundColor={theme.colors.background} 
+        translucent={false}
+      />
+      
+      <View style={styles.screenContainer}>
+        {renderCurrentScreen()}
+      </View>
 
-        <BottomBar
-          streakCount={streakCount}
-          onNavigate={handleNavigate}
-          onToggleMenu={handleToggleCircularMenu}
-          activeScreen={activeScreen}
-        />
+      <BottomBar
+        streakCount={streakCount}
+        onNavigate={handleNavigate}
+        onToggleMenu={handleToggleCircularMenu}
+        activeScreen={activeScreen}
+      />
 
-        <CircularMenu
-          isOpen={isCircularMenuOpen}
-          onClose={() => setIsCircularMenuOpen(false)}
+      <CircularMenu
+        isOpen={isCircularMenuOpen}
+        onClose={() => setIsCircularMenuOpen(false)}
           onSelect={handleCircularMenuSelect}
           centerX={centerX}
           centerY={centerY}
@@ -181,36 +212,6 @@ export const MainNavigator: React.FC = () => {
         <FocusSessionScreen
           visible={isFocusSessionOpen}
           onClose={() => setIsFocusSessionOpen(false)}
-        />
-
-        <GoalEntryPage
-          visible={isGoalEntryOpen}
-          onClose={() => setIsGoalEntryOpen(false)}
-          onSave={() => setIsGoalEntryOpen(false)}
-        />
-
-        <JournalEntryPage
-          visible={isJournalEntryOpen}
-          onClose={() => setIsJournalEntryOpen(false)}
-          onSave={() => setIsJournalEntryOpen(false)}
-        />
-
-        <RemindersCreationPage
-          visible={isReminderEntryOpen}
-          onClose={() => setIsReminderEntryOpen(false)}
-          onSave={() => setIsReminderEntryOpen(false)}
-        />
-
-        <ToDoCreationPage
-          visible={isTodoEntryOpen}
-          onClose={() => setIsTodoEntryOpen(false)}
-          onSave={() => setIsTodoEntryOpen(false)}
-        />
-
-        <SocialEntriesPage
-          visible={isSocialEntryOpen}
-          onClose={() => setIsSocialEntryOpen(false)}
-          onSave={() => setIsSocialEntryOpen(false)}
         />
         
         {isPointsHistoryOpen && (
@@ -230,8 +231,7 @@ export const MainNavigator: React.FC = () => {
             }}
           />
         )}
-      </AuthProvider>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

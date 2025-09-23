@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
 const TODOS_STORAGE_KEY = '@kigen_todos';
@@ -30,7 +31,6 @@ interface Todo {
 }
 
 interface ToDoCreationPageProps {
-  visible?: boolean;
   onClose?: () => void;
   onSave?: () => void;
 }
@@ -43,10 +43,10 @@ const priorityConfig = {
 };
 
 export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
-  visible = true,
   onClose,
   onSave,
 }) => {
+  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
@@ -110,8 +110,8 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
       setPriority('medium');
       setDueDate('');
       
-      onSave?.();
       Alert.alert('Success', 'Task added successfully!');
+      navigation.goBack();
     } catch (error) {
       console.error('Error saving todo:', error);
       Alert.alert('Error', 'Failed to add task');
@@ -167,10 +167,6 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
     });
   };
 
-  if (!visible) {
-    return null;
-  }
-
   const checkboxScale = checkboxAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [1, 1.2],
@@ -181,7 +177,7 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add New Task</Text>

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
 const REMINDERS_STORAGE_KEY = '@kigen_reminders';
@@ -27,7 +28,6 @@ interface Reminder {
 }
 
 interface RemindersCreationPageProps {
-  visible?: boolean;
   onClose?: () => void;
   onSave?: () => void;
 }
@@ -44,10 +44,10 @@ Notifications.setNotificationHandler({
 });
 
 export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
-  visible = true,
   onClose,
   onSave,
 }) => {
+  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -59,10 +59,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
   const [hasPermission, setHasPermission] = useState(false);
 
   useEffect(() => {
-    if (visible) {
-      requestNotificationPermission();
-    }
-  }, [visible]);
+    requestNotificationPermission();
+  }, []);
 
   const requestNotificationPermission = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
@@ -190,8 +188,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
       setSelectedTime(new Date());
       setRecurring('none');
       
-      onSave?.();
       Alert.alert('Success', 'Reminder created successfully!');
+      navigation.goBack();
     } catch (error) {
       console.error('Error saving reminder:', error);
       Alert.alert('Error', 'Failed to create reminder');
@@ -206,14 +204,10 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
     return `${dateStr} at ${timeStr}`;
   };
 
-  if (!visible) {
-    return null;
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Reminder</Text>

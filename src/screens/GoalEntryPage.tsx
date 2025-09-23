@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
 interface Goal {
@@ -31,10 +32,10 @@ interface GoalEntryPageProps {
 }
 
 export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
-  visible = true,
   onClose,
   onSave,
 }) => {
+  const navigation = useNavigation();
   const [goalText, setGoalText] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -66,8 +67,8 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
       // Clear input
       setGoalText('');
       
-      // Notify parent
-      onSave?.();
+      // Navigate back to previous screen
+      navigation.goBack();
       
       Alert.alert('Success', 'Goal added successfully!');
     } catch (error) {
@@ -78,14 +79,10 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
     }
   };
 
-  if (!visible) {
-    return null;
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add New Goal</Text>

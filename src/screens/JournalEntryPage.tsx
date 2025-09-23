@@ -12,6 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { UserStatsService } from '../services/userStatsService';
 import { theme } from '../config/theme';
@@ -32,10 +33,10 @@ interface JournalEntryPageProps {
 }
 
 export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
-  visible = true,
   onClose,
   onSave,
 }) => {
+  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,21 +45,19 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (visible) {
-      loadDrafts();
-    }
-  }, [visible]);
+    loadDrafts();
+  }, []);
 
   // Auto-save as draft every 5 seconds if there's content
   useEffect(() => {
-    if (!visible || (!title.trim() && !content.trim())) return;
+    if (!title.trim() && !content.trim()) return;
 
     const autoSaveTimer = setInterval(() => {
       saveAsDraft(true); // silent auto-save
     }, 5000);
 
     return () => clearInterval(autoSaveTimer);
-  }, [title, content, visible]);
+  }, [title, content]);
 
   const loadDrafts = async () => {
     try {
@@ -140,8 +139,8 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
       setContent('');
       setCurrentDraftId(null);
       
-      onSave?.();
       Alert.alert('Success', 'Journal entry saved!');
+      navigation.goBack();
     } catch (error) {
       console.error('Error saving entry:', error);
       Alert.alert('Error', 'Failed to save journal entry');
@@ -177,19 +176,15 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
         'Unsaved Changes',
         'You have unsaved changes. Would you like to save as draft before closing?',
         [
-          { text: 'Discard', style: 'destructive', onPress: onClose },
-          { text: 'Save as Draft', onPress: () => { saveAsDraft(); onClose?.(); } },
+          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          { text: 'Save as Draft', onPress: () => { saveAsDraft(); navigation.goBack(); } },
           { text: 'Cancel', style: 'cancel' },
         ]
       );
     } else {
-      onClose?.();
+      navigation.goBack();
     }
   };
-
-  if (!visible) {
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.container}>
