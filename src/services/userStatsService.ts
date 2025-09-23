@@ -3,6 +3,7 @@ import { UserStats, UserRating, CardTier, RatingSystem } from './ratingSystem';
 import LeaderboardService from './LeaderboardService';
 import { generateUniqueId } from '../utils/uniqueId';
 import { nativeUsageTracker } from './nativeUsageTracker';
+import { PointsHistoryService } from './PointsHistoryService';
 
 interface UserProfile {
   id: string;
@@ -568,6 +569,19 @@ export class UserStatsService {
           today.focusMinutes.notech += minutes;
           break;
       }
+
+      // Calculate and record points for focus session
+      const points = 5; // Base 5 points per completed session
+      const bonusPoints = Math.floor(minutes / 15); // Bonus 1 point per 15 minutes
+      const totalPoints = points + bonusPoints;
+      
+      await PointsHistoryService.recordPoints(
+        'focus_session',
+        totalPoints,
+        'FOC',
+        `${type} focus session completed (${minutes} min)`,
+        { sessionDuration: minutes, taskTitle: `${type} session` }
+      );
     } else {
       today.abortedSessions += 1;
     }
@@ -591,6 +605,18 @@ export class UserStatsService {
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
 
+    // Calculate points for journal entry
+    const points = RatingSystem.calculateJournalingPoints(1);
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'journal',
+      points,
+      'JOU',
+      'Journal entry completed',
+      { entryContent: 'Journal entry' }
+    );
+
     // Update monthly accumulation
     await this.updateMonthlyStats();
 
@@ -608,6 +634,18 @@ export class UserStatsService {
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
     
+    // Calculate points for goal completion - using basic 10 points per goal
+    const points = 10;
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'goal_completed',
+      points,
+      'DIS',
+      'Goal completed',
+      { goalTitle: 'Goal completion' }
+    );
+    
     // Update monthly accumulation
     await this.updateMonthlyStats();
     
@@ -619,6 +657,196 @@ export class UserStatsService {
     this.syncUserToLeaderboard().catch(error => {
       console.error('Background leaderboard sync failed:', error);
     });
+  }
+
+  static async recordTodoCompletion(title: string): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    const today = await this.getTodayActivity();
+    today.completedTodoBullets = (today.completedTodoBullets || 0) + 1;
+    await this.saveDailyActivity(today);
+    
+    // Calculate points for todo completion
+    const points = 3; // Base points per todo completion
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'todo_completed',
+      points,
+      'DET',
+      'Todo completed',
+      { taskTitle: title }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async recordTodoCreation(title: string): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Record points for creating a todo
+    const points = 1; // Small reward for planning/organizing
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'todo_created',
+      points,
+      'DET',
+      'Todo created',
+      { taskTitle: title }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+  }
+
+  static async recordReminderCompletion(title: string): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Record points for completing a reminder
+    const points = 2; // Points for following through on reminders
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'reminder_completed',
+      points,
+      'DET',
+      'Reminder completed',
+      { reminderTitle: title }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async recordGoalCreation(title: string): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Record points for creating a goal
+    const points = 2; // Points for goal setting
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'goal_created',
+      points,
+      'DIS',
+      'Goal created',
+      { goalTitle: title }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+  }
+
+  static async recordSocialInteraction(type: string, moodRating?: number): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Record points for social engagement
+    const points = 5; // Base points for social activity
+    const moodBonus = moodRating ? Math.max(0, moodRating - 5) : 0; // Bonus for good mood
+    const totalPoints = points + moodBonus;
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'social_interaction',
+      totalPoints,
+      'SOC',
+      `Social interaction: ${type}`,
+      { socialType: type, moodRating }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async recordHabitStreak(streakCount: number): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Progressive points for streak milestones
+    let points = 0;
+    if (streakCount >= 7) points += 10; // Weekly milestone
+    if (streakCount >= 30) points += 25; // Monthly milestone
+    if (streakCount >= 100) points += 50; // 100-day milestone
+    
+    if (points > 0) {
+      // Record points in history
+      await PointsHistoryService.recordPoints(
+        'habit_streak',
+        points,
+        'DET',
+        `Habit streak milestone: ${streakCount} days`,
+        { streakCount }
+      );
+      
+      // Update monthly accumulation
+      await this.updateMonthlyStats();
+    }
+  }
+
+  static async recordAchievementUnlock(achievementId: string, achievementName: string, points: number): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    const today = await this.getTodayActivity();
+    today.achievementsUnlocked = (today.achievementsUnlocked || 0) + 1;
+    await this.saveDailyActivity(today);
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'achievement_unlocked',
+      points,
+      'DET',
+      `Achievement unlocked: ${achievementName}`,
+      { achievementId }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async recordDailyBonus(): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    const points = 10; // Daily login bonus
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'daily_bonus',
+      points,
+      'DET',
+      'Daily login bonus',
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
   }
 
   static async hasUsageAccess(): Promise<boolean> {

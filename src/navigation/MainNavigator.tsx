@@ -17,6 +17,7 @@ import { JournalEntryPage } from '../screens/JournalEntryPage';
 import { RemindersCreationPage } from '../screens/RemindersCreationPage';
 import { ToDoCreationPage } from '../screens/ToDoCreationPage';
 import { SocialEntriesPage } from '../screens/SocialEntriesPage';
+import PointsHistoryScreen from '../screens/PointsHistoryScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -44,6 +45,7 @@ export const MainNavigator: React.FC = () => {
   const [isReminderEntryOpen, setIsReminderEntryOpen] = useState(false);
   const [isTodoEntryOpen, setIsTodoEntryOpen] = useState(false);
   const [isSocialEntryOpen, setIsSocialEntryOpen] = useState(false);
+  const [isPointsHistoryOpen, setIsPointsHistoryOpen] = useState(false);
 
   // Load real streak data
   useEffect(() => {
@@ -109,7 +111,11 @@ export const MainNavigator: React.FC = () => {
   };
 
   const handleSidebarNavigate = (screen: string) => {
-    setActiveScreen(screen as ScreenName);
+    if (screen === 'pointsHistory') {
+      setIsPointsHistoryOpen(true);
+    } else {
+      setActiveScreen(screen as ScreenName);
+    }
   };
 
   const renderCurrentScreen = () => {
@@ -205,6 +211,13 @@ export const MainNavigator: React.FC = () => {
           onClose={() => setIsSocialEntryOpen(false)}
           onSave={() => setIsSocialEntryOpen(false)}
         />
+        
+        {isPointsHistoryOpen && (
+          <PointsHistoryScreen
+            visible={isPointsHistoryOpen}
+            onClose={() => setIsPointsHistoryOpen(false)}
+          />
+        )}
       </AuthProvider>
     </GestureHandlerRootView>
   );

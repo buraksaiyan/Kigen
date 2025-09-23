@@ -13,6 +13,8 @@ import Animated, {
   withTiming,
   interpolate,
   Extrapolate,
+  withSequence,
+  runOnJS,
 } from 'react-native-reanimated';
 import {
   Gesture,
@@ -62,71 +64,140 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   const rotation = useSharedValue(0);
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
+  const spinAnimation = useSharedValue(0);
+  const itemPulse = useSharedValue(1);
 
+  // Enhanced opening animation with spin effect
   React.useEffect(() => {
     if (isOpen) {
-      scale.value = withTiming(1, { duration: 300 });
+      // Entrance animation with spin
+      scale.value = withSpring(1, { 
+        damping: 15, 
+        stiffness: 200,
+        mass: 0.8,
+      });
       opacity.value = withTiming(1, { duration: 300 });
+      spinAnimation.value = withSequence(
+        withTiming(360, { duration: 600 }),
+        withTiming(0, { duration: 0 })
+      );
+      // Pulse effect for items
+      itemPulse.value = withSequence(
+        withTiming(1.1, { duration: 150 }),
+        withSpring(1, { damping: 10 })
+      );
     } else {
-      scale.value = withTiming(0, { duration: 300 });
-      opacity.value = withTiming(0, { duration: 300 });
+      // Exit animation
+      scale.value = withSpring(0, { 
+        damping: 20, 
+        stiffness: 300 
+      });
+      opacity.value = withTiming(0, { duration: 200 });
+      spinAnimation.value = withTiming(0, { duration: 200 });
+      itemPulse.value = withTiming(1, { duration: 200 });
     }
   }, [isOpen]);
 
+  // Enhanced gesture handling with better rotation feedback
   const panGesture = Gesture.Pan()
-    .minDistance(5) // Require minimum movement to activate
+    .minDistance(3)
     .onStart(() => {
       'worklet';
-      // Store initial rotation
+      // Add subtle haptic feedback would go here
     })
     .onUpdate((event) => {
       'worklet';
       const deltaX = event.translationX;
-      // Make rotation more sensitive and smooth
-      const rotationDelta = (deltaX / (screenWidth * 0.5)) * Math.PI; // More sensitive
-      rotation.value = rotationDelta;
+      const deltaY = event.translationY;
+      
+      // Calculate rotation based on both X and Y movement for more natural feel
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const rotationFactor = Math.min(distance / 100, Math.PI / 2);
+      const direction = deltaX > 0 ? 1 : -1;
+      
+      rotation.value = rotationFactor * direction;
     })
     .onEnd((event) => {
       'worklet';
-      // Smooth snap back with velocity consideration
-      const velocity = Math.abs(event.velocityX);
-      const duration = Math.max(200, Math.min(500, 1000 / (velocity + 1))); // Faster with more velocity
-      rotation.value = withTiming(0, { duration });
+      const velocity = Math.sqrt(
+        event.velocityX * event.velocityX + event.velocityY * event.velocityY
+      );
+      
+      // Smooth spring back with velocity consideration
+      const springConfig = {
+        damping: 15 + Math.min(velocity / 1000, 5),
+        stiffness: 200,
+      };
+      
+      rotation.value = withSpring(0, springConfig);
     });
 
   const containerStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: scale.value },
+      { rotate: `${spinAnimation.value}deg` },
     ],
     opacity: opacity.value,
   }));
 
-  // Create animated styles for each menu item arranged in a circle around streak button
+  // Create enhanced animated styles for each menu item with staggered entrance
   const itemStyles = menuItems.map((_, index) => {
     return useAnimatedStyle(() => {
       // Arrange items in a circle around the center (streak button)
       const radius = 100; // Distance from center to each item
       const angleStep = (Math.PI * 2) / menuItems.length; // Evenly distribute around circle
-      const angle = index * angleStep - Math.PI / 2; // Start from top (-90 degrees)
+      const baseAngle = index * angleStep - Math.PI / 2; // Start from top (-90 degrees)
+      
+      // Add rotation effect from gestures and spin animation
+      const totalAngle = baseAngle + (rotation.value * 0.5) + (spinAnimation.value * Math.PI / 180);
       
       // Calculate position based on angle and radius
-      const x = centerX + Math.cos(angle) * radius - ITEM_SIZE / 2;
-      const y = centerY + Math.sin(angle) * radius - ITEM_SIZE / 2;
+      const x = centerX + Math.cos(totalAngle) * radius - ITEM_SIZE / 2;
+      const y = centerY + Math.sin(totalAngle) * radius - ITEM_SIZE / 2;
 
-      // Apply rotation effect from gestures
-      const rotatedX = x + (rotation.value * 10);
-      const rotatedY = y;
+      // Staggered entrance animation
+      const staggerDelay = index * 50;
+      const itemScale = interpolate(
+        scale.value,
+        [0, 1],
+        [0, 1],
+        Extrapolate.CLAMP
+      );
+
+      // Enhanced scaling with pulse effect
+      const finalScale = itemScale * itemPulse.value;
 
       return {
         transform: [
-          { translateX: rotatedX },
-          { translateY: rotatedY },
-          { scale: scale.value },
+          { translateX: x },
+          { translateY: y },
+          { scale: finalScale },
+          { rotate: `${rotation.value * 10}deg` }, // Slight rotation on items
         ],
         opacity: opacity.value,
       };
     });
   });
+
+  // Enhanced item selection with visual feedback
+  const handleItemSelect = (itemId: string, index: number) => {
+    // Trigger selection animation
+    itemPulse.value = withSequence(
+      withTiming(1.3, { duration: 100 }),
+      withTiming(1, { duration: 100 })
+    );
+    
+    // Slight rotation on selection
+    rotation.value = withSequence(
+      withTiming(0.2, { duration: 100 }),
+      withTiming(0, { duration: 100 })
+    );
+    
+    // Delayed callback to allow animation
+    setTimeout(() => {
+      onSelect(itemId);
+    }, 150);
+  };
 
   // Handle backdrop press - only close if tap is outside menu orbit
   const handleBackdropPress = (event: any) => {
@@ -153,26 +224,30 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
         activeOpacity={1}
       />
       
-      <View style={styles.menuContainer}>
-        <Animated.View style={containerStyle}>
-          {/* Menu items arranged around the bottom bar streak button - no separate central circle */}
-          {menuItems.map((item, index) => (
-            <Animated.View
-              key={item.id}
-              style={[styles.menuItem, itemStyles[index]]}
-            >
-              <TouchableOpacity
-                style={[styles.itemButton, { backgroundColor: item.color }]}
-                onPress={() => onSelect(item.id)}
-                activeOpacity={0.8}
+      <GestureDetector gesture={panGesture}>
+        <View style={styles.menuContainer}>
+          <Animated.View style={containerStyle}>
+            {/* Enhanced menu items with individual animations */}
+            {menuItems.map((item, index) => (
+              <Animated.View
+                key={item.id}
+                style={[styles.menuItem, itemStyles[index]]}
               >
-                <Icon name={item.icon} size={24} color="#FFFFFF" />
-              </TouchableOpacity>
-              <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>{item.title}</Text>
-            </Animated.View>
-          ))}
-        </Animated.View>
-      </View>
+                <TouchableOpacity
+                  style={[styles.itemButton, { backgroundColor: item.color }]}
+                  onPress={() => handleItemSelect(item.id, index)}
+                  activeOpacity={0.7}
+                >
+                  <Icon name={item.icon} size={24} color="#FFFFFF" />
+                </TouchableOpacity>
+                <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
+                  {item.title}
+                </Text>
+              </Animated.View>
+            ))}
+          </Animated.View>
+        </View>
+      </GestureDetector>
     </View>
   );
 };
@@ -216,22 +291,22 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 2,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 12,
+    borderWidth: 3,
     borderColor: '#FFFFFF',
   },
   itemLabel: {
-    marginTop: 6,
-    fontSize: 12,
-    fontWeight: '600',
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 3,
   },
 });
