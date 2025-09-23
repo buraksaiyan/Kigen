@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
@@ -349,14 +349,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   frequencyOptionTitleSelected: {
-    color: theme.colors.primary,
+    color: theme.colors.text.primary,
   },
   frequencyOptionDesc: {
     fontSize: 14,
     color: theme.colors.text.secondary,
   },
   frequencyOptionDescSelected: {
-    color: theme.colors.primary,
+    color: theme.colors.text.primary,
   },
   customDaysContainer: {
     marginTop: 16,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
   },
   dayButtonTextSelected: {
-    color: theme.colors.surface,
+    color: theme.colors.text.primary,
   },
   saveButton: {
     backgroundColor: theme.colors.primary,
