@@ -12,6 +12,11 @@ import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
+import { GoalEntryPage } from '../screens/GoalEntryPage';
+import { JournalEntryPage } from '../screens/JournalEntryPage';
+import { RemindersCreationPage } from '../screens/RemindersCreationPage';
+import { ToDoCreationPage } from '../screens/ToDoCreationPage';
+import { SocialEntriesPage } from '../screens/SocialEntriesPage';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -34,6 +39,11 @@ export const MainNavigator: React.FC = () => {
   const [isCircularMenuOpen, setIsCircularMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
+  const [isGoalEntryOpen, setIsGoalEntryOpen] = useState(false);
+  const [isJournalEntryOpen, setIsJournalEntryOpen] = useState(false);
+  const [isReminderEntryOpen, setIsReminderEntryOpen] = useState(false);
+  const [isTodoEntryOpen, setIsTodoEntryOpen] = useState(false);
+  const [isSocialEntryOpen, setIsSocialEntryOpen] = useState(false);
 
   // Load real streak data
   useEffect(() => {
@@ -77,10 +87,19 @@ export const MainNavigator: React.FC = () => {
         setIsFocusSessionOpen(true);
         break;
       case 'goals':
-        // Goals entry UI removed — do nothing (menu will close)
+        setIsGoalEntryOpen(true);
         break;
       case 'journaling':
-        // Journals entry UI removed — do nothing (menu will close)
+        setIsJournalEntryOpen(true);
+        break;
+      case 'reminders':
+        setIsReminderEntryOpen(true);
+        break;
+      case 'todo':
+        setIsTodoEntryOpen(true);
+        break;
+      case 'social':
+        setIsSocialEntryOpen(true);
         break;
       default:
         console.log(`Unhandled menu item: ${itemId}`);
@@ -155,6 +174,36 @@ export const MainNavigator: React.FC = () => {
         <FocusSessionScreen
           visible={isFocusSessionOpen}
           onClose={() => setIsFocusSessionOpen(false)}
+        />
+
+        <GoalEntryPage
+          visible={isGoalEntryOpen}
+          onClose={() => setIsGoalEntryOpen(false)}
+          onSave={() => setIsGoalEntryOpen(false)}
+        />
+
+        <JournalEntryPage
+          visible={isJournalEntryOpen}
+          onClose={() => setIsJournalEntryOpen(false)}
+          onSave={() => setIsJournalEntryOpen(false)}
+        />
+
+        <RemindersCreationPage
+          visible={isReminderEntryOpen}
+          onClose={() => setIsReminderEntryOpen(false)}
+          onSave={() => setIsReminderEntryOpen(false)}
+        />
+
+        <ToDoCreationPage
+          visible={isTodoEntryOpen}
+          onClose={() => setIsTodoEntryOpen(false)}
+          onSave={() => setIsTodoEntryOpen(false)}
+        />
+
+        <SocialEntriesPage
+          visible={isSocialEntryOpen}
+          onClose={() => setIsSocialEntryOpen(false)}
+          onSave={() => setIsSocialEntryOpen(false)}
         />
       </AuthProvider>
     </GestureHandlerRootView>
