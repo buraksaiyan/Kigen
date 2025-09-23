@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -47,23 +47,21 @@ export const MainNavigator: React.FC = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
   return (
-    <NavigationContainer>
-      <GestureHandlerRootView style={styles.container}>
-        <AuthProvider>
-          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          
-          <Stack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Main" component={MainScreen} />
-            <Stack.Screen name="GoalEntry" component={GoalEntryPage} />
-            <Stack.Screen name="JournalEntry" component={JournalEntryPage} />
-            <Stack.Screen name="ReminderEntry" component={RemindersCreationPage} />
-            <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
-            <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
-          </Stack.Navigator>
-          
-        </AuthProvider>
-      </GestureHandlerRootView>
-    </NavigationContainer>
+    <GestureHandlerRootView style={styles.container}>
+      <AuthProvider>
+        <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+        
+        <Stack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="GoalEntry" component={GoalEntryPage} />
+          <Stack.Screen name="JournalEntry" component={JournalEntryPage} />
+          <Stack.Screen name="ReminderEntry" component={RemindersCreationPage} />
+          <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
+          <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
+        </Stack.Navigator>
+        
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 };
 
