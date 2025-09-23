@@ -51,7 +51,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [selectedHour, setSelectedHour] = useState(9);
+  const [selectedMinute, setSelectedMinute] = useState(0);
   const [showDateSelector, setShowDateSelector] = useState(false);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
   const [recurring, setRecurring] = useState<'none' | 'daily' | 'weekly' | 'monthly'>('none');
@@ -62,26 +63,37 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
     requestNotificationPermission();
   }, []);
 
-  const requestNotificationPermission = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert(
-        'Permission Required',
-        'Please enable notifications to create reminders.',
-        [{ text: 'OK' }]
-      );
-      setHasPermission(false);
-    } else {
-      setHasPermission(true);
+  const formatDateTime = (date: Date, hour: number, minute: number) => {
+    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    return `${date.toLocaleDateString()} ${timeString}`;
+  };
+
+  const handleTimeSelect = (hour: number, minute: number) => {
+    setSelectedHour(hour);
+    setSelectedMinute(minute);
+    setShowTimeSelector(false);
+  };
+
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) { // 15-minute intervals
+        options.push({
+          hour,
+          minute,
+          label: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+        });
+      }
     }
+    return options;
   };
 
   const scheduleNotification = async (reminder: Omit<Reminder, 'notificationId'>): Promise<string | null> => {
     try {
       // Combine date and time
       const scheduledDateTime = new Date(selectedDate);
-      scheduledDateTime.setHours(selectedTime.getHours());
-      scheduledDateTime.setMinutes(selectedTime.getMinutes());
+      scheduledDateTime.setHours(selectedHour);
+      scheduledDateTime.setMinutes(selectedMinute);
       scheduledDateTime.setSeconds(0);
       scheduledDateTime.setMilliseconds(0);
 
@@ -104,8 +116,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
       if (recurring !== 'none') {
         const recurringTrigger: any = {
           repeats: true,
-          hour: selectedTime.getHours(),
-          minute: selectedTime.getMinutes(),
+          hour: selectedHour,
+          minute: selectedMinute,
         };
 
         switch (recurring) {
@@ -154,7 +166,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
         id: Date.now().toString(),
         title: title.trim(),
         message: message.trim() || title.trim(),
-        scheduledTime: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.getHours(), selectedTime.getMinutes()).toISOString(),
+        scheduledTime: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedHour, selectedMinute).toISOString(),
         recurring,
         isActive: true,
         createdAt: new Date().toISOString(),
@@ -185,7 +197,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
       setTitle('');
       setMessage('');
       setSelectedDate(new Date());
-      setSelectedTime(new Date());
+      setSelectedHour(9);
+      setSelectedMinute(0);
       setRecurring('none');
       
       Alert.alert('Success', 'Reminder created successfully!');
@@ -196,12 +209,6 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDateTime = (date: Date, time: Date) => {
-    const dateStr = date.toLocaleDateString();
-    const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    return `${dateStr} at ${timeStr}`;
   };
 
   return (
@@ -240,7 +247,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
           <Text style={styles.label}>Date & Time</Text>
           <TouchableOpacity onPress={() => setShowDateSelector(!showDateSelector)} style={styles.dateTimeButton}>
             <Text style={styles.dateTimeButtonText}>
-              📅 {formatDateTime(selectedDate, selectedTime)}
+              📅 {formatDateTime(selectedDate, selectedHour, selectedMinute)}
             </Text>
           </TouchableOpacity>
 
@@ -252,13 +259,23 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
 
           <TouchableOpacity onPress={() => setShowTimeSelector(!showTimeSelector)} style={styles.dateTimeButton}>
             <Text style={styles.dateTimeButtonText}>
-              🕐 Change Time
+              🕐 {selectedHour.toString().padStart(2, '0')}:{selectedMinute.toString().padStart(2, '0')}
             </Text>
           </TouchableOpacity>
 
           {showTimeSelector && (
-            <View style={styles.dateTimeInputs}>
-              <Text style={styles.infoText}>Time selection interface would go here</Text>
+            <View style={styles.timePickerContainer}>
+              <ScrollView style={styles.timePickerScroll} showsVerticalScrollIndicator={false}>
+                {generateTimeOptions().map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.timeOption}
+                    onPress={() => handleTimeSelect(option.hour, option.minute)}
+                  >
+                    <Text style={styles.timeOptionText}>{option.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           )}
 
@@ -465,5 +482,25 @@ const styles = StyleSheet.create({
     color: theme.colors.danger,
     fontWeight: '500',
     marginTop: theme.spacing.sm,
+  },
+  timePickerContainer: {
+    marginTop: 8,
+    maxHeight: 200,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surface,
+  },
+  timePickerScroll: {
+    maxHeight: 200,
+  },
+  timeOption: {
+    padding: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  timeOptionText: {
+    fontSize: 16,
+    color: theme.colors.text.primary,
   },
 });

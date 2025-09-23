@@ -55,6 +55,9 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
   const [customDays, setCustomDays] = useState<number[]>([]);
   const [targetDuration, setTargetDuration] = useState('');
   const [reminderTime, setReminderTime] = useState('');
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedHour, setSelectedHour] = useState(9);
+  const [selectedMinute, setSelectedMinute] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const toggleCustomDay = (dayId: number) => {
@@ -63,6 +66,28 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
         ? prev.filter(d => d !== dayId)
         : [...prev, dayId]
     );
+  };
+
+  const handleTimeSelect = (hour: number, minute: number) => {
+    setSelectedHour(hour);
+    setSelectedMinute(minute);
+    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    setReminderTime(timeString);
+    setShowTimePicker(false);
+  };
+
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) { // 15-minute intervals
+        options.push({
+          hour,
+          minute,
+          label: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+        });
+      }
+    }
+    return options;
   };
 
   const saveHabit = async () => {
@@ -234,13 +259,31 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Reminder Time</Text>
-            <TextInput
-              style={styles.textInput}
-              value={reminderTime}
-              onChangeText={setReminderTime}
-              placeholder="e.g., 09:00"
-              placeholderTextColor={theme.colors.text.secondary}
-            />
+            <TouchableOpacity
+              style={styles.timeInput}
+              onPress={() => setShowTimePicker(!showTimePicker)}
+            >
+              <Text style={[styles.timeInputText, !reminderTime && styles.timeInputPlaceholder]}>
+                {reminderTime || 'Select time'}
+              </Text>
+              <Text style={styles.timeInputIcon}>🕐</Text>
+            </TouchableOpacity>
+
+            {showTimePicker && (
+              <View style={styles.timePickerContainer}>
+                <ScrollView style={styles.timePickerScroll} showsVerticalScrollIndicator={false}>
+                  {generateTimeOptions().map((option, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.timeOption}
+                      onPress={() => handleTimeSelect(option.hour, option.minute)}
+                    >
+                      <Text style={styles.timeOptionText}>{option.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
           </View>
         </View>
 
@@ -403,5 +446,46 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.surface,
+  },
+  timeInput: {
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: theme.colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  timeInputText: {
+    fontSize: 16,
+    color: theme.colors.text.primary,
+  },
+  timeInputPlaceholder: {
+    color: theme.colors.text.secondary,
+  },
+  timeInputIcon: {
+    fontSize: 16,
+    color: theme.colors.text.secondary,
+  },
+  timePickerContainer: {
+    marginTop: 8,
+    maxHeight: 200,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    backgroundColor: theme.colors.surface,
+  },
+  timePickerScroll: {
+    maxHeight: 200,
+  },
+  timeOption: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  timeOptionText: {
+    fontSize: 16,
+    color: theme.colors.text.primary,
   },
 });

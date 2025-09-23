@@ -68,6 +68,13 @@ interface ActiveTodo {
   completed: boolean;
 }
 
+interface ActiveReminder {
+  id: string;
+  title: string;
+  scheduledTime: string;
+  recurring: string;
+}
+
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
   const { 
@@ -83,11 +90,68 @@ export const DashboardScreen: React.FC = () => {
   const [activeGoals, setActiveGoals] = useState<ActiveGoal[]>([]);
   const [activeHabits, setActiveHabits] = useState<ActiveHabit[]>([]);
   const [activeTodos, setActiveTodos] = useState<ActiveTodo[]>([]);
+  const [activeReminders, setActiveReminders] = useState<ActiveReminder[]>([]);
   const [userRank, setUserRank] = useState('Bronze');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [usageStats, setUsageStats] = useState<DigitalWellbeingStats | null>(null);
   const [hasUsagePermission, setHasUsagePermission] = useState(false);
+
+  const toggleTodoCompletion = async (todoId: string) => {
+    try {
+      const updatedTodos = activeTodos.map(todo => 
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+      );
+      setActiveTodos(updatedTodos);
+      
+      // Update in AsyncStorage
+      await AsyncStorage.setItem('@kigen_todos', JSON.stringify(updatedTodos));
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
+  };
+
+  const toggleHabitCompletion = async (habitId: string) => {
+    try {
+      const updatedHabits = activeHabits.map(habit => 
+        habit.id === habitId ? { ...habit, completedToday: !habit.completedToday } : habit
+      );
+      setActiveHabits(updatedHabits);
+      
+      // Update in AsyncStorage
+      await AsyncStorage.setItem('@kigen_habits', JSON.stringify(updatedHabits));
+    } catch (error) {
+      console.error('Error updating habit:', error);
+    }
+  };
+
+  const completeGoal = async (goalId: string) => {
+    try {
+      const updatedGoals = activeGoals.map(goal => 
+        goal.id === goalId ? { ...goal, completed: true, completedAt: new Date().toISOString() } : goal
+      );
+      setActiveGoals(updatedGoals);
+      
+      // Update in AsyncStorage
+      await AsyncStorage.setItem('@kigen_goals', JSON.stringify(updatedGoals));
+    } catch (error) {
+      console.error('Error completing goal:', error);
+    }
+  };
+
+  const failGoal = async (goalId: string) => {
+    try {
+      const updatedGoals = activeGoals.map(goal => 
+        goal.id === goalId ? { ...goal, failed: true, failedAt: new Date().toISOString() } : goal
+      );
+      setActiveGoals(updatedGoals);
+      
+      // Update in AsyncStorage
+      await AsyncStorage.setItem('@kigen_goals', JSON.stringify(updatedGoals));
+    } catch (error) {
+      console.error('Error failing goal:', error);
+    }
+  };
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
@@ -129,6 +193,49 @@ export const DashboardScreen: React.FC = () => {
         setActiveGoals(activeGoalsData);
       }
 
+      // Load active habits
+      const habitsData = await AsyncStorage.getItem('@kigen_habits');
+      if (habitsData) {
+        const habits = JSON.parse(habitsData);
+        const activeHabitsData = habits
+          .filter((habit: any) => habit.isActive)
+          .slice(0, 3)
+          .map((habit: any) => ({ 
+            id: habit.id, 
+            title: habit.title, 
+            streak: habit.streak || 0,
+            completedToday: habit.lastCompleted === new Date().toDateString()
+          }));
+        setActiveHabits(activeHabitsData);
+      }
+
+      // Load active todos
+      const todosData = await AsyncStorage.getItem('@kigen_todos');
+      if (todosData) {
+        const todos = JSON.parse(todosData);
+        const activeTodosData = todos
+          .filter((todo: any) => !todo.completed)
+          .slice(0, 3)
+          .map((todo: any) => ({ id: todo.id, title: todo.title, completed: false }));
+        setActiveTodos(activeTodosData);
+      }
+
+      // Load active reminders
+      const remindersData = await AsyncStorage.getItem('@kigen_reminders');
+      if (remindersData) {
+        const reminders = JSON.parse(remindersData);
+        const activeRemindersData = reminders
+          .filter((reminder: any) => reminder.isActive)
+          .slice(0, 3)
+          .map((reminder: any) => ({ 
+            id: reminder.id, 
+            title: reminder.title, 
+            scheduledTime: reminder.scheduledTime,
+            recurring: reminder.recurring
+          }));
+        setActiveReminders(activeRemindersData);
+      }
+
       // Load canonical user profile from UserStatsService (falls back to AsyncStorage keys)
       try {
         const userProfile = await UserStatsService.getUserProfile();
@@ -146,8 +253,6 @@ export const DashboardScreen: React.FC = () => {
         console.error('Error loading user profile', e);
       }
 
-      setActiveHabits([]);
-      setActiveTodos([]);
       setUserRank(monthlyRating.cardTier);
 
       try {
@@ -486,11 +591,17 @@ export const DashboardScreen: React.FC = () => {
                 <View style={[styles.progressFill, { width: `${goal.progress * 100}%` }]} />
               </View>
               <View style={styles.goalActions}>
-                <TouchableOpacity style={styles.completeButton}>
+                <TouchableOpacity 
+                  style={styles.completeButton}
+                  onPress={() => completeGoal(goal.id)}
+                >
                   <Icon name="check" size={16} color="#FFFFFF" />
                   <Text style={styles.actionButtonText}>Complete</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.failButton}>
+                <TouchableOpacity 
+                  style={styles.failButton}
+                  onPress={() => failGoal(goal.id)}
+                >
                   <Icon name="close" size={16} color="#FFFFFF" />
                   <Text style={styles.actionButtonText}>Fail</Text>
                 </TouchableOpacity>
@@ -514,7 +625,10 @@ export const DashboardScreen: React.FC = () => {
         {activeHabits.length > 0 ? (
           activeHabits.map((habit) => (
             <View key={habit.id} style={styles.habitItem}>
-              <TouchableOpacity style={styles.habitCheckbox}>
+              <TouchableOpacity 
+                style={styles.habitCheckbox}
+                onPress={() => toggleHabitCompletion(habit.id)}
+              >
                 <Icon
                   name={habit.completedToday ? 'check-box' : 'check-box-outline-blank'}
                   size={24}
@@ -547,7 +661,10 @@ export const DashboardScreen: React.FC = () => {
         {activeTodos.length > 0 ? (
           activeTodos.map((todo) => (
             <View key={todo.id} style={styles.todoItem}>
-              <TouchableOpacity style={styles.todoCheckbox}>
+              <TouchableOpacity 
+                style={styles.todoCheckbox}
+                onPress={() => toggleTodoCompletion(todo.id)}
+              >
                 <Icon
                   name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
                   size={24}
@@ -566,6 +683,45 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>No active tasks</Text>
             <Text style={styles.emptyStateSubtext}>Stay organized by adding tasks to your to-do list</Text>
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+
+  const renderActiveReminders = () => (
+    <View style={styles.carouselPanel}>
+      <Text style={styles.sectionTitle}>Active Reminders</Text>
+      <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+        {activeReminders.length > 0 ? (
+          activeReminders.map((reminder) => (
+            <View key={reminder.id} style={styles.reminderItem}>
+              <View style={styles.reminderContent}>
+                <Text style={styles.reminderTitle}>{reminder.title}</Text>
+                <View style={styles.reminderTime}>
+                  <Icon name="schedule" size={16} color={theme.colors.text.secondary} />
+                  <Text style={styles.reminderTimeText}>
+                    {new Date(reminder.scheduledTime).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </Text>
+                  {reminder.recurring !== 'none' && (
+                    <Text style={styles.reminderRecurring}>
+                      • {reminder.recurring}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              <TouchableOpacity style={styles.reminderAction}>
+                <Icon name="notifications-off" size={20} color={theme.colors.text.secondary} />
+              </TouchableOpacity>
+            </View>
+          ))
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>No active reminders</Text>
+            <Text style={styles.emptyStateSubtext}>Set up reminders to stay on track</Text>
           </View>
         )}
       </ScrollView>
@@ -705,10 +861,11 @@ export const DashboardScreen: React.FC = () => {
             case 'activeGoals':
             case 'activeHabits':
             case 'activeTodos':
+            case 'activeReminders':
               // For carousel sections, render as a group
               if (sectionType === 'activeGoals') {
                 const carouselSections = getSortedSections().filter((s) => 
-                  ['activeGoals', 'activeHabits', 'activeTodos'].includes(s.id)
+                  ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
                 );
                 
                 if (carouselSections.length === 0) return null;
@@ -720,6 +877,7 @@ export const DashboardScreen: React.FC = () => {
                         {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
                         {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
                         {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
                       </Animated.View>
                     </GestureDetector>
 
@@ -1235,5 +1393,39 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 120, // Space for bottom navigation
+  },
+  reminderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  reminderContent: {
+    flex: 1,
+  },
+  reminderTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
+  },
+  reminderTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  reminderTimeText: {
+    fontSize: 14,
+    color: theme.colors.text.secondary,
+    marginLeft: theme.spacing.xs,
+  },
+  reminderRecurring: {
+    fontSize: 14,
+    color: theme.colors.secondary,
+    marginLeft: theme.spacing.xs,
+  },
+  reminderAction: {
+    padding: theme.spacing.sm,
   },
 });

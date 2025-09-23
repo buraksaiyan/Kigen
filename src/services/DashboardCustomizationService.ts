@@ -5,6 +5,7 @@ export type DashboardSectionType =
   | 'activeGoals' 
   | 'activeHabits'
   | 'activeTodos'
+  | 'activeReminders'
   | 'phoneUsage';
 
 export interface DashboardSection {
@@ -65,11 +66,20 @@ export class DashboardCustomizationService {
       category: 'productivity',
     },
     {
+      id: 'activeReminders',
+      title: 'Active Reminders',
+      description: 'View your upcoming reminders and notifications',
+      enabled: true,
+      order: 4,
+      icon: 'notifications',
+      category: 'productivity',
+    },
+    {
       id: 'phoneUsage',
       title: 'Digital Wellness',
       description: 'Monitor your phone usage and screen time',
       enabled: true,
-      order: 4,
+      order: 5,
       icon: 'phone-android',
       category: 'analytics',
     },
