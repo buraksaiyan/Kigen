@@ -8,7 +8,6 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
-  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -198,20 +197,6 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
       Alert.alert('Error', 'Failed to create reminder');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDateChange = (event: any, date?: Date) => {
-    setShowDateSelector(false);
-    if (date) {
-      setSelectedDate(date);
-    }
-  };
-
-  const handleTimeChange = (event: any, time?: Date) => {
-    setShowTimeSelector(false);
-    if (time) {
-      setSelectedTime(time);
     }
   };
 

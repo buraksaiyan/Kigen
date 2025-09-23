@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,16 @@ import {
   Dimensions,
   StatusBar,
   AppState,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import * as Notifications from 'expo-notifications';
 import Svg, { Circle } from 'react-native-svg';
 import { theme } from '../config/theme';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import { useSettings } from '../hooks/useSettings';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 interface FocusMode {
   id: string;
@@ -404,26 +402,6 @@ const FOCUS_QUOTES = {
       author: "Sathya Sai Baba"
     }
   ]
-};
-
-interface FlipDigitProps {
-  digit: string;
-  nextDigit: string;
-  color: string;
-  isFlipping: boolean;
-  size?: 'large' | 'small';
-}
-
-// Simple digital display without flip animation
-const SimpleDigit: React.FC<{ digit: string; size?: 'large' | 'small' }> = ({ digit, size = 'large' }) => {
-  return (
-    <Text style={[
-      styles.simpleDigitText, 
-      size === 'small' ? styles.simpleDigitTextSmall : styles.simpleDigitTextLarge
-    ]}>
-      {digit}
-    </Text>
-  );
 };
 
 export const CountdownScreen: React.FC<CountdownScreenProps> = ({
@@ -880,7 +858,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   digitText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',

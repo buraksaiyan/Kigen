@@ -174,7 +174,7 @@ class FocusSessionService {
   }
 
   // Abort session (no points awarded)
-  async abortSession(sessionId: string): Promise<void> {
+  async abortSession(_sessionId: string): Promise<void> {
     try {
       const currentSessionData = await AsyncStorage.getItem('@kigen_current_session');
       if (!currentSessionData) {

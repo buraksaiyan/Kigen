@@ -7,11 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
   Keyboard,
-  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
@@ -42,9 +39,9 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
   const [focusTask, setFocusTask] = useState<Task | null>(null);
   const [focusTimer, setFocusTimer] = useState(0); // in seconds
   const [isTimerActive, setIsTimerActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [, setIsKeyboardVisible] = useState(false);
   
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -75,7 +72,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
     if (isExpanded) {
       loadTasks();
     }
-  }, [isExpanded]);
+  }, [isExpanded, slideAnim]);
 
   // Focus timer effect
   useEffect(() => {
@@ -267,7 +264,6 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
 
   const activeTasks = tasks.filter(t => !t.completed && !t.failed);
   const completedTasks = tasks.filter(t => t.completed);
-  const failedTasks = tasks.filter(t => t.failed);
 
   if (focusMode && focusTask) {
     return (
@@ -479,9 +475,6 @@ export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose })
 };
 
 const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
-  },
   container: {
     backgroundColor: 'rgba(0,0,0,0.5)',
     bottom: 0,
@@ -490,6 +483,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   taskCard: {
     backgroundColor: theme.colors.surface,

@@ -16,7 +16,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { UserStatsService } from '../services/userStatsService';
-import { Card } from './UI';
 
 interface JournalSectionProps {
   isExpanded: boolean;
@@ -50,7 +49,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
     if (isExpanded) {
       loadEntries();
     }
-  }, [isExpanded]);
+  }, [isExpanded, slideAnim]);
 
   // Handle keyboard events
   useEffect(() => {

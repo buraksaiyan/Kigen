@@ -83,7 +83,7 @@ export const UsageChart: React.FC<UsageChartProps> = ({
             fontSize="12"
             fill="#CCCCCC"
           >
-            TODAY
+            {'TODAY'}
           </SvgText>
           <SvgText
             x={centerX}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Path, Circle } from 'react-native-svg';
+import { theme } from '../config/theme';
 
 interface FlowBackgroundProps {
   style?: any;
@@ -84,7 +85,7 @@ export const FlowBackground: React.FC<FlowBackgroundProps> = ({ style, fullCover
 
 const styles = StyleSheet.create({
   blackBase: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: theme.colors.background,
     borderRadius: 20,
     bottom: 0,
     left: 0,

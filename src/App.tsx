@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
@@ -14,7 +14,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
   const { GestureHandlerRootView } = require('react-native-gesture-handler');
   GestureHandler = GestureHandlerRootView;
-} catch (e) {
+} catch {
   // Fallback for web
   console.log('Using View fallback for web');
 }

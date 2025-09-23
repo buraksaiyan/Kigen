@@ -12,6 +12,7 @@ import { UserCard } from '../components/UserCard';
 import { Leaderboard } from '../components/Leaderboard';
 import { UserStatsService } from '../services/userStatsService';
 import { UserRating } from '../services/ratingSystem';
+import { theme } from '../config/theme';
 
 type ViewMode = 'card' | 'leaderboard';
 type CardMode = 'monthly' | 'lifetime';
@@ -68,7 +69,7 @@ export const RatingsScreen: React.FC = () => {
                 try {
                   const profile = await UserStatsService.createUserProfile(username.trim());
                   resolve(profile);
-                } catch (error) {
+                } catch {
                   Alert.alert('Error', 'Failed to create profile');
                   resolve(null);
                 }
@@ -263,13 +264,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#8b5cf6',
   },
   activeCardModeText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
   },
   activeHeaderButton: {
     backgroundColor: '#8b5cf6',
   },
   activeHeaderButtonText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
   },
   cardModeButton: {
     alignItems: 'center',
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   explanationTitle: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -352,12 +353,12 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   headerTitle: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: 'bold',
   },
   loadingText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 16,
     marginTop: 20,
   },
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   retryButtonText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontWeight: 'bold',
   },
   statsExplanation: {

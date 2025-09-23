@@ -9,11 +9,8 @@ import {
   RefreshControl
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { UserStatsService } from '../services/userStatsService';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
 import LeaderboardService, { LeaderboardEntry } from '../services/LeaderboardService';
-
-const { width } = Dimensions.get('window');
 
 type LeaderboardType = 'lifetime' | 'monthly';
 

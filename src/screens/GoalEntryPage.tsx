@@ -94,7 +94,7 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.inputSection}>
-          <Text style={styles.label}>What's your goal?</Text>
+          <Text style={styles.label}>What&apos;s your goal?</Text>
           <TextInput
             style={styles.textInput}
             value={goalText}

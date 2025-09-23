@@ -317,7 +317,7 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
                 <Text style={[styles.appsHeader, { color: theme.colors.text.primary }]}>
                   Most used apps
                 </Text>
-                {usageStats.apps.map((app: any, index: number) => (
+                {usageStats.apps.map((app: any, _index: number) => (
                   <View key={app.packageName} style={styles.appItem}>
                     {app.icon ? (
                       <Image 

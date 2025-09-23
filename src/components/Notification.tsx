@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { theme } from '../config/theme';
 
 interface NotificationProps {
   visible: boolean;
@@ -124,13 +125,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   message: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 14,
     lineHeight: 20,
     opacity: 0.9,
   },
   title: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,

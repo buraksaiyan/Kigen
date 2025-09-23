@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Image } from 'react-native';
 import { theme } from '../../config/theme';
 
 interface BottomBarProps {
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     elevation: 12,
     height: 84,
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     position: 'absolute',
     right: 0,
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: {
       width: 0,
       height: -2,
@@ -168,14 +167,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   streakLabel: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 10,
     fontWeight: '500',
     letterSpacing: 0.5,
     marginTop: 2,
   },
   streakNumber: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 22,
     fontWeight: '700',
     lineHeight: 26,

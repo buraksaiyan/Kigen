@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -26,7 +26,7 @@ interface PointsHistoryScreenProps {
 
 export default function PointsHistoryScreen({ visible = true, onClose, navigation }: PointsHistoryScreenProps) {
   const [history, setHistory] = useState<PointHistoryEntry[]>([]);
-  const [dailySummaries, setDailySummaries] = useState<DailyPointsSummary[]>([]);
+  const [_dailySummaries, setDailySummaries] = useState<DailyPointsSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('week');
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     borderRadius: 8,
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 11,
     fontWeight: '600',
     overflow: 'hidden',

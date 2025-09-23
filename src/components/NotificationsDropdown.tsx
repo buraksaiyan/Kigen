@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Animated,
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +25,6 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   onClose,
 }) => {
   const { notifications, markAsRead, markAllAsRead, clearNotification, clearAllNotifications } = useNotifications();
-  const { t } = useTranslation();
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -121,7 +119,7 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyStateIcon}>🔔</Text>
                   <Text style={styles.emptyStateTitle}>No Notifications</Text>
-                  <Text style={styles.emptyStateMessage}>You're all caught up! Achievement notifications will appear here.</Text>
+                  <Text style={styles.emptyStateMessage}>You&apos;re all caught up! Achievement notifications will appear here.</Text>
                 </View>
               ) : (
                 notifications.map((notification) => (
@@ -196,8 +194,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: theme.borderRadius.lg,
     marginTop: 60, // Account for status bar and header
     maxHeight: '80%',
-    width: SCREEN_WIDTH,
     position: 'absolute',
+    width: SCREEN_WIDTH,
     top: 0,
     left: 0,
     right: 0,

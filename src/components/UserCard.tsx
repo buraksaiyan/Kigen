@@ -10,7 +10,7 @@ import {
   Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { UserRating, CardTier, RatingSystem } from '../services/ratingSystem';
+import { UserRating, RatingSystem } from '../services/ratingSystem';
 import * as ImagePicker from 'expo-image-picker';
 
 const { width } = Dimensions.get('window');
@@ -64,11 +64,6 @@ export const UserCard: React.FC<UserCardProps> = ({
     } catch (error) {
       console.error('Error picking image:', error);
     }
-  };
-
-  const getCardBackgroundImage = () => {
-    // Return the appropriate background image for the tier
-    return RatingSystem.getCardBackgroundImage(userRating.cardTier);
   };
 
   const renderStatBar = (label: string, value: number, maxValue: number = 100) => {

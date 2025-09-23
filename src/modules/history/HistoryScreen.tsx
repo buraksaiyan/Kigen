@@ -12,7 +12,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 import { focusSessionService } from '../../services/FocusSessionService';
-import { UserStatsService } from '../../services/userStatsService';
 import { journalStorage } from '../../services/journalStorage';
 
 type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
@@ -162,7 +161,6 @@ export const HistoryScreen: React.FC = () => {
       setLoading(false);
     }
   };
-  const [selectedDateRange, setSelectedDateRange] = useState('week');
 
   const currentData = historyData[activeTab] || [];
 
@@ -327,7 +325,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.primary,
   },
   activeTabText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
   },
   container: {
     backgroundColor: theme.colors.background,

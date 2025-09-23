@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ interface ProgressScreenProps {
 export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose }) => {
   const [currentView, setCurrentView] = useState<'focus-logs' | 'kigen-stats'>('focus-logs');
   const [focusLogs, setFocusLogs] = useState<FocusSession[]>([]);
-  const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
+  const [, setSessionStats] = useState<SessionStats | null>(null);
   const [kigenStats, setKigenStats] = useState<any[]>([]);
   const [todaysSummary, setTodaysSummary] = useState<{
     sessions: number;

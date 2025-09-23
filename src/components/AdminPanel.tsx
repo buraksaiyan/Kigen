@@ -110,7 +110,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
               } else {
                 Alert.alert('Error', 'Failed to delete user');
               }
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to delete user');
             }
           }
@@ -144,7 +144,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ theme, onClose }) => {
                             'Email Sent', 
                             `Promotional email sent to ${result.sent} users`
                           );
-                        } catch (error) {
+                        } catch {
                           Alert.alert('Error', 'Failed to send promotional email');
                         }
                       }

@@ -20,7 +20,7 @@ interface AchievementsScreenProps {
 export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible, onClose }) => {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Achievement['category']>('focus_hours');
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalHours: 0,
     totalMinutes: 0,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   unlockedText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 12,
     fontWeight: 'bold',
   },

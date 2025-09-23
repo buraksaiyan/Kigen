@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { UsageChart } from './UsageChart';
-import UsageTracker, { UsageStats, AppUsage } from '../services/usageTracker';
+import UsageTracker, { UsageStats } from '../services/usageTracker';
 
 interface DigitalWellbeingDashboardProps {
   theme: any;
@@ -102,25 +102,25 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
           To enable screen time tracking:
         </Text>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>1</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent }]}>1</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Tap &quot;Grant Permission&quot; below
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>2</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent }]}>2</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Find &quot;Kigen&quot; in the Usage Access list
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>3</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent }]}>3</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Toggle &quot;Allow usage access&quot; ON
           </Text>
         </View>
         <View style={styles.requirementStep}>
-          <Text style={[styles.stepNumber, { color: '#8B5CF6' }]}>4</Text>
+          <Text style={[styles.stepNumber, { color: theme.accent }]}>4</Text>
           <Text style={[styles.stepText, { color: theme.textSecondary }]}>
             Return to this app
           </Text>
@@ -128,7 +128,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
       </View>
 
       <TouchableOpacity
-        style={[styles.permissionButton, { backgroundColor: '#8B5CF6' }]}
+        style={[styles.permissionButton, { backgroundColor: theme.accent }]}
         onPress={requestPermission}
       >
         <Text style={styles.permissionButtonText}>Grant Permission</Text>
@@ -196,7 +196,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
       <ScrollView 
         style={styles.usageContainer}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor="#8B5CF6" />
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={theme.accent} />
         }
       >
         {/* Chart Section */}
@@ -263,17 +263,17 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginBottom: 16,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
   
   // Permission Request Styles
   permissionContainer: {
     alignItems: 'center',
     borderRadius: 16,
     padding: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   iconContainer: {
     marginBottom: 16,

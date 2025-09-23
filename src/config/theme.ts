@@ -3,6 +3,7 @@ export const theme = {
   colors: {
   primary: '#001428',      // Even deeper navy (less cyan)
   secondary: '#5AAFCC',    // Muted sky blue for accents (less saturated)
+  accent: '#8B5CF6',       // Purple accent color
     success: '#2ECC40',      // Emerald green for positive actions
     danger: '#FF4136',       // Bright red for warnings/mistakes
     warning: '#FFDC00',      // Bright yellow for moderate alerts
@@ -12,12 +13,17 @@ export const theme = {
   surface: '#001826',      // Subtle surface shade for cards
   surfaceSecondary: '#002B3A', // Deeper section background
   border: '#00374A',       // Muted blue-tinted borders
+  shadow: '#000000',       // Shadow color for elevations
+  overlay: 'rgba(0, 0, 0, 0.7)', // Semi-transparent overlay
+  overlayLight: 'rgba(0, 0, 0, 0.05)', // Very light overlay
+  borderLight: 'rgba(0, 0, 0, 0.1)', // Light border
     
     text: {
       primary: '#FFFFFF',    // Pure white for main text
       secondary: '#8FCFDF',  // Softer light blue for secondary text
       tertiary: '#8FCFDFFF', // Translucent soft blue
       disabled: '#274F63',   // Muted slate for disabled text
+      dark: '#000000',       // Black text for dark backgrounds
     }
   },
   

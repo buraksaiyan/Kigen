@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,22 +17,30 @@ interface DigitalWellbeingSimpleProps {
   theme: any;
 }
 
-const APP_COLORS = [
-  '#1E88E5', // Blue (Expo Go)
-  '#E53935', // Red (Instagram)  
-  '#FFB300', // Orange (TikTok)
-  '#43A047', // Green (Firefox)
-  '#8E24AA', // Purple (WhatsApp)
-  '#FB8C00', // Orange (YouTube)
-];
-
 const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }) => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading] = useState<boolean>(false);
   const [appState, setAppState] = useState(AppState.currentState);
-  const [usageData, setUsageData] = useState<any[]>([]);
+  const [usageData] = useState<any[]>([]);
   
   const usageTracker = UsageTracker.getInstance();
+
+  const checkPermission = useCallback(async () => {
+    try {
+      const permission = await usageTracker.hasUsageAccessPermission();
+      setHasPermission(permission);
+    } catch (error) {
+      console.error('Error checking permission:', error);
+    }
+  }, [usageTracker]);
+
+  const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
+    if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      // User returned to app, check permission again
+      globalThis.setTimeout(checkPermission, 500);
+    }
+    setAppState(nextAppState);
+  }, [appState, checkPermission]);
 
   useEffect(() => {
     checkPermission();
@@ -41,48 +49,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     
     return () => subscription?.remove();
-  }, []);
-
-  useEffect(() => {
-    if (hasPermission) {
-      loadUsageData();
-    }
-  }, [hasPermission]);
-
-  const loadUsageData = async () => {
-    try {
-      setIsLoading(true);
-      // TODO: Replace with real usage data from UsageTracker
-      const realUsageData = await usageTracker.getUsageStats(1);
-      if (realUsageData && realUsageData.length > 0 && realUsageData[0]) {
-        setUsageData(realUsageData[0].apps || []);
-      } else {
-        setUsageData([]);
-      }
-    } catch (error) {
-      console.error('Error loading usage data:', error);
-      setUsageData([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (appState.match(/inactive|background/) && nextAppState === 'active') {
-      // User returned to app, check permission again
-  globalThis.setTimeout(checkPermission, 500);
-    }
-    setAppState(nextAppState);
-  };
-
-  const checkPermission = async () => {
-    try {
-      const permission = await usageTracker.hasUsageAccessPermission();
-      setHasPermission(permission);
-    } catch (error) {
-      console.error('Error checking permission:', error);
-    }
-  };
+  }, [checkPermission, handleAppStateChange]);
 
   const requestPermission = async () => {
     try {
@@ -239,7 +206,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
           <Text style={[styles.appListTitle, { color: theme.text }]}>App activity</Text>
           
           {usageData.map((app: any, index: number) => {
-            const percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
+            const _percentage = totalTime > 0 ? Math.round((app.time / totalTime) * 100) : 0;
             
             return (
               <View key={app.packageName || `${app.appName}-${index}`} style={styles.appRow}>
@@ -381,8 +348,8 @@ const styles = StyleSheet.create({
   
   // App List - Compact
   appRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10, // Reduced from 12
     borderBottomWidth: 0.5,
@@ -394,8 +361,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   appIcon: {
-    width: 32, // Smaller icon
     height: 32,
+    width: 32, // Smaller icon
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',

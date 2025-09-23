@@ -4,7 +4,6 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  TouchableWithoutFeedback,
   Animated, 
   Dimensions,
   PanResponder,
@@ -27,7 +26,7 @@ interface FlippableStatsCardProps {
   refreshTrigger?: number;
 }
 
-export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress, refreshTrigger }) => {
+export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress: _onPress, refreshTrigger }) => {
   const [monthlyRating, setMonthlyRating] = useState<UserRating | null>(null);
   const [lifetimeRating, setLifetimeRating] = useState<UserRating | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -158,21 +157,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     fetchRatings();
   }, [refreshTrigger]);
 
-  const handleFlip = () => {
-    const targetFlipped = !displayFlipped;
-    const toValue = targetFlipped ? 1 : 0;
-    setIsFlipped(targetFlipped);
-    
-    Animated.timing(flipAnimation, {
-      toValue,
-      duration: 600,
-      useNativeDriver: true,
-    }).start(() => {
-      // Update display text only after animation is fully complete
-      setDisplayFlipped(targetFlipped);
-    });
-  };
-
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
       // Only respond to clear horizontal swipes with minimal vertical movement
@@ -216,14 +200,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     onPanResponderTerminationRequest: () => false, // Don't let parent views intercept
   });
 
-  // Handle tap separately
-  const handleTap = () => {
-    console.log('Handle tap called');
-    if (!isSwipeGesture.current) {
-      setIsExpanded(!isExpanded);
-    }
-  };
-
   const getStatName = (statKey: string): string => {
     const statNames = {
       DIS: 'Discipline',
@@ -258,7 +234,6 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress,
     );
   }
 
-  const tierColors = RatingSystem.getCardTierColors(currentRating.cardTier);
   const backgroundImage = RatingSystem.getCardBackgroundImage(currentRating.cardTier);
   const textColor = RatingSystem.getCardTextColor(currentRating.cardTier);
 
@@ -496,7 +471,7 @@ const styles = StyleSheet.create({
     margin: 16, // Reverted to original spacing
     overflow: 'hidden',
     padding: 8, // Reverted to original spacing
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -529,7 +504,7 @@ const styles = StyleSheet.create({
   timePeriod: {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 6,
-    color: 'black',
+    color: theme.colors.text.dark,
     fontSize: 12,
     fontWeight: '600',
     paddingHorizontal: 12,

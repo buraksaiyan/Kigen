@@ -9,7 +9,6 @@ import {
   Alert,
   Modal,
   ActivityIndicator,
-  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -36,7 +35,6 @@ export default function DashboardCustomizationScreen({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [usageStats, setUsageStats] = useState<any>(null);
 
@@ -169,7 +167,7 @@ export default function DashboardCustomizationScreen({
               await DashboardCustomizationService.resetToDefault();
               await loadData();
               Alert.alert('Success', 'Dashboard reset to default layout');
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to reset dashboard');
             }
           },

@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { KigenLogo } from './KigenLogo';
 import { theme } from '../config/theme';
-
-const { width, height } = Dimensions.get('window');
 
 interface SplashScreenProps {
   onFinish: () => void;

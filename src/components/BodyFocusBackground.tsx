@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Path, Circle } from 'react-native-svg';
+import { theme } from '../config/theme';
 
 interface BodyFocusBackgroundProps {
   style?: any;
@@ -70,7 +71,7 @@ export const BodyFocusBackground: React.FC<BodyFocusBackgroundProps> = ({ style,
 const styles = StyleSheet.create({
   blackBase: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
+    backgroundColor: theme.colors.background,
   },
   container: {
     ...StyleSheet.absoluteFillObject,

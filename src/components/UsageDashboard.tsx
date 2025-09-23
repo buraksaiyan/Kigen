@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import UsageTracker, { UsageStats, AppUsage } from '../services/usageTracker';

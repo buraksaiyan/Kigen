@@ -43,7 +43,7 @@ class BackgroundTimerService {
     }
 
     try {
-      await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data, error, executionInfo }) => {
+      await TaskManager.defineTask(BACKGROUND_TIMER_TASK, async ({ data: _data, error, executionInfo: _executionInfo }) => {
         if (error) {
           console.error('Background task error:', error);
           return BackgroundTask.BackgroundTaskResult.Failed;

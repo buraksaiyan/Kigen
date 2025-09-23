@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -164,23 +164,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   const handleCountdownPause = () => {
     console.log('Session paused');
-  };
-
-  const handleCountdownStop = async () => {
-    try {
-      if (currentSessionId) {
-        await focusSessionService.completeSession(currentSessionId, false);
-        console.log('Focus session stopped');
-      }
-    } catch (error) {
-      console.error('Error stopping focus session:', error);
-    } finally {
-      // Reset all states
-      setShowCountdown(false);
-      setSelectedMode(null);
-      setSelectedGoal(null);
-      setCurrentSessionId(null);
-    }
   };
 
   const handleEarlyFinish = async () => {

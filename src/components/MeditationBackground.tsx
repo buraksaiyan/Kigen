@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Path, Circle } from 'react-native-svg';
+import { theme } from '../config/theme';
 
 interface MeditationBackgroundProps {
   style?: any;
@@ -63,7 +64,7 @@ export const MeditationBackground: React.FC<MeditationBackgroundProps> = ({ styl
 const styles = StyleSheet.create({
   blackBase: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
+    backgroundColor: theme.colors.background,
   },
   container: {
     ...StyleSheet.absoluteFillObject,

@@ -87,10 +87,10 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   const opacity6 = useSharedValue(0);
 
   // Group them into arrays for easier access
-  const translateXValues = useMemo(() => [translateX0, translateX1, translateX2, translateX3, translateX4, translateX5, translateX6], []);
-  const translateYValues = useMemo(() => [translateY0, translateY1, translateY2, translateY3, translateY4, translateY5, translateY6], []);
-  const scaleValues = useMemo(() => [scale0, scale1, scale2, scale3, scale4, scale5, scale6], []);
-  const opacityValues = useMemo(() => [opacity0, opacity1, opacity2, opacity3, opacity4, opacity5, opacity6], []);
+  const translateXValues = useMemo(() => [translateX0, translateX1, translateX2, translateX3, translateX4, translateX5, translateX6], [translateX0, translateX1, translateX2, translateX3, translateX4, translateX5, translateX6]);
+  const translateYValues = useMemo(() => [translateY0, translateY1, translateY2, translateY3, translateY4, translateY5, translateY6], [translateY0, translateY1, translateY2, translateY3, translateY4, translateY5, translateY6]);
+  const scaleValues = useMemo(() => [scale0, scale1, scale2, scale3, scale4, scale5, scale6], [scale0, scale1, scale2, scale3, scale4, scale5, scale6]);
+  const opacityValues = useMemo(() => [opacity0, opacity1, opacity2, opacity3, opacity4, opacity5, opacity6], [opacity0, opacity1, opacity2, opacity3, opacity4, opacity5, opacity6]);
 
   // Create animated styles for each menu item
   const animatedStyle0 = useAnimatedStyle(() => ({

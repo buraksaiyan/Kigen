@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Path } from 'react-native-svg';
+import { theme } from '../config/theme';
 
 interface NoTechBackgroundProps {
   style?: any;
@@ -58,7 +59,7 @@ export const NoTechBackground: React.FC<NoTechBackgroundProps> = ({ style, fullC
 const styles = StyleSheet.create({
   blackBase: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#1F2937',
+    backgroundColor: theme.colors.background,
   },
   container: {
     flex: 1,

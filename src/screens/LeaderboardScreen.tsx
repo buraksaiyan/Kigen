@@ -31,7 +31,7 @@ interface LeaderboardScreenProps {
   onNavigateBack?: () => void;
 }
 
-export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigateBack }) => {
+export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigateBack: _onNavigateBack }) => {
   const [activeTab, setActiveTab] = useState<LeaderboardType>('monthly');
   const [lifetimeLeaderboard, setLifetimeLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -150,7 +150,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
               <Text style={styles.emptyText}>No data available</Text>
             </View>
           ) : (
-            currentLeaderboard.map((entry, index) => {
+            currentLeaderboard.map((entry, _index) => {
               const tierColors = getTierColors(entry.cardTier);
               const points = activeTab === 'monthly' ? entry.monthlyPoints : entry.totalPoints;
               
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   activeTabText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
   },
   container: {
     backgroundColor: theme.colors.background,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
   pointsText: {
     ...theme.typography.h4,
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontWeight: '700',
   },
   rankContainer: {
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   rankNumber: {
     ...theme.typography.h4,
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontWeight: '700',
   },
   scrollView: {
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
   tierText: {
     ...theme.typography.small,
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   username: {
     ...theme.typography.bodyLarge,
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontWeight: '700',
     marginBottom: 4,
   },

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { setTimeout } from 'timers';
 import {
   View,
@@ -9,7 +9,6 @@ import {
   Image,
   ImageBackground,
   Dimensions,
-  Platform,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,12 +19,9 @@ import Animated, {
   withSpring,
   withTiming,
   interpolate,
-  Extrapolate,
   runOnJS,
 } from 'react-native-reanimated';
 import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
@@ -38,7 +34,6 @@ import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useDashboardSections } from '../../hooks/useDashboardSections';
-import type { DashboardSectionType } from '../../services/DashboardCustomizationService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -77,10 +72,6 @@ interface ActiveTodo {
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
   const { 
-    enabledSections, 
-    loading: sectionsLoading, 
-    isSectionEnabled, 
-    getSectionOrder,
     getSortedSections,
     refreshSections 
   } = useDashboardSections();
@@ -340,7 +331,7 @@ export const DashboardScreen: React.FC = () => {
                       // Save to canonical profile so Profile screen and other parts of app see the change
                       try {
                         await UserStatsService.updateUserProfile({ profileImage: uri });
-                      } catch (err) {
+                      } catch {
                         // Fallback to AsyncStorage key if update fails
                         await AsyncStorage.setItem('@kigen_profile_image', uri);
                       }
@@ -422,7 +413,7 @@ export const DashboardScreen: React.FC = () => {
                       const uri = (result as any).assets[0].uri;
                       try {
                         await UserStatsService.updateUserProfile({ profileImage: uri });
-                      } catch (err) {
+                      } catch {
                         await AsyncStorage.setItem('@kigen_profile_image', uri);
                       }
                       setProfileImageUri(uri);
@@ -658,7 +649,7 @@ export const DashboardScreen: React.FC = () => {
         </View>
         <View style={styles.topApps}>
           <Text style={styles.topAppsTitle}>Top Apps</Text>
-          {topApps.map((app, index) => {
+          {topApps.map((app, _index) => {
             const maxTime = topApps[0]?.timeInForeground || 1;
             const widthPercent = Math.max(20, (app.timeInForeground / maxTime) * 100);
             
@@ -852,7 +843,7 @@ const styles = StyleSheet.create({
     top: 12,
   },
   rankText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -865,7 +856,7 @@ const styles = StyleSheet.create({
     height: 100, // Made bigger
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: theme.colors.text.primary,
   },
   usernameSection: {
     alignItems: 'center',

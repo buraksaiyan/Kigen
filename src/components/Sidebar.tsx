@@ -14,6 +14,16 @@ import { theme } from '../config/theme';
 import { useAuth } from '../modules/auth/AuthProvider';
 import { useTranslation } from '../i18n/I18nProvider';
 
+// Import icons
+const homeIcon = require('../../assets/images/home-icon.png');
+const pastJournalsIcon = require('../../assets/images/pastjournals-icon.png');
+const pastGoalsIcon = require('../../assets/images/pastgoals-icon.png');
+const progressIcon = require('../../assets/images/progress-icon.png');
+const settingsIcon = require('../../assets/images/settings-icon.png');
+const achievementsIcon = require('../../assets/images/achievements-icon.png');
+const profileIcon = require('../../assets/images/profile-icon.png');
+const notificationIcon = require('../../assets/images/notification-icon.png');
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,10 +32,10 @@ interface SidebarProps {
   onShowAdmin?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen, onShowAdmin }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, currentScreen: _currentScreen, onShowAdmin }) => {
   const { session, signOut, showLoginScreen } = useAuth();
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const _navigation = useNavigation();
   const slideAnim = React.useRef(new Animated.Value(-300)).current;
 
   React.useEffect(() => {
@@ -34,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [isOpen]);
+  }, [isOpen, slideAnim]);
 
   // Pan responder for swipe gesture
   const panResponder = PanResponder.create({
@@ -61,14 +71,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
   });
 
   const menuItems = [
-    { id: 'dashboard', title: t('sidebar.dashboard'), icon: require('../../assets/images/home-icon.png') },
-    { id: 'journals', title: t('sidebar.pastJournals'), icon: require('../../assets/images/pastjournals-icon.png') },
-    { id: 'goalsHistory', title: t('sidebar.pastGoals'), icon: require('../../assets/images/pastgoals-icon.png') },
-    { id: 'pointsHistory', title: 'Points History', icon: require('../../assets/images/progress-icon.png') },
-    { id: 'dashboardCustomization', title: 'Customize Dashboard', icon: require('../../assets/images/settings-icon.png') },
-    { id: 'achievements', title: t('sidebar.achievements'), icon: require('../../assets/images/achievements-icon.png') },
-    { id: 'profile', title: t('sidebar.profile'), icon: require('../../assets/images/profile-icon.png') },
-    { id: 'settings', title: t('sidebar.settings'), icon: require('../../assets/images/settings-icon.png') },
+    { id: 'dashboard', title: t('sidebar.dashboard'), icon: homeIcon },
+    { id: 'journals', title: t('sidebar.pastJournals'), icon: pastJournalsIcon },
+    { id: 'goalsHistory', title: t('sidebar.pastGoals'), icon: pastGoalsIcon },
+    { id: 'pointsHistory', title: 'Points History', icon: progressIcon },
+    { id: 'dashboardCustomization', title: 'Customize Dashboard', icon: settingsIcon },
+    { id: 'achievements', title: t('sidebar.achievements'), icon: achievementsIcon },
+    { id: 'profile', title: t('sidebar.profile'), icon: profileIcon },
+    { id: 'settings', title: t('sidebar.settings'), icon: settingsIcon },
   ];
 
   const handleItemPress = (screenId: string) => {

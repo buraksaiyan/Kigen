@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -47,7 +46,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       translateX.value = withTiming(SIDEBAR_WIDTH, { duration: 300 });
       backdropOpacity.value = withTiming(0, { duration: 300 });
     }
-  }, [isOpen]);
+  }, [isOpen, backdropOpacity, translateX]);
 
   const sidebarStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -273,7 +272,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   signInText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
   },

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: theme.colors.overlay,
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: theme.spacing.lg,

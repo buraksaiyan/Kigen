@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Platform, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity, RefreshControl, Alert, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthProvider';
@@ -9,15 +9,16 @@ import { theme } from '../../config/theme';
 import { Button, Card } from '../../components/UI';
 import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
-import { RatingsScreen } from '../../screens/RatingsScreen';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { UserStatsService } from '../../services/userStatsService';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
+
+// Import icons
+const notificationIcon = require('../../../assets/images/notification-icon.png');
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { useNotifications } from '../../contexts/NotificationsContext';
 import { NotificationsDropdown } from '../../components/NotificationsDropdown';
-import { achievementService } from '../../services/achievementService';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
 
@@ -36,14 +37,6 @@ export const DashboardScreen: React.FC = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const { unreadCount } = useNotifications();
-
-  const handleCloseJournal = useCallback(() => {
-    setIsJournalOpen(false);
-  }, []);
-
-  const handleCloseNotifications = useCallback(() => {
-    setIsNotificationsOpen(false);
-  }, []);
 
   const handleCloseSidebar = useCallback(() => {
     setIsSidebarOpen(false);
@@ -135,7 +128,7 @@ export const DashboardScreen: React.FC = () => {
           
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={() => setIsNotificationsOpen(true)} style={styles.notificationsButton}>
-              <Image source={require('../../../assets/images/notification-icon.png')} style={styles.notificationsIcon} />
+              <Image source={notificationIcon} style={styles.notificationsIcon} />
               {unreadCount > 0 && (
                 <View style={styles.notificationBadge}>
                   <Text style={styles.notificationBadgeText}>
@@ -339,7 +332,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.primary, // Match border color to background for seamless look
   },
   activeTopNavText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
   },
   closeDebugButton: {
     backgroundColor: theme.colors.danger,

@@ -8,23 +8,6 @@ export interface InstalledApp {
   isSystemApp: boolean;
 }
 
-interface AppUtilsModuleInterface {
-  /**
-   * Get list of all installed apps with icons
-   */
-  getInstalledApps(): Promise<InstalledApp[]>;
-  
-  /**
-   * Get specific app icon as base64
-   */
-  getAppIcon(packageName: string): Promise<string>;
-  
-  /**
-   * Get specific app information
-   */
-  getAppInfo(packageName: string): Promise<InstalledApp>;
-}
-
 const { AppUtilsModule } = NativeModules;
 
 class AppUtilsService {
@@ -113,7 +96,7 @@ class AppUtilsService {
     try {
       const appInfo = await AppUtilsModule.getAppInfo(packageName);
       return !!appInfo;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

@@ -47,7 +47,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [stats, setStats] = useState<ProfileStats>({
@@ -532,7 +532,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
         <View style={styles.privacyNotice}>
           <Text style={[styles.privacyText, { color: theme.colors.text.tertiary }]}>
             Your username is visible to other users on the leaderboard. 
-            Make sure it's appropriate and follows our community guidelines.
+            Make sure it&apos;s appropriate and follows our community guidelines.
           </Text>
         </View>
       </ScrollView>

@@ -57,7 +57,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             try {
               await UserStatsService.clearAllData();
               Alert.alert('Success', 'All data has been reset.');
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to reset data. Please try again.');
             }
           }

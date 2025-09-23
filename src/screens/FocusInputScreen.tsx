@@ -18,6 +18,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import { theme } from '../config/theme';
 
 interface FocusInputScreenProps {
   visible: boolean;
@@ -514,7 +515,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   playButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
   },
