@@ -461,6 +461,17 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
 };
 
 const styles = StyleSheet.create({
+  addPhotoText: {
+    color: theme.colors.text.primary,
+    fontSize: 10,
+    marginTop: 4,
+  },
+  additionalInfo: {
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 12,
+    marginTop: 24,
+    padding: 16,
+  },
   
   // Bottom section for rank (moved down)
   bottomSection: {
@@ -528,6 +539,96 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  
+  cleanStatName: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  cleanStatRow: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  cleanStatValue: {
+    color: theme.colors.text.secondary,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  
+  // eslint-disable-next-line react-native/no-color-literals
+  closeButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    marginBottom: 20,
+    width: 32,
+  },
+  closeButtonText: {
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  
+  detailedStatsContainer: {
+    padding: 20,
+  },
+  detailedStatsTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  
+  // Expanded Modal Styles (keeping existing)
+  expandedCard: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+  },
+  expandedContent: {
+    paddingBottom: 40,
+  },
+  expandedHeader: {
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  expandedOvrContainer: {
+    alignItems: 'center',
+  },
+  expandedOvrLabel: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  expandedOvrNumber: {
+    color: theme.colors.text.primary,
+    fontSize: 64,
+    fontWeight: '900',
+  },
+  
+  infoLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  infoValue: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '600',
   },
   
   // Left column - Picture and username
@@ -603,6 +704,35 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
+  profileImage: {
+    height: '100%',
+    width: '100%',
+  },
+  profileImageContainer: {
+    borderRadius: 50,
+    height: 100,
+    marginBottom: 12,
+    overflow: 'hidden',
+    width: 100,
+  },
+  // eslint-disable-next-line react-native/no-color-literals
+  profilePlaceholder: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  profilePlaceholderText: {
+    color: theme.colors.text.primary,
+    fontSize: 32,
+    fontWeight: '300',
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  
   rankText: {
     backgroundColor: theme.colors.overlayLight,
     borderRadius: 6,
@@ -655,6 +785,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   
+  tapHintText: {
+    color: theme.colors.text.secondary,
+    fontSize: 11,
+    opacity: 0.9,
+    textAlign: 'center',
+  },
+  
   // Top section for time period (moved higher)
   timePeriod: {
     borderRadius: 6,
@@ -662,13 +799,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingHorizontal: 12,
     paddingVertical: 4,
-  },
-  
-  tapHintText: {
-    color: theme.colors.text.secondary,
-    fontSize: 11,
-    opacity: 0.9,
-    textAlign: 'center',
   },
   
   topBarButtonText: {
@@ -706,134 +836,11 @@ const styles = StyleSheet.create({
     marginTop: -4, // Move higher
   },
   
-  // Expanded Modal Styles (keeping existing)
-  expandedCard: {
-    backgroundColor: theme.colors.background,
-    flex: 1,
-  },
-  expandedContent: {
-    paddingBottom: 40,
-  },
-  expandedHeader: {
-    paddingBottom: 30,
-    paddingHorizontal: 20,
-    paddingTop: 60,
-  },
-  // eslint-disable-next-line react-native/no-color-literals
-  closeButton: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    height: 32,
-    justifyContent: 'center',
-    marginBottom: 20,
-    width: 32,
-  },
-  closeButtonText: {
-    color: theme.colors.text.primary,
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  profileSection: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  profileImageContainer: {
-    borderRadius: 50,
-    height: 100,
-    marginBottom: 12,
-    overflow: 'hidden',
-    width: 100,
-  },
-  profileImage: {
-    height: '100%',
-    width: '100%',
-  },
-  // eslint-disable-next-line react-native/no-color-literals
-  profilePlaceholder: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  profilePlaceholderText: {
-    color: theme.colors.text.primary,
-    fontSize: 32,
-    fontWeight: '300',
-  },
-  addPhotoText: {
-    color: theme.colors.text.primary,
-    fontSize: 10,
-    marginTop: 4,
-  },
   userName: {
     color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
   },
-  expandedOvrContainer: {
-    alignItems: 'center',
-  },
-  expandedOvrLabel: {
-    color: theme.colors.text.primary,
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  expandedOvrNumber: {
-    color: theme.colors.text.primary,
-    fontSize: 64,
-    fontWeight: '900',
-  },
-  detailedStatsContainer: {
-    padding: 20,
-  },
-  detailedStatsTitle: {
-    color: theme.colors.text.primary,
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  cleanStatRow: {
-    alignItems: 'center',
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-  },
-  cleanStatName: {
-    color: theme.colors.text.primary,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  cleanStatValue: {
-    color: theme.colors.text.secondary,
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  additionalInfo: {
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: 12,
-    marginTop: 24,
-    padding: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  infoLabel: {
-    color: theme.colors.text.secondary,
-    fontSize: 14,
-  },
-  infoValue: {
-    color: theme.colors.text.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  
 });

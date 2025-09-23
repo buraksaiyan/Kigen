@@ -628,7 +628,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   if (!visible) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: '#000000' }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
@@ -718,7 +718,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             <View style={styles.timeDisplayContainer}>
               {/* Hours and Minutes - Large */}
               <View style={styles.primaryTimeContainer}>
-                <Text style={[styles.primaryTimeText, { color: '#FFFFFF' }]}>
+                <Text style={[styles.primaryTimeText, { color: theme.colors.text.primary }]}>
                   {currentTime.h1}{currentTime.h2}:{currentTime.m1}{currentTime.m2}
                 </Text>
                 <View style={styles.primaryLabelsContainer}>
@@ -747,7 +747,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#888691' }]}>Abort</Text>
+            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]}>Abort</Text>
           </TouchableOpacity>
 
           {/* Main Pause/Resume Button */}
@@ -757,7 +757,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
+            <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>
               {isPaused ? 'Resume' : 'Pause'}
             </Text>
           </TouchableOpacity>
@@ -769,7 +769,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.secondaryButtonText, { color: '#888691' }]} numberOfLines={1}>Early Finish</Text>
+            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]} numberOfLines={1}>Early Finish</Text>
           </TouchableOpacity>
         </View>
 
@@ -786,44 +786,58 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.background,
-    flex: 1,
+  abortButton: {
+    backgroundColor: theme.colors.overlayLight,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: theme.spacing.lg,
-  },
-  header: {
+  // New circular timer styles
+  circularTimerContainer: {
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
-    paddingTop: theme.spacing.lg,
-  },
-  modeTitle: {
-    ...theme.typography.h2,
-    fontWeight: '700',
-    marginBottom: theme.spacing.md,
-  },
-  progressBar: {
-    borderRadius: 2,
-    height: 4,
-    overflow: 'hidden',
-    width: width * 0.8,
-  },
-  progressFill: {
-    borderRadius: 2,
-    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: theme.spacing.xl,
   },
   clockContainer: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
   },
-  timeRow: {
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+  },
+  controlButton: {
+    alignItems: 'center',
+    borderRadius: 20,
+    flex: 1,
+    justifyContent: 'center',
+    maxWidth: 120,
+    minWidth: 100,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  controls: {
     alignItems: 'center',
     flexDirection: 'row',
+    gap: theme.spacing.sm,
     justifyContent: 'center',
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.md,
+  },
+  digitBottom: {
+    borderTopColor: theme.colors.overlayLight,
+    borderTopWidth: 1,
+    bottom: 0,
+  },
+  digitCard: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 8,
+    height: 80,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: 60,
   },
   digitContainer: {
     height: 80,
@@ -838,7 +852,7 @@ const styles = StyleSheet.create({
     height: '50%',
     justifyContent: 'center',
     position: 'absolute',
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -847,21 +861,128 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     width: '100%',
   },
-  digitTop: {
-    borderBottomColor: 'rgba(0,0,0,0.2)',
-    borderBottomWidth: 1,
-    top: 0,
-  },
-  digitBottom: {
-    borderTopColor: 'rgba(255,255,255,0.2)',
-    borderTopWidth: 1,
-    bottom: 0,
-  },
   digitText: {
     color: theme.colors.text.primary,
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  digitTop: {
+    borderBottomColor: theme.colors.overlay,
+    borderBottomWidth: 1,
+    top: 0,
+  },
+  earlyFinishButton: {
+    backgroundColor: theme.colors.overlayLight,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
+    maxWidth: 140,
+    minWidth: 130, // Wider to fit "Early Finish" on one line
+  },
+  flipContainer: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.xl,
+    paddingTop: theme.spacing.lg,
+  },
+  modeTitle: {
+    ...theme.typography.h2,
+    fontWeight: '700',
+    marginBottom: theme.spacing.md,
+  },
+  primaryButton: {
+    elevation: 8,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  primaryButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
+  primaryTimeContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  // eslint-disable-next-line react-native/no-color-literals
+  progressArc: {
+    borderBottomColor: 'transparent',
+    borderLeftColor: theme.colors.primary,
+    borderRadius: 165,
+    borderRightColor: 'transparent',
+    borderTopColor: 'transparent',
+    borderWidth: 6,
+    height: 330,
+    position: 'absolute',
+    width: 330,
+  },
+  progressBar: {
+    borderRadius: 2,
+    height: 4,
+    overflow: 'hidden',
+    width: width * 0.8,
+  },
+  progressCircle: {
+    alignItems: 'center',
+    height: 420,
+    justifyContent: 'center',
+    marginTop: -30,
+    position: 'relative',
+    width: 420, // Move circle up slightly
+  },
+  progressFill: {
+    borderRadius: 2,
+    height: '100%',
+  },
+  progressRing: {
+    borderColor: theme.colors.overlayLight,
+    borderRadius: 165,
+    borderWidth: 6,
+    height: 330,
+    position: 'absolute',
+    width: 330,
+  },
+  quoteAuthor: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+  },
+  quoteContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  quoteText: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontStyle: 'italic',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+  },
+  safeArea: {
+    flex: 1,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  secondaryButton: {
+    backgroundColor: theme.colors.overlay,
+    borderColor: theme.colors.overlayLight,
+    borderWidth: 2,
+  },
+  secondaryButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '700',
   },
   separator: {
     fontSize: 32,
@@ -873,16 +994,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginHorizontal: theme.spacing.sm,
   },
+  primaryTimeText: {
+    color: theme.colors.text.primary,
+    fontFamily: 'monospace',
+    fontSize: 64,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    textAlign: 'center',
+  },
   separatorSmall: {
     fontSize: 28,
     fontWeight: 'bold',
     marginHorizontal: theme.spacing.xs,
   },
-  timeLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: theme.spacing.lg,
-    width: '100%',
+  smallButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  smallControlButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.overlay,
+    borderRadius: 22.5,
+    borderWidth: 2,
+    height: 45,
+    justifyContent: 'center',
+    width: 45,
+  },
+  timeDisplayContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
   },
   timeLabel: {
     ...theme.typography.caption,
@@ -904,162 +1045,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 1,
   },
-  controls: {
-    alignItems: 'center',
+  timeLabels: {
     flexDirection: 'row',
-    gap: theme.spacing.sm,
-    justifyContent: 'center',
-    marginBottom: theme.spacing.xl,
-    paddingHorizontal: theme.spacing.md,
-  },
-  smallControlButton: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 22.5,
-    borderWidth: 2,
-    height: 45,
-    justifyContent: 'center',
-    width: 45,
-  },
-  smallButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  controlButton: {
-    alignItems: 'center',
-    borderRadius: 20,
-    flex: 1,
-    justifyContent: 'center',
-    maxWidth: 120,
-    minWidth: 100,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  abortButton: {
-    backgroundColor: 'rgba(255,68,68,0.1)',
-    borderColor: '#888691',
-    borderWidth: 1,
-  },
-  earlyFinishButton: {
-    backgroundColor: 'rgba(34,197,94,0.1)',
-    borderWidth: 1,
-    borderColor: '#888691',
-    minWidth: 130, // Wider to fit "Early Finish" on one line
-    maxWidth: 140,
-  },
-  primaryButton: {
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  secondaryButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderColor: 'rgba(255,255,255,0.3)',
-    borderWidth: 2,
-  },
-  primaryButtonText: {
-    ...theme.typography.bodyLarge,
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  secondaryButtonText: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.secondary,
-    fontWeight: '700',
-  },
-  quoteContainer: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.lg,
+    justifyContent: 'space-around',
     paddingHorizontal: theme.spacing.lg,
-  },
-  quoteText: {
-    ...theme.typography.body,
-    color: 'rgba(255,255,255,0.9)',
-    fontStyle: 'italic',
-    marginBottom: theme.spacing.sm,
-    textAlign: 'center',
-  },
-  quoteAuthor: {
-    ...theme.typography.caption,
-    color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center',
-  },
-  digitCard: {
-    alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    height: 80,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    width: 60,
-  },
-  flipContainer: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  // New circular timer styles
-  circularTimerContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: theme.spacing.xl,
-  },
-  progressCircle: {
-    alignItems: 'center',
-    height: 420,
-    justifyContent: 'center',
-    marginTop: -30,
-    position: 'relative',
-    width: 420, // Move circle up slightly
-  },
-  progressRing: {
-    borderColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 165,
-    borderWidth: 6,
-    elevation: 5,
-    height: 330,
-    position: 'absolute',
-    shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    width: 330,
-  },
-  progressArc: {
-    borderBottomColor: 'transparent',
-    borderColor: '#FFFFFF',
-    borderRadius: 165,
-    borderRightColor: 'transparent',
-    borderTopColor: 'transparent',
-    borderWidth: 6,
-    height: 330,
-    position: 'absolute',
-    width: 330,
-  },
-  timeDisplayContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2,
-  },
-  primaryTimeContainer: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  primaryTimeText: {
-    color: '#FFFFFF',
-    fontFamily: 'monospace',
-    fontSize: 64,
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    textAlign: 'center',
+    width: '100%',
   },
   primaryLabelsContainer: {
     flexDirection: 'row',
@@ -1067,7 +1057,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   primaryLabel: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 1.5,
@@ -1078,7 +1068,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.sm,
   },
   secondaryTimeText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontFamily: 'monospace',
     fontSize: 36,
     fontWeight: 'bold',
@@ -1086,7 +1076,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   secondaryLabel: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 10,
     fontWeight: '600',
     letterSpacing: 1.5,
@@ -1095,7 +1085,7 @@ const styles = StyleSheet.create({
   },
   // Simple text styles for backup
   simpleDigitText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontFamily: 'monospace',
     fontWeight: 'bold',
   },
@@ -1124,7 +1114,7 @@ const styles = StyleSheet.create({
   },
   setCounterButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: theme.colors.overlayLight,
     borderRadius: 40,
     borderWidth: 3,
     height: 80,
@@ -1144,7 +1134,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
   },
   setResetButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1,
@@ -1152,11 +1142,11 @@ const styles = StyleSheet.create({
   },
   // SVG progress circle styles
   progressSvg: {
+    left: '50%',
+    marginLeft: -170, // Half of SVG width (340/2)
+    marginTop: -170, // Half of SVG height (340/2)
     position: 'absolute',
     top: '50%',
-    left: '50%',
-    marginTop: -170, // Half of SVG height (340/2)
-    marginLeft: -170, // Half of SVG width (340/2)
   },
   // Goal display styles
   goalDisplayContainer: {
@@ -1177,21 +1167,21 @@ const styles = StyleSheet.create({
   },
   goalCard: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: theme.colors.overlayLight,
     borderRadius: theme.borderRadius.md,
     borderWidth: 2,
     padding: theme.spacing.md,
     width: '100%',
   },
   goalTitle: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '700',
     marginBottom: theme.spacing.xs,
     textAlign: 'center',
   },
   goalDescription: {
-    color: 'rgba(255,255,255,0.7)',
+    color: theme.colors.text.secondary,
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
