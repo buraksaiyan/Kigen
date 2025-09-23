@@ -290,7 +290,6 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const flipRotation = useSharedValue(0);
-  const carouselTranslateX = useSharedValue(0);
 
   // Toggle isMonthly after animation completes (runOnJS safe)
   const finishFlip = useCallback(() => {
@@ -330,52 +329,6 @@ export const DashboardScreen: React.FC = () => {
       backfaceVisibility: 'hidden',
     } as any;
   });
-
-  const updateCarouselIndex = (index: number) => {
-    setCurrentCarouselIndex(index);
-  };
-
-  const pan = Gesture.Pan()
-    .onUpdate((event) => {
-      // Only track horizontal movement when it's clearly dominant to avoid interfering with vertical scroll
-      if (Math.abs(event.translationX) > Math.abs(event.translationY) * 1.2) {
-        carouselTranslateX.value = currentCarouselIndex * -screenWidth + event.translationX;
-      }
-    })
-    .onEnd((event) => {
-      const velocity = event.velocityX;
-      // Require a larger swipe to change panel so vertical scrolls don't trigger it accidentally
-      const threshold = screenWidth * 0.45;
-      const absX = Math.abs(event.translationX);
-
-      if ((absX > threshold && Math.abs(event.translationX) > Math.abs(event.translationY) * 1.2) || Math.abs(velocity) > 800) {
-        if (event.translationX > 0) {
-          // Swipe right - go to previous
-          if (currentCarouselIndex > 0) {
-            const newIndex = currentCarouselIndex - 1;
-            carouselTranslateX.value = withSpring(newIndex * -screenWidth);
-            runOnJS(updateCarouselIndex)(newIndex);
-          } else {
-            carouselTranslateX.value = withSpring(0);
-          }
-        } else {
-          // Swipe left - go to next
-          if (currentCarouselIndex < 3) {
-            const newIndex = currentCarouselIndex + 1;
-            carouselTranslateX.value = withSpring(newIndex * -screenWidth);
-            runOnJS(updateCarouselIndex)(newIndex);
-          } else {
-            carouselTranslateX.value = withSpring(currentCarouselIndex * -screenWidth);
-          }
-        }
-      } else {
-        carouselTranslateX.value = withSpring(currentCarouselIndex * -screenWidth);
-      }
-    });
-
-  const carouselAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: carouselTranslateX.value }],
-  }));
 
   const renderUserCard = () => {
     // Get background image based on current rank
@@ -843,6 +796,8 @@ export const DashboardScreen: React.FC = () => {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         bounces={true}
+        nestedScrollEnabled={true}
+        contentContainerStyle={styles.scrollViewContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
       >
         <View style={styles.topTapHintContainer}>
@@ -874,14 +829,26 @@ export const DashboardScreen: React.FC = () => {
                   carouselRendered = true;
                   return (
                     <View key="carousel-group">
-                      <GestureDetector gesture={pan}>
-                        <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
-                          {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
-                          {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
-                          {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
-                          {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
-                        </Animated.View>
-                      </GestureDetector>
+                      <ScrollView
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        nestedScrollEnabled={true}
+                        onScroll={(event) => {
+                          const offsetX = event.nativeEvent.contentOffset.x;
+                          const newIndex = Math.round(offsetX / screenWidth);
+                          if (newIndex !== currentCarouselIndex) {
+                            setCurrentCarouselIndex(newIndex);
+                          }
+                        }}
+                        scrollEventThrottle={16}
+                        style={styles.carousel}
+                      >
+                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
+                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
+                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
+                      </ScrollView>
 
                       {carouselSections.length > 1 && (
                         <View style={styles.carouselIndicator}>
@@ -932,6 +899,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
   // Top bar (slightly thicker than bottom bar)
   topBarContainer: {
@@ -1113,6 +1083,7 @@ const styles = StyleSheet.create({
   carousel: {
     flexDirection: 'row',
     marginTop: 20,
+    height: 350, // Fixed height to prevent vertical stretching
   },
   carouselPanel: {
     minHeight: 300,
