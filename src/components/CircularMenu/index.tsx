@@ -10,11 +10,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
   interpolate,
   Extrapolate,
-  withSequence,
-  runOnJS,
 } from 'react-native-reanimated';
 import {
   Gesture,
@@ -41,10 +38,9 @@ interface CircularMenuProps {
 }
 
 const menuItems: CircularMenuItem[] = [
-  { id: 'goals', title: 'Goals', icon: 'flag', color: '#FF6B6B' },
-  { id: 'journaling', title: 'Journals', icon: 'book', color: '#4ECDC4' },
+  { id: 'goal', title: 'Goal', icon: 'flag', color: '#FF6B6B' },
+  { id: 'journal', title: 'Journal', icon: 'book', color: '#4ECDC4' },
   { id: 'focus', title: 'Focus', icon: 'psychology', color: '#45B7D1' },
-  { id: 'reminders', title: 'Reminders', icon: 'notifications', color: '#F6C85F' },
   { id: 'social', title: 'Social', icon: 'people', color: '#96CEB4' },
   { id: 'todo', title: 'To-Do', icon: 'check-circle', color: '#FFEAA7' },
   { id: 'habit', title: 'Habit', icon: 'repeat', color: '#DDA0DD' },
@@ -52,7 +48,7 @@ const menuItems: CircularMenuItem[] = [
 
 const MENU_RADIUS = 120;
 const ITEM_SIZE = 64;
-const VISIBLE_ANGLE = Math.PI / 2; // 90 degrees - only right side
+const VISIBLE_ANGLE = Math.PI; // 180 degrees
 
 export const CircularMenu: React.FC<CircularMenuProps> = ({
   isOpen,
@@ -64,189 +60,106 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   const rotation = useSharedValue(0);
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
-  const spinAnimation = useSharedValue(0);
-  const itemPulse = useSharedValue(1);
 
-  // Enhanced opening animation with spin effect
   React.useEffect(() => {
     if (isOpen) {
-      // Entrance animation with spin
-      scale.value = withSpring(1, { 
-        damping: 15, 
-        stiffness: 200,
-        mass: 0.8,
-      });
-      opacity.value = withTiming(1, { duration: 300 });
-      spinAnimation.value = withSequence(
-        withTiming(360, { duration: 600 }),
-        withTiming(0, { duration: 0 })
-      );
-      // Pulse effect for items
-      itemPulse.value = withSequence(
-        withTiming(1.1, { duration: 150 }),
-        withSpring(1, { damping: 10 })
-      );
+      scale.value = withSpring(1, { damping: 15, stiffness: 100 });
+      opacity.value = withSpring(1, { damping: 15, stiffness: 100 });
     } else {
-      // Exit animation
-      scale.value = withSpring(0, { 
-        damping: 20, 
-        stiffness: 300 
-      });
-      opacity.value = withTiming(0, { duration: 200 });
-      spinAnimation.value = withTiming(0, { duration: 200 });
-      itemPulse.value = withTiming(1, { duration: 200 });
+      scale.value = withSpring(0, { damping: 15, stiffness: 100 });
+      opacity.value = withSpring(0, { damping: 15, stiffness: 100 });
     }
   }, [isOpen]);
 
-  // Enhanced gesture handling with better rotation feedback
   const panGesture = Gesture.Pan()
-    .minDistance(3)
     .onStart(() => {
       'worklet';
-      // Add subtle haptic feedback would go here
     })
     .onUpdate((event) => {
       'worklet';
       const deltaX = event.translationX;
-      const deltaY = event.translationY;
-      
-      // Calculate rotation based on both X and Y movement for more natural feel
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      const rotationFactor = Math.min(distance / 100, Math.PI / 2);
-      const direction = deltaX > 0 ? 1 : -1;
-      
-      rotation.value = rotationFactor * direction;
+      const rotationDelta = (deltaX / screenWidth) * Math.PI * 2;
+      rotation.value = rotationDelta;
     })
-    .onEnd((event) => {
+    .onEnd(() => {
       'worklet';
-      const velocity = Math.sqrt(
-        event.velocityX * event.velocityX + event.velocityY * event.velocityY
-      );
-      
-      // Smooth spring back with velocity consideration
-      const springConfig = {
-        damping: 15 + Math.min(velocity / 1000, 5),
-        stiffness: 200,
-      };
-      
-      rotation.value = withSpring(0, springConfig);
+      rotation.value = withSpring(0, { damping: 15, stiffness: 100 });
     });
 
   const containerStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: scale.value },
-      { rotate: `${spinAnimation.value}deg` },
     ],
     opacity: opacity.value,
   }));
 
-  // Create enhanced animated styles for each menu item with staggered entrance
-  const itemStyles = menuItems.map((_, index) => {
-    return useAnimatedStyle(() => {
-      // Arrange items in a circle around the center (streak button)
-      const radius = 100; // Distance from center to each item
-      const angleStep = (Math.PI * 2) / menuItems.length; // Evenly distribute around circle
-      const baseAngle = index * angleStep - Math.PI / 2; // Start from top (-90 degrees)
-      
-      // Add rotation effect from gestures and spin animation
-      const totalAngle = baseAngle + (rotation.value * 0.5) + (spinAnimation.value * Math.PI / 180);
-      
-      // Calculate position based on angle and radius
-      const x = centerX + Math.cos(totalAngle) * radius - ITEM_SIZE / 2;
-      const y = centerY + Math.sin(totalAngle) * radius - ITEM_SIZE / 2;
+  const getItemPosition = (index: number) => {
+    const baseAngle = -Math.PI / 2; // Start from top
+    const angleStep = (Math.PI * 2) / menuItems.length;
+    const angle = baseAngle + index * angleStep;
 
-      // Staggered entrance animation
-      const staggerDelay = index * 50;
-      const itemScale = interpolate(
-        scale.value,
-        [0, 1],
-        [0, 1],
+    return useAnimatedStyle(() => {
+      const currentAngle = angle + rotation.value;
+      const x = centerX + MENU_RADIUS * Math.cos(currentAngle) - ITEM_SIZE / 2;
+      const y = centerY - MENU_RADIUS * Math.sin(currentAngle) - ITEM_SIZE / 2;
+
+      // Calculate visibility based on angle
+      const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const isVisible = normalizedAngle >= Math.PI / 4 && normalizedAngle <= (7 * Math.PI) / 4;
+
+      const itemOpacity = interpolate(
+        normalizedAngle,
+        [Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 2, (7 * Math.PI) / 4],
+        [0.3, 1, 1, 0.3],
         Extrapolate.CLAMP
       );
 
-      // Enhanced scaling with pulse effect
-      const finalScale = itemScale * itemPulse.value;
+      const itemScale = interpolate(
+        normalizedAngle,
+        [Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 2, (7 * Math.PI) / 4],
+        [0.7, 1, 1, 0.7],
+        Extrapolate.CLAMP
+      );
 
       return {
         transform: [
           { translateX: x },
           { translateY: y },
-          { scale: finalScale },
-          { rotate: `${rotation.value * 10}deg` }, // Slight rotation on items
+          { scale: itemScale },
         ],
-        opacity: opacity.value,
+        opacity: isVisible ? itemOpacity : 0,
       };
     });
-  });
-
-  // Enhanced item selection with visual feedback
-  const handleItemSelect = (itemId: string, index: number) => {
-    // Trigger selection animation
-    itemPulse.value = withSequence(
-      withTiming(1.3, { duration: 100 }),
-      withTiming(1, { duration: 100 })
-    );
-    
-    // Slight rotation on selection
-    rotation.value = withSequence(
-      withTiming(0.2, { duration: 100 }),
-      withTiming(0, { duration: 100 })
-    );
-    
-    // Delayed callback to allow animation
-    setTimeout(() => {
-      onSelect(itemId);
-    }, 150);
-  };
-
-  // Handle backdrop press - only close if tap is outside menu orbit
-  const handleBackdropPress = (event: any) => {
-    const { pageX, pageY } = event.nativeEvent;
-    
-    // Calculate distance from tap to menu center
-    const distance = Math.sqrt(
-      Math.pow(pageX - centerX, 2) + Math.pow(pageY - centerY, 2)
-    );
-    
-    // Close menu only if tap is outside the menu orbit (radius of 120px to include item positions)
-    if (distance > 120) {
-      onClose();
-    }
   };
 
   if (!isOpen) return null;
 
   return (
     <View style={styles.overlay}>
-      <TouchableOpacity 
-        style={styles.backdrop} 
+      <TouchableOpacity
+        style={styles.backdrop}
         onPress={onClose}
         activeOpacity={1}
       />
-      
+
       <GestureDetector gesture={panGesture}>
-        <View style={styles.menuContainer}>
-          <Animated.View style={containerStyle}>
-            {/* Enhanced menu items with individual animations */}
-            {menuItems.map((item, index) => (
-              <Animated.View
-                key={item.id}
-                style={[styles.menuItem, itemStyles[index]]}
+        <Animated.View style={[styles.menuContainer, containerStyle]}>
+          {menuItems.map((item, index) => (
+            <Animated.View
+              key={item.id}
+              style={[styles.menuItem, getItemPosition(index)]}
+            >
+              <TouchableOpacity
+                style={[styles.itemButton, { backgroundColor: item.color }]}
+                onPress={() => onSelect(item.id)}
+                activeOpacity={0.8}
               >
-                <TouchableOpacity
-                  style={[styles.itemButton, { backgroundColor: item.color }]}
-                  onPress={() => handleItemSelect(item.id, index)}
-                  activeOpacity={0.7}
-                >
-                  <Icon name={item.icon} size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-                <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
-                  {item.title}
-                </Text>
-              </Animated.View>
-            ))}
-          </Animated.View>
-        </View>
+                <Icon name={item.icon} size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+              <Text style={styles.itemLabel}>{item.title}</Text>
+            </Animated.View>
+          ))}
+        </Animated.View>
       </GestureDetector>
     </View>
   );
@@ -262,13 +175,8 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    zIndex: -1, // Behind menu items but still clickable
   },
   menuContainer: {
     position: 'absolute',
@@ -291,22 +199,22 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 4,
     },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 12,
-    borderWidth: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 2,
     borderColor: '#FFFFFF',
   },
   itemLabel: {
-    marginTop: 8,
-    fontSize: 13,
-    fontWeight: '700',
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: '600',
     color: '#FFFFFF',
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    textShadowRadius: 2,
   },
 });
