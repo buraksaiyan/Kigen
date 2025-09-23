@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { setTimeout } from 'timers';
 import {
   View,
   Text,
@@ -774,8 +775,8 @@ const StatItem: React.FC<{
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -791,18 +792,18 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
   },
   topBarLeftButton: {
-    height: 48,
-    width: 48,
-    borderRadius: 24,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'transparent',
+    borderRadius: 24,
+    height: 48,
+    justifyContent: 'center',
+    width: 48,
   },
   topBarButtonIcon: {
-    width: 28,
     height: 28,
-    tintColor: theme.colors.text.primary,
     resizeMode: 'contain',
+    tintColor: theme.colors.text.primary,
+    width: 28,
   },
   topBarCenter: {
     flex: 1,
@@ -812,15 +813,15 @@ const styles = StyleSheet.create({
   // Tight tap hint spacing: small gaps to keep it close to top bar and card
   tapHintContainer: {
     alignSelf: 'center',
+    marginBottom: 6,
     marginHorizontal: 16,
     marginTop: 6,
-    marginBottom: 6,
   },
   tapHintText: {
-    fontSize: 11,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
+    fontSize: 11,
     opacity: 0.9,
+    textAlign: 'center',
   },
   userCard: {
     backgroundColor: 'transparent', // Remove background since we use ImageBackground
@@ -842,13 +843,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   rankBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 16,
     backgroundColor: theme.colors.primary,
+    borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    position: 'absolute',
+    right: 16,
+    top: 12,
   },
   rankText: {
     color: '#FFFFFF',
@@ -871,10 +872,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   periodTopLeft: {
+    backgroundColor: 'transparent',
+    left: 16,
     position: 'absolute',
     top: 12,
-    left: 16,
-    backgroundColor: 'transparent',
   },
   username: {
     fontSize: 16, // Made smaller
@@ -931,8 +932,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   ratingSubtextRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 8,
     marginTop: 6,
   },
@@ -945,26 +946,26 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   tapToFlipText: {
-    fontSize: 12,
     color: theme.colors.text.tertiary,
+    fontSize: 12,
   },
   topTapHintContainer: {
     alignItems: 'center',
-    marginTop: 6,
     marginBottom: 6,
+    marginTop: 6,
   },
   topTapHintText: {
-    fontSize: 10,
     color: theme.colors.text.tertiary,
+    fontSize: 10,
   },
   carousel: {
     flexDirection: 'row',
     marginTop: 20,
   },
   carouselPanel: {
-    width: screenWidth,
-    paddingHorizontal: 16,
     minHeight: 300,
+    paddingHorizontal: 16,
+    width: screenWidth,
   },
   sectionTitle: {
     color: theme.colors.text.primary,
@@ -978,20 +979,20 @@ const styles = StyleSheet.create({
   goalItem: {
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
+    padding: 16,
   },
   goalHeader: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: 12,
   },
   goalTitle: {
     color: theme.colors.text.primary,
+    flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    flex: 1,
     marginRight: 8,
   },
   goalDeadline: {
@@ -999,37 +1000,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   progressBar: {
-    height: 6,
     backgroundColor: theme.colors.surfaceSecondary,
     borderRadius: 3,
+    height: 6,
     marginBottom: 12,
   },
   progressFill: {
-    height: '100%',
     backgroundColor: theme.colors.success,
     borderRadius: 3,
+    height: '100%',
   },
   goalActions: {
     flexDirection: 'row',
     gap: 8,
   },
   completeButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.success,
+    borderRadius: 6,
+    flexDirection: 'row',
+    gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 6,
-    gap: 4,
   },
   failButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.danger,
+    borderRadius: 6,
+    flexDirection: 'row',
+    gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 6,
-    gap: 4,
   },
   actionButtonText: {
     color: '#FFFFFF',
@@ -1037,12 +1038,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   habitItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
+    flexDirection: 'row',
     marginBottom: 12,
+    padding: 16,
   },
   habitCheckbox: {
     marginRight: 12,
@@ -1057,8 +1058,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   habitStreak: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 4,
   },
   habitStreakText: {
@@ -1066,38 +1067,38 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   todoItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
+    flexDirection: 'row',
     marginBottom: 12,
+    padding: 16,
   },
   todoCheckbox: {
     marginRight: 12,
   },
   todoTitle: {
     color: theme.colors.text.primary,
+    flex: 1,
     fontSize: 16,
     fontWeight: '500',
-    flex: 1,
   },
   todoTitleCompleted: {
-    textDecorationLine: 'line-through',
     color: theme.colors.text.secondary,
+    textDecorationLine: 'line-through',
   },
   carouselIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    flexDirection: 'row',
     gap: 8,
+    justifyContent: 'center',
+    marginTop: 16,
   },
   indicatorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
     backgroundColor: theme.colors.text.tertiary,
+    borderRadius: 4,
+    height: 8,
+    width: 8,
   },
   indicatorDotActive: {
     backgroundColor: '#0000FF',
@@ -1105,9 +1106,9 @@ const styles = StyleSheet.create({
   },
   usageSection: {
     backgroundColor: theme.colors.surface,
+    borderRadius: 16,
     marginHorizontal: 16,
     marginTop: 20,
-    borderRadius: 16,
     padding: 20,
   },
   usageSectionTitle: {
@@ -1125,13 +1126,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   faceContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     borderRadius: 20,
+    bottom: 0,
+    left: 0,
     overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   backFace: {
     // Place back face above front so rotation works; zIndex may not matter for animated 3D
@@ -1160,9 +1161,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   appUsageBar: {
-    height: 4,
     backgroundColor: theme.colors.primary,
     borderRadius: 2,
+    height: 4,
     marginBottom: 4,
     width: '80%',
   },
@@ -1171,11 +1172,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   improveButton: {
-    backgroundColor: theme.colors.secondary,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
     alignItems: 'center',
+    backgroundColor: theme.colors.secondary,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   improveButtonText: {
     color: '#FFFFFF',
@@ -1183,9 +1184,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loadingContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: 40,
   },
   loadingText: {
@@ -1206,17 +1207,17 @@ const styles = StyleSheet.create({
   permissionText: {
     color: theme.colors.text.secondary,
     fontSize: 14,
-    textAlign: 'center',
     lineHeight: 20,
     marginBottom: 16,
+    textAlign: 'center',
   },
   permissionButton: {
     backgroundColor: theme.colors.secondary,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    borderColor: theme.colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
   permissionButtonText: {
     color: '#FFFFFF',
@@ -1226,8 +1227,8 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
     paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   emptyStateText: {
     color: theme.colors.text.primary,
@@ -1239,8 +1240,8 @@ const styles = StyleSheet.create({
   emptyStateSubtext: {
     color: theme.colors.text.secondary,
     fontSize: 14,
-    textAlign: 'center',
     lineHeight: 20,
+    textAlign: 'center',
   },
   bottomSpacer: {
     height: 120, // Space for bottom navigation

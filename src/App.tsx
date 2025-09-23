@@ -6,6 +6,7 @@ import { AuthProvider } from './modules/auth/AuthProvider';
 import { I18nProvider } from './i18n/I18nProvider';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { clearOldFocusData } from './utils/clearOldData';
+import { theme } from './config/theme';
 
 // Conditional import for web compatibility
 let GestureHandler: any = View;
@@ -43,7 +44,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000', // TODO: Replace with theme color
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
 });

@@ -689,12 +689,12 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
   },
   topBarLeftButton: {
-    height: 36,
-    width: 36,
-    borderRadius: 10,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 10,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
   topBarButtonText: {
     fontSize: 16,
@@ -706,15 +706,15 @@ const styles = StyleSheet.create({
   // Small tap hint between top bar and card
   tapHintContainer: {
     alignSelf: 'center',
+    marginBottom: 4,
     marginHorizontal: 16,
     marginTop: 8,
-    marginBottom: 4,
   },
   tapHintText: {
-    fontSize: 11,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
+    fontSize: 11,
     opacity: 0.9,
+    textAlign: 'center',
   },
   
   // Expanded Modal Styles (keeping existing)

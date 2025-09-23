@@ -297,18 +297,27 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
+  activityGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: theme.spacing.md,
+  },
+  activityLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: theme.spacing.xs,
+    textAlign: 'center',
+  },
+  activityOption: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    marginBottom: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    minWidth: '30%',
+    padding: theme.spacing.md,
   },
   closeButton: {
     padding: theme.spacing.sm,
@@ -318,15 +327,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
-    textAlign: 'center',
-    marginHorizontal: theme.spacing.md,
-  },
-  headerSpacer: {
-    width: 32,
   },
   content: {
     flex: 1,
@@ -334,10 +337,55 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: theme.spacing.lg,
   },
+  counterButton: {
+    backgroundColor: theme.colors.secondary,
+    borderRadius: theme.borderRadius.sm,
+    padding: theme.spacing.sm,
+  },
+  counterText: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '500',
+    marginHorizontal: theme.spacing.lg,
+    minWidth: 80,
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  headerSpacer: {
+    width: 32,
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    flex: 1,
+    marginHorizontal: theme.spacing.md,
+    textAlign: 'center',
+  },
   inputSection: {
     marginBottom: theme.spacing.xl,
   },
-  sectionTitle: {
+  insightText: {
+    ...theme.typography.small,
+    color: theme.colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: theme.spacing.sm,
+  },
+  insightsSection: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    padding: theme.spacing.lg,
+  },
+  insightsTitle: {
     ...theme.typography.h4,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
@@ -345,84 +393,106 @@ const styles = StyleSheet.create({
   label: {
     ...theme.typography.body,
     color: theme.colors.text.primary,
+    fontWeight: '600',
     marginBottom: theme.spacing.sm,
     marginTop: theme.spacing.md,
+  },
+  moodEmoji: {
+    fontSize: 20,
+    marginBottom: theme.spacing.xs,
+  },
+  moodLabel: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.sm,
+  },
+  moodLabelSelected: {
+    color: theme.colors.secondary,
     fontWeight: '600',
   },
-  activityGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: theme.spacing.md,
-  },
-  activityOption: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginRight: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
-    minWidth: '30%',
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-  },
-  activityLabel: {
-    marginTop: theme.spacing.xs,
+  moodLabelText: {
+    color: theme.colors.text.secondary,
     fontSize: 12,
-    fontWeight: '500',
     textAlign: 'center',
   },
-  textInput: {
+  moodOption: {
+    alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    color: theme.colors.text.primary,
-    fontSize: 16,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    flex: 1,
+    marginHorizontal: 2,
+    padding: theme.spacing.md,
+  },
+  moodOptionSelected: {
+    backgroundColor: theme.colors.secondary + '20',
+    borderColor: theme.colors.secondary,
+  },
+  moodOptions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  moodSection: {
+    marginBottom: theme.spacing.md,
   },
   multilineInput: {
     minHeight: 80,
     textAlignVertical: 'top',
   },
   peopleCounter: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
     borderColor: theme.colors.border,
-  },
-  counterButton: {
-    backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.sm,
-    padding: theme.spacing.sm,
-  },
-  counterText: {
-    marginHorizontal: theme.spacing.lg,
-    fontSize: 16,
-    color: theme.colors.text.primary,
-    fontWeight: '500',
-    minWidth: 80,
-    textAlign: 'center',
-  },
-  timeOptions: {
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    justifyContent: 'center',
     marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  saveButton: {
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: theme.spacing.lg,
+    padding: theme.spacing.lg,
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonText: {
+    color: theme.colors.background,
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: theme.spacing.sm,
+  },
+  sectionTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  textInput: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.lg,
   },
   timeOption: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    marginRight: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    marginBottom: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   timeOptionSelected: {
     backgroundColor: theme.colors.secondary,
@@ -436,79 +506,9 @@ const styles = StyleSheet.create({
   timeOptionTextSelected: {
     color: theme.colors.background,
   },
-  moodSection: {
-    marginBottom: theme.spacing.md,
-  },
-  moodLabel: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
-    fontWeight: '600',
-  },
-  moodOptions: {
+  timeOptions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  moodOption: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    flex: 1,
-    marginHorizontal: 2,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  moodOptionSelected: {
-    backgroundColor: theme.colors.secondary + '20',
-    borderColor: theme.colors.secondary,
-  },
-  moodEmoji: {
-    fontSize: 20,
-    marginBottom: theme.spacing.xs,
-  },
-  moodLabelText: {
-    fontSize: 12,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-  moodLabelSelected: {
-    color: theme.colors.secondary,
-    fontWeight: '600',
-  },
-  saveButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: theme.colors.background,
-    fontSize: 18,
-    fontWeight: '600',
-    marginLeft: theme.spacing.sm,
-  },
-  insightsSection: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  insightsTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
+    flexWrap: 'wrap',
     marginBottom: theme.spacing.md,
-  },
-  insightText: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.sm,
-    lineHeight: 20,
   },
 });

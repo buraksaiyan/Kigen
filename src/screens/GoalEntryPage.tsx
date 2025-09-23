@@ -131,19 +131,6 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
     padding: theme.spacing.sm,
     width: 40,
@@ -153,20 +140,33 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
   },
   content: {
     flex: 1,
   },
   contentContainer: {
     padding: theme.spacing.lg,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    flex: 1,
+    textAlign: 'center',
   },
   inputSection: {
     marginBottom: theme.spacing.xl,
@@ -176,24 +176,12 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.md,
   },
-  textInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    color: theme.colors.text.primary,
-    fontSize: 17,
-    minHeight: 120,
-    textAlignVertical: 'top',
-    marginBottom: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
   saveButton: {
+    alignItems: 'center',
     backgroundColor: theme.colors.secondary,
     borderRadius: theme.borderRadius.md,
-    paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    alignItems: 'center',
+    paddingVertical: theme.spacing.md,
   },
   saveButtonDisabled: {
     backgroundColor: theme.colors.text.disabled,
@@ -203,20 +191,32 @@ const styles = StyleSheet.create({
     color: theme.colors.background,
     fontWeight: '600',
   },
+  textInput: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 17,
+    marginBottom: theme.spacing.lg,
+    minHeight: 120,
+    padding: theme.spacing.lg,
+    textAlignVertical: 'top',
+  },
   tipsSection: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.lg,
+  },
+  tipsText: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    lineHeight: 20,
   },
   tipsTitle: {
     ...theme.typography.body,
     color: theme.colors.text.primary,
     fontWeight: '600',
     marginBottom: theme.spacing.sm,
-  },
-  tipsText: {
-    ...theme.typography.caption,
-    color: theme.colors.text.secondary,
-    lineHeight: 20,
   },
 });

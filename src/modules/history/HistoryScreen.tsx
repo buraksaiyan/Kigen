@@ -322,171 +322,171 @@ export const HistoryScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  activeTabButton: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  contentContainer: {
+    flex: 1,
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+  emptyState: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyStateDescription: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  emptyStateTitle: {
     color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+    marginTop: 16,
+    textAlign: 'center',
   },
   filterButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
-    gap: 6,
   },
   filterButtonText: {
     color: theme.colors.text.secondary,
     fontSize: 14,
     fontWeight: '500',
   },
-  tabsContainer: {
-    maxHeight: 80,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  tabsContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
-  },
-  tabButton: {
-    flexDirection: 'row',
+  header: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    minWidth: 100,
-  },
-  activeTabButton: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  tabIcon: {
-    marginRight: 8,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.text.secondary,
-  },
-  activeTabText: {
-    color: '#FFFFFF',
-  },
-  contentContainer: {
-    flex: 1,
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-  },
-  listContent: {
     paddingVertical: 16,
-    paddingBottom: 120, // Space for bottom navigation
+  },
+  headerTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: '700',
   },
   historyItem: {
-    flexDirection: 'row',
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
+    elevation: 2,
+    flexDirection: 'row',
     marginBottom: 12,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
-  },
-  historyItemSelected: {
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-    backgroundColor: 'rgba(0,0,0,0.03)',
-  },
-  historyItemIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
   },
   historyItemContent: {
     flex: 1,
   },
-  historyItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
-  },
-  historyItemTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-    flex: 1,
-    marginRight: 8,
-  },
-  historyItemTime: {
-    fontSize: 12,
-    color: theme.colors.text.secondary,
-  },
   historyItemDate: {
-    fontSize: 12,
     color: theme.colors.text.tertiary,
+    fontSize: 12,
     marginBottom: 6,
   },
   historyItemDescription: {
-    fontSize: 14,
     color: theme.colors.text.secondary,
+    fontSize: 14,
     lineHeight: 20,
     marginBottom: 4,
   },
-  historyItemValue: {
-    fontSize: 12,
-    color: theme.colors.primary,
-    fontWeight: '600',
+  historyItemHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
   },
-  emptyState: {
-    flex: 1,
+  historyItemIcon: {
     alignItems: 'center',
+    borderRadius: 20,
+    height: 40,
     justifyContent: 'center',
-    paddingHorizontal: 40,
+    marginRight: 12,
+    width: 40,
   },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-    marginTop: 16,
-    marginBottom: 8,
-    textAlign: 'center',
+  historyItemSelected: {
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    borderColor: theme.colors.primary,
+    borderWidth: 2,
   },
-  emptyStateDescription: {
-    fontSize: 14,
+  historyItemTime: {
     color: theme.colors.text.secondary,
-    textAlign: 'center',
-    lineHeight: 20,
+    fontSize: 12,
+  },
+  historyItemTitle: {
+    color: theme.colors.text.primary,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    marginRight: 8,
+  },
+  historyItemValue: {
+    color: theme.colors.primary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  listContent: {
+    paddingBottom: 120,
+    paddingVertical: 16, // Space for bottom navigation
   },
   loadingState: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: 40,
   },
   loadingText: {
     color: theme.colors.text.secondary,
     fontSize: 16,
+  },
+  tabButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderColor: theme.colors.border,
+    borderRadius: 20,
+    borderWidth: 1,
+    flexDirection: 'row',
+    minWidth: 100,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  tabIcon: {
+    marginRight: 8,
+  },
+  tabText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  tabsContainer: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    maxHeight: 80,
+  },
+  tabsContent: {
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
 });

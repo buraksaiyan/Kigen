@@ -292,13 +292,13 @@ const styles = StyleSheet.create({
   overlay: {
     alignItems: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    bottom: 0,
     flex: 1,
     justifyContent: 'flex-start',
-    position: 'absolute',
-    top: 0,
     left: 0,
+    position: 'absolute',
     right: 0,
-    bottom: 0,
+    top: 0,
   },
   safeArea: {
     flex: 1,

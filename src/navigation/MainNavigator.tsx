@@ -240,8 +240,8 @@ export const MainNavigator: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flex: 1,
   },
   screenContainer: {
     flex: 1,

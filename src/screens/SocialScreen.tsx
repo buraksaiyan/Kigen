@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { setTimeout } from 'timers';
 import {
   View,
   Text,
@@ -475,116 +476,116 @@ export const SocialScreen: React.FC<SocialScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-  },
-  closeButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  notificationButton: {
-    padding: 8,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-    margin: 16,
-    borderRadius: 12,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 6,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  tabContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1C1C1E',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
-    gap: 12,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-  },
   addFriendButton: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 12,
-    marginBottom: 20,
+    flexDirection: 'row',
     gap: 8,
+    justifyContent: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   addFriendText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
-  friendCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  friendInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginRight: 12,
-  },
   avatar: {
     fontSize: 32,
   },
-  statusDot: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#1C1C1E',
+  avatarContainer: {
+    marginRight: 12,
+    position: 'relative',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  challengeActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  challengeCard: {
+    borderRadius: 12,
+    marginBottom: 16,
+    padding: 16,
+  },
+  challengeDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  challengeHeader: {
+    marginBottom: 12,
+  },
+  challengeMeta: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  challengeStat: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  challengeStatText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  challengeStats: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 16,
+  },
+  challengeTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  challengeTitleContainer: {
+    marginBottom: 8,
+  },
+  closeButton: {
+    padding: 8,
+  },
+  container: {
+    flex: 1,
+  },
+  deadlineText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  difficultyBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  difficultyText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  friendActions: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  friendCard: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    padding: 16,
   },
   friendDetails: {
+    flex: 1,
+  },
+  friendInfo: {
+    alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
   },
   friendName: {
@@ -596,169 +597,169 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 2,
   },
+  header: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  joinButton: {
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
   lastActive: {
     fontSize: 12,
   },
-  friendActions: {
+  leaderboardCard: {
     alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 16,
+  },
+  leaderboardHeader: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
     gap: 8,
+    justifyContent: 'center',
+    marginBottom: 20,
+    padding: 16,
+  },
+  leaderboardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  leaveButton: {
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  messageButton: {
+    borderRadius: 8,
+    padding: 8,
+  },
+  notificationButton: {
+    padding: 8,
+  },
+  points: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  pointsContainer: {
+    alignItems: 'flex-end',
+  },
+  pointsLabel: {
+    fontSize: 12,
+  },
+  rank: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  rankContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    width: 60,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  searchContainer: {
+    alignItems: 'center',
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  statusDot: {
+    borderColor: '#1C1C1E',
+    borderRadius: 6,
+    borderWidth: 2,
+    bottom: 2,
+    height: 12,
+    position: 'absolute',
+    right: 2,
+    width: 12,
   },
   streakContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 4,
   },
   streakText: {
     fontSize: 14,
     fontWeight: '600',
   },
-  messageButton: {
-    padding: 8,
+  tab: {
+    alignItems: 'center',
     borderRadius: 8,
-  },
-  challengeCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  challengeHeader: {
-    marginBottom: 12,
-  },
-  challengeTitleContainer: {
-    marginBottom: 8,
-  },
-  challengeTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  challengeMeta: {
+    flex: 1,
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  difficultyBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+  tabContainer: {
     borderRadius: 12,
+    flexDirection: 'row',
+    margin: 16,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
-  difficultyText: {
-    color: '#FFFFFF',
-    fontSize: 12,
+  tabContent: {
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  tabText: {
+    fontSize: 14,
     fontWeight: '600',
-    textTransform: 'uppercase',
   },
   typeBadge: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
     borderRadius: 12,
+    flexDirection: 'row',
     gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   typeText: {
     fontSize: 12,
     fontWeight: '500',
     textTransform: 'capitalize',
   },
-  challengeDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  challengeStats: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 16,
-  },
-  challengeStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  challengeStatText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  challengeActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  deadlineText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  joinButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  leaveButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  leaderboardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-    gap: 8,
-  },
-  leaderboardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  leaderboardCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  rankContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 60,
-    gap: 4,
-  },
-  rank: {
-    fontSize: 18,
-    fontWeight: '700',
+  userDetails: {
+    flex: 1,
+    marginLeft: 12,
   },
   userInfo: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
     marginLeft: 16,
   },
-  userDetails: {
-    marginLeft: 12,
-    flex: 1,
+  userLevel: {
+    fontSize: 14,
   },
   userName: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 2,
-  },
-  userLevel: {
-    fontSize: 14,
-  },
-  pointsContainer: {
-    alignItems: 'flex-end',
-  },
-  points: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  pointsLabel: {
-    fontSize: 12,
   },
 });

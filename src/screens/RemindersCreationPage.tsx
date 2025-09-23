@@ -343,19 +343,6 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
     padding: theme.spacing.sm,
   },
@@ -364,15 +351,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
-    textAlign: 'center',
-    marginHorizontal: theme.spacing.md,
-  },
-  headerSpacer: {
-    width: 32,
   },
   content: {
     flex: 1,
@@ -380,56 +361,84 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: theme.spacing.lg,
   },
-  inputSection: {
-    marginBottom: theme.spacing.xl,
-  },
-  label: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
-    fontWeight: '600',
-  },
-  textInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    color: theme.colors.text.primary,
-    fontSize: 16,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  multilineInput: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
   dateTimeButton: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.lg,
   },
   dateTimeButtonText: {
     color: theme.colors.text.primary,
     fontSize: 16,
     textAlign: 'center',
   },
-  recurringOptions: {
+  dateTimeInputs: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.sm,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: theme.spacing.lg,
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  headerSpacer: {
+    width: 32,
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    flex: 1,
+    marginHorizontal: theme.spacing.md,
+    textAlign: 'center',
+  },
+  infoSection: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    padding: theme.spacing.lg,
+  },
+  infoText: {
+    ...theme.typography.small,
+    color: theme.colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: theme.spacing.sm,
+  },
+  infoTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+  inputSection: {
+    marginBottom: theme.spacing.xl,
+  },
+  label: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.sm,
+  },
+  multilineInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
   },
   recurringOption: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    marginRight: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
-    borderWidth: 1,
     borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    marginBottom: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   recurringOptionSelected: {
     backgroundColor: theme.colors.secondary,
@@ -443,11 +452,16 @@ const styles = StyleSheet.create({
   recurringOptionTextSelected: {
     color: theme.colors.background,
   },
+  recurringOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: theme.spacing.lg,
+  },
   saveButton: {
+    alignItems: 'center',
     backgroundColor: theme.colors.secondary,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.lg,
-    alignItems: 'center',
   },
   saveButtonDisabled: {
     backgroundColor: theme.colors.text.disabled,
@@ -457,34 +471,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  infoSection: {
+  textInput: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    borderWidth: 1,
     borderColor: theme.colors.border,
-  },
-  infoTitle: {
-    ...theme.typography.h4,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
     color: theme.colors.text.primary,
+    fontSize: 16,
     marginBottom: theme.spacing.md,
-  },
-  infoText: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.sm,
-    lineHeight: 20,
+    padding: theme.spacing.lg,
   },
   warningText: {
     ...theme.typography.small,
     color: theme.colors.danger,
-    marginTop: theme.spacing.sm,
     fontWeight: '500',
-  },
-  dateTimeInputs: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
+    marginTop: theme.spacing.sm,
   },
 });

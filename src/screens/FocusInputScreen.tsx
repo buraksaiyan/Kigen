@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { setTimeout, setInterval, clearInterval } from 'timers';
 import {
   View,
   Text,
@@ -56,7 +57,7 @@ export const FocusInputScreen: React.FC<FocusInputScreenProps> = ({
   const progress = useSharedValue(0);
   const scale = useSharedValue(1);
   
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const sessionStartTime = useRef<string>('');
 
   const theme = {
@@ -444,32 +445,88 @@ export const FocusInputScreen: React.FC<FocusInputScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
+  activeControls: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
+    gap: 20,
   },
   closeButton: {
     padding: 8,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  resetButton: {
-    padding: 8,
+  container: {
+    flex: 1,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  controlButton: {
+    alignItems: 'center',
+    borderRadius: 32,
+    height: 64,
+    justifyContent: 'center',
+    width: 64,
+  },
+  controlsContainer: {
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  durationButton: {
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    marginRight: 12,
+    minWidth: 60,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  durationScrollView: {
+    flexDirection: 'row',
+  },
+  durationText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  interruptionText: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  playButton: {
+    alignItems: 'center',
+    borderRadius: 24,
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+  },
+  playButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  progressCircle: {
+    borderRadius: (CIRCLE_SIZE - 20) / 2,
+    borderWidth: 8,
+    height: CIRCLE_SIZE - 20,
+    position: 'absolute',
+    width: CIRCLE_SIZE - 20,
+  },
+  resetButton: {
+    padding: 8,
   },
   sectionContainer: {
     marginBottom: 24,
@@ -479,147 +536,91 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 12,
   },
+  sessionLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 8,
+  },
+  sessionTypeButton: {
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
   sessionTypeContainer: {
     flexDirection: 'row',
     gap: 12,
-  },
-  sessionTypeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 8,
   },
   sessionTypeText: {
     fontSize: 14,
     fontWeight: '500',
   },
-  durationScrollView: {
+  statContent: {
+    alignItems: 'center',
+  },
+  statItem: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  statsContainer: {
+    borderRadius: 12,
     flexDirection: 'row',
-  },
-  durationButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginRight: 12,
-    borderWidth: 1,
-    minWidth: 60,
-    alignItems: 'center',
-  },
-  durationText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  timerContainer: {
-    alignItems: 'center',
-    marginVertical: 32,
-  },
-  timerCircle: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: CIRCLE_SIZE,
-    height: CIRCLE_SIZE,
-  },
-  progressCircle: {
-    position: 'absolute',
-    width: CIRCLE_SIZE - 20,
-    height: CIRCLE_SIZE - 20,
-    borderRadius: (CIRCLE_SIZE - 20) / 2,
-    borderWidth: 8,
-  },
-  timerContent: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
+    marginBottom: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
   },
   timeText: {
     fontSize: 48,
     fontWeight: '300',
     letterSpacing: -2,
   },
-  sessionLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginTop: 8,
-  },
-  interruptionText: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 4,
-  },
-  controlsContainer: {
+  timerCircle: {
     alignItems: 'center',
-    marginVertical: 24,
+    height: CIRCLE_SIZE,
+    justifyContent: 'center',
+    position: 'relative',
+    width: CIRCLE_SIZE,
   },
-  playButton: {
-    flexDirection: 'row',
+  timerContainer: {
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 24,
-    gap: 8,
+    marginVertical: 32,
   },
-  playButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  activeControls: {
-    flexDirection: 'row',
-    gap: 20,
-  },
-  controlButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  timerContent: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-  },
-  statItem: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  statContent: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 12,
-    fontWeight: '500',
+    position: 'absolute',
   },
   tipsContainer: {
-    flexDirection: 'row',
-    padding: 16,
     borderRadius: 12,
+    flexDirection: 'row',
     marginBottom: 40,
+    padding: 16,
   },
   tipsContent: {
     flex: 1,
     marginLeft: 12,
   },
+  tipsText: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
   tipsTitle: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 4,
-  },
-  tipsText: {
-    fontSize: 12,
-    lineHeight: 16,
   },
 });

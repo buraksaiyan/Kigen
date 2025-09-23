@@ -391,20 +391,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
   disabledButton: {
     opacity: 0.7,
   },
   form: {
     alignSelf: 'center',
     maxWidth: 400,
-    width: '100%',
     paddingBottom: 20,
+    width: '100%',
   },
   header: {
     alignItems: 'center',
@@ -432,6 +426,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 20,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   label: {
     fontSize: 16,
@@ -463,9 +460,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 40,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 40,
+  },
+  scrollView: {
+    flex: 1,
   },
   submitButton: {
     alignItems: 'center',

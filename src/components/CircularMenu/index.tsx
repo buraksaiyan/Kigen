@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -12,10 +11,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { setTimeout } from 'timers';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface CircularMenuItem {
   id: string;
@@ -52,15 +50,111 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   centerX,
   centerY,
 }) => {
-  // Individual animation values for each menu item
-  const animations = React.useMemo(() => 
-    menuItems.map(() => ({
-      translateX: useSharedValue(0),
-      translateY: useSharedValue(0),
-      scale: useSharedValue(0),
-      opacity: useSharedValue(0),
-    })), []
-  );
+  // Individual animation values for each menu item - must be called at component level
+  const translateX0 = useSharedValue(0);
+  const translateY0 = useSharedValue(0);
+  const scale0 = useSharedValue(0);
+  const opacity0 = useSharedValue(0);
+  
+  const translateX1 = useSharedValue(0);
+  const translateY1 = useSharedValue(0);
+  const scale1 = useSharedValue(0);
+  const opacity1 = useSharedValue(0);
+  
+  const translateX2 = useSharedValue(0);
+  const translateY2 = useSharedValue(0);
+  const scale2 = useSharedValue(0);
+  const opacity2 = useSharedValue(0);
+  
+  const translateX3 = useSharedValue(0);
+  const translateY3 = useSharedValue(0);
+  const scale3 = useSharedValue(0);
+  const opacity3 = useSharedValue(0);
+  
+  const translateX4 = useSharedValue(0);
+  const translateY4 = useSharedValue(0);
+  const scale4 = useSharedValue(0);
+  const opacity4 = useSharedValue(0);
+  
+  const translateX5 = useSharedValue(0);
+  const translateY5 = useSharedValue(0);
+  const scale5 = useSharedValue(0);
+  const opacity5 = useSharedValue(0);
+  
+  const translateX6 = useSharedValue(0);
+  const translateY6 = useSharedValue(0);
+  const scale6 = useSharedValue(0);
+  const opacity6 = useSharedValue(0);
+
+  // Group them into arrays for easier access
+  const translateXValues = useMemo(() => [translateX0, translateX1, translateX2, translateX3, translateX4, translateX5, translateX6], []);
+  const translateYValues = useMemo(() => [translateY0, translateY1, translateY2, translateY3, translateY4, translateY5, translateY6], []);
+  const scaleValues = useMemo(() => [scale0, scale1, scale2, scale3, scale4, scale5, scale6], []);
+  const opacityValues = useMemo(() => [opacity0, opacity1, opacity2, opacity3, opacity4, opacity5, opacity6], []);
+
+  // Create animated styles for each menu item
+  const animatedStyle0 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX0.value },
+      { translateY: translateY0.value },
+      { scale: scale0.value },
+    ],
+    opacity: opacity0.value,
+  }));
+
+  const animatedStyle1 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX1.value },
+      { translateY: translateY1.value },
+      { scale: scale1.value },
+    ],
+    opacity: opacity1.value,
+  }));
+
+  const animatedStyle2 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX2.value },
+      { translateY: translateY2.value },
+      { scale: scale2.value },
+    ],
+    opacity: opacity2.value,
+  }));
+
+  const animatedStyle3 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX3.value },
+      { translateY: translateY3.value },
+      { scale: scale3.value },
+    ],
+    opacity: opacity3.value,
+  }));
+
+  const animatedStyle4 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX4.value },
+      { translateY: translateY4.value },
+      { scale: scale4.value },
+    ],
+    opacity: opacity4.value,
+  }));
+
+  const animatedStyle5 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX5.value },
+      { translateY: translateY5.value },
+      { scale: scale5.value },
+    ],
+    opacity: opacity5.value,
+  }));
+
+  const animatedStyle6 = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX6.value },
+      { translateY: translateY6.value },
+      { scale: scale6.value },
+    ],
+    opacity: opacity6.value,
+  }));
 
   // Quick opening animation - each item animates from streak button to its position
   React.useEffect(() => {
@@ -76,44 +170,47 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
           const finalX = Math.cos(angle) * MENU_RADIUS;
           const finalY = Math.sin(angle) * MENU_RADIUS;
 
-          const anim = animations[index];
-          if (!anim) return;
-
           // Animate from center (streak button) to final position
-          anim.translateX.value = withSpring(finalX, {
+          translateXValues[index]!.value = withSpring(finalX, {
             damping: 20,
             stiffness: 300,
           });
-          anim.translateY.value = withSpring(finalY, {
+          translateYValues[index]!.value = withSpring(finalY, {
             damping: 20,
             stiffness: 300,
           });
-          anim.scale.value = withSpring(1, {
+          scaleValues[index]!.value = withSpring(1, {
             damping: 20,
             stiffness: 300,
           });
-          anim.opacity.value = withTiming(1, { duration: 150 });
+          opacityValues[index]!.value = withTiming(1, { duration: 150 });
         }, delay);
       });
     } else {
       // Animate back to center when closing
-      animations.forEach((anim) => {
-        anim.translateX.value = withSpring(0, {
+      translateXValues.forEach((translateX) => {
+        translateX.value = withSpring(0, {
           damping: 25,
           stiffness: 400
         });
-        anim.translateY.value = withSpring(0, {
+      });
+      translateYValues.forEach((translateY) => {
+        translateY.value = withSpring(0, {
           damping: 25,
           stiffness: 400
         });
-        anim.scale.value = withSpring(0, {
+      });
+      scaleValues.forEach((scale) => {
+        scale.value = withSpring(0, {
           damping: 25,
           stiffness: 400
         });
-        anim.opacity.value = withTiming(0, { duration: 100 });
+      });
+      opacityValues.forEach((opacity) => {
+        opacity.value = withTiming(0, { duration: 100 });
       });
     }
-  }, [isOpen, animations]);
+  }, [isOpen, translateXValues, translateYValues, scaleValues, opacityValues]);
 
   if (!isOpen) return null;
 
@@ -127,20 +224,19 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
 
       <View style={styles.menuContainer}>
         {menuItems.map((item, index) => {
-          // Create animated style for each item
-          const animatedStyle = useAnimatedStyle(() => {
-            const anim = animations[index];
-            if (!anim) return {};
-            
-            return {
-              transform: [
-                { translateX: anim.translateX.value },
-                { translateY: anim.translateY.value },
-                { scale: anim.scale.value },
-              ],
-              opacity: anim.opacity.value,
-            };
-          });
+          // Get the appropriate animated style for this index
+          const getAnimatedStyle = () => {
+            switch (index) {
+              case 0: return animatedStyle0;
+              case 1: return animatedStyle1;
+              case 2: return animatedStyle2;
+              case 3: return animatedStyle3;
+              case 4: return animatedStyle4;
+              case 5: return animatedStyle5;
+              case 6: return animatedStyle6;
+              default: return {};
+            }
+          };
 
           return (
             <Animated.View
@@ -151,7 +247,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
                   left: centerX - ITEM_SIZE / 2,
                   top: centerY - ITEM_SIZE / 2,
                 },
-                animatedStyle,
+                getAnimatedStyle(),
               ]}
             >
               <TouchableOpacity
@@ -171,60 +267,62 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     </View>
   );
 };const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000,
-  },
+  // eslint-disable-next-line react-native/no-color-literals
   backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    backgroundColor: 'rgba(0, 15, 26, 0.3)', // Semi-transparent version of theme.colors.background
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
     zIndex: -1, // Behind menu items but still clickable
   },
-  menuContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  menuItem: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   itemButton: {
-    width: ITEM_SIZE,
-    height: ITEM_SIZE,
-    borderRadius: ITEM_SIZE / 2,
     alignItems: 'center',
+    borderColor: theme.colors.surface,
+    borderRadius: ITEM_SIZE / 2,
+    borderWidth: 3,
+    elevation: 12,
+    height: ITEM_SIZE,
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: theme.colors.primary,
     shadowOffset: {
       width: 0,
       height: 6,
     },
     shadowOpacity: 0.4,
     shadowRadius: 12,
-    elevation: 12,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
+    width: ITEM_SIZE,
   },
+  // eslint-disable-next-line react-native/no-color-literals
   itemLabel: {
-    marginTop: 8,
+    color: theme.colors.surface,
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    marginTop: 8,
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowColor: 'rgba(0, 15, 26, 0.7)', // Semi-transparent version of theme.colors.background
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
+  },
+  menuContainer: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  menuItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  overlay: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 1000,
   },
 });

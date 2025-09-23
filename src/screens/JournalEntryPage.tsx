@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { setInterval, clearInterval } from 'timers';
 import {
   View,
   Text,
@@ -281,19 +282,6 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
     padding: theme.spacing.sm,
   },
@@ -302,53 +290,78 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
+  container: {
+    backgroundColor: theme.colors.background,
     flex: 1,
-    textAlign: 'center',
-    marginHorizontal: theme.spacing.md,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: theme.spacing.lg,
+  },
+  contentInput: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 17,
+    minHeight: 300,
+    padding: theme.spacing.lg,
+    textAlignVertical: 'top',
   },
   draftButton: {
-    padding: theme.spacing.sm,
     marginRight: theme.spacing.sm,
+    padding: theme.spacing.sm,
   },
   draftButtonText: {
     fontSize: 18,
   },
-  saveButton: {
-    backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.sm,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
+  draftDeleteButton: {
+    padding: theme.spacing.sm,
   },
-  saveButtonDisabled: {
-    backgroundColor: theme.colors.text.disabled,
-  },
-  saveButtonText: {
-    color: theme.colors.background,
-    fontWeight: '600',
+  draftDeleteText: {
     fontSize: 16,
+  },
+  draftIndicator: {
+    ...theme.typography.small,
+    color: theme.colors.secondary,
+    fontStyle: 'italic',
+  },
+  draftItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  draftItemContent: {
+    flex: 1,
+  },
+  draftItemDate: {
+    ...theme.typography.small,
+    color: theme.colors.text.secondary,
+  },
+  draftItemTitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    marginBottom: 2,
   },
   draftMenu: {
     backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
     maxHeight: 300,
   },
-  draftMenuHeader: {
-    padding: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+  draftMenuDivider: {
+    backgroundColor: theme.colors.border,
+    height: 1,
+    marginVertical: theme.spacing.sm,
   },
-  draftMenuTitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
+  draftMenuHeader: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    padding: theme.spacing.md,
   },
   draftMenuItem: {
     padding: theme.spacing.md,
@@ -357,82 +370,70 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.primary,
   },
-  draftMenuDivider: {
-    height: 1,
-    backgroundColor: theme.colors.border,
-    marginVertical: theme.spacing.sm,
-  },
-  draftItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  draftItemContent: {
-    flex: 1,
-  },
-  draftItemTitle: {
+  draftMenuTitle: {
     ...theme.typography.body,
     color: theme.colors.text.primary,
-    marginBottom: 2,
+    fontWeight: '600',
   },
-  draftItemDate: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
   },
-  draftDeleteButton: {
-    padding: theme.spacing.sm,
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
   },
-  draftDeleteText: {
-    fontSize: 16,
-  },
-  content: {
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
     flex: 1,
-  },
-  contentContainer: {
-    padding: theme.spacing.lg,
+    marginHorizontal: theme.spacing.md,
+    textAlign: 'center',
   },
   inputSection: {
     flex: 1,
   },
-  titleInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    color: theme.colors.text.primary,
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+  saveButton: {
+    backgroundColor: theme.colors.secondary,
+    borderRadius: theme.borderRadius.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
-  contentInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.lg,
-    color: theme.colors.text.primary,
-    fontSize: 17,
-    minHeight: 300,
-    textAlignVertical: 'top',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+  saveButtonDisabled: {
+    backgroundColor: theme.colors.text.disabled,
+  },
+  saveButtonText: {
+    color: theme.colors.background,
+    fontSize: 16,
+    fontWeight: '600',
   },
   statsSection: {
+    alignItems: 'center',
+    borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginTop: theme.spacing.md,
     paddingTop: theme.spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
   },
   statsText: {
     ...theme.typography.small,
     color: theme.colors.text.secondary,
   },
-  draftIndicator: {
-    ...theme.typography.small,
-    color: theme.colors.secondary,
-    fontStyle: 'italic',
+  titleInput: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.lg,
   },
 });

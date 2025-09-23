@@ -369,100 +369,84 @@ export default function PointsHistoryScreen({ visible = true, onClose, navigatio
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   backButton: {
+    alignItems: 'center',
     width: 40,
-    alignItems: 'center',
   },
-  refreshButton: {
-    width: 40,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: theme.colors.text.secondary,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  statsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  statCard: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    flex: 1,
-    marginHorizontal: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text.primary,
-    marginTop: 8,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: theme.colors.text.secondary,
-    marginTop: 4,
-  },
-  timeFiltersContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  timeFilterButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginHorizontal: 4,
+  categoryBadge: {
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    alignItems: 'center',
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
-  timeFilterButtonActive: {
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyStateSubtext: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  emptyStateText: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '500',
+    marginTop: 16,
+  },
+  entryDescription: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  entryDetails: {
+    flex: 1,
+  },
+  entryLeft: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+  },
+  entryMeta: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  entryRight: {
+    alignItems: 'flex-end',
+  },
+  entryTime: {
+    color: theme.colors.text.secondary,
+    fontSize: 13,
+  },
+  filterButton: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginRight: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  filterButtonActive: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
   },
-  timeFilterButtonText: {
-    fontSize: 14,
+  filterButtonText: {
     color: theme.colors.text.secondary,
+    fontSize: 14,
     fontWeight: '500',
   },
-  timeFilterButtonTextActive: {
+  filterButtonTextActive: {
     color: '#FFFFFF',
   },
   filtersContainer: {
@@ -471,114 +455,130 @@ const styles = StyleSheet.create({
   filtersScroll: {
     paddingHorizontal: 20,
   },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 12,
-    borderRadius: 20,
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  filterButtonActive: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  filterButtonText: {
-    fontSize: 14,
-    color: theme.colors.text.secondary,
-    fontWeight: '500',
-  },
-  filterButtonTextActive: {
-    color: '#FFFFFF',
+  headerTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: '600',
   },
   historyContainer: {
-    paddingHorizontal: 20,
     paddingBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-    marginBottom: 16,
+    paddingHorizontal: 20,
   },
   historyEntry: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     backgroundColor: theme.colors.surface,
-    padding: 16,
     borderRadius: 12,
+    elevation: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 12,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    elevation: 2,
-  },
-  entryLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
+    alignItems: 'center',
     borderRadius: 20,
+    height: 40,
     justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 12,
+    width: 40,
   },
-  entryDetails: {
-    flex: 1,
-  },
-  entryDescription: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: theme.colors.text.primary,
-    marginBottom: 4,
-  },
-  entryTime: {
-    fontSize: 13,
-    color: theme.colors.text.secondary,
-  },
-  entryMeta: {
-    fontSize: 12,
-    color: theme.colors.text.secondary,
-    marginTop: 2,
-  },
-  entryRight: {
-    alignItems: 'flex-end',
-  },
-  pointsText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginBottom: 4,
-  },
-  categoryBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    overflow: 'hidden',
-  },
-  emptyState: {
+  loadingContainer: {
     alignItems: 'center',
-    paddingVertical: 40,
+    flex: 1,
+    justifyContent: 'center',
   },
-  emptyStateText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: theme.colors.text.primary,
+  loadingText: {
+    color: theme.colors.text.secondary,
+    fontSize: 16,
     marginTop: 16,
   },
-  emptyStateSubtext: {
-    fontSize: 14,
+  pointsText: {
+    color: theme.colors.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  refreshButton: {
+    alignItems: 'center',
+    width: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  sectionTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  statCard: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    elevation: 3,
+    flex: 1,
+    marginHorizontal: 4,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statLabel: {
     color: theme.colors.text.secondary,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  statValue: {
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginTop: 8,
-    textAlign: 'center',
+  },
+  statsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  timeFilterButton: {
+    alignItems: 'center',
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    marginHorizontal: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  timeFilterButtonActive: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  timeFilterButtonText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  timeFilterButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  timeFiltersContainer: {
+    flexDirection: 'row',
+    paddingBottom: 16,
+    paddingHorizontal: 20,
   },
 });
