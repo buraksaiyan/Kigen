@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
   RefreshControl
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -223,14 +222,14 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.text.secondary,
   },
   activeTabText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
   },
   container: {
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
   currentMonthIndicator: {
-    color: '#8b5cf6',
+    color: theme.colors.accent,
     fontSize: 10,
     marginTop: 2,
   },
@@ -238,19 +237,19 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   disabledText: {
-    color: '#666',
+    color: theme.colors.text.tertiary,
   },
   emptyContainer: {
     alignItems: 'center',
     paddingVertical: 40,
   },
   emptySubtext: {
-    color: '#888',
+    color: theme.colors.text.secondary,
     fontSize: 14,
     textAlign: 'center',
   },
   emptyText: {
-    color: '#666',
+    color: theme.colors.text.tertiary,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
@@ -261,7 +260,7 @@ const styles = StyleSheet.create({
   },
   entryBackground: {
     alignItems: 'center',
-    borderColor: '#333',
+    borderColor: theme.colors.border,
     borderRadius: 15,
     borderWidth: 1,
     flexDirection: 'row',
@@ -275,11 +274,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerSubtitle: {
-    color: '#888',
+    color: theme.colors.text.secondary,
     fontSize: 14,
   },
   headerTitle: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 5,
@@ -289,14 +288,14 @@ const styles = StyleSheet.create({
   },
   monthButton: {
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.colors.surface,
     borderRadius: 20,
     height: 40,
     justifyContent: 'center',
     width: 40,
   },
   monthButtonText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   monthText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -319,11 +318,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   pointsLabel: {
-    color: '#888',
+    color: theme.colors.text.secondary,
     fontSize: 12,
   },
   pointsText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -332,20 +331,20 @@ const styles = StyleSheet.create({
     width: 50,
   },
   rankText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: 'bold',
   },
   tab: {
     alignItems: 'center',
-    borderColor: '#888691',
+    borderColor: theme.colors.text.secondary,
     borderRadius: 12,
     borderWidth: 1,
     flex: 1,
     paddingVertical: 12,
   },
   tabContainer: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.colors.surface,
     borderRadius: 15,
     flexDirection: 'row',
     margin: 20,
@@ -353,7 +352,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   tabText: {
-    color: '#888',
+    color: theme.colors.text.secondary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -369,7 +368,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   username: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
