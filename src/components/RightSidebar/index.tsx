@@ -7,6 +7,7 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -104,17 +105,18 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           />
         </Animated.View>
 
-        <Animated.View style={[styles.sidebar, sidebarStyle, { paddingTop: insets.top }]}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.headerTitle}>Menu</Text>
+        <Animated.View style={[styles.sidebar, sidebarStyle]}>
+          <SafeAreaView style={styles.safeArea}>
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Text style={styles.headerTitle}>Menu</Text>
+              </View>
+              <View style={styles.headerRight}>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Icon name="close" size={24} color={theme.colors.text.secondary} />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.headerRight}>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Icon name="close" size={24} color={theme.colors.text.secondary} />
-              </TouchableOpacity>
-            </View>
-          </View>
 
           <View style={styles.menuContainer}>
             {menuItems.map((item) => (
@@ -152,6 +154,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               </TouchableOpacity>
             )}
           </View>
+          </SafeAreaView>
         </Animated.View>
       </View>
     </Modal>
@@ -160,6 +163,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
 const styles = StyleSheet.create({
   overlay: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   backdrop: {

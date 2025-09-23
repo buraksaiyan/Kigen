@@ -6,6 +6,12 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 
@@ -46,6 +52,33 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   centerX,
   centerY,
 }) => {
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
+
+  // Quick opening animation
+  React.useEffect(() => {
+    if (isOpen) {
+      // Fast entrance animation
+      scale.value = withSpring(1, {
+        damping: 20,
+        stiffness: 300,
+      });
+      opacity.value = withTiming(1, { duration: 150 });
+    } else {
+      // Fast exit animation
+      scale.value = withSpring(0, {
+        damping: 25,
+        stiffness: 400
+      });
+      opacity.value = withTiming(0, { duration: 100 });
+    }
+  }, [isOpen]);
+
+  const containerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
   if (!isOpen) return null;
 
   return (
@@ -57,38 +90,40 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
       />
 
       <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => {
-          // Arrange items in a circle around the center
-          const angleStep = (Math.PI * 2) / menuItems.length;
-          const angle = index * angleStep - Math.PI / 2; // Start from top
+        <Animated.View style={containerStyle}>
+          {menuItems.map((item, index) => {
+            // Arrange items in a circle around the center
+            const angleStep = (Math.PI * 2) / menuItems.length;
+            const angle = index * angleStep - Math.PI / 2; // Start from top
 
-          const x = centerX + Math.cos(angle) * MENU_RADIUS - ITEM_SIZE / 2;
-          const y = centerY + Math.sin(angle) * MENU_RADIUS - ITEM_SIZE / 2;
+            const x = centerX + Math.cos(angle) * MENU_RADIUS - ITEM_SIZE / 2;
+            const y = centerY + Math.sin(angle) * MENU_RADIUS - ITEM_SIZE / 2;
 
-          return (
-            <View
-              key={item.id}
-              style={[
-                styles.menuItem,
-                {
-                  left: x,
-                  top: y,
-                },
-              ]}
-            >
-              <TouchableOpacity
-                style={[styles.itemButton, { backgroundColor: item.color }]}
-                onPress={() => onSelect(item.id)}
-                activeOpacity={0.8}
+            return (
+              <View
+                key={item.id}
+                style={[
+                  styles.menuItem,
+                  {
+                    left: x,
+                    top: y,
+                  },
+                ]}
               >
-                <Icon name={item.icon} size={24} color="#FFFFFF" />
-              </TouchableOpacity>
-              <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
-                {item.title}
-              </Text>
-            </View>
-          );
-        })}
+                <TouchableOpacity
+                  style={[styles.itemButton, { backgroundColor: item.color }]}
+                  onPress={() => onSelect(item.id)}
+                  activeOpacity={0.8}
+                >
+                  <Icon name={item.icon} size={24} color="#FFFFFF" />
+                </TouchableOpacity>
+                <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
+                  {item.title}
+                </Text>
+              </View>
+            );
+          })}
+        </Animated.View>
       </View>
     </View>
   );
