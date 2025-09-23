@@ -17,6 +17,7 @@ import { JournalEntryPage } from '../screens/JournalEntryPage';
 import { RemindersCreationPage } from '../screens/RemindersCreationPage';
 import { ToDoCreationPage } from '../screens/ToDoCreationPage';
 import { SocialEntriesPage } from '../screens/SocialEntriesPage';
+import { HabitsCreationPage } from '../screens/HabitsCreationPage';
 import PointsHistoryScreen from '../screens/PointsHistoryScreen';
 import DashboardCustomizationScreen from '../screens/DashboardCustomizationScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
@@ -41,6 +42,7 @@ type RootStackParamList = {
   ReminderEntry: undefined;
   TodoEntry: undefined;
   SocialEntry: undefined;
+  HabitEntry: undefined;
 };
 
 export const MainNavigator: React.FC = () => {
@@ -58,6 +60,7 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="ReminderEntry" component={RemindersCreationPage} />
           <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
           <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
+          <Stack.Screen name="HabitEntry" component={HabitsCreationPage} />
         </Stack.Navigator>
         
       </AuthProvider>
@@ -131,6 +134,9 @@ const MainScreen: React.FC = () => {
         break;
       case 'social':
         navigation.navigate('SocialEntry');
+        break;
+      case 'habit':
+        navigation.navigate('HabitEntry');
         break;
       default:
         console.log(`Unhandled menu item: ${itemId}`);
