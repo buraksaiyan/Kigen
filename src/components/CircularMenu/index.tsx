@@ -52,32 +52,68 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
   centerX,
   centerY,
 }) => {
-  const scale = useSharedValue(0);
-  const opacity = useSharedValue(0);
+  // Individual animation values for each menu item
+  const animations = React.useMemo(() => 
+    menuItems.map(() => ({
+      translateX: useSharedValue(0),
+      translateY: useSharedValue(0),
+      scale: useSharedValue(0),
+      opacity: useSharedValue(0),
+    })), []
+  );
 
-  // Quick opening animation
+  // Quick opening animation - each item animates from streak button to its position
   React.useEffect(() => {
     if (isOpen) {
-      // Fast entrance animation
-      scale.value = withSpring(1, {
-        damping: 20,
-        stiffness: 300,
-      });
-      opacity.value = withTiming(1, { duration: 150 });
-    } else {
-      // Fast exit animation
-      scale.value = withSpring(0, {
-        damping: 25,
-        stiffness: 400
-      });
-      opacity.value = withTiming(0, { duration: 100 });
-    }
-  }, [isOpen]);
+      // Stagger the animations for a nice effect
+      menuItems.forEach((_, index) => {
+        const delay = index * 50; // 50ms stagger between items
+        
+        setTimeout(() => {
+          // Calculate final position
+          const angleStep = (Math.PI * 2) / menuItems.length;
+          const angle = index * angleStep - Math.PI / 2; // Start from top
+          const finalX = Math.cos(angle) * MENU_RADIUS;
+          const finalY = Math.sin(angle) * MENU_RADIUS;
 
-  const containerStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
+          const anim = animations[index];
+          if (!anim) return;
+
+          // Animate from center (streak button) to final position
+          anim.translateX.value = withSpring(finalX, {
+            damping: 20,
+            stiffness: 300,
+          });
+          anim.translateY.value = withSpring(finalY, {
+            damping: 20,
+            stiffness: 300,
+          });
+          anim.scale.value = withSpring(1, {
+            damping: 20,
+            stiffness: 300,
+          });
+          anim.opacity.value = withTiming(1, { duration: 150 });
+        }, delay);
+      });
+    } else {
+      // Animate back to center when closing
+      animations.forEach((anim) => {
+        anim.translateX.value = withSpring(0, {
+          damping: 25,
+          stiffness: 400
+        });
+        anim.translateY.value = withSpring(0, {
+          damping: 25,
+          stiffness: 400
+        });
+        anim.scale.value = withSpring(0, {
+          damping: 25,
+          stiffness: 400
+        });
+        anim.opacity.value = withTiming(0, { duration: 100 });
+      });
+    }
+  }, [isOpen, animations]);
 
   if (!isOpen) return null;
 
@@ -90,40 +126,47 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
       />
 
       <View style={styles.menuContainer}>
-        <Animated.View style={containerStyle}>
-          {menuItems.map((item, index) => {
-            // Arrange items in a circle around the center
-            const angleStep = (Math.PI * 2) / menuItems.length;
-            const angle = index * angleStep - Math.PI / 2; // Start from top
+        {menuItems.map((item, index) => {
+          // Create animated style for each item
+          const animatedStyle = useAnimatedStyle(() => {
+            const anim = animations[index];
+            if (!anim) return {};
+            
+            return {
+              transform: [
+                { translateX: anim.translateX.value },
+                { translateY: anim.translateY.value },
+                { scale: anim.scale.value },
+              ],
+              opacity: anim.opacity.value,
+            };
+          });
 
-            const x = centerX + Math.cos(angle) * MENU_RADIUS - ITEM_SIZE / 2;
-            const y = centerY + Math.sin(angle) * MENU_RADIUS - ITEM_SIZE / 2;
-
-            return (
-              <View
-                key={item.id}
-                style={[
-                  styles.menuItem,
-                  {
-                    left: x,
-                    top: y,
-                  },
-                ]}
+          return (
+            <Animated.View
+              key={item.id}
+              style={[
+                styles.menuItem,
+                {
+                  left: centerX - ITEM_SIZE / 2,
+                  top: centerY - ITEM_SIZE / 2,
+                },
+                animatedStyle,
+              ]}
+            >
+              <TouchableOpacity
+                style={[styles.itemButton, { backgroundColor: item.color }]}
+                onPress={() => onSelect(item.id)}
+                activeOpacity={0.8}
               >
-                <TouchableOpacity
-                  style={[styles.itemButton, { backgroundColor: item.color }]}
-                  onPress={() => onSelect(item.id)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name={item.icon} size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-                <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
-                  {item.title}
-                </Text>
-              </View>
-            );
-          })}
-        </Animated.View>
+                <Icon name={item.icon} size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+              <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
+                {item.title}
+              </Text>
+            </Animated.View>
+          );
+        })}
       </View>
     </View>
   );
