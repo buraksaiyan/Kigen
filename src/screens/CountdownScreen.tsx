@@ -911,9 +911,29 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '700',
   },
+  primaryLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  primaryLabelsContainer: {
+    flexDirection: 'row',
+    gap: theme.spacing.lg,
+    marginTop: theme.spacing.xs,
+  },
   primaryTimeContainer: {
     alignItems: 'center',
     marginBottom: theme.spacing.sm,
+  },
+  primaryTimeText: {
+    color: theme.colors.text.primary,
+    fontFamily: 'monospace',
+    fontSize: 64,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    textAlign: 'center',
   },
   // eslint-disable-next-line react-native/no-color-literals
   progressArc: {
@@ -984,6 +1004,18 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
     fontWeight: '700',
   },
+  secondaryTimeContainer: {
+    alignItems: 'center',
+    marginTop: theme.spacing.sm,
+  },
+  secondaryTimeText: {
+    color: theme.colors.text.primary,
+    fontFamily: 'monospace',
+    fontSize: 36,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
   separator: {
     fontSize: 32,
     fontWeight: 'bold',
@@ -993,14 +1025,6 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: 'bold',
     marginHorizontal: theme.spacing.sm,
-  },
-  primaryTimeText: {
-    color: theme.colors.text.primary,
-    fontFamily: 'monospace',
-    fontSize: 64,
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    textAlign: 'center',
   },
   separatorSmall: {
     fontSize: 28,
@@ -1050,30 +1074,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingHorizontal: theme.spacing.lg,
     width: '100%',
-  },
-  primaryLabelsContainer: {
-    flexDirection: 'row',
-    gap: theme.spacing.lg,
-    marginTop: theme.spacing.xs,
-  },
-  primaryLabel: {
-    color: theme.colors.text.secondary,
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  secondaryTimeContainer: {
-    alignItems: 'center',
-    marginTop: theme.spacing.sm,
-  },
-  secondaryTimeText: {
-    color: theme.colors.text.primary,
-    fontFamily: 'monospace',
-    fontSize: 36,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-    textAlign: 'center',
   },
   secondaryLabel: {
     color: theme.colors.text.secondary,
