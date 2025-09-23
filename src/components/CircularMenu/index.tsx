@@ -11,7 +11,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { setTimeout } from 'timers';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 

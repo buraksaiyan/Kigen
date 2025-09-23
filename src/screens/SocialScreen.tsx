@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { setTimeout } from 'timers';
 import {
   View,
   Text,

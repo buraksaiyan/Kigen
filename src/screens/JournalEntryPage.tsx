@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { setInterval, clearInterval } from 'timers';
 import {
   View,
   Text,
