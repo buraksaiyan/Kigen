@@ -36,6 +36,8 @@ import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/d
 import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { useDashboardSections } from '../../hooks/useDashboardSections';
+import type { DashboardSectionType } from '../../services/DashboardCustomizationService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -73,6 +75,15 @@ interface ActiveTodo {
 
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
+  const { 
+    enabledSections, 
+    loading: sectionsLoading, 
+    isSectionEnabled, 
+    getSectionOrder,
+    getSortedSections,
+    refreshSections 
+  } = useDashboardSections();
+  
   const [isMonthly, setIsMonthly] = useState(true);
   const [isCardFlipping, setIsCardFlipping] = useState(false);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
@@ -174,6 +185,7 @@ export const DashboardScreen: React.FC = () => {
     setRefreshing(true);
     try {
       await loadDashboardData();
+      await refreshSections();
     } catch (e) {
       console.error('Error refreshing dashboard', e);
     } finally {
@@ -689,29 +701,58 @@ export const DashboardScreen: React.FC = () => {
         <View style={styles.topTapHintContainer}>
           <Text style={styles.topTapHintText}>Tap to flip</Text>
         </View>
-        {renderUserCard()}
+        
+        {/* Render sections in custom order with visibility control */}
+        {getSortedSections().map((section) => {
+          const sectionType = section.id;
+          
+          switch (sectionType) {
+            case 'userCard':
+              return <View key={sectionType}>{renderUserCard()}</View>;
+            case 'phoneUsage':
+              return <View key={sectionType}>{renderPhoneUsage()}</View>;
+            case 'activeGoals':
+            case 'activeHabits':
+            case 'activeTodos':
+              // For carousel sections, render as a group
+              if (sectionType === 'activeGoals') {
+                const carouselSections = getSortedSections().filter((s) => 
+                  ['activeGoals', 'activeHabits', 'activeTodos'].includes(s.id)
+                );
+                
+                if (carouselSections.length === 0) return null;
+                
+                return (
+                  <View key="carousel-group">
+                    <GestureDetector gesture={pan}>
+                      <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
+                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
+                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
+                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                      </Animated.View>
+                    </GestureDetector>
 
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[styles.carousel, carouselAnimatedStyle]}>
-            {renderActiveGoals()}
-            {renderActiveHabits()}
-            {renderActiveTodos()}
-          </Animated.View>
-        </GestureDetector>
-
-        <View style={styles.carouselIndicator}>
-          {[0, 1, 2].map((index) => (
-            <View
-              key={index}
-              style={[
-                styles.indicatorDot,
-                currentCarouselIndex === index && styles.indicatorDotActive,
-              ]}
-            />
-          ))}
-        </View>
-
-        {renderPhoneUsage()}
+                    {carouselSections.length > 1 && (
+                      <View style={styles.carouselIndicator}>
+                        {carouselSections.map((_, index: number) => (
+                          <View
+                            key={index}
+                            style={[
+                              styles.indicatorDot,
+                              currentCarouselIndex === index && styles.indicatorDotActive,
+                            ]}
+                          />
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                );
+              }
+              return null; // Already handled in the carousel group
+            default:
+              return null;
+          }
+        })}
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

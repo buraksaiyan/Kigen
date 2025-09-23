@@ -18,6 +18,7 @@ import { RemindersCreationPage } from '../screens/RemindersCreationPage';
 import { ToDoCreationPage } from '../screens/ToDoCreationPage';
 import { SocialEntriesPage } from '../screens/SocialEntriesPage';
 import PointsHistoryScreen from '../screens/PointsHistoryScreen';
+import DashboardCustomizationScreen from '../screens/DashboardCustomizationScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -46,6 +47,7 @@ export const MainNavigator: React.FC = () => {
   const [isTodoEntryOpen, setIsTodoEntryOpen] = useState(false);
   const [isSocialEntryOpen, setIsSocialEntryOpen] = useState(false);
   const [isPointsHistoryOpen, setIsPointsHistoryOpen] = useState(false);
+  const [isDashboardCustomizationOpen, setIsDashboardCustomizationOpen] = useState(false);
 
   // Load real streak data
   useEffect(() => {
@@ -113,6 +115,8 @@ export const MainNavigator: React.FC = () => {
   const handleSidebarNavigate = (screen: string) => {
     if (screen === 'pointsHistory') {
       setIsPointsHistoryOpen(true);
+    } else if (screen === 'dashboardCustomization') {
+      setIsDashboardCustomizationOpen(true);
     } else {
       setActiveScreen(screen as ScreenName);
     }
@@ -216,6 +220,17 @@ export const MainNavigator: React.FC = () => {
           <PointsHistoryScreen
             visible={isPointsHistoryOpen}
             onClose={() => setIsPointsHistoryOpen(false)}
+          />
+        )}
+        
+        {isDashboardCustomizationOpen && (
+          <DashboardCustomizationScreen
+            visible={isDashboardCustomizationOpen}
+            onClose={() => setIsDashboardCustomizationOpen(false)}
+            onSave={() => {
+              setIsDashboardCustomizationOpen(false);
+              // Refresh dashboard here if needed
+            }}
           />
         )}
       </AuthProvider>

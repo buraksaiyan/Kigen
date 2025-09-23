@@ -65,6 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
     { id: 'journals', title: t('sidebar.pastJournals'), icon: require('../../assets/images/pastjournals-icon.png') },
     { id: 'goalsHistory', title: t('sidebar.pastGoals'), icon: require('../../assets/images/pastgoals-icon.png') },
     { id: 'pointsHistory', title: 'Points History', icon: require('../../assets/images/progress-icon.png') },
+    { id: 'dashboardCustomization', title: 'Customize Dashboard', icon: require('../../assets/images/settings-icon.png') },
     { id: 'achievements', title: t('sidebar.achievements'), icon: require('../../assets/images/achievements-icon.png') },
     { id: 'profile', title: t('sidebar.profile'), icon: require('../../assets/images/profile-icon.png') },
     { id: 'settings', title: t('sidebar.settings'), icon: require('../../assets/images/settings-icon.png') },
