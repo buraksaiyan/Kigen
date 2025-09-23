@@ -360,7 +360,7 @@ export const DashboardScreen: React.FC = () => {
           }
         } else {
           // Swipe left - go to next
-          if (currentCarouselIndex < 2) {
+          if (currentCarouselIndex < 3) {
             const newIndex = currentCarouselIndex + 1;
             carouselTranslateX.value = withSpring(newIndex * -screenWidth);
             runOnJS(updateCarouselIndex)(newIndex);
