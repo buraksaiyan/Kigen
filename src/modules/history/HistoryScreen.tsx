@@ -9,10 +9,12 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../../config/theme';
 import { focusSessionService } from '../../services/FocusSessionService';
 import { journalStorage } from '../../services/journalStorage';
+import { PointsHistoryService } from '../../services/PointsHistoryService';
 
 type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
 
@@ -84,27 +86,127 @@ export const HistoryScreen: React.FC = () => {
         };
       });
 
-      // Load goal completion data
-      const goalLogs = await focusSessionService.getGoalCompletionLogs(50);
-      const goalItems: HistoryItem[] = goalLogs.map(log => {
-        const date = new Date(log.timestamp);
-        const dateStr = date.getFullYear() + '-' + 
-          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-          String(date.getDate()).padStart(2, '0');
-        return {
-          id: log.id.toString(),
-          date: dateStr,
-          time: new Date(log.timestamp).toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false 
-          }),
-          title: log.goalTitle,
-          description: 'Goal completed',
-          value: log.pointsEarned,
-          type: 'goal_completed',
-        };
-      });
+      // Load goal completion data from AsyncStorage
+      const goalsData = await AsyncStorage.getItem('@kigen_goals');
+      const goalItems: HistoryItem[] = [];
+      if (goalsData) {
+        const goals = JSON.parse(goalsData);
+        goals.forEach((goal: any) => {
+          if (goal.completed && goal.completedAt) {
+            const date = new Date(goal.completedAt);
+            const dateStr = date.getFullYear() + '-' + 
+              String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+              String(date.getDate()).padStart(2, '0');
+            goalItems.push({
+              id: goal.id,
+              date: dateStr,
+              time: date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              }),
+              title: goal.title,
+              description: 'Goal completed',
+              type: 'goal_completed',
+            });
+          }
+        });
+      }
+
+      // Load habits data from AsyncStorage
+      const habitsData = await AsyncStorage.getItem('@kigen_habits');
+      const habitItems: HistoryItem[] = [];
+      if (habitsData) {
+        const habits = JSON.parse(habitsData);
+        habits.forEach((habit: any) => {
+          // Show habit creation and completion history
+          const createdDate = new Date(habit.createdAt);
+          const createdDateStr = createdDate.getFullYear() + '-' + 
+            String(createdDate.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(createdDate.getDate()).padStart(2, '0');
+          
+          habitItems.push({
+            id: habit.id + '_created',
+            date: createdDateStr,
+            time: createdDate.toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false 
+            }),
+            title: habit.title,
+            description: `Habit created - ${habit.frequency} frequency`,
+            type: 'habit_created',
+          });
+
+          // If habit has been completed, show completion history
+          if (habit.lastCompleted) {
+            const completedDate = new Date(habit.lastCompleted);
+            const completedDateStr = completedDate.getFullYear() + '-' + 
+              String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+              String(completedDate.getDate()).padStart(2, '0');
+            
+            habitItems.push({
+              id: habit.id + '_completed',
+              date: completedDateStr,
+              time: completedDate.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              }),
+              title: habit.title,
+              description: `Habit completed - Streak: ${habit.streak}`,
+              type: 'habit_completed',
+            });
+          }
+        });
+      }
+
+      // Load todos data from AsyncStorage
+      const todosData = await AsyncStorage.getItem('@kigen_todos');
+      const todoItems: HistoryItem[] = [];
+      if (todosData) {
+        const todos = JSON.parse(todosData);
+        todos.forEach((todo: any) => {
+          const createdDate = new Date(todo.createdAt);
+          const createdDateStr = createdDate.getFullYear() + '-' + 
+            String(createdDate.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(createdDate.getDate()).padStart(2, '0');
+          
+          todoItems.push({
+            id: todo.id + '_created',
+            date: createdDateStr,
+            time: createdDate.toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false 
+            }),
+            title: todo.title,
+            description: todo.completed ? 'Todo completed' : 'Todo created',
+            type: todo.completed ? 'todo_completed' : 'todo_created',
+          });
+
+          // If todo is completed, also show completion entry
+          if (todo.completed && todo.completedAt) {
+            const completedDate = new Date(todo.completedAt);
+            const completedDateStr = completedDate.getFullYear() + '-' + 
+              String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+              String(completedDate.getDate()).padStart(2, '0');
+            
+            todoItems.push({
+              id: todo.id + '_completed',
+              date: completedDateStr,
+              time: completedDate.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              }),
+              title: todo.title,
+              description: 'Todo completed',
+              type: 'todo_completed',
+            });
+          }
+        });
+      }
 
       // Load focus session data
       const focusSessions = await focusSessionService.getFocusSessions(50);
@@ -130,21 +232,27 @@ export const HistoryScreen: React.FC = () => {
         };
       });
 
-      // Load combined stats logs for points and other activities
-      const statsLogs = await focusSessionService.getCombinedKigenStatsLogs(50);
-      const pointsItems: HistoryItem[] = statsLogs.map(log => ({
-        id: log.id,
-        date: log.date,
-        time: '12:00', // Default time since logs don't have specific time
-        title: log.action,
-        description: log.action,
-        value: parseInt(log.points.replace('+', '')) || 0,
-        type: 'points_earned',
-      }));
-
-      // For now, keep habits and todo as empty (they would need separate storage systems)
-      const habitItems: HistoryItem[] = [];
-      const todoItems: HistoryItem[] = [];
+      // Load points history using PointsHistoryService
+      const pointsHistory = await PointsHistoryService.getPointsHistory(50);
+      const pointsItems: HistoryItem[] = pointsHistory.map(entry => {
+        const date = new Date(entry.timestamp);
+        const dateStr = date.getFullYear() + '-' + 
+          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(date.getDate()).padStart(2, '0');
+        return {
+          id: entry.id,
+          date: dateStr,
+          time: date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          }),
+          title: entry.description,
+          description: `${entry.points > 0 ? '+' : ''}${entry.points} points (${entry.category})`,
+          value: entry.points,
+          type: 'points_earned',
+        };
+      });
 
       setHistoryData({
         journaling: journalingItems,
