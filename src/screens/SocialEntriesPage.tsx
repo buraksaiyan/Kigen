@@ -13,23 +13,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
+import { UserStatsService } from '../services/userStatsService';
 
 const SOCIAL_ENTRIES_STORAGE_KEY = '@kigen_social_entries';
 
-type MoodLevel = 1 | 2 | 3 | 4 | 5;
-type SocialActivity = 'meeting' | 'call' | 'text' | 'hangout' | 'event' | 'work' | 'family' | 'other';
+type SocialActivity = 'outside' | 'with_friends';
 type TimeSpent = '15min' | '30min' | '1hour' | '2hours' | '3hours' | 'halfday' | 'fullday';
 
 interface SocialEntry {
   id: string;
   activity: SocialActivity;
-  description: string;
-  peopleCount: number;
-  moodBefore: MoodLevel;
-  moodAfter: MoodLevel;
   timeSpent: TimeSpent;
-  quality: MoodLevel;
-  notes?: string;
   createdAt: string;
 }
 
@@ -39,14 +33,8 @@ interface SocialEntriesPageProps {
 }
 
 const activityConfig: Record<SocialActivity, { icon: string; label: string; color: string }> = {
-  meeting: { icon: 'business', label: 'Meeting', color: '#3498DB' },
-  call: { icon: 'phone', label: 'Phone Call', color: '#E74C3C' },
-  text: { icon: 'message', label: 'Messaging', color: '#2ECC71' },
-  hangout: { icon: 'people', label: 'Hangout', color: '#F39C12' },
-  event: { icon: 'event', label: 'Event', color: '#9B59B6' },
-  work: { icon: 'work', label: 'Work Social', color: '#34495E' },
-  family: { icon: 'family-restroom', label: 'Family Time', color: '#E67E22' },
-  other: { icon: 'more-horiz', label: 'Other', color: '#95A5A6' },
+  outside: { icon: 'nature', label: 'Being Outside', color: '#2ECC71' },
+  with_friends: { icon: 'people', label: 'With Friends', color: '#3498DB' },
 };
 
 const timeSpentConfig: Record<TimeSpent, { label: string; minutes: number }> = {
@@ -67,34 +55,17 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
   onSave,
 }) => {
   const navigation = useNavigation();
-  const [activity, setActivity] = useState<SocialActivity>('hangout');
-  const [description, setDescription] = useState('');
-  const [peopleCount, setPeopleCount] = useState(1);
-  const [moodBefore, setMoodBefore] = useState<MoodLevel>(3);
-  const [moodAfter, setMoodAfter] = useState<MoodLevel>(3);
+  const [activity, setActivity] = useState<SocialActivity>('outside');
   const [timeSpent, setTimeSpent] = useState<TimeSpent>('1hour');
-  const [quality, setQuality] = useState<MoodLevel>(3);
-  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
 
   const saveSocialEntry = async () => {
-    if (!description.trim()) {
-      Alert.alert('Error', 'Please describe your social interaction');
-      return;
-    }
-
     setLoading(true);
     try {
       const newEntry: SocialEntry = {
         id: Date.now().toString(),
         activity,
-        description: description.trim(),
-        peopleCount,
-        moodBefore,
-        moodAfter,
         timeSpent,
-        quality,
-        notes: notes.trim() || undefined,
         createdAt: new Date().toISOString(),
       };
 
@@ -111,14 +82,17 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       // Save back to storage
       await AsyncStorage.setItem(SOCIAL_ENTRIES_STORAGE_KEY, JSON.stringify(trimmedEntries));
 
+      // Record points and time for social activity
+      const minutesSpent = timeSpentConfig[timeSpent].minutes;
+      await UserStatsService.recordSocialInteraction(activity, 5); // 5 is a default mood rating
+      await UserStatsService.updatePhoneUsage(0, minutesSpent); // Record time as social media minutes for points calculation
+
       // Clear form
-      setDescription('');
-      setPeopleCount(1);
-      setMoodBefore(3);
-      setMoodAfter(3);
+      setActivity('outside');
       setTimeSpent('1hour');
-      setQuality(3);
-      setNotes('');
+      
+      Alert.alert('Success', 'Social interaction logged successfully!');
+      navigation.goBack();
       
       Alert.alert('Success', 'Social interaction logged successfully!');
       navigation.goBack();
@@ -129,38 +103,6 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       setLoading(false);
     }
   };
-
-  const renderMoodSelector = (
-    label: string,
-    value: MoodLevel,
-    onChange: (mood: MoodLevel) => void
-  ) => (
-    <View style={styles.moodSection}>
-      <Text style={styles.moodLabel}>{label}</Text>
-      <View style={styles.moodOptions}>
-        {[1, 2, 3, 4, 5].map((mood) => (
-          <TouchableOpacity
-            key={mood}
-            onPress={() => onChange(mood as MoodLevel)}
-            style={[
-              styles.moodOption,
-              value === mood && styles.moodOptionSelected,
-            ]}
-          >
-            <Text style={styles.moodEmoji}>
-              {moodEmojis[mood - 1]}
-            </Text>
-            <Text style={[
-              styles.moodLabelText,
-              value === mood && styles.moodLabelSelected,
-            ]}>
-              {moodLabels[mood - 1]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -174,7 +116,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.inputSection}>
-          <Text style={styles.sectionTitle}>Type of Interaction</Text>
+          <Text style={styles.sectionTitle}>What did you do?</Text>
           <View style={styles.activityGrid}>
             {Object.entries(activityConfig).map(([key, config]) => (
               <TouchableOpacity
@@ -193,34 +135,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
             ))}
           </View>
 
-          <Text style={styles.label}>Description *</Text>
-          <TextInput
-            style={styles.textInput}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="What did you do? Who did you interact with?"
-            placeholderTextColor={theme.colors.text.secondary}
-            maxLength={200}
-          />
-
-          <Text style={styles.label}>Number of People</Text>
-          <View style={styles.peopleCounter}>
-            <TouchableOpacity
-              onPress={() => setPeopleCount(Math.max(1, peopleCount - 1))}
-              style={styles.counterButton}
-            >
-              <Icon name="remove" size={24} color={theme.colors.text.primary} />
-            </TouchableOpacity>
-            <Text style={styles.counterText}>{peopleCount} people</Text>
-            <TouchableOpacity
-              onPress={() => setPeopleCount(Math.min(20, peopleCount + 1))}
-              style={styles.counterButton}
-            >
-              <Icon name="add" size={24} color={theme.colors.text.primary} />
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.label}>Time Spent</Text>
+          <Text style={styles.label}>How long did you spend?</Text>
           <View style={styles.timeOptions}>
             {Object.entries(timeSpentConfig).map(([key, config]) => (
               <TouchableOpacity
@@ -240,21 +155,6 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
               </TouchableOpacity>
             ))}
           </View>
-
-          {renderMoodSelector('How did you feel before?', moodBefore, setMoodBefore)}
-          {renderMoodSelector('How did you feel after?', moodAfter, setMoodAfter)}
-          {renderMoodSelector('Overall interaction quality?', quality, setQuality)}
-
-          <Text style={styles.label}>Additional Notes (optional)</Text>
-          <TextInput
-            style={[styles.textInput, styles.multilineInput]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Any additional thoughts or observations..."
-            placeholderTextColor={theme.colors.text.secondary}
-            multiline
-            maxLength={300}
-          />
 
           <TouchableOpacity
             style={[

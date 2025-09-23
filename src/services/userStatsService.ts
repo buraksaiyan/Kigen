@@ -591,6 +591,12 @@ export class UserStatsService {
     // Update monthly accumulation
     await this.updateMonthlyStats();
     
+    // Check for new achievements
+    if (completed) {
+      const { achievementService } = await import('./achievementService');
+      await achievementService.checkAchievements();
+    }
+    
     // Sync with leaderboard after focus session
     if (completed) {
       await this.syncUserToLeaderboard();
@@ -619,6 +625,10 @@ export class UserStatsService {
 
     // Update monthly accumulation
     await this.updateMonthlyStats();
+
+    // Check for new achievements
+    const { achievementService } = await import('./achievementService');
+    await achievementService.checkAchievements();
 
     // Sync with leaderboard asynchronously (don't block journal saving)
     this.syncUserToLeaderboard().catch(error => {

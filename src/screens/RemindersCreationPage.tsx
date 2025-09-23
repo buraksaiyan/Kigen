@@ -63,6 +63,23 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
     requestNotificationPermission();
   }, []);
 
+  const requestNotificationPermission = async () => {
+    try {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      setHasPermission(finalStatus === 'granted');
+    } catch (error) {
+      console.error('Failed to request notification permissions:', error);
+      setHasPermission(false);
+    }
+  };
+
   const formatDateTime = (date: Date, hour: number, minute: number) => {
     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     return `${date.toLocaleDateString()} ${timeString}`;
