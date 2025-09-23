@@ -13,14 +13,14 @@ import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { UserStatsService } from '../../services/userStatsService';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
-
-// Import icons
-const notificationIcon = require('../../../assets/images/notification-icon.png');
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { useNotifications } from '../../contexts/NotificationsContext';
 import { NotificationsDropdown } from '../../components/NotificationsDropdown';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
+
+// Import icons
+const notificationIcon = require('../../../assets/images/notification-icon.png');
 
 export const DashboardScreen: React.FC = () => {
   const { signOut } = useAuth();

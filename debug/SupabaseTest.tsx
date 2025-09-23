@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { supabase } from '../src/services/supabase';
 import { env } from '../src/config/env';
+import { theme } from '../src/config/theme';
 
 export const SupabaseTest = () => {
   const [connectionStatus, setConnectionStatus] = useState('Testing...');
@@ -66,31 +67,58 @@ export const SupabaseTest = () => {
   }, []);
 
   return (
-    <View style={{ padding: 20, backgroundColor: 'white', flex: 1 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+    <View style={styles.container}>
+      <Text style={styles.title}>
         🔍 Supabase Debug Panel
       </Text>
       
-      <Text style={{ marginBottom: 10 }}>
+      <Text style={styles.statusText}>
         Status: {connectionStatus}
       </Text>
       
-      <Text style={{ marginBottom: 10 }}>
+      <Text style={styles.urlText}>
         URL: {env.supabaseUrl}
       </Text>
       
       <Button title="🔄 Test Connection" onPress={testConnection} />
       <Button title="➕ Insert Test Data" onPress={testInsert} />
       
-      <Text style={{ marginTop: 20, fontWeight: 'bold' }}>
+      <Text style={styles.dataTitle}>
         Current Data ({leaderboardData.length} entries):
       </Text>
       
       {leaderboardData.map((entry, index) => (
-        <Text key={index} style={{ fontSize: 12, marginTop: 5 }}>
+        <Text key={index} style={styles.dataEntry}>
           {entry.username}: {entry.total_points} pts ({entry.card_tier})
         </Text>
       ))}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+    padding: 20,
+  },
+  dataEntry: {
+    fontSize: 12,
+    marginTop: 5,
+  },
+  dataTitle: {
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  statusText: {
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  urlText: {
+    marginBottom: 10,
+  },
+});

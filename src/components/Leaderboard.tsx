@@ -11,6 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
 import LeaderboardService, { LeaderboardEntry } from '../services/LeaderboardService';
+import { theme } from '../config/theme';
 
 type LeaderboardType = 'lifetime' | 'monthly';
 
@@ -218,8 +219,8 @@ export const Leaderboard: React.FC = () => {
 
 const styles = StyleSheet.create({
   activeTab: {
-    backgroundColor: '#2E1A47', // Midnight purple
-    borderColor: '#888691',
+    backgroundColor: theme.colors.primary, // Midnight purple
+    borderColor: theme.colors.text.secondary,
   },
   activeTabText: {
     color: '#fff',

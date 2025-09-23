@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Animated, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
   Dimensions,
   PanResponder,
   Modal,
@@ -14,13 +14,7 @@ import {
   Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { UserStatsServi            {/* Card Layout matching your sketch exactly - FRONT SIDE */}
-            <View style={styles.cardLayout}>
-              
-              {/* Top Section - Time Period (moved higher) */}
-              <View style={styles.topSection}>
-                <Text style={[styles.timePeriod, { backgroundColor: 'rgba(0, 0, 0, 0.1)', color: textColor }]}>{displayFlipped ? 'ALL-TIME' : 'MONTHLY'}</Text>
-              </View>om '../services/userStatsService';
+import { UserStatsService } from '../services/userStatsService';
 import { UserRating, RatingSystem } from '../services/ratingSystem';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../config/theme';
@@ -490,15 +484,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  cardSide: {
-    backfaceVisibility: 'hidden',
-    flex: 1,
-  },
-  
+
   // Card layout matching the exact sketch
   cardLayout: {
     flex: 1,
     padding: 12,
+  },
+
+  cardSide: {
+    backfaceVisibility: 'hidden',
+    flex: 1,
   },
   
   // Top section for time period (moved higher)
@@ -532,8 +527,8 @@ const styles = StyleSheet.create({
   
   // Middle column - OVR (moved up without X)
   middleColumn: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'flex-start', // Move OVR to top
     paddingHorizontal: 8,
     paddingTop: 10,
@@ -601,14 +596,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  rightSection: {
-    flex: 0.6,
-    paddingLeft: 8,
-  },
-  ovrSection: {
-    alignItems: 'flex-end', // Move OVR to right edge
-    marginBottom: 12,
-  },
   ovrLabel: {
     color: 'black',
     fontSize: 14,
@@ -620,9 +607,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '900',
     textAlign: 'center',
-  },
-  allStatsGrid: {
-    flex: 1,
   },
   statRow: {
     marginBottom: 2,
@@ -641,16 +625,9 @@ const styles = StyleSheet.create({
     marginLeft: 'auto', // Push to right edge
   },
   
-  tierText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  
   // Loading state
   loadingText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
     marginTop: 80,
@@ -720,7 +697,7 @@ const styles = StyleSheet.create({
     width: 32,
   },
   closeButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: '600',
   },
@@ -747,17 +724,17 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   profilePlaceholderText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 32,
     fontWeight: '300',
   },
   addPhotoText: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 10,
     marginTop: 4,
   },
   userName: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
@@ -766,13 +743,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   expandedOvrLabel: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
   },
   expandedOvrNumber: {
-    color: '#FFFFFF',
+    color: theme.colors.text.primary,
     fontSize: 64,
     fontWeight: '900',
   },
@@ -800,39 +777,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cleanStatValue: {
-    color: '#888691',
+    color: theme.colors.text.secondary,
     fontSize: 18,
     fontWeight: '700',
-  },
-  // Keep old styles for backwards compatibility but unused now
-  detailedStatRow: {
-    marginBottom: 16,
-  },
-  detailedStatName: {
-    color: theme.colors.text.primary,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  statBar: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: 16,
-    flexDirection: 'row',
-    height: 32,
-    overflow: 'hidden',
-    paddingRight: 12,
-  },
-  statBarFill: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 16,
-    height: '100%',
-  },
-  detailedStatValue: {
-    color: theme.colors.text.primary,
-    fontSize: 14,
-    fontWeight: '700',
-    marginLeft: 'auto',
   },
   additionalInfo: {
     backgroundColor: theme.colors.surfaceSecondary,

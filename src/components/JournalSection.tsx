@@ -271,10 +271,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '600',
   },
-  blackBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
-  },
   buttonRow: {
     flexDirection: 'row',
     gap: theme.spacing.sm,
@@ -298,11 +294,11 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: '#888691',
+    color: theme.colors.text.secondary,
     fontWeight: '600',
   },
   container: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: theme.colors.overlay,
     bottom: 0,
     justifyContent: 'flex-end',
     left: 0,
@@ -310,11 +306,9 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
+  // eslint-disable-next-line react-native/no-color-literals
   containerWithKeyboard: {
-    backgroundColor: 'rgba(0,0,0,0.7)', // Slightly more opaque when keyboard is open
-  },
-  contentContainer: {
-    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // More opaque overlay when keyboard is open
   },
   emptyState: {
     alignItems: 'center',
@@ -325,20 +319,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text.tertiary,
     textAlign: 'center',
   },
-  emptyText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    fontStyle: 'italic',
-    marginTop: theme.spacing.lg,
-    textAlign: 'center',
-  },
   entriesContainer: {
     flex: 1,
-  },
-  entriesTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
   },
   entryCard: {
     backgroundColor: theme.colors.background,
@@ -369,23 +351,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  header: {
-    alignItems: 'flex-start',
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.lg,
-    paddingBottom: theme.spacing.md,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
-  },
   inputLabel: {
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
@@ -393,11 +358,11 @@ const styles = StyleSheet.create({
   },
   inputSection: {
     backgroundColor: theme.colors.background, // Pure black background
+    borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
+    marginTop: theme.spacing.lg, // Add space to move text box down from header
     padding: theme.spacing.md,
     paddingBottom: theme.spacing.md, // reduced to avoid oversized input height
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    marginTop: theme.spacing.lg, // Add space to move text box down from header
   },
   inputSectionWithKeyboard: {
     paddingBottom: theme.spacing.xl, // Extra padding when keyboard is open
@@ -416,10 +381,6 @@ const styles = StyleSheet.create({
   keyboardAvoid: {
     flex: 1,
   },
-  logoContainer: {
-    alignItems: 'center',
-    flex: 1,
-  },
   modalHeader: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -435,18 +396,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollableContentContainer: {
-  paddingHorizontal: theme.spacing.lg,
-  // Reduced padding since input section now has marginTop
-  paddingBottom: theme.spacing.md,
-  },
-  sectionTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-  },
-  subtitle: {
-    ...theme.typography.caption,
-    color: theme.colors.text.secondary,
+    // Reduced padding since input section now has marginTop
+    paddingBottom: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
   },
   textInput: {
     ...theme.typography.body,
@@ -461,10 +413,5 @@ const styles = StyleSheet.create({
     minHeight: 96,
     padding: theme.spacing.md,
     textAlignVertical: 'top', // Prevent zoom on iOS
-  },
-  title: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
   },
 });

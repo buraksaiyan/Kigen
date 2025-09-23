@@ -1,48 +1,58 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { theme } from '../src/config/theme';
 
 export default function SimpleTest() {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      backgroundColor: '#000000',
-      color: '#FFFFFF',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      padding: '20px',
-      textAlign: 'center',
-    }}>
-      <h1 style={{ 
-        fontSize: '48px', 
-        margin: '0 0 16px 0',
-        fontWeight: 'bold'
-      }}>
-        🎉 Kigen Works!
-      </h1>
-      <p style={{ 
-        fontSize: '20px', 
-        color: '#8E8E93',
-        lineHeight: '1.4',
-        maxWidth: '600px',
-      }}>
-        Your React Native app is running successfully in the browser!<br/>
+    <View style={styles.container}>
+      <Text style={styles.title}>🎉 Kigen Works!</Text>
+      <Text style={styles.description}>
+        Your React Native app is running successfully in the browser!{'\n'}
         This means the foundation is solid and ready for development.
-      </p>
-      <div style={{
-        marginTop: '32px',
-        padding: '16px 32px',
-        backgroundColor: '#1C1C1E',
-        borderRadius: '12px',
-        border: '1px solid #38383A'
-      }}>
-        <p style={{ margin: 0, color: '#007AFF' }}>
-          ✅ React Native Web: Working<br/>
-          ✅ Development Server: Running<br/>
-          ✅ Components: Loading<br/>
-        </p>
-      </div>
-    </div>
+      </Text>
+      <View style={styles.statusContainer}>
+        <Text style={styles.statusText}>
+          ✅ React Native Web: Working{'\n'}
+          ✅ Development Server: Running{'\n'}
+          ✅ Components: Loading
+        </Text>
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  description: {
+    color: theme.colors.text.secondary,
+    fontSize: 20,
+    lineHeight: 28,
+    maxWidth: 600,
+    textAlign: 'center',
+  },
+  statusContainer: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 32,
+    padding: 16,
+  },
+  statusText: {
+    color: theme.colors.secondary,
+    textAlign: 'center',
+  },
+  title: {
+    color: theme.colors.text.primary,
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+});

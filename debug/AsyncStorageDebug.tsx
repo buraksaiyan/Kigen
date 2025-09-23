@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStatsService } from '../src/services/userStatsService';
+import { theme } from '../src/config/theme';
 
 export const AsyncStorageDebug: React.FC = () => {
-  const [debugData, setDebugData] = useState<any>({});
+  const [debugData, setDebugData] = useState<Record<string, unknown>>({});
   const [loading, setLoading] = useState(false);
 
   const loadAsyncStorageData = async () => {
@@ -16,7 +17,7 @@ export const AsyncStorageDebug: React.FC = () => {
         '@kigen_user_profile'
       ];
       
-      const data: any = {};
+      const data: Record<string, unknown> = {};
       
       for (const key of keys) {
         try {
@@ -101,7 +102,7 @@ export const AsyncStorageDebug: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.background,
     flex: 1,
     padding: 20,
   },
@@ -113,28 +114,28 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loading: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 16,
     textAlign: 'center',
   },
   section: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.colors.surface,
     borderRadius: 8,
     padding: 15,
   },
   sectionContent: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontFamily: 'monospace',
     fontSize: 12,
   },
   sectionTitle: {
-    color: '#4CAF50',
+    color: theme.colors.success,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   title: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
