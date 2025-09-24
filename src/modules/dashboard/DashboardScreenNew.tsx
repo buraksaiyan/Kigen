@@ -255,11 +255,6 @@ export const DashboardScreen: React.FC = () => {
         return habit;
       });
       
-      // Record habit streak milestone if streak increased
-      if (habitStreakIncreased) {
-        await UserStatsService.recordHabitStreak(newStreakValue);
-      }
-      
       if (habitCompleted) {
         // Move habit to completed habits
         const updatedCompletedHabits = [...completedHabits, completedHabitData];

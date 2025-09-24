@@ -1102,31 +1102,29 @@ export class UserStatsService {
       const todayStr = new Date().toISOString().split('T')[0];
       let currentDate = new Date(todayStr!);
       
-      // Check if today has activity
+      // Check if today has both journal entry AND completed focus session
       const todayActivity = activities.find(a => a.date === todayStr);
-      const hasTodayActivity = todayActivity && (
-        todayActivity.journalEntries > 0 ||
-        todayActivity.completedSessions > 0 ||
-        todayActivity.completedGoals > 0
+      const hasTodayValidStreak = todayActivity && (
+        todayActivity.journalEntries > 0 &&
+        todayActivity.completedSessions > 0
       );
       
-      if (!hasTodayActivity) {
-        // If no activity today, check yesterday
+      if (!hasTodayValidStreak) {
+        // If no valid streak activity today, check yesterday
         currentDate.setDate(currentDate.getDate() - 1);
       }
       
-      // Count consecutive days with activity
+      // Count consecutive days with both journal entries AND completed focus sessions
       while (true) {
         const dateStr = currentDate.toISOString().split('T')[0];
         const activity = activities.find(a => a.date === dateStr);
         
-        const hasActivity = activity && (
-          activity.journalEntries > 0 ||
-          activity.completedSessions > 0 ||
-          activity.completedGoals > 0
+        const hasValidStreakActivity = activity && (
+          activity.journalEntries > 0 &&
+          activity.completedSessions > 0
         );
         
-        if (hasActivity) {
+        if (hasValidStreakActivity) {
           streak++;
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
