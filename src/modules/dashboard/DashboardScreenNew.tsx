@@ -113,8 +113,6 @@ export const DashboardScreen: React.FC = () => {
     refreshSections 
   } = useDashboardSections();
   
-  const [currentView, setCurrentView] = useState<'dashboard' | 'history'>('dashboard');
-  
   const [isMonthly, setIsMonthly] = useState(true);
   const [isCardFlipping, setIsCardFlipping] = useState(false);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
@@ -1164,130 +1162,92 @@ export const DashboardScreen: React.FC = () => {
         <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
       </View>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity 
-          style={[styles.tab, currentView === 'dashboard' && styles.activeTab]}
-          onPress={() => setCurrentView('dashboard')}
-        >
-          <Text style={[styles.tabText, currentView === 'dashboard' && styles.activeTabText]}>
-            Dashboard
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.tab, currentView === 'history' && styles.activeTab]}
-          onPress={() => setCurrentView('history')}
-        >
-          <Text style={[styles.tabText, currentView === 'history' && styles.activeTabText]}>
-            History
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Small hint text between top bar and card - moved into scrollable content so it can scroll away */}
 
-      {currentView === 'dashboard' ? (
-        <ScrollView 
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          bounces={true}
-          nestedScrollEnabled={true}
-          contentContainerStyle={styles.scrollViewContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
-        >
-          <View style={styles.topTapHintContainer}>
-            <Text style={styles.topTapHintText}>Tap to flip</Text>
-          </View>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        nestedScrollEnabled={true}
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
+      >
+        <View style={styles.topTapHintContainer}>
+          <Text style={styles.topTapHintText}>Tap to flip</Text>
+        </View>
+        
+        {/* Render sections in custom order with visibility control */}
+        {(() => {
+          const carouselSections = getSortedSections().filter((s) => 
+            ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
+          );
+          const hasCarouselSections = carouselSections.length > 0;
+          let carouselRendered = false;
           
-          {/* Render sections in custom order with visibility control */}
-          {(() => {
-            const carouselSections = getSortedSections().filter((s) => 
-              ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
-            );
-            const hasCarouselSections = carouselSections.length > 0;
-            let carouselRendered = false;
+          return getSortedSections().map((section) => {
+            const sectionType = section.id;
             
-            return getSortedSections().map((section) => {
-              const sectionType = section.id;
-              
-              switch (sectionType) {
-                case 'userCard':
-                  return <View key={sectionType}>{renderUserCard()}</View>;
-                case 'phoneUsage':
-                  return <View key={sectionType}>{renderPhoneUsage()}</View>;
-                case 'activeGoals':
-                case 'activeHabits':
-                case 'activeTodos':
-                case 'activeReminders':
-                  // Render carousel only once when we encounter the first carousel section
-                  if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
-                    carouselRendered = true;
-                    return (
-                      <View key="carousel-group">
-                        <ScrollView
-                          horizontal
-                          pagingEnabled
-                          showsHorizontalScrollIndicator={false}
-                          nestedScrollEnabled={true}
-                          onScroll={(event) => {
-                            const offsetX = event.nativeEvent.contentOffset.x;
-                            const newIndex = Math.round(offsetX / screenWidth);
-                            if (newIndex !== currentCarouselIndex) {
-                              setCurrentCarouselIndex(newIndex);
-                            }
-                          }}
-                          scrollEventThrottle={16}
-                          style={styles.carousel}
-                        >
-                          {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
-                          {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
-                          {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
-                          {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
-                        </ScrollView>
+            switch (sectionType) {
+              case 'userCard':
+                return <View key={sectionType}>{renderUserCard()}</View>;
+              case 'phoneUsage':
+                return <View key={sectionType}>{renderPhoneUsage()}</View>;
+              case 'activeGoals':
+              case 'activeHabits':
+              case 'activeTodos':
+              case 'activeReminders':
+                // Render carousel only once when we encounter the first carousel section
+                if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
+                  carouselRendered = true;
+                  return (
+                    <View key="carousel-group">
+                      <ScrollView
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        nestedScrollEnabled={true}
+                        onScroll={(event) => {
+                          const offsetX = event.nativeEvent.contentOffset.x;
+                          const newIndex = Math.round(offsetX / screenWidth);
+                          if (newIndex !== currentCarouselIndex) {
+                            setCurrentCarouselIndex(newIndex);
+                          }
+                        }}
+                        scrollEventThrottle={16}
+                        style={styles.carousel}
+                      >
+                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
+                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
+                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
+                      </ScrollView>
 
-                        {carouselSections.length > 1 && (
-                          <View style={styles.carouselIndicator}>
-                            {carouselSections.map((_, index: number) => (
-                              <View
-                                key={index}
-                                style={[
-                                  styles.indicatorDot,
-                                  currentCarouselIndex === index && styles.indicatorDotActive,
-                                ]}
-                              />
-                            ))}
-                          </View>
-                        )}
-                      </View>
-                    );
-                  }
-                  // Skip other carousel sections since they're rendered in the carousel above
-                  return null;
-                default:
-                  return null;
-              }
-            }).filter(Boolean); // Remove null entries
-          })()}
+                      {carouselSections.length > 1 && (
+                        <View style={styles.carouselIndicator}>
+                          {carouselSections.map((_, index: number) => (
+                            <View
+                              key={index}
+                              style={[
+                                styles.indicatorDot,
+                                currentCarouselIndex === index && styles.indicatorDotActive,
+                              ]}
+                            />
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  );
+                }
+                // Skip other carousel sections since they're rendered in the carousel above
+                return null;
+              default:
+                return null;
+            }
+          }).filter(Boolean); // Remove null entries
+        })()}
 
-          <View style={styles.bottomSpacer} />
-        </ScrollView>
-      ) : (
-        <ScrollView 
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          bounces={true}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          <View style={styles.topTapHintContainer}>
-            <Text style={styles.topTapHintText}>Your completed items</Text>
-          </View>
-          
-          {/* History content */}
-          {renderHistoryContent()}
-          
-          <View style={styles.bottomSpacer} />
-        </ScrollView>
-      )}
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
     </SafeAreaView>
   );
 };

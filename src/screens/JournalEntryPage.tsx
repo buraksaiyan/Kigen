@@ -311,6 +311,7 @@ const styles = StyleSheet.create({
   },
   draftButtonText: {
     fontSize: 18,
+    color: theme.colors.text.primary,
   },
   draftDeleteButton: {
     padding: theme.spacing.sm,
