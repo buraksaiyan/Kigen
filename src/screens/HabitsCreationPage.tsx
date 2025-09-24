@@ -22,6 +22,7 @@ interface Habit {
   frequency: 'daily' | 'weekly' | 'custom';
   customDays?: number[];
   targetDuration?: number; // in minutes
+  targetDays?: number; // target number of days for the habit
   reminderTime?: string;
   isActive: boolean;
   createdAt: string;
@@ -54,6 +55,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'custom'>('daily');
   const [customDays, setCustomDays] = useState<number[]>([]);
   const [targetDuration, setTargetDuration] = useState('');
+  const [targetDays, setTargetDays] = useState('21'); // Default to 21 days
   const [reminderTime, setReminderTime] = useState('');
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedHour, setSelectedHour] = useState(9);
@@ -110,6 +112,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
         frequency,
         customDays: frequency === 'custom' ? customDays : undefined,
         targetDuration: targetDuration ? parseInt(targetDuration) : undefined,
+        targetDays: targetDays ? parseInt(targetDays) : 21,
         reminderTime: reminderTime || undefined,
         isActive: true,
         createdAt: new Date().toISOString(),
@@ -252,6 +255,18 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
               value={targetDuration}
               onChangeText={setTargetDuration}
               placeholder="e.g., 30"
+              placeholderTextColor={theme.colors.text.secondary}
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Target Days</Text>
+            <TextInput
+              style={styles.textInput}
+              value={targetDays}
+              onChangeText={setTargetDays}
+              placeholder="e.g., 21"
               placeholderTextColor={theme.colors.text.secondary}
               keyboardType="numeric"
             />

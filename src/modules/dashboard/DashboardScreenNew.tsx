@@ -60,6 +60,8 @@ interface ActiveHabit {
   title: string;
   streak: number;
   completedToday: boolean;
+  lastCompleted?: string;
+  targetDays?: number;
 }
 
 interface ActiveTodo {
@@ -113,9 +115,31 @@ export const DashboardScreen: React.FC = () => {
 
   const toggleHabitCompletion = async (habitId: string) => {
     try {
-      const updatedHabits = activeHabits.map(habit => 
-        habit.id === habitId ? { ...habit, completedToday: !habit.completedToday } : habit
-      );
+      const updatedHabits = activeHabits.map(habit => {
+        if (habit.id === habitId) {
+          const today = new Date().toDateString();
+          const wasCompletedToday = habit.lastCompleted === today;
+          
+          if (!wasCompletedToday) {
+            // First completion today - increase streak
+            return { 
+              ...habit, 
+              streak: habit.streak + 1,
+              lastCompleted: today,
+              completedToday: true
+            };
+          } else {
+            // Already completed today - decrease streak
+            return { 
+              ...habit, 
+              streak: Math.max(0, habit.streak - 1),
+              lastCompleted: undefined,
+              completedToday: false
+            };
+          }
+        }
+        return habit;
+      });
       setActiveHabits(updatedHabits);
       
       // Update in AsyncStorage
@@ -204,7 +228,9 @@ export const DashboardScreen: React.FC = () => {
             id: habit.id, 
             title: habit.title, 
             streak: habit.streak || 0,
-            completedToday: habit.lastCompleted === new Date().toDateString()
+            completedToday: habit.lastCompleted === new Date().toDateString(),
+            lastCompleted: habit.lastCompleted,
+            targetDays: habit.targetDays || 21 // Default to 21 days if not set
           }));
         setActiveHabits(activeHabitsData);
       }
@@ -594,7 +620,9 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.habitTitle}>{habit.title}</Text>
                 <View style={styles.habitStreak}>
                   <Icon name="local-fire-department" size={16} color="#FF6B35" />
-                  <Text style={styles.habitStreakText}>{habit.streak} days</Text>
+                  <Text style={styles.habitStreakText}>
+                    {habit.streak} of {habit.targetDays || 21} days
+                  </Text>
                 </View>
               </View>
             </View>
