@@ -480,8 +480,9 @@ export const DashboardScreen: React.FC = () => {
                   }
                 }}>
                   <Image
-                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url }}
                     style={styles.profileImage}
+                    defaultSource={require('../../../assets/images/profile-icon.png')}
                   />
                 </TouchableOpacity>
               </View>
@@ -932,8 +933,8 @@ const styles = StyleSheet.create({
     width: 28,
   },
   topBarLogo: {
-    height: 48,
-    width: 160,
+    height: 96,
+    width: 180,
     resizeMode: 'contain',
   },
 
