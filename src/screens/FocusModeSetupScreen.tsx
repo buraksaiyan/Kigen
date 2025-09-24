@@ -89,7 +89,6 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <View style={styles.contentHeader}>
-              <View style={[styles.modeIndicator, { backgroundColor: mode.color }]} />
               <Text style={[styles.title, { color: mode.color }]}>{mode.title}</Text>
               <Text style={styles.subtitle}>{mode.description}</Text>
             </View>
@@ -283,12 +282,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
-  },
-  modeIndicator: {
-    borderRadius: 2,
-    height: 40,
-    marginBottom: theme.spacing.md,
-    width: 4,
   },
   placeholder: {
     width: 60,
