@@ -133,6 +133,17 @@ export const DashboardScreen: React.FC = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
+  // Function to update rank in real-time based on current monthly stats
+  const updateRankInRealTime = async () => {
+    try {
+      const monthlyRating = await UserStatsService.getCurrentRating();
+      setUserRank(monthlyRating.cardTier);
+      console.log('🎖️ Rank updated to:', monthlyRating.cardTier, 'with', monthlyRating.totalPoints, 'points');
+    } catch (error) {
+      console.error('Error updating rank:', error);
+    }
+  };
+
   const toggleTodoCompletion = async (todoId: string) => {
     try {
       const todoToToggle = activeTodos.find(todo => todo.id === todoId);
@@ -172,6 +183,9 @@ export const DashboardScreen: React.FC = () => {
       console.error('Error updating todo:', error);
       Alert.alert('Error', 'Failed to update todo');
     }
+
+    // Update rank in real-time after todo changes
+    await updateRankInRealTime();
   };
 
   const toggleHabitCompletion = async (habitId: string) => {
@@ -244,6 +258,9 @@ export const DashboardScreen: React.FC = () => {
         setActiveHabits(updatedHabits);
         await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
       }
+
+      // Update rank in real-time after habit changes
+      await updateRankInRealTime();
     } catch (error) {
       console.error('Error updating habit:', error);
       Alert.alert('Error', 'Failed to update habit');
@@ -338,6 +355,9 @@ export const DashboardScreen: React.FC = () => {
       await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
       
       Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
+
+      // Update rank in real-time after goal completion
+      await updateRankInRealTime();
     } catch (error) {
       console.error('Error completing goal:', error);
       Alert.alert('Error', 'Failed to complete goal');
