@@ -54,8 +54,8 @@ export const RatingsScreen: React.FC = () => {
   const createUserProfile = async () => {
     return new Promise<any>((resolve) => {
       Alert.prompt(
-        'Welcome to Kigen!',
-        'Enter your username to create your fighter card:',
+        'Welcome to the zone.',
+        'Enter your username to create your user card:',
         [
           {
             text: 'Cancel',

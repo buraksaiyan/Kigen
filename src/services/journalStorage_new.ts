@@ -7,7 +7,7 @@ export interface JournalEntry {
   date: string; // ISO date string
 }
 
-const STORAGE_KEY = '@kigen_journal_entries';
+const STORAGE_KEY = '@inzone_journal_entries';
 
 export const journalStorage = {
   // Get all journal entries

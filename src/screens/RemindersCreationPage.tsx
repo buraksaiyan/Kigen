@@ -14,7 +14,7 @@ import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
-const REMINDERS_STORAGE_KEY = '@kigen_reminders';
+const REMINDERS_STORAGE_KEY = '@inzone_reminders';
 
 interface Reminder {
   id: string;

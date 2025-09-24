@@ -5,7 +5,7 @@ import { theme } from '../src/config/theme';
 export default function SimpleTest() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🎉 Kigen Works!</Text>
+      <Text style={styles.title}>🎉 inzone Works!</Text>
       <Text style={styles.description}>
         Your React Native app is running successfully in the browser!{'\n'}
         This means the foundation is solid and ready for development.

@@ -6,11 +6,11 @@ export async function clearOldFocusData(): Promise<void> {
     console.log('🧹 Clearing old focus session data to prevent duplicate keys...');
     
     // Clear old focus sessions that might have duplicate timestamp keys
-    await AsyncStorage.removeItem('@kigen_focus_sessions');
-    await AsyncStorage.removeItem('@kigen_session_stats');
-    await AsyncStorage.removeItem('@kigen_daily_points');
-    await AsyncStorage.removeItem('@kigen_current_session');
-    await AsyncStorage.removeItem('@kigen_last_session_date');
+    await AsyncStorage.removeItem('@inzone_focus_sessions');
+    await AsyncStorage.removeItem('@inzone_session_stats');
+    await AsyncStorage.removeItem('@inzone_daily_points');
+    await AsyncStorage.removeItem('@inzone_current_session');
+    await AsyncStorage.removeItem('@inzone_last_session_date');
     
     console.log('✅ Old focus session data cleared successfully');
   } catch (error) {
@@ -25,11 +25,11 @@ export async function clearAllOldData(): Promise<void> {
     // Get all keys
     const allKeys = await AsyncStorage.getAllKeys();
     const keysToKeep = [
-      '@kigen_user_profile',
-      '@kigen_user_stats', 
-      '@kigen_monthly_records',
-      '@kigen_daily_activity',
-      '@kigen_goals', // Keep goals data
+      '@inzone_user_profile',
+      '@inzone_user_stats', 
+      '@inzone_monthly_records',
+      '@inzone_daily_activity',
+      '@inzone_goals', // Keep goals data
       'usage_permission_granted',
       'hasUsagePermission'
     ];

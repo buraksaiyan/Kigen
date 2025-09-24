@@ -96,7 +96,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'goals_1000', category: 'completed_goals', title: 'Infinite Champion', description: '1000 goals - infinite champion', emoji: '♾️', requirement: 1000 },
 ];
 
-const STORAGE_KEY = '@kigen_achievements';
+const STORAGE_KEY = '@inzone_achievements';
 
 class AchievementService {
   // Initialize achievements with default state

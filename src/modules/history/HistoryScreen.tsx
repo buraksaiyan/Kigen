@@ -87,7 +87,7 @@ export const HistoryScreen: React.FC = () => {
       });
 
       // Load goal completion data from AsyncStorage
-      const goalsData = await AsyncStorage.getItem('@kigen_goals');
+      const goalsData = await AsyncStorage.getItem('@inzone_goals');
       const goalItems: HistoryItem[] = [];
       if (goalsData) {
         const goals = JSON.parse(goalsData);
@@ -114,7 +114,7 @@ export const HistoryScreen: React.FC = () => {
       }
 
       // Load habits data from AsyncStorage
-      const habitsData = await AsyncStorage.getItem('@kigen_habits');
+      const habitsData = await AsyncStorage.getItem('@inzone_habits');
       const habitItems: HistoryItem[] = [];
       if (habitsData) {
         const habits = JSON.parse(habitsData);
@@ -162,7 +162,7 @@ export const HistoryScreen: React.FC = () => {
       }
 
       // Load todos data from AsyncStorage
-      const todosData = await AsyncStorage.getItem('@kigen_todos');
+      const todosData = await AsyncStorage.getItem('@inzone_todos');
       const todoItems: HistoryItem[] = [];
       if (todosData) {
         const todos = JSON.parse(todosData);

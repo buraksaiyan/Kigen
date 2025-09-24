@@ -33,7 +33,7 @@ Notifications.setNotificationHandler({
 });
 
 class BackgroundTimerService {
-  private static STORAGE_KEY = '@kigen_background_timer';
+  private static STORAGE_KEY = '@inzone_background_timer';
 
   // Register background task (only works in development builds, not Expo Go)
   static async registerBackgroundTask() {

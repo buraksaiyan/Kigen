@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 import { Card } from '../components/UI';
 
-const GOALS_STORAGE_KEY = '@kigen_goals';
+const GOALS_STORAGE_KEY = '@inzone_goals';
 
 interface Goal {
   id: string;

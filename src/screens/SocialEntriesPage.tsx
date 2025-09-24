@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 
-const SOCIAL_ENTRIES_STORAGE_KEY = '@kigen_social_entries';
+const SOCIAL_ENTRIES_STORAGE_KEY = '@inzone_social_entries';
 
 type SocialActivity = 'outside' | 'with_friends';
 type TimeSpent = '15min' | '30min' | '1hour' | '2hours' | '3hours' | 'halfday' | 'fullday';

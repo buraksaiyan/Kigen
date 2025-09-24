@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
-const HABITS_STORAGE_KEY = '@kigen_habits';
+const HABITS_STORAGE_KEY = '@inzone_habits';
 
 interface Habit {
   id: string;

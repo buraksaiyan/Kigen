@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Kigen",
-    "slug": "kigen",
-    "scheme": "kigen",
+    "name": "inzone",
+    "slug": "inzone",
+    "scheme": "inzone",
     "version": "0.1.0-beta.1",
     "orientation": "portrait",
-    "icon": "./assets/images/kigen-newlogo.png",
+    "icon": "./assets/images/inzone-logo.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/images/kigen-newlogo.png",
+      "image": "./assets/images/inzone-logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#000F1A"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -31,13 +31,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kigen.app",
+      "bundleIdentifier": "com.inzone.app",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you upload profile pictures."
       }
     },
     "android": {
-      "package": "com.kigen.app",
+      "package": "com.inzone.app",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"

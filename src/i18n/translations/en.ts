@@ -23,7 +23,7 @@ export const en = {
     welcomeBack: 'Welcome Back',
     createYourAccount: 'Create your account',
     signInToYourAccount: 'Sign in to your account',
-    joinKigen: 'Join Kigen and start your digital wellbeing journey',
+    joinKigen: 'Join inzone and start your digital wellbeing journey',
     welcomeBackPleaseSignIn: 'Welcome back! Please sign in to continue',
     username: 'Username',
     email: 'Email Address',
@@ -153,7 +153,7 @@ export const en = {
 
   settings: {
     title: 'Settings',
-    customize: 'Customize your Kigen experience',
+    customize: 'Customize your inzone experience',
     soundsTitle: 'Sounds',
     timerTickSounds: 'Timer Tick Sounds',
     timerTickSoundsDesc: 'Play soft tick sounds as seconds count down during focus sessions',

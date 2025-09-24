@@ -277,7 +277,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             
             <View style={styles.settingRow}>
               <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>Kigen Focus App</Text>
+                <Text style={styles.settingTitle}>inzone Focus App</Text>
                 <Text style={styles.settingDescription}>
                   Version 1.0.0 - Focus modes with mindful productivity
                 </Text>

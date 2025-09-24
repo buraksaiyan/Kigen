@@ -39,11 +39,11 @@ interface SessionStats {
 }
 
 const STORAGE_KEYS = {
-  FOCUS_SESSIONS: '@kigen_focus_sessions',
-  SESSION_STATS: '@kigen_session_stats',
-  DAILY_POINTS: '@kigen_daily_points',
-  LAST_SESSION_DATE: '@kigen_last_session_date',
-  GOAL_COMPLETION_LOGS: '@kigen_goal_completion_logs',
+  FOCUS_SESSIONS: '@inzone_focus_sessions',
+  SESSION_STATS: '@inzone_session_stats',
+  DAILY_POINTS: '@inzone_daily_points',
+  LAST_SESSION_DATE: '@inzone_last_session_date',
+  GOAL_COMPLETION_LOGS: '@inzone_goal_completion_logs',
 };
 
 class FocusSessionService {
@@ -106,7 +106,7 @@ class FocusSessionService {
       };
 
       // Store the current session
-      await AsyncStorage.setItem('@kigen_current_session', JSON.stringify(session));
+      await AsyncStorage.setItem('@inzone_current_session', JSON.stringify(session));
       
       console.log('Focus session started:', session);
       return sessionId;
@@ -119,7 +119,7 @@ class FocusSessionService {
   // Complete a focus session
   async completeSession(sessionId: string, completed: boolean = true, completionType: 'completed' | 'early-finish' | 'aborted' = 'completed'): Promise<void> {
     try {
-      const currentSessionData = await AsyncStorage.getItem('@kigen_current_session');
+      const currentSessionData = await AsyncStorage.getItem('@inzone_current_session');
       if (!currentSessionData) {
         console.error('No current session found');
         return;
@@ -159,7 +159,7 @@ class FocusSessionService {
       }
 
       // Clear current session
-      await AsyncStorage.removeItem('@kigen_current_session');
+      await AsyncStorage.removeItem('@inzone_current_session');
     } catch (error) {
       console.error('Error completing focus session:', error);
       throw error;
@@ -176,7 +176,7 @@ class FocusSessionService {
   // Abort session (no points awarded)
   async abortSession(_sessionId: string): Promise<void> {
     try {
-      const currentSessionData = await AsyncStorage.getItem('@kigen_current_session');
+      const currentSessionData = await AsyncStorage.getItem('@inzone_current_session');
       if (!currentSessionData) {
         console.error('No current session found');
         return;
@@ -204,7 +204,7 @@ class FocusSessionService {
       console.log(`Focus session aborted: ${actualMinutes} minutes, no points earned`);
 
       // Clear current session
-      await AsyncStorage.removeItem('@kigen_current_session');
+      await AsyncStorage.removeItem('@inzone_current_session');
     } catch (error) {
       console.error('Error aborting focus session:', error);
       throw error;
@@ -393,7 +393,7 @@ class FocusSessionService {
   // Get current active session
   async getCurrentSession(): Promise<FocusSession | null> {
     try {
-      const sessionData = await AsyncStorage.getItem('@kigen_current_session');
+      const sessionData = await AsyncStorage.getItem('@inzone_current_session');
       return sessionData ? JSON.parse(sessionData) : null;
     } catch (error) {
       console.error('Error getting current session:', error);
@@ -404,7 +404,7 @@ class FocusSessionService {
   // Cancel current session
   async cancelSession(): Promise<void> {
     try {
-      await AsyncStorage.removeItem('@kigen_current_session');
+      await AsyncStorage.removeItem('@inzone_current_session');
       console.log('Focus session cancelled');
     } catch (error) {
       console.error('Error cancelling session:', error);
@@ -412,8 +412,8 @@ class FocusSessionService {
     }
   }
 
-  // Get focus session logs formatted for Kigen Stats display
-  async getKigenStatsLogs(limit: number = 50): Promise<Array<{
+  // Get focus session logs formatted for inzone Stats display
+  async getInzoneStatsLogs(limit: number = 50): Promise<Array<{
     id: string;
     action: string;
     points: string;
@@ -440,7 +440,7 @@ class FocusSessionService {
         };
       }).filter(log => log.points !== '0'); // Only show logs where points were earned
     } catch (error) {
-      console.error('Error getting Kigen stats logs:', error);
+      console.error('Error getting inzone stats logs:', error);
       return [];
     }
   }
@@ -598,7 +598,7 @@ class FocusSessionService {
       return [];
     }
   }
-  async getCombinedKigenStatsLogs(limit: number = 50): Promise<Array<{
+  async getCombinedInzoneStatsLogs(limit: number = 50): Promise<Array<{
     id: string;
     action: string;
     points: string;
@@ -607,7 +607,7 @@ class FocusSessionService {
   }>> {
     try {
       const [focusLogs, goalLogs, journalLogs] = await Promise.all([
-        this.getKigenStatsLogs(limit),
+        this.getInzoneStatsLogs(limit),
         this.getGoalCompletionLogs(limit),
         this.getJournalLogs(limit)
       ]);
@@ -643,7 +643,7 @@ class FocusSessionService {
       console.log('📊 Final combined logs count:', result.length);
       return result;
     } catch (error) {
-      console.error('Error getting combined Kigen stats logs:', error);
+      console.error('Error getting combined inzone stats logs:', error);
       return [];
     }
   }

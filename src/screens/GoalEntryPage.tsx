@@ -23,7 +23,7 @@ interface Goal {
   failedAt?: string;
 }
 
-const GOALS_STORAGE_KEY = '@kigen_goals';
+const GOALS_STORAGE_KEY = '@inzone_goals';
 
 interface GoalEntryPageProps {
   visible?: boolean;

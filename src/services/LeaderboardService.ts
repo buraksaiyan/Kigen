@@ -25,8 +25,8 @@ interface UserLeaderboardData {
 }
 
 class LeaderboardService {
-  private static readonly STORAGE_KEY = '@kigen_leaderboard_cache';
-  private static readonly USER_DATA_KEY = '@kigen_user_leaderboard_data';
+  private static readonly STORAGE_KEY = '@inzone_leaderboard_cache';
+  private static readonly USER_DATA_KEY = '@inzone_user_leaderboard_data';
 
   // Get cached leaderboard data
   static async getCachedLeaderboard(): Promise<LeaderboardEntry[]> {

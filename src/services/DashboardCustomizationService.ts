@@ -25,7 +25,7 @@ export interface DashboardLayout {
 }
 
 export class DashboardCustomizationService {
-  private static DASHBOARD_LAYOUT_KEY = '@kigen_dashboard_layout';
+  private static DASHBOARD_LAYOUT_KEY = '@inzone_dashboard_layout';
   
   // Default dashboard configuration
   private static DEFAULT_SECTIONS: DashboardSection[] = [

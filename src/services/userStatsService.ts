@@ -42,10 +42,10 @@ interface DailyActivity {
 }
 
 export class UserStatsService {
-  private static USER_PROFILE_KEY = '@kigen_user_profile';
-  private static USER_STATS_KEY = '@kigen_user_stats';
-  private static MONTHLY_RECORDS_KEY = '@kigen_monthly_records';
-  private static DAILY_ACTIVITY_KEY = '@kigen_daily_activity';
+  private static USER_PROFILE_KEY = '@inzone_user_profile';
+  private static USER_STATS_KEY = '@inzone_user_stats';
+  private static MONTHLY_RECORDS_KEY = '@inzone_monthly_records';
+  private static DAILY_ACTIVITY_KEY = '@inzone_daily_activity';
 
   // User Profile Management
   static async createUserProfile(username: string, profileImage?: string): Promise<UserProfile> {
@@ -344,7 +344,7 @@ export class UserStatsService {
   // Helper: count completed todo bullets from tasks storage (best-effort)
   static async getTotalCompletedTodoBullets(): Promise<number> {
     try {
-      const TASKS_STORAGE_KEY = '@kigen_tasks';
+      const TASKS_STORAGE_KEY = '@inzone_tasks';
       const data = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
       if (!data) return 0;
       const tasks = JSON.parse(data) as Array<{ completed?: boolean }>;
@@ -393,7 +393,7 @@ export class UserStatsService {
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
     const currentMonth = localDate.toISOString().slice(0, 7);
     const todayString = localDate.toISOString().slice(0, 10);
-    const lastUpdateKey = `@kigen_monthly_last_update_${currentMonth}`;
+    const lastUpdateKey = `@inzone_monthly_last_update_${currentMonth}`;
     const lastUpdate = await AsyncStorage.getItem(lastUpdateKey);
     
     // Only update if we haven't updated today
@@ -1029,18 +1029,18 @@ export class UserStatsService {
       // Get all keys
       const keys = await AsyncStorage.getAllKeys();
       
-      // Filter for Kigen-related keys but EXCLUDE important user data
-      const kigenKeys = keys.filter(key => 
-        (key.includes('@kigen') || 
+      // Filter for inzone-related keys but EXCLUDE important user data
+      const inzoneKeys = keys.filter(key => 
+        (key.includes('@inzone') || 
          key.includes('daily_activity') ||
          key.includes('monthly_records')) &&
         !key.includes('user_profile') && // Keep user profile (username, etc)
         !key.includes('goals') // Keep goals data
       );
       
-      // Remove selected Kigen data but preserve user profile and goals
-      await AsyncStorage.multiRemove(kigenKeys);
-      console.log('🗑️ Cleared Kigen stats data from AsyncStorage (preserved username and goals)');
+      // Remove selected inzone data but preserve user profile and goals
+      await AsyncStorage.multiRemove(inzoneKeys);
+      console.log('🗑️ Cleared inzone stats data from AsyncStorage (preserved username and goals)');
       
     } catch (error) {
       console.error('Error clearing data:', error);

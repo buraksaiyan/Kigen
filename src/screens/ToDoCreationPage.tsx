@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
-const TODOS_STORAGE_KEY = '@kigen_todos';
+const TODOS_STORAGE_KEY = '@inzone_todos';
 
 type Priority = 'low' | 'medium' | 'high' | 'urgent';
 

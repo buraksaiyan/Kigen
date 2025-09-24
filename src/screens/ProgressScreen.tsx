@@ -18,10 +18,10 @@ interface ProgressScreenProps {
 }
 
 export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose }) => {
-  const [currentView, setCurrentView] = useState<'focus-logs' | 'kigen-stats'>('focus-logs');
+  const [currentView, setCurrentView] = useState<'focus-logs' | 'inzone-stats'>('focus-logs');
   const [focusLogs, setFocusLogs] = useState<FocusSession[]>([]);
   const [, setSessionStats] = useState<SessionStats | null>(null);
-  const [kigenStats, setKigenStats] = useState<any[]>([]);
+  const [inzoneStats, setInzoneStats] = useState<any[]>([]);
   const [todaysSummary, setTodaysSummary] = useState<{
     sessions: number;
     minutes: number;
@@ -40,11 +40,11 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
   const loadData = async () => {
     setLoading(true);
     try {
-      const [logs, stats, summary, kigenLogs] = await Promise.all([
+      const [logs, stats, summary, inzoneLogs] = await Promise.all([
         focusSessionService.getFocusSessions(20), // Get last 20 sessions
         focusSessionService.getSessionStats(),
         focusSessionService.getTodaysSummary(),
-        focusSessionService.getCombinedKigenStatsLogs(20), // Get last 20 combined Kigen stats logs (focus + goals)
+        focusSessionService.getCombinedInzoneStatsLogs(20), // Get last 20 combined inzone stats logs (focus + goals)
       ]);
 
       console.log('📊 Loaded focus sessions for progress:', logs.length, 'sessions');
@@ -58,7 +58,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
       setFocusLogs(logs);
       setSessionStats(stats);
       setTodaysSummary(summary);
-      setKigenStats(kigenLogs);
+      setInzoneStats(inzoneLogs);
     } catch (error) {
       console.error('Error loading progress data:', error);
     } finally {
@@ -122,11 +122,11 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tab, currentView === 'kigen-stats' && styles.activeTab]}
-            onPress={() => setCurrentView('kigen-stats')}
+            style={[styles.tab, currentView === 'inzone-stats' && styles.activeTab]}
+            onPress={() => setCurrentView('inzone-stats')}
           >
-            <Text style={[styles.tabText, currentView === 'kigen-stats' && styles.activeTabText]}>
-              Kigen Stats
+            <Text style={[styles.tabText, currentView === 'inzone-stats' && styles.activeTabText]}>
+              inzone Stats
             </Text>
           </TouchableOpacity>
         </View>
@@ -226,13 +226,13 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
             ) : (
               <View>
                 <View style={styles.contentHeader}>
-                  <Text style={styles.title}>Kigen Stats Logs</Text>
+                  <Text style={styles.title}>inzone Stats Logs</Text>
                   <Text style={styles.subtitle}>Points gained and lost</Text>
                 </View>
 
                 <View style={styles.logsContainer}>
-                  {kigenStats.length > 0 ? (
-                    kigenStats.map((stat) => (
+                  {inzoneStats.length > 0 ? (
+                    inzoneStats.map((stat) => (
                       <Card key={stat.id} style={styles.logCard}>
                         <View style={styles.logHeader}>
                           <Text style={styles.logAction}>{stat.action}</Text>

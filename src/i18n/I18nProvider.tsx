@@ -15,7 +15,7 @@ interface I18nProviderProps {
   children: ReactNode;
 }
 
-const LANGUAGE_STORAGE_KEY = '@kigen_language';
+const LANGUAGE_STORAGE_KEY = '@inzone_language';
 
 export const I18nProvider: React.FC<I18nProviderProps> = ({ children }) => {
   const [language, setCurrentLanguage] = useState<Language>(DEFAULT_LANGUAGE);

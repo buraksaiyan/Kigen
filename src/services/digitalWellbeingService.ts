@@ -58,7 +58,7 @@ class DigitalWellbeingService {
     return new Promise((resolve, reject) => {
       Alert.alert(
         'Enable Usage Access',
-        'Kigen needs access to your app usage data to help you understand and manage your digital wellbeing.\n\nThis permission allows us to:\n• Show your daily screen time\n• Track app usage patterns\n• Help you set healthy digital habits\n\nYou can revoke this permission at any time in Settings.',
+        'inzone needs access to your app usage data to help you understand and manage your digital wellbeing.\n\nThis permission allows us to:\n• Show your daily screen time\n• Track app usage patterns\n• Help you set healthy digital habits\n\nYou can revoke this permission at any time in Settings.',
         [
           {
             text: 'Not Now',
@@ -281,7 +281,7 @@ class DigitalWellbeingService {
    */
   async getUsageNotificationSettings(): Promise<UsageNotificationSettings> {
     try {
-      const stored = await AsyncStorage.getItem('@kigen_usage_notification_settings');
+      const stored = await AsyncStorage.getItem('@inzone_usage_notification_settings');
       if (stored) {
         return JSON.parse(stored);
       }
@@ -324,7 +324,7 @@ class DigitalWellbeingService {
     try {
       const current = await this.getUsageNotificationSettings();
       const updated = { ...current, ...settings };
-      await AsyncStorage.setItem('@kigen_usage_notification_settings', JSON.stringify(updated));
+      await AsyncStorage.setItem('@inzone_usage_notification_settings', JSON.stringify(updated));
     } catch (error) {
       console.error('Error updating usage notification settings:', error);
     }

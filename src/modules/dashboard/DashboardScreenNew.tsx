@@ -105,7 +105,7 @@ export const DashboardScreen: React.FC = () => {
       setActiveTodos(updatedTodos);
       
       // Update in AsyncStorage
-      await AsyncStorage.setItem('@kigen_todos', JSON.stringify(updatedTodos));
+      await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedTodos));
     } catch (error) {
       console.error('Error updating todo:', error);
     }
@@ -119,7 +119,7 @@ export const DashboardScreen: React.FC = () => {
       setActiveHabits(updatedHabits);
       
       // Update in AsyncStorage
-      await AsyncStorage.setItem('@kigen_habits', JSON.stringify(updatedHabits));
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
     } catch (error) {
       console.error('Error updating habit:', error);
     }
@@ -133,7 +133,7 @@ export const DashboardScreen: React.FC = () => {
       setActiveGoals(updatedGoals);
       
       // Update in AsyncStorage
-      await AsyncStorage.setItem('@kigen_goals', JSON.stringify(updatedGoals));
+      await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedGoals));
     } catch (error) {
       console.error('Error completing goal:', error);
     }
@@ -147,7 +147,7 @@ export const DashboardScreen: React.FC = () => {
       setActiveGoals(updatedGoals);
       
       // Update in AsyncStorage
-      await AsyncStorage.setItem('@kigen_goals', JSON.stringify(updatedGoals));
+      await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedGoals));
     } catch (error) {
       console.error('Error failing goal:', error);
     }
@@ -183,7 +183,7 @@ export const DashboardScreen: React.FC = () => {
       setMonthlyStats(mappedMonthlyStats);
       setAllTimeStats(mappedMonthlyStats);
 
-      const goalsData = await AsyncStorage.getItem('@kigen_goals');
+      const goalsData = await AsyncStorage.getItem('@inzone_goals');
       if (goalsData) {
         const goals = JSON.parse(goalsData);
         const activeGoalsData = goals
@@ -194,7 +194,7 @@ export const DashboardScreen: React.FC = () => {
       }
 
       // Load active habits
-      const habitsData = await AsyncStorage.getItem('@kigen_habits');
+      const habitsData = await AsyncStorage.getItem('@inzone_habits');
       if (habitsData) {
         const habits = JSON.parse(habitsData);
         const activeHabitsData = habits
@@ -210,7 +210,7 @@ export const DashboardScreen: React.FC = () => {
       }
 
       // Load active todos
-      const todosData = await AsyncStorage.getItem('@kigen_todos');
+      const todosData = await AsyncStorage.getItem('@inzone_todos');
       if (todosData) {
         const todos = JSON.parse(todosData);
         const activeTodosData = todos
@@ -221,7 +221,7 @@ export const DashboardScreen: React.FC = () => {
       }
 
       // Load active reminders
-      const remindersData = await AsyncStorage.getItem('@kigen_reminders');
+      const remindersData = await AsyncStorage.getItem('@inzone_reminders');
       if (remindersData) {
         const reminders = JSON.parse(remindersData);
         const activeRemindersData = reminders
@@ -244,9 +244,9 @@ export const DashboardScreen: React.FC = () => {
           if (userProfile.username) setDisplayName(userProfile.username);
         } else {
           // Fallback to legacy keys
-          const saved = await AsyncStorage.getItem('@kigen_profile_image');
+          const saved = await AsyncStorage.getItem('@inzone_profile_image');
           if (saved) setProfileImageUri(saved);
-          const savedName = await AsyncStorage.getItem('@kigen_profile_name');
+          const savedName = await AsyncStorage.getItem('@inzone_profile_name');
           if (savedName) setDisplayName(savedName);
         }
       } catch (e) {
@@ -390,7 +390,7 @@ export const DashboardScreen: React.FC = () => {
                         await UserStatsService.updateUserProfile({ profileImage: uri });
                       } catch {
                         // Fallback to AsyncStorage key if update fails
-                        await AsyncStorage.setItem('@kigen_profile_image', uri);
+                        await AsyncStorage.setItem('@inzone_profile_image', uri);
                       }
                       setProfileImageUri(uri);
                     }
@@ -471,7 +471,7 @@ export const DashboardScreen: React.FC = () => {
                       try {
                         await UserStatsService.updateUserProfile({ profileImage: uri });
                       } catch {
-                        await AsyncStorage.setItem('@kigen_profile_image', uri);
+                        await AsyncStorage.setItem('@inzone_profile_image', uri);
                       }
                       setProfileImageUri(uri);
                     }
@@ -786,8 +786,10 @@ export const DashboardScreen: React.FC = () => {
           {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
-        {/* center area left empty for app name (to be added later) */}
-        <View style={styles.topBarCenter} />
+        {/* center area with app logo */}
+        <View style={styles.topBarCenter}>
+          <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
+        </View>
       </View>
 
       {/* Small hint text between top bar and card - moved into scrollable content so it can scroll away */}
@@ -929,6 +931,12 @@ const styles = StyleSheet.create({
   },
   topBarCenter: {
     flex: 1,
+    alignItems: 'center',
+  },
+  topBarLogo: {
+    height: 32,
+    width: 100,
+    resizeMode: 'contain',
   },
 
   // Small tap hint between top bar and card

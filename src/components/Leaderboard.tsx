@@ -184,8 +184,8 @@ export const Leaderboard: React.FC = () => {
           </Text>
           <Text style={styles.headerSubtitle}>
             {activeTab === 'monthly' 
-              ? `Compete for this month's crown` 
-              : 'The greatest Kigen warriors of all time'
+              ? `Rule this month's zone` 
+              : 'The greatest ones in the zone'
             }
           </Text>
         </View>

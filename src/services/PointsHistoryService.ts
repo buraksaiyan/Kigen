@@ -65,10 +65,10 @@ export interface MonthlyPointsSummary {
 }
 
 export class PointsHistoryService {
-  private static POINTS_HISTORY_KEY = '@kigen_points_history';
-  private static DAILY_SUMMARIES_KEY = '@kigen_daily_summaries';
-  private static WEEKLY_SUMMARIES_KEY = '@kigen_weekly_summaries';
-  private static MONTHLY_SUMMARIES_KEY = '@kigen_monthly_summaries';
+  private static POINTS_HISTORY_KEY = '@inzone_points_history';
+  private static DAILY_SUMMARIES_KEY = '@inzone_daily_summaries';
+  private static WEEKLY_SUMMARIES_KEY = '@inzone_weekly_summaries';
+  private static MONTHLY_SUMMARIES_KEY = '@inzone_monthly_summaries';
 
   // Record a point earning event
   static async recordPoints(

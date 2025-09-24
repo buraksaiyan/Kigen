@@ -12,9 +12,9 @@ export const AsyncStorageDebug: React.FC = () => {
     setLoading(true);
     try {
       const keys = [
-        '@kigen_monthly_records',
-        '@kigen_daily_activity',
-        '@kigen_user_profile'
+        '@inzone_monthly_records',
+        '@inzone_daily_activity',
+        '@inzone_user_profile'
       ];
       
       const data: Record<string, unknown> = {};
@@ -30,7 +30,7 @@ export const AsyncStorageDebug: React.FC = () => {
 
       // Get specific date activities
       const today = new Date().toISOString().slice(0, 10);
-      const todayKey = `@kigen_daily_activity_${today}`;
+      const todayKey = `@inzone_daily_activity_${today}`;
       try {
         const todayValue = await AsyncStorage.getItem(todayKey);
         data[`TODAY (${today})`] = todayValue ? JSON.parse(todayValue) : null;
@@ -61,9 +61,9 @@ export const AsyncStorageDebug: React.FC = () => {
   const clearAllData = async () => {
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const kigenKeys = keys.filter(key => key.startsWith('@kigen'));
-      await AsyncStorage.multiRemove(kigenKeys);
-      alert(`Cleared ${kigenKeys.length} Kigen keys`);
+      const inzoneKeys = keys.filter(key => key.startsWith('@inzone'));
+      await AsyncStorage.multiRemove(inzoneKeys);
+      alert(`Cleared ${inzoneKeys.length} inzone keys`);
       loadAsyncStorageData();
     } catch (error) {
       alert(`Error clearing data: ${error}`);

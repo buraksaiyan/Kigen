@@ -30,7 +30,7 @@ interface TaskSectionProps {
   onClose: () => void;
 }
 
-const TASKS_STORAGE_KEY = '@kigen_tasks';
+const TASKS_STORAGE_KEY = '@inzone_tasks';
 
 export const TaskSection: React.FC<TaskSectionProps> = ({ isExpanded, onClose }) => {
   const [tasks, setTasks] = useState<Task[]>([]);

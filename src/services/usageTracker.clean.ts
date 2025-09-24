@@ -59,7 +59,7 @@ class UsageTracker {
     try {
       Alert.alert(
         'Usage Access Required',
-        'To track your screen time and app usage, please grant "Usage Access" permission in the next screen.\n\n1. Find "Kigen" in the list\n2. Toggle "Allow usage access" ON\n3. Return to the app',
+        'To track your screen time and app usage, please grant "Usage Access" permission in the next screen.\n\n1. Find "inzone" in the list\n2. Toggle "Allow usage access" ON\n3. Return to the app',
         [
           { text: 'Cancel', style: 'cancel' },
           { 

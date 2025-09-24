@@ -24,7 +24,7 @@ export const de = {
     welcomeBack: 'Willkommen zurück',
     createYourAccount: 'Erstelle dein Konto',
     signInToYourAccount: 'Melde dich bei deinem Konto an',
-    joinKigen: 'Tritt Kigen bei und beginne deine Reise zum digitalen Wohlbefinden',
+    joinKigen: 'Tritt inzone bei und beginne deine Reise zum digitalen Wohlbefinden',
     welcomeBackPleaseSignIn: 'Willkommen zurück! Bitte melde dich an, um fortzufahren',
     username: 'Benutzername',
     email: 'E-Mail-Adresse',
@@ -177,7 +177,7 @@ export const de = {
 
   settings: {
     title: 'Einstellungen',
-    customize: 'Passen Sie Ihr Kigen-Erlebnis an',
+    customize: 'Passen Sie Ihr inzone-Erlebnis an',
     soundsTitle: 'Töne',
     timerTickSounds: 'Timer-Tick-Töne',
     timerTickSoundsDesc: 'Spielen Sie sanfte Tick-Töne ab, während die Sekunden während der Fokussessions herunterzählen',

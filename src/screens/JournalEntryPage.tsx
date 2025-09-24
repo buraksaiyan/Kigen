@@ -16,7 +16,7 @@ import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { UserStatsService } from '../services/userStatsService';
 import { theme } from '../config/theme';
 
-const JOURNAL_DRAFTS_KEY = '@kigen_journal_drafts';
+const JOURNAL_DRAFTS_KEY = '@inzone_journal_drafts';
 
 interface JournalDraft {
   id: string;
