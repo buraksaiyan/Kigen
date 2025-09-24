@@ -81,6 +81,11 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
+  const getMinMonth = () => {
+    // Allow going back to January 2024 (or whenever the app started)
+    return '2024-01';
+  };
+
   const currentLeaderboard = activeTab === 'monthly' ? monthlyLeaderboard : lifetimeLeaderboard;
 
   return (
@@ -88,21 +93,24 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
       <SafeAreaView style={styles.container}>
         
-        {/* Tab Selection - Monthly vs All-Time */}
-        <View style={styles.tabContainer}>
+        {/* Top Bar with Monthly and All-Time buttons */}
+        <View style={styles.topBar}>
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'monthly' && styles.activeTab]}
+            style={[styles.topBarButton, activeTab === 'monthly' && styles.activeTopBarButton]}
             onPress={() => setActiveTab('monthly')}
           >
-            <Text style={[styles.tabText, activeTab === 'monthly' && styles.activeTabText]}>
+            <Text style={[styles.topBarButtonText, activeTab === 'monthly' && styles.activeTopBarButtonText]}>
               Monthly
             </Text>
           </TouchableOpacity>
+
+          <View style={styles.topBarDivider} />
+
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'lifetime' && styles.activeTab]}
+            style={[styles.topBarButton, activeTab === 'lifetime' && styles.activeTopBarButton]}
             onPress={() => setActiveTab('lifetime')}
           >
-            <Text style={[styles.tabText, activeTab === 'lifetime' && styles.activeTabText]}>
+            <Text style={[styles.topBarButtonText, activeTab === 'lifetime' && styles.activeTopBarButtonText]}>
               All-Time
             </Text>
           </TouchableOpacity>
@@ -110,21 +118,28 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
 
         {/* Month selector for monthly view */}
         {activeTab === 'monthly' && (
-          <View style={styles.monthSelector}>
-            <TouchableOpacity 
-              style={styles.monthNavButtonInline}
+          <View style={styles.monthSelectorContainer}>
+            <TouchableOpacity
+              style={[styles.monthNavButton, selectedMonth === getMinMonth() && styles.monthNavButtonDisabled]}
               onPress={() => {
                 const currentDate = new Date(selectedMonth + '-01');
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 const newMonth = currentDate.toISOString().slice(0, 7);
-                setSelectedMonth(newMonth);
+                if (newMonth >= getMinMonth()) {
+                  setSelectedMonth(newMonth);
+                }
               }}
+              disabled={selectedMonth === getMinMonth()}
             >
-              <Text style={styles.monthNavText}>‹</Text>
+              <Text style={[styles.monthNavButtonText, selectedMonth === getMinMonth() && styles.monthNavButtonTextDisabled]}>‹</Text>
             </TouchableOpacity>
-            <Text style={styles.monthText}>{formatMonthYear(selectedMonth)}</Text>
-            <TouchableOpacity 
-              style={[styles.monthNavButtonInline, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
+
+            <View style={styles.monthDisplay}>
+              <Text style={styles.monthDisplayText}>{formatMonthYear(selectedMonth)}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.monthNavButton, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
               onPress={() => {
                 const currentDate = new Date(selectedMonth + '-01');
                 currentDate.setMonth(currentDate.getMonth() + 1);
@@ -136,7 +151,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
               }}
               disabled={selectedMonth >= new Date().toISOString().slice(0, 7)}
             >
-              <Text style={[styles.monthNavText, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavTextDisabled]}>›</Text>
+              <Text style={[styles.monthNavButtonText, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonTextDisabled]}>›</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -203,6 +218,12 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: theme.colors.text.primary,
   },
+  activeTopBarButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  activeTopBarButtonText: {
+    color: theme.colors.text.primary,
+  },
   container: {
     backgroundColor: theme.colors.background,
     flex: 1,
@@ -233,41 +254,50 @@ const styles = StyleSheet.create({
   },
   monthNavButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
     justifyContent: 'center',
-    marginHorizontal: theme.spacing.md,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    width: 40,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    width: 48,
   },
   monthNavButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: theme.colors.surface,
     opacity: 0.5,
   },
-  monthNavButtonInline: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: theme.borderRadius.md,
-    justifyContent: 'center',
-    marginHorizontal: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.xs,
-    paddingVertical: theme.spacing.xs,
-    width: 32,
-  },
-  monthNavText: {
+  monthNavButtonText: {
     color: theme.colors.text.primary,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '600',
   },
-  monthNavTextDisabled: {
+  monthNavButtonTextDisabled: {
     color: theme.colors.text.tertiary,
+  },
+  monthDisplay: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  monthDisplayText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
   },
   monthSelector: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: theme.spacing.md,
+  },
+  monthSelectorContainer: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   monthText: {
     ...theme.typography.h4,
@@ -334,6 +364,27 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '600',
     textTransform: 'uppercase',
+  },
+  topBar: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+  },
+  topBarButton: {
+    alignItems: 'center',
+    flex: 1,
+    paddingVertical: theme.spacing.md,
+  },
+  topBarButtonText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
+  },
+  topBarDivider: {
+    backgroundColor: theme.colors.border,
+    width: 1,
   },
   userInfo: {
     flex: 1,
