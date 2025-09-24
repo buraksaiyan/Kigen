@@ -933,8 +933,8 @@ const styles = StyleSheet.create({
     width: 28,
   },
   topBarLogo: {
-    height: 96,
-    width: 180,
+    height: 128,
+    width: 200,
     resizeMode: 'contain',
   },
 
