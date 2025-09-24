@@ -1132,11 +1132,9 @@ export const DashboardScreen: React.FC = () => {
                         {entry.content}
                       </Text>
                     </View>
-                    <Icon 
-                      name={isExpanded ? "expand-less" : "expand-more"} 
-                      size={24} 
-                      color={theme.colors.text.secondary} 
-                    />
+                    <Text style={styles.expandIcon}>
+                      {isExpanded ? '▲' : '▼'}
+                    </Text>
                   </TouchableOpacity>
                 );
               })}
@@ -1893,5 +1891,10 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
     fontSize: 14,
     marginTop: 8,
+  },
+  expandIcon: {
+    fontSize: 16,
+    color: theme.colors.text.secondary,
+    fontWeight: 'bold',
   },
 });

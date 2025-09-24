@@ -197,7 +197,7 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
             onPress={() => setShowDraftMenu(!showDraftMenu)}
             style={styles.draftButton}
           >
-            <Text style={styles.draftButtonText}>📝</Text>
+            <Text style={styles.draftButtonText}>Drafts</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={saveEntry}
@@ -217,7 +217,7 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
             <Text style={styles.draftMenuTitle}>Drafts & Actions</Text>
           </View>
           <TouchableOpacity onPress={() => { saveAsDraft(); setShowDraftMenu(false); }} style={styles.draftMenuItem}>
-            <Text style={styles.draftMenuItemText}>💾 Save as Draft</Text>
+            <Text style={styles.draftMenuItemText}>Save as Draft</Text>
           </TouchableOpacity>
           {drafts.length > 0 && (
             <>
@@ -267,7 +267,7 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
             Words: {content.trim().split(/\s+/).filter(word => word.length > 0).length}
           </Text>
           {currentDraftId && (
-            <Text style={styles.draftIndicator}>📝 Auto-saving as draft</Text>
+            <Text style={styles.draftIndicator}>Auto-saving as draft</Text>
           )}
         </View>
       </ScrollView>
