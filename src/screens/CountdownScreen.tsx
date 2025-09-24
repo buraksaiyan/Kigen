@@ -754,13 +754,13 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             <View style={styles.controlButton} />
             
             <TouchableOpacity
-              style={[styles.controlButton, { backgroundColor: '#22C55E', borderRadius: 25 }]}
+              style={[styles.controlButton, styles.continueButton, { backgroundColor: '#22C55E', borderRadius: 25 }]}
               onPress={handleContinueFromBreak}
               activeOpacity={0.6}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>
-                Continue Focus
+                Continue
               </Text>
             </TouchableOpacity>
 
@@ -921,7 +921,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]} numberOfLines={1}>Early Finish</Text>
+            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]} numberOfLines={1}>Finish</Text>
           </TouchableOpacity>
         </View>
 
@@ -947,6 +947,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.overlayLight,
     borderColor: theme.colors.border,
     borderWidth: 1,
+  },
+  continueButton: {
+    minWidth: 160,
+    paddingVertical: theme.spacing.sm,
   },
   // New circular timer styles
   circularTimerContainer: {
