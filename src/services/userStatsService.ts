@@ -1141,8 +1141,23 @@ export class UserStatsService {
 
   private static async getAllDailyActivities(): Promise<DailyActivity[]> {
     try {
-      const data = await AsyncStorage.getItem(this.DAILY_ACTIVITY_KEY);
-      return data ? JSON.parse(data) : [];
+      const keys = await AsyncStorage.getAllKeys();
+      const activityKeys = keys.filter(key => key.startsWith(`${this.DAILY_ACTIVITY_KEY}_`));
+      
+      const activities: DailyActivity[] = [];
+      for (const key of activityKeys) {
+        try {
+          const data = await AsyncStorage.getItem(key);
+          if (data) {
+            const activity: DailyActivity = JSON.parse(data);
+            activities.push(activity);
+          }
+        } catch (error) {
+          console.error('Error parsing daily activity:', error);
+        }
+      }
+      
+      return activities;
     } catch (error) {
       console.error('Error getting daily activities:', error);
       return [];
