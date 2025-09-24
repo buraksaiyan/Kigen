@@ -322,6 +322,12 @@ const styles = StyleSheet.create({
   contentHeader: {
     alignItems: 'center',
     marginBottom: theme.spacing.xl,
+    // Ensure the header sits above any underlying elements and masks
+    // tiny stray artifacts (e.g. native caret/underline bleed-through).
+    backgroundColor: theme.colors.background,
+    zIndex: 10,
+    paddingTop: theme.spacing.sm,
+    overflow: 'hidden',
   },
   modalHeader: {
     alignItems: 'center',
