@@ -413,10 +413,10 @@ export const DashboardScreen: React.FC = () => {
         focus: monthlyRating.stats.FOC,
         journaling: monthlyRating.stats.JOU,
         determination: monthlyRating.stats.DET,
-        productivity: monthlyRating.stats.MEN,
+        productivity: monthlyRating.stats.PRD || 0,
         mental: monthlyRating.stats.MEN,
         physical: monthlyRating.stats.PHY,
-        social: monthlyRating.stats.DET,
+        social: monthlyRating.stats.SOC || 0,
         overallRating: monthlyRating.overallRating,
       };
       setMonthlyStats(mappedMonthlyStats);

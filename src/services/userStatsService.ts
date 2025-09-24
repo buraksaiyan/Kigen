@@ -570,15 +570,13 @@ export class UserStatsService {
           break;
       }
 
-      // Calculate and record points for focus session
-      const points = 5; // Base 5 points per completed session
-      const bonusPoints = Math.floor(minutes / 15); // Bonus 1 point per 15 minutes
-      const totalPoints = points + bonusPoints;
+      // Calculate and record points for focus session - matches discipline calculation
+      const points = 5; // 5 points per completed session (discipline)
       
       await PointsHistoryService.recordPoints(
         'focus_session',
-        totalPoints,
-        'FOC',
+        points,
+        'DIS',
         `${type} focus session completed (${minutes} min)`,
         { sessionDuration: minutes, taskTitle: `${type} session` }
       );
@@ -611,8 +609,8 @@ export class UserStatsService {
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
 
-    // Calculate points for journal entry
-    const points = RatingSystem.calculateJournalingPoints(1);
+    // Calculate points for journal entry - matches discipline calculation
+    const points = 5; // 5 points per journal entry (discipline)
     
     // Record points in history
     await PointsHistoryService.recordPoints(
@@ -678,7 +676,7 @@ export class UserStatsService {
     await this.saveDailyActivity(today);
     
     // Calculate points for todo completion
-    const points = 3; // Base points per todo completion
+    const points = 5; // 5 points per todo completion (determination)
     
     // Record points in history
     await PointsHistoryService.recordPoints(
