@@ -83,9 +83,13 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       await AsyncStorage.setItem(SOCIAL_ENTRIES_STORAGE_KEY, JSON.stringify(trimmedEntries));
 
       // Record points and time for social activity
-      const minutesSpent = timeSpentConfig[timeSpent].minutes;
-      await UserStatsService.recordSocialInteraction(activity, 5); // 5 is a default mood rating
-      await UserStatsService.updatePhoneUsage(0, minutesSpent); // Record time as social media minutes for points calculation
+      const hoursSpent = timeSpentConfig[timeSpent].minutes / 60;
+      
+      if (activity === 'outside') {
+        await UserStatsService.recordTimeSpentOutside(hoursSpent);
+      } else if (activity === 'with_friends') {
+        await UserStatsService.recordTimeSpentWithFriends(hoursSpent);
+      }
 
       // Clear form
       setActivity('outside');

@@ -123,27 +123,35 @@ export class RatingSystem {
     points += Math.ceil(executionHours) * 10;
     points += Math.ceil(bodyFocusHours) * 10;
     
-    // -5 pts per aborted focus session
-    points -= abortedSessions * 5;
-    
-    // social-media based penalties were removed; social is tracked as its own stat (SOC)
+    // Aborted session penalty removed
     
     return Math.max(0, points);
   }
 
-  // Calculate social points (SOC). Positive metric representing healthy social interactions.
-  // Simple scale: +5 points per 10 minutes of social activity.
-  static calculateSocialPoints(socialMediaMinutes: number): number {
-    if (!socialMediaMinutes || socialMediaMinutes <= 0) return 0;
-    return Math.floor(socialMediaMinutes / 10) * 5;
+  // Calculate social points (SOC). Manual entries for healthy social activities.
+  // +15 points per hour spent outside
+  // +20 points per hour spent with friends
+  static calculateSocialPoints(hoursOutside: number = 0, hoursWithFriends: number = 0): number {
+    let points = 0;
+    points += hoursOutside * 15;
+    points += hoursWithFriends * 20;
+    return Math.max(0, Math.round(points));
   }
 
-  // Calculate productivity points (PRD) from execution and body focus minutes.
-  // We award 15 points per productive hour (rounded up).
-  static calculateProductivityPoints(executionMinutes: number, bodyFocusMinutes: number): number {
-    const totalMinutes = (executionMinutes || 0) + (bodyFocusMinutes || 0);
-    const hours = Math.ceil(totalMinutes / 60);
-    return hours * 15;
+  // Calculate productivity points (PRD) from goals, journals, and focus sessions.
+  // +10 points per goal completion
+  // +10 points per journal entry
+  // +5 points per hour of focus sessions (builds up, doesn't have to be full session)
+  static calculateProductivityPoints(
+    totalGoalsCompleted: number,
+    totalJournalEntries: number,
+    totalFocusMinutes: number
+  ): number {
+    let points = 0;
+    points += totalGoalsCompleted * 10;
+    points += totalJournalEntries * 10;
+    points += Math.ceil(totalFocusMinutes / 60) * 5; // +5 per hour of focus sessions
+    return Math.max(0, Math.round(points));
   }
 
   // Calculate focus points

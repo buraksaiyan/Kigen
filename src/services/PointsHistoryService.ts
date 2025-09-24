@@ -9,6 +9,8 @@ export type PointSource =
   | 'todo_completed' 
   | 'todo_created'
   | 'social_interaction' 
+  | 'time_outside'
+  | 'time_with_friends'
   | 'habit_streak'
   | 'achievement_unlocked'
   | 'daily_bonus'
@@ -32,6 +34,8 @@ export interface PointHistoryEntry {
     achievementId?: string;
     streakCount?: number;
     moodRating?: number;
+    hoursSpent?: number;
+    activityType?: string;
   };
 }
 

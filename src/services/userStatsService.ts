@@ -208,8 +208,8 @@ export class UserStatsService {
         ),
         MEN: RatingSystem.calculateMentalityPoints(meditationMinutes),
         PHY: RatingSystem.calculatePhysicalPoints(bodyFocusMinutes),
-        SOC: RatingSystem.calculateSocialPoints(today.socialMediaMinutes),
-        PRD: RatingSystem.calculateProductivityPoints(executionMinutes, bodyFocusMinutes)
+        SOC: RatingSystem.calculateSocialPoints(),
+        PRD: RatingSystem.calculateProductivityPoints(today.completedGoals, today.journalEntries, totalFocusMinutes)
       };
 
       return stats;
@@ -285,8 +285,8 @@ export class UserStatsService {
       // Calculate stats using aggregated monthly data
       const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
 
-      const productivityPoints = RatingSystem.calculateProductivityPoints(totalFocusMinutes.executioner, totalFocusMinutes.body);
-      const socialPoints = RatingSystem.calculateSocialPoints(totalSocialMediaMinutes);
+      const productivityPoints = RatingSystem.calculateProductivityPoints(totalCompletedGoals, totalJournalEntries, totalAllFocusMinutes);
+      const socialPoints = RatingSystem.calculateSocialPoints();
 
       totalStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
@@ -570,13 +570,15 @@ export class UserStatsService {
           break;
       }
 
-      // Calculate and record points for focus session - matches discipline calculation
-      const points = 5; // 5 points per completed session (discipline)
+      // Calculate and record points for focus session - matches determination and productivity calculations
+      const sessionPoints = 5; // 5 points per session (determination: per 10 sessions = 50 points)
+      const hourlyPoints = Math.ceil(minutes / 60) * 5; // 5 points per hour (productivity)
+      const totalPoints = sessionPoints + hourlyPoints;
       
       await PointsHistoryService.recordPoints(
         'focus_session',
-        points,
-        'DIS',
+        totalPoints,
+        'DET', // Determination for session completion
         `${type} focus session completed (${minutes} min)`,
         { sessionDuration: minutes, taskTitle: `${type} session` }
       );
@@ -609,14 +611,14 @@ export class UserStatsService {
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
 
-    // Calculate points for journal entry - matches discipline calculation
-    const points = 5; // 5 points per journal entry (discipline)
+    // Calculate points for journal entry - matches productivity calculation (+10 per entry)
+    const points = 10;
     
     // Record points in history
     await PointsHistoryService.recordPoints(
       'journal',
       points,
-      'JOU',
+      'PRD',
       'Journal entry completed',
       { entryContent: 'Journal entry' }
     );
@@ -642,14 +644,14 @@ export class UserStatsService {
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
     
-    // Calculate points for goal completion - using basic 10 points per goal
+    // Calculate points for goal completion - matches productivity calculation (+10 per goal)
     const points = 10;
     
     // Record points in history
     await PointsHistoryService.recordPoints(
       'goal_completed',
       points,
-      'DIS',
+      'PRD',
       'Goal completed',
       { goalTitle: 'Goal completion' }
     );
@@ -761,22 +763,45 @@ export class UserStatsService {
     await this.updateMonthlyStats();
   }
 
-  static async recordSocialInteraction(type: string, moodRating?: number): Promise<void> {
+  static async recordTimeSpentOutside(hours: number): Promise<void> {
     // Ensure user profile exists
     await this.ensureUserProfile();
     
-    // Record points for social engagement
-    const points = 5; // Base points for social activity
-    const moodBonus = moodRating ? Math.max(0, moodRating - 5) : 0; // Bonus for good mood
-    const totalPoints = points + moodBonus;
+    // Calculate points for time spent outside - matches social calculation (+15 per hour)
+    const points = hours * 15;
     
     // Record points in history
     await PointsHistoryService.recordPoints(
-      'social_interaction',
-      totalPoints,
+      'time_outside',
+      points,
       'SOC',
-      `Social interaction: ${type}`,
-      { socialType: type, moodRating }
+      `Spent ${hours} hour(s) outside`,
+      { hoursSpent: hours, activityType: 'time_outside' }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
+  static async recordTimeSpentWithFriends(hours: number): Promise<void> {
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Calculate points for time spent with friends - matches social calculation (+20 per hour)
+    const points = hours * 20;
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'time_with_friends',
+      points,
+      'SOC',
+      `Spent ${hours} hour(s) with friends`,
+      { hoursSpent: hours, activityType: 'time_with_friends' }
     );
     
     // Update monthly accumulation
