@@ -58,7 +58,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'custom'>('daily');
   const [customDays, setCustomDays] = useState<number[]>([]);
   const [targetDuration, setTargetDuration] = useState('');
-  const [targetDays, setTargetDays] = useState('21'); // Default to 21 days
+  const [targetDays, setTargetDays] = useState('30'); // Default to 30 days
   const [reminderTime, setReminderTime] = useState('');
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedHour, setSelectedHour] = useState(9);
@@ -101,8 +101,8 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
       return;
     }
 
-    if (!targetDays || parseInt(targetDays) <= 0) {
-      Alert.alert('Error', 'Please enter a valid target number of days');
+    if (!targetDays || parseInt(targetDays) < 7) {
+      Alert.alert('Error', 'Target days must be at least 7 days');
       return;
     }
 
@@ -120,7 +120,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
         frequency,
         customDays: frequency === 'custom' ? customDays : undefined,
         targetDuration: targetDuration ? parseInt(targetDuration) : undefined,
-        targetDays: targetDays ? parseInt(targetDays) : 21,
+        targetDays: Math.max(7, parseInt(targetDays)),
         reminderTime: reminderTime || undefined,
         isActive: true,
         createdAt: new Date().toISOString(),
@@ -269,7 +269,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
               style={styles.textInput}
               value={targetDays}
               onChangeText={setTargetDays}
-              placeholder="e.g., 21"
+              placeholder="e.g., 30"
               placeholderTextColor={theme.colors.text.secondary}
               keyboardType="numeric"
             />

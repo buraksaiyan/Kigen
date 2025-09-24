@@ -214,7 +214,7 @@ export const DashboardScreen: React.FC = () => {
             const targetDays = habit.targetDays || 21;
             
             // Check if habit is completed (reached target)
-            if (newStreak >= targetDays) {
+            if (newStreak >= targetDays && targetDays >= 7) {
               habitCompleted = true;
               completedHabitData = {
                 id: habit.id,
@@ -1076,7 +1076,7 @@ export const DashboardScreen: React.FC = () => {
                   <View style={styles.historyContent}>
                     <Text style={styles.historyTitle}>{goal.title}</Text>
                     <Text style={styles.historyDate}>
-                      Completed: {new Date(goal.completedAt).toLocaleDateString()} at {new Date(goal.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      Completed: {new Date(goal.completedAt).toLocaleDateString()} at {new Date(goal.completedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
                     </Text>
                   </View>
                   <Icon name="check-circle" size={24} color="#34C759" />
@@ -1101,7 +1101,7 @@ export const DashboardScreen: React.FC = () => {
                       Final streak: {habit.finalStreak} days (Target: {habit.targetDays})
                     </Text>
                     <Text style={styles.historyDate}>
-                      Completed: {new Date(habit.completedAt).toLocaleDateString()} at {new Date(habit.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      Completed: {new Date(habit.completedAt).toLocaleDateString()} at {new Date(habit.completedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
                     </Text>
                   </View>
                   <Icon name="local-fire-department" size={24} color="#FF6B35" />
@@ -1123,7 +1123,7 @@ export const DashboardScreen: React.FC = () => {
                   <View style={styles.historyContent}>
                     <Text style={styles.historyTitle}>{todo.title}</Text>
                     <Text style={styles.historyDate}>
-                      Completed: {new Date(todo.completedAt).toLocaleDateString()} at {new Date(todo.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      Completed: {new Date(todo.completedAt).toLocaleDateString()} at {new Date(todo.completedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
                     </Text>
                   </View>
                   <Icon name="check-box" size={24} color="#34C759" />
