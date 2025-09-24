@@ -786,10 +786,8 @@ export const DashboardScreen: React.FC = () => {
           {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
-        {/* center area with app logo */}
-        <View style={styles.topBarCenter}>
-          <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
-        </View>
+        {/* center area with app logo - absolutely positioned to center in entire top bar */}
+        <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
       </View>
 
       {/* Small hint text between top bar and card - moved into scrollable content so it can scroll away */}
@@ -929,14 +927,13 @@ const styles = StyleSheet.create({
     tintColor: theme.colors.text.primary,
     width: 28,
   },
-  topBarCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
   topBarLogo: {
-    height: 32,
-    width: 100,
+    height: 40,
+    width: 120,
     resizeMode: 'contain',
+    position: 'absolute',
+    left: '50%',
+    marginLeft: -60, // Half of width to center
   },
 
   // Small tap hint between top bar and card
