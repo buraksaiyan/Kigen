@@ -299,9 +299,6 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     fontWeight: '700',
     marginTop: 8,
     textAlign: 'center',
-    textShadowColor: 'rgba(255, 255, 255, 0.8)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   menuContainer: {
     bottom: 0,

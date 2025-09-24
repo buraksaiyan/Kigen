@@ -5,7 +5,7 @@ import { showAchievementNotification } from './notificationService';
 
 export interface Achievement {
   id: string;
-  category: 'focus_hours' | 'current_streak' | 'max_streak' | 'completed_goals' | 'journal_entries' | 'body_focus_special' | 'meditation_special';
+  category: 'focus_hours' | 'current_streak' | 'max_streak' | 'completed_goals' | 'journal_entries' | 'body_focus_special' | 'meditation_special' | 'completed_habits' | 'completed_todos' | 'active_reminders' | 'social_reduction';
   title: string;
   description: string;
   emoji: string;
@@ -94,6 +94,53 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'goals_500', category: 'completed_goals', title: 'Transcendent Achiever', description: '500 goals transcending limits', emoji: '🌟', requirement: 500 },
   { id: 'goals_750', category: 'completed_goals', title: 'Divine Conqueror', description: '750 goals of divine conquest', emoji: '🕊️', requirement: 750 },
   { id: 'goals_1000', category: 'completed_goals', title: 'Infinite Champion', description: '1000 goals - infinite champion', emoji: '♾️', requirement: 1000 },
+
+  // Completed Habits Achievements
+  { id: 'habits_1', category: 'completed_habits', title: 'Habit Builder', description: 'Complete your first habit', emoji: '🌱', requirement: 1 },
+  { id: 'habits_5', category: 'completed_habits', title: 'Routine Master', description: 'Complete 5 habits successfully', emoji: '🔄', requirement: 5 },
+  { id: 'habits_10', category: 'completed_habits', title: 'Discipline Forge', description: '10 habits of forged discipline', emoji: '⚒️', requirement: 10 },
+  { id: 'habits_25', category: 'completed_habits', title: 'Habit Champion', description: '25 habits conquered', emoji: '🏅', requirement: 25 },
+  { id: 'habits_50', category: 'completed_habits', title: 'Routine Legend', description: '50 legendary habits mastered', emoji: '🔥', requirement: 50 },
+  { id: 'habits_100', category: 'completed_habits', title: 'Century Builder', description: '100 habits of century-level discipline', emoji: '💎', requirement: 100 },
+  { id: 'habits_250', category: 'completed_habits', title: 'Ultimate Routine', description: '250 habits of ultimate mastery', emoji: '⚡', requirement: 250 },
+  { id: 'habits_500', category: 'completed_habits', title: 'Transcendent Builder', description: '500 habits transcending limitations', emoji: '🌟', requirement: 500 },
+  { id: 'habits_750', category: 'completed_habits', title: 'Divine Discipline', description: '750 habits of divine discipline', emoji: '🕊️', requirement: 750 },
+  { id: 'habits_1000', category: 'completed_habits', title: 'Infinite Builder', description: '1000 habits - infinite discipline', emoji: '♾️', requirement: 1000 },
+
+  // Completed Todos Achievements
+  { id: 'todos_1', category: 'completed_todos', title: 'Task Master', description: 'Complete your first task', emoji: '✅', requirement: 1 },
+  { id: 'todos_10', category: 'completed_todos', title: 'Productive Mind', description: 'Complete 10 tasks successfully', emoji: '📋', requirement: 10 },
+  { id: 'todos_25', category: 'completed_todos', title: 'Efficiency Expert', description: '25 tasks of expert efficiency', emoji: '⚡', requirement: 25 },
+  { id: 'todos_50', category: 'completed_todos', title: 'Task Champion', description: '50 tasks conquered', emoji: '🏆', requirement: 50 },
+  { id: 'todos_100', category: 'completed_todos', title: 'Century Completer', description: '100 tasks of century-level productivity', emoji: '💎', requirement: 100 },
+  { id: 'todos_250', category: 'completed_todos', title: 'Ultimate Producer', description: '250 tasks of ultimate productivity', emoji: '🔥', requirement: 250 },
+  { id: 'todos_500', category: 'completed_todos', title: 'Transcendent Doer', description: '500 tasks transcending limits', emoji: '🌟', requirement: 500 },
+  { id: 'todos_750', category: 'completed_todos', title: 'Divine Executor', description: '750 tasks of divine execution', emoji: '🕊️', requirement: 750 },
+  { id: 'todos_1000', category: 'completed_todos', title: 'Infinite Producer', description: '1000 tasks - infinite productivity', emoji: '♾️', requirement: 1000 },
+
+  // Active Reminders Achievements
+  { id: 'reminders_1', category: 'active_reminders', title: 'Mindful Reminder', description: 'Set your first reminder', emoji: '⏰', requirement: 1 },
+  { id: 'reminders_5', category: 'active_reminders', title: 'Time Keeper', description: 'Maintain 5 active reminders', emoji: '🕐', requirement: 5 },
+  { id: 'reminders_10', category: 'active_reminders', title: 'Schedule Master', description: '10 reminders of masterful organization', emoji: '📅', requirement: 10 },
+  { id: 'reminders_25', category: 'active_reminders', title: 'Time Lord', description: '25 reminders of time lord mastery', emoji: '⚡', requirement: 25 },
+  { id: 'reminders_50', category: 'active_reminders', title: 'Chronicle Keeper', description: '50 reminders of legendary timekeeping', emoji: '🏛️', requirement: 50 },
+  { id: 'reminders_100', category: 'active_reminders', title: 'Century Organizer', description: '100 reminders of century-level organization', emoji: '💎', requirement: 100 },
+  { id: 'reminders_250', category: 'active_reminders', title: 'Ultimate Scheduler', description: '250 reminders of ultimate scheduling', emoji: '🔥', requirement: 250 },
+  { id: 'reminders_500', category: 'active_reminders', title: 'Transcendent Planner', description: '500 reminders transcending time', emoji: '🌟', requirement: 500 },
+  { id: 'reminders_750', category: 'active_reminders', title: 'Divine Organizer', description: '750 reminders of divine organization', emoji: '🕊️', requirement: 750 },
+  { id: 'reminders_1000', category: 'active_reminders', title: 'Infinite Scheduler', description: '1000 reminders - infinite organization', emoji: '♾️', requirement: 1000 },
+
+  // Social Media Reduction Achievements
+  { id: 'social_1', category: 'social_reduction', title: 'Digital Balance', description: 'Reduce social media usage by 1 hour', emoji: '📱', requirement: 1 },
+  { id: 'social_5', category: 'social_reduction', title: 'Screen Wisdom', description: 'Reduce social media by 5 hours total', emoji: '🧠', requirement: 5 },
+  { id: 'social_10', category: 'social_reduction', title: 'Mindful User', description: '10 hours of mindful social reduction', emoji: '🌱', requirement: 10 },
+  { id: 'social_25', category: 'social_reduction', title: 'Digital Freedom', description: '25 hours of digital freedom achieved', emoji: '🕊️', requirement: 25 },
+  { id: 'social_50', category: 'social_reduction', title: 'Screen Master', description: '50 hours of masterful screen control', emoji: '⚡', requirement: 50 },
+  { id: 'social_100', category: 'social_reduction', title: 'Century Liberator', description: '100 hours of century-level liberation', emoji: '💎', requirement: 100 },
+  { id: 'social_250', category: 'social_reduction', title: 'Ultimate Balance', description: '250 hours of ultimate digital balance', emoji: '🔥', requirement: 250 },
+  { id: 'social_500', category: 'social_reduction', title: 'Transcendent User', description: '500 hours transcending digital addiction', emoji: '🌟', requirement: 500 },
+  { id: 'social_750', category: 'social_reduction', title: 'Divine Balance', description: '750 hours of divine digital harmony', emoji: '🕊️', requirement: 750 },
+  { id: 'social_1000', category: 'social_reduction', title: 'Infinite Freedom', description: '1000 hours - infinite digital freedom', emoji: '♾️', requirement: 1000 },
 ];
 
 const STORAGE_KEY = '@inzone_achievements';
@@ -254,6 +301,82 @@ class AchievementService {
     }
   }
 
+  // Check habit achievements
+  private async checkHabitAchievements(): Promise<void> {
+    try {
+      const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
+      const completedHabits = completedHabitsData ? JSON.parse(completedHabitsData) : [];
+      const totalCompletedHabits = completedHabits.length;
+      
+      const habitAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'completed_habits');
+      for (const achievement of habitAchievements) {
+        if (totalCompletedHabits >= achievement.requirement) {
+          await this.unlockAchievement(achievement.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking habit achievements:', error);
+    }
+  }
+
+  // Check todo achievements
+  private async checkTodoAchievements(): Promise<void> {
+    try {
+      const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
+      const completedTodos = completedTodosData ? JSON.parse(completedTodosData) : [];
+      const totalCompletedTodos = completedTodos.length;
+      
+      const todoAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'completed_todos');
+      for (const achievement of todoAchievements) {
+        if (totalCompletedTodos >= achievement.requirement) {
+          await this.unlockAchievement(achievement.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking todo achievements:', error);
+    }
+  }
+
+  // Check reminder achievements
+  private async checkReminderAchievements(): Promise<void> {
+    try {
+      const remindersData = await AsyncStorage.getItem('@inzone_reminders');
+      const reminders = remindersData ? JSON.parse(remindersData) : [];
+      const activeReminders = reminders.filter((r: any) => r.isActive);
+      const totalActiveReminders = activeReminders.length;
+      
+      const reminderAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'active_reminders');
+      for (const achievement of reminderAchievements) {
+        if (totalActiveReminders >= achievement.requirement) {
+          await this.unlockAchievement(achievement.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking reminder achievements:', error);
+    }
+  }
+
+  // Check social media reduction achievements
+  private async checkSocialAchievements(): Promise<void> {
+    try {
+      // For social achievements, we'll track total hours of social media usage reduction
+      // This could be based on time spent in focus sessions vs social media time
+      // For now, let's use a simple approach - total social media hours tracked
+      const { UserStatsService } = await import('./userStatsService');
+      const monthlyStats = await UserStatsService.calculateCurrentMonthStats();
+      const totalSocialHours = Math.floor(monthlyStats.SOC / 60); // Convert minutes to hours
+      
+      const socialAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'social_reduction');
+      for (const achievement of socialAchievements) {
+        if (totalSocialHours >= achievement.requirement) {
+          await this.unlockAchievement(achievement.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking social achievements:', error);
+    }
+  }
+
   // Main method to check all achievements
   async checkAchievements(): Promise<void> {
     try {
@@ -274,6 +397,10 @@ class AchievementService {
         this.checkSpecialModeAchievements(),
         this.checkJournalAchievements(),
         this.checkGoalAchievements(),
+        this.checkHabitAchievements(),
+        this.checkTodoAchievements(),
+        this.checkReminderAchievements(),
+        this.checkSocialAchievements(),
       ]);
 
       // Reconcile stored achievements with actual computed values in case
