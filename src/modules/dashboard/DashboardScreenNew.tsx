@@ -1167,7 +1167,10 @@ export const DashboardScreen: React.FC = () => {
                       <Text style={styles.historyDate}>
                         {new Date(entry.date).toLocaleDateString()} at {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Text>
-                      <Text style={styles.historyPreview} numberOfLines={isExpanded ? undefined : 2}>
+                      <Text 
+                        style={styles.historyPreview} 
+                        {...(isExpanded ? {} : { numberOfLines: 2 })}
+                      >
                         {entry.content}
                       </Text>
                     </View>
