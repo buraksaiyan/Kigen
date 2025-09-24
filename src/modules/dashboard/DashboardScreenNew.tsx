@@ -206,20 +206,20 @@ export const DashboardScreen: React.FC = () => {
         completedAt: '',
         targetDays: 21
       };
-      
+
       let habitStreakIncreased = false;
       let newStreakValue = 0;
-      
+
       const updatedHabits = activeHabits.map(habit => {
         if (habit.id === habitId) {
           const today = new Date().toDateString();
           const wasCompletedToday = habit.lastCompleted === today;
-          
+
           if (!wasCompletedToday) {
             // First completion today - increase streak
             const newStreak = habit.streak + 1;
             const targetDays = habit.targetDays || 21;
-            
+
             // Check if habit is completed (reached target)
             if (newStreak >= targetDays && targetDays >= 7) {
               habitCompleted = true;
@@ -232,24 +232,19 @@ export const DashboardScreen: React.FC = () => {
               };
               return habit; // Don't update the habit since we're removing it
             }
-            
+
             habitStreakIncreased = true;
             newStreakValue = newStreak;
-            
-            return { 
-              ...habit, 
+
+            return {
+              ...habit,
               streak: newStreak,
               lastCompleted: today,
               completedToday: true
             };
           } else {
-            // Already completed today - decrease streak
-            return { 
-              ...habit, 
-              streak: Math.max(0, habit.streak - 1),
-              lastCompleted: undefined,
-              completedToday: false
-            };
+            // Already completed today - do nothing, habit stays completed
+            return habit;
           }
         }
         return habit;
@@ -1216,7 +1211,13 @@ export const DashboardScreen: React.FC = () => {
         bounces={true}
         nestedScrollEnabled={true}
         contentContainerStyle={styles.scrollViewContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={refreshData}
+            enabled={!isCardFlipping}
+          />
+        }
       >
         <View style={styles.topTapHintContainer}>
           <Text style={styles.topTapHintText}>Tap to flip</Text>

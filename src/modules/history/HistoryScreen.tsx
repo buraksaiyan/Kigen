@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,6 +50,7 @@ export const HistoryScreen: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadHistoryData();
@@ -61,9 +63,10 @@ export const HistoryScreen: React.FC = () => {
     }, [])
   );
 
-  const loadHistoryData = async () => {
+  const loadHistoryData = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (!isRefresh) setLoading(true);
+      else setRefreshing(true);
 
       // Load real journal entries with full content
       const journalEntries = await journalStorage.getAllEntries();
@@ -244,7 +247,8 @@ export const HistoryScreen: React.FC = () => {
     } catch (error) {
       console.error('Error loading history data:', error);
     } finally {
-      setLoading(false);
+      if (!isRefresh) setLoading(false);
+      else setRefreshing(false);
     }
   };
 
@@ -429,6 +433,12 @@ export const HistoryScreen: React.FC = () => {
             renderItem={renderHistoryItem}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => loadHistoryData(true)}
+              />
+            }
           />
         ) : (
           <View style={styles.emptyState}>
