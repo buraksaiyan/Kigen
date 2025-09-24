@@ -10,6 +10,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
+
+const CLOSE_BUTTON_COLOR = '#888691';
+const TRANSPARENT = 'transparent';
+const SHADOW_COLOR = '#000';
+const WHITE = '#FFFFFF';
 import { Card } from '../components/UI';
 
 interface FocusMode {
@@ -89,7 +94,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <View style={styles.contentHeader}>
-              <Text style={[styles.title, { color: mode.color }]}>{mode.title}</Text>
+              <Text style={[styles.title, { color: mode.color }]}>{mode.title} Focus</Text>
               <Text style={styles.subtitle}>{mode.description}</Text>
             </View>
 
@@ -100,7 +105,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, { borderColor: mode.color }]}
+                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
                     value={hours}
                     onChangeText={setHours}
                     keyboardType="numeric"
@@ -111,11 +116,11 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   <Text style={styles.timeLabel}>hours</Text>
                 </View>
                 
-                <Text style={styles.timeSeparator}>:</Text>
+                {mode.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
                 
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, { borderColor: mode.color }]}
+                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
                     value={minutes}
                     onChangeText={setMinutes}
                     keyboardType="numeric"
@@ -133,14 +138,14 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 {presetTimes.map((preset, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.presetButton, { borderColor: mode.color }]}
+                    style={[styles.presetButton, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
                     onPress={() => {
                       setHours(preset.hours.toString());
                       setMinutes(preset.minutes.toString());
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, { color: mode.color }]}>
+                    <Text style={[styles.presetText, mode.id === 'executioner' ? {} : { color: mode.color }]}>
                       {preset.label}
                     </Text>
                   </TouchableOpacity>
@@ -155,7 +160,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, { borderColor: mode.color }]}
+                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
                     value={breakMinutes}
                     onChangeText={setBreakMinutes}
                     keyboardType="numeric"
@@ -178,11 +183,11 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 ].map((preset, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.presetButton, { borderColor: mode.color }]}
+                    style={[styles.presetButton, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
                     onPress={() => setBreakMinutes(preset.minutes.toString())}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, { color: mode.color }]}>
+                    <Text style={[styles.presetText, mode.id === 'executioner' ? {} : { color: mode.color }]}>
                       {preset.label}
                     </Text>
                   </TouchableOpacity>
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: '#888691',
+    color: CLOSE_BUTTON_COLOR,
     fontWeight: '600',
   },
   container: {
@@ -272,10 +277,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   modalHeader: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   presetButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: TRANSPARENT,
     borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     paddingHorizontal: theme.spacing.md,
@@ -329,7 +330,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.lg,
     paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.lg,
-    shadowColor: '#000',
+    shadowColor: SHADOW_COLOR,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -339,7 +340,7 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     ...theme.typography.h3,
-    color: '#FFFFFF',
+    color: WHITE,
     fontWeight: '700',
   },
   subtitle: {

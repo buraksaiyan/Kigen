@@ -58,7 +58,7 @@ const focusModes: FocusMode[] = [
   },
   {
     id: 'meditation',
-    title: 'Meditate',
+    title: 'Meditation',
     subtitle: 'Mindfulness & Awareness',
     color: '#22C55E',
     description: 'Cultivate mindfulness and inner awareness through meditation.',
@@ -67,7 +67,7 @@ const focusModes: FocusMode[] = [
     id: 'body',
     title: 'Body',
     subtitle: 'Physical Training',
-    color: '#7C2D42',
+    color: '#A855F7',
     description: 'Focus on physical training and body awareness exercises.',
   },
 ];
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: TRANSPARENT,
     borderRadius: theme.borderRadius.lg,
-    borderWidth: 2,
+    borderWidth: 1,
     elevation: 3,
     flex: 1,
     height: 120,
