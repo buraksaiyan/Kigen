@@ -151,7 +151,7 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
-  const failHabit = async (habitId: string, reason: 'missed_day' | 'gave_up' = 'gave_up') => {
+  const handleHabitAction = async (habitId: string, action: 'reset_streak' | 'give_up') => {
     try {
       // Load all habits from storage
       const habitsData = await AsyncStorage.getItem('@inzone_habits');
@@ -162,14 +162,22 @@ export const DashboardScreen: React.FC = () => {
       // Update the specific habit
       const updatedHabits = allHabits.map((habit: any) => {
         if (habit.id === habitId) {
-          return {
-            ...habit,
-            isActive: false,
-            failedAt: new Date().toISOString(),
-            failureReason: reason,
-            // Reset streak if it was a missed day, keep it if giving up
-            streak: reason === 'missed_day' ? 0 : habit.streak
-          };
+          if (action === 'reset_streak') {
+            return {
+              ...habit,
+              streak: 0,
+              lastCompleted: undefined,
+              completedToday: false
+            };
+          } else {
+            // give_up
+            return {
+              ...habit,
+              isActive: false,
+              failedAt: new Date().toISOString(),
+              failureReason: 'gave_up'
+            };
+          }
         }
         return habit;
       });
@@ -177,18 +185,27 @@ export const DashboardScreen: React.FC = () => {
       // Save back to storage
       await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
 
-      // Remove from active habits list
-      setActiveHabits(prev => prev.filter(habit => habit.id !== habitId));
+      // Update active habits list
+      if (action === 'give_up') {
+        setActiveHabits(prev => prev.filter(habit => habit.id !== habitId));
+      } else {
+        // For reset_streak, update the active habits with reset values
+        setActiveHabits(prev => prev.map(habit => 
+          habit.id === habitId 
+            ? { ...habit, streak: 0, lastCompleted: undefined, completedToday: false }
+            : habit
+        ));
+      }
 
       Alert.alert(
-        'Habit Failed',
-        reason === 'missed_day' 
-          ? 'Habit streak has been reset due to missed day.'
-          : 'Habit has been marked as failed and moved to history.'
+        action === 'reset_streak' ? 'Habit Reset' : 'Habit Ended',
+        action === 'reset_streak' 
+          ? 'Your habit streak has been reset. Keep going!'
+          : 'Habit has been ended and moved to history.'
       );
     } catch (error) {
-      console.error('Error failing habit:', error);
-      Alert.alert('Error', 'Failed to mark habit as failed');
+      console.error('Error handling habit action:', error);
+      Alert.alert('Error', 'Failed to update habit');
     }
   };
 
@@ -672,11 +689,11 @@ export const DashboardScreen: React.FC = () => {
                 style={styles.habitFailButton}
                 onPress={() => {
                   Alert.alert(
-                    'Fail Habit',
-                    'Choose what to do with this habit:',
+                    'Reset Habit',
+                    'This will reset your streak to 0. You can start building it again.',
                     [
-                      { text: 'Reset Streak (Missed Day)', onPress: () => failHabit(habit.id, 'missed_day') },
-                      { text: 'Give Up (Move to History)', onPress: () => failHabit(habit.id, 'gave_up') },
+                      { text: 'Reset Streak', onPress: () => handleHabitAction(habit.id, 'reset_streak') },
+                      { text: 'Give Up (Move to History)', onPress: () => handleHabitAction(habit.id, 'give_up') },
                       { text: 'Cancel', style: 'cancel' }
                     ]
                   );
