@@ -141,6 +141,9 @@ export const DashboardScreen: React.FC = () => {
       const monthlyRating = await UserStatsService.getCurrentRating();
       setUserRank(monthlyRating.cardTier);
       console.log('🎖️ Rank updated to:', monthlyRating.cardTier, 'with', monthlyRating.totalPoints, 'points');
+      
+      // Sync leaderboard data whenever rank changes
+      await UserStatsService.syncUserToLeaderboard();
     } catch (error) {
       console.error('Error updating rank:', error);
     }
@@ -531,6 +534,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Check for achievements on app load
       await achievementService.checkAchievements();
+
+      // Sync leaderboard data with current user stats
+      await UserStatsService.syncUserToLeaderboard();
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);

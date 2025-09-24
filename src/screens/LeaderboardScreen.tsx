@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { UserStatsService } from '../services/userStatsService';
+import LeaderboardService from '../services/LeaderboardService';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
 import { theme } from '../config/theme';
 
@@ -44,18 +44,34 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
 
   const loadLeaderboards = async () => {
     try {
-      // Load lifetime leaderboard
-      const lifetimeData = await UserStatsService.getLifetimeLeaderboard();
-      const lifetimeWithRanks = lifetimeData
+      // Load global leaderboard from LeaderboardService
+      const globalData = await LeaderboardService.getGlobalLeaderboard();
+      
+      // Transform to the expected format
+      const lifetimeWithRanks = globalData
         .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+        .map((entry, index) => ({
+          userId: entry.id,
+          username: entry.username,
+          totalPoints: entry.totalPoints,
+          monthlyPoints: entry.monthlyPoints,
+          cardTier: entry.cardTier as CardTier,
+          rank: index + 1
+        }));
       setLifetimeLeaderboard(lifetimeWithRanks);
 
-      // Load monthly leaderboard
-      const monthlyData = await UserStatsService.getMonthlyLeaderboard(selectedMonth);
-      const monthlyWithRanks = monthlyData
+      // For monthly, filter by current month (this is a simplified approach)
+      // In a real implementation, you'd want monthly-specific data
+      const monthlyWithRanks = globalData
         .sort((a, b) => (b.monthlyPoints || 0) - (a.monthlyPoints || 0))
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+        .map((entry, index) => ({
+          userId: entry.id,
+          username: entry.username,
+          totalPoints: entry.totalPoints,
+          monthlyPoints: entry.monthlyPoints,
+          cardTier: entry.cardTier as CardTier,
+          rank: index + 1
+        }));
       setMonthlyLeaderboard(monthlyWithRanks);
     } catch (error) {
       console.error('Error loading leaderboards:', error);

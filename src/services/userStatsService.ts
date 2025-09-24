@@ -1245,6 +1245,34 @@ export class UserStatsService {
     }
   }
 
+  // Sync current user data to leaderboard
+  static async syncUserToLeaderboard(): Promise<void> {
+    try {
+      const profile = await this.getUserProfile();
+      if (!profile) {
+        console.log('No user profile found, skipping leaderboard sync');
+        return;
+      }
+
+      const currentRating = await this.getCurrentRating();
+      
+      const userLeaderboardData = {
+        username: profile.username,
+        totalPoints: currentRating.totalPoints,
+        monthlyPoints: currentRating.monthlyPoints,
+        weeklyPoints: 0, // TODO: Implement weekly calculation if needed
+        overallRating: currentRating.overallRating,
+        cardTier: currentRating.cardTier,
+        country: undefined // TODO: Add country support if needed
+      };
+
+      await LeaderboardService.updateUserData(userLeaderboardData);
+      console.log('✅ Synced user data to leaderboard:', userLeaderboardData);
+    } catch (error) {
+      console.error('Error syncing user to leaderboard:', error);
+    }
+  }
+
   // Achievement stats methods
   static async getTotalCompletedHabits(): Promise<number> {
     try {
