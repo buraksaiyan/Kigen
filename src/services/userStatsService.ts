@@ -1244,4 +1244,49 @@ export class UserStatsService {
       return [];
     }
   }
+
+  // Achievement stats methods
+  static async getTotalCompletedHabits(): Promise<number> {
+    try {
+      const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
+      const completedHabits = completedHabitsData ? JSON.parse(completedHabitsData) : [];
+      return completedHabits.length;
+    } catch (error) {
+      console.error('Error getting total completed habits:', error);
+      return 0;
+    }
+  }
+
+  static async getTotalCompletedTodos(): Promise<number> {
+    try {
+      const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
+      const completedTodos = completedTodosData ? JSON.parse(completedTodosData) : [];
+      return completedTodos.length;
+    } catch (error) {
+      console.error('Error getting total completed todos:', error);
+      return 0;
+    }
+  }
+
+  static async getTotalActiveReminders(): Promise<number> {
+    try {
+      const remindersData = await AsyncStorage.getItem('@inzone_reminders');
+      const reminders = remindersData ? JSON.parse(remindersData) : [];
+      const activeReminders = reminders.filter((r: any) => r.isActive);
+      return activeReminders.length;
+    } catch (error) {
+      console.error('Error getting total active reminders:', error);
+      return 0;
+    }
+  }
+
+  static async getTotalSocialReductionHours(): Promise<number> {
+    try {
+      const monthlyStats = await this.calculateCurrentMonthStats();
+      return Math.floor(monthlyStats.SOC / 60); // Convert minutes to hours
+    } catch (error) {
+      console.error('Error getting total social reduction hours:', error);
+      return 0;
+    }
+  }
 }

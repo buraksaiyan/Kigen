@@ -30,6 +30,10 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     meditationSessions: 0,
     journalEntries: 0,
     totalCompletedGoals: 0,
+    totalCompletedHabits: 0,
+    totalCompletedTodos: 0,
+    totalActiveReminders: 0,
+    totalSocialReduction: 0,
   });
 
   useEffect(() => {
@@ -67,6 +71,12 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       const totalCompletedGoals = await UserStatsService.getTotalCompletedGoals();
       const journalEntries = (await journalStorage.getAllEntries()).length;
       
+      // Get additional stats for new achievement categories
+      const totalCompletedHabits = await UserStatsService.getTotalCompletedHabits();
+      const totalCompletedTodos = await UserStatsService.getTotalCompletedTodoBullets();
+      const totalActiveReminders = await UserStatsService.getTotalActiveReminders();
+      const totalSocialReduction = await UserStatsService.getTotalSocialReductionHours();
+      
       setStats({
         totalHours: Math.floor(sessionStats.totalMinutes / 60),
         totalMinutes: sessionStats.totalMinutes,
@@ -76,6 +86,10 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
         meditationSessions,
         journalEntries,
         totalCompletedGoals,
+        totalCompletedHabits,
+        totalCompletedTodos,
+        totalActiveReminders,
+        totalSocialReduction,
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -112,6 +126,10 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     { category: 'meditation_special', title: 'Meditation', icon: '🧘' },
     { category: 'journal_entries', title: 'Journal', icon: '📝' },
     { category: 'completed_goals', title: 'Goals', icon: '🎯' },
+    { category: 'completed_habits', title: 'Habits', icon: '🔄' },
+    { category: 'completed_todos', title: 'Tasks', icon: '✅' },
+    { category: 'active_reminders', title: 'Reminders', icon: '⏰' },
+    { category: 'social_reduction', title: 'Digital Wellness', icon: '📱' },
   ];
 
   const renderAchievement = (achievement: Achievement) => {
