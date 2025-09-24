@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../config/theme';
 
 const HABITS_STORAGE_KEY = '@inzone_habits';
@@ -97,6 +98,11 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
   const saveHabit = async () => {
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a habit title');
+      return;
+    }
+
+    if (!targetDays || parseInt(targetDays) <= 0) {
+      Alert.alert('Error', 'Please enter a valid target number of days');
       return;
     }
 
@@ -205,18 +211,25 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
                 ]}
                 onPress={() => setFrequency(option.id as any)}
               >
-                <Text style={[
-                  styles.frequencyOptionTitle,
-                  frequency === option.id && styles.frequencyOptionTitleSelected,
-                ]}>
-                  {option.label}
-                </Text>
-                <Text style={[
-                  styles.frequencyOptionDesc,
-                  frequency === option.id && styles.frequencyOptionDescSelected,
-                ]}>
-                  {option.desc}
-                </Text>
+                <View style={styles.frequencyOptionContent}>
+                  <View style={styles.frequencyOptionTextContainer}>
+                    <Text style={[
+                      styles.frequencyOptionTitle,
+                      frequency === option.id && styles.frequencyOptionTitleSelected,
+                    ]}>
+                      {option.label}
+                    </Text>
+                    <Text style={[
+                      styles.frequencyOptionDesc,
+                      frequency === option.id && styles.frequencyOptionDescSelected,
+                    ]}>
+                      {option.desc}
+                    </Text>
+                  </View>
+                  {frequency === option.id && (
+                    <Icon name="check-circle" size={24} color={theme.colors.primary} />
+                  )}
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -248,7 +261,19 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Optional Settings</Text>
+          <Text style={styles.sectionTitle}>Target Duration</Text>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Target Days *</Text>
+            <TextInput
+              style={styles.textInput}
+              value={targetDays}
+              onChangeText={setTargetDays}
+              placeholder="e.g., 21"
+              placeholderTextColor={theme.colors.text.secondary}
+              keyboardType="numeric"
+            />
+          </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Target Duration (minutes)</Text>
@@ -257,18 +282,6 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
               value={targetDuration}
               onChangeText={setTargetDuration}
               placeholder="e.g., 30"
-              placeholderTextColor={theme.colors.text.secondary}
-              keyboardType="numeric"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Target Days</Text>
-            <TextInput
-              style={styles.textInput}
-              value={targetDays}
-              onChangeText={setTargetDays}
-              placeholder="e.g., 21"
               placeholderTextColor={theme.colors.text.secondary}
               keyboardType="numeric"
             />
@@ -504,5 +517,13 @@ const styles = StyleSheet.create({
   timeOptionText: {
     fontSize: 16,
     color: theme.colors.text.primary,
+  },
+  frequencyOptionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  frequencyOptionTextContainer: {
+    flex: 1,
   },
 });

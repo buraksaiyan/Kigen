@@ -661,7 +661,9 @@ export const DashboardScreen: React.FC = () => {
                   }
                 }}>
                   <Image
-                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/100x100' }}
+                    source={profileImageUri || session?.user?.user_metadata?.avatar_url 
+                      ? { uri: profileImageUri || session?.user?.user_metadata?.avatar_url }
+                      : require('../../../assets/images/profile-icon.png')}
                     style={styles.profileImage}
                   />
                 </TouchableOpacity>
