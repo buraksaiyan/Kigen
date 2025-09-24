@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { theme } from '../config/theme';
 
 const REMINDERS_STORAGE_KEY = '@inzone_reminders';
@@ -53,8 +54,8 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedHour, setSelectedHour] = useState(9);
   const [selectedMinute, setSelectedMinute] = useState(0);
-  const [showDateSelector, setShowDateSelector] = useState(false);
-  const [showTimeSelector, setShowTimeSelector] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [recurring, setRecurring] = useState<'none' | 'daily' | 'weekly' | 'monthly'>('none');
   const [loading, setLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
@@ -83,26 +84,6 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
   const formatDateTime = (date: Date, hour: number, minute: number) => {
     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     return `${date.toLocaleDateString()} ${timeString}`;
-  };
-
-  const handleTimeSelect = (hour: number, minute: number) => {
-    setSelectedHour(hour);
-    setSelectedMinute(minute);
-    setShowTimeSelector(false);
-  };
-
-  const generateTimeOptions = () => {
-    const options = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 15) { // 15-minute intervals
-        options.push({
-          hour,
-          minute,
-          label: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-        });
-      }
-    }
-    return options;
   };
 
   const scheduleNotification = async (reminder: Omit<Reminder, 'notificationId'>): Promise<string | null> => {
@@ -262,38 +243,46 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
           />
 
           <Text style={styles.label}>Date & Time</Text>
-          <TouchableOpacity onPress={() => setShowDateSelector(!showDateSelector)} style={styles.dateTimeButton}>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateTimeButton}>
             <Text style={styles.dateTimeButtonText}>
               📅 {formatDateTime(selectedDate, selectedHour, selectedMinute)}
             </Text>
           </TouchableOpacity>
 
-          {showDateSelector && (
-            <View style={styles.dateTimeInputs}>
-              <Text style={styles.infoText}>Simple date/time selection (production would use native picker)</Text>
-            </View>
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              onChange={(event, date) => {
+                setShowDatePicker(false);
+                if (date) {
+                  setSelectedDate(date);
+                }
+              }}
+              minimumDate={new Date()}
+            />
           )}
 
-          <TouchableOpacity onPress={() => setShowTimeSelector(!showTimeSelector)} style={styles.dateTimeButton}>
+          <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.dateTimeButton}>
             <Text style={styles.dateTimeButtonText}>
               🕐 {selectedHour.toString().padStart(2, '0')}:{selectedMinute.toString().padStart(2, '0')}
             </Text>
           </TouchableOpacity>
 
-          {showTimeSelector && (
-            <View style={styles.timePickerContainer}>
-              <ScrollView style={styles.timePickerScroll} showsVerticalScrollIndicator={false}>
-                {generateTimeOptions().map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.timeOption}
-                    onPress={() => handleTimeSelect(option.hour, option.minute)}
-                  >
-                    <Text style={styles.timeOptionText}>{option.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
+          {showTimePicker && (
+            <DateTimePicker
+              value={new Date(2000, 0, 1, selectedHour, selectedMinute)}
+              mode="time"
+              display="default"
+              onChange={(event, date) => {
+                setShowTimePicker(false);
+                if (date) {
+                  setSelectedHour(date.getHours());
+                  setSelectedMinute(date.getMinutes());
+                }
+              }}
+            />
           )}
 
           <Text style={styles.label}>Repeat</Text>
@@ -386,12 +375,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: 16,
     textAlign: 'center',
-  },
-  dateTimeInputs: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.md,
-    padding: theme.spacing.md,
   },
   header: {
     alignItems: 'center',
@@ -499,25 +482,5 @@ const styles = StyleSheet.create({
     color: theme.colors.danger,
     fontWeight: '500',
     marginTop: theme.spacing.sm,
-  },
-  timePickerContainer: {
-    marginTop: 8,
-    maxHeight: 200,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.surface,
-  },
-  timePickerScroll: {
-    maxHeight: 200,
-  },
-  timeOption: {
-    padding: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  timeOptionText: {
-    fontSize: 16,
-    color: theme.colors.text.primary,
   },
 });
