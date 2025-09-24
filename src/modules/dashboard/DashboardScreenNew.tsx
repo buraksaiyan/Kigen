@@ -28,6 +28,7 @@ import { theme } from '../../config/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../auth/AuthProvider';
 import { UserStatsService } from '../../services/userStatsService';
+import { achievementService } from '../../services/achievementService';
 import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/digitalWellbeingService';
 import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -186,6 +187,9 @@ export const DashboardScreen: React.FC = () => {
 
     // Update rank in real-time after todo changes
     await updateRankInRealTime();
+    
+    // Check for new achievements
+    await achievementService.checkAchievements();
   };
 
   const toggleHabitCompletion = async (habitId: string) => {
@@ -261,6 +265,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Update rank in real-time after habit changes
       await updateRankInRealTime();
+      
+      // Check for new achievements
+      await achievementService.checkAchievements();
     } catch (error) {
       console.error('Error updating habit:', error);
       Alert.alert('Error', 'Failed to update habit');
@@ -358,6 +365,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Update rank in real-time after goal completion
       await updateRankInRealTime();
+      
+      // Check for new achievements
+      await achievementService.checkAchievements();
     } catch (error) {
       console.error('Error completing goal:', error);
       Alert.alert('Error', 'Failed to complete goal');
@@ -514,6 +524,9 @@ export const DashboardScreen: React.FC = () => {
       if (journalData) {
         setJournalEntries(JSON.parse(journalData));
       }
+
+      // Check for achievements on app load
+      await achievementService.checkAchievements();
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);

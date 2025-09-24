@@ -256,7 +256,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
               >
                 <Icon name={item.icon} size={24} color="#FFFFFF" />
               </TouchableOpacity>
-              <Text style={[styles.itemLabel, { color: '#000000' }]}>
+              <Text style={[styles.itemLabel, { color: '#FFFFFF' }]}>
                 {item.title}
               </Text>
             </Animated.View>
@@ -268,7 +268,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
 };const styles = StyleSheet.create({
   // eslint-disable-next-line react-native/no-color-literals
   backdrop: {
-    backgroundColor: 'rgba(0, 15, 26, 0.3)', // Semi-transparent version of theme.colors.background
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Darker overlay to indicate menu is open
     bottom: 0,
     left: 0,
     position: 'absolute',
