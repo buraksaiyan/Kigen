@@ -111,7 +111,8 @@ export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
   const { 
     getSortedSections,
-    refreshSections 
+    refreshSections,
+    enabledSections
   } = useDashboardSections();
   
   const [isMonthly, setIsMonthly] = useState(true);
@@ -133,7 +134,6 @@ export const DashboardScreen: React.FC = () => {
   const [completedHabits, setCompletedHabits] = useState<CompletedHabit[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [sections, setSections] = useState<any[]>([]);
 
   // Function to update rank in real-time based on current monthly stats
   const updateRankInRealTime = async () => {
@@ -546,11 +546,7 @@ export const DashboardScreen: React.FC = () => {
 
   // Initialize sections on first load
   React.useEffect(() => {
-    const initializeSections = async () => {
-      await loadDashboardData();
-      setSections(getSortedSections());
-    };
-    initializeSections();
+    loadDashboardData();
   }, []);
 
   const refreshData = async () => {
@@ -558,7 +554,7 @@ export const DashboardScreen: React.FC = () => {
     try {
       await loadDashboardData();
       await refreshSections();
-      setSections(getSortedSections()); // Update sections state to trigger re-render
+      // No need to set sections anymore - using enabledSections directly
     } catch (e) {
       console.error('Error refreshing dashboard', e);
     } finally {
@@ -1228,13 +1224,13 @@ export const DashboardScreen: React.FC = () => {
         
         {/* Render sections in custom order with visibility control */}
         {(() => {
-          const carouselSections = sections.filter((s) => 
+          const carouselSections = enabledSections.filter((s) => 
             ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
           );
           const hasCarouselSections = carouselSections.length > 0;
           let carouselRendered = false;
           
-          return sections.map((section) => {
+          return enabledSections.map((section) => {
             const sectionType = section.id;
             
             switch (sectionType) {
