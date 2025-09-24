@@ -27,7 +27,7 @@ export const DashboardScreen: React.FC = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard' | 'history'>('dashboard');
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
@@ -165,6 +165,18 @@ export const DashboardScreen: React.FC = () => {
               {t('dashboard.leaderboard')}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.topNavTab, currentView === 'history' && styles.activeTopNavTab]}
+            onPress={() => {
+              setCurrentView('history');
+              // Close journal modal when switching to history
+              setIsJournalOpen(false);
+            }}
+          >
+            <Text style={[styles.topNavText, currentView === 'history' && styles.activeTopNavText]}>
+              History
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {currentView === 'dashboard' ? (
@@ -261,8 +273,29 @@ export const DashboardScreen: React.FC = () => {
               </Card>
             )}
           </ScrollView>
-        ) : (
+        ) : currentView === 'leaderboard' ? (
           <LeaderboardScreen />
+        ) : (
+          <ScrollView 
+            contentContainerStyle={[
+              styles.scrollContent, 
+              { paddingBottom: Math.max(insets.bottom + 20, theme.spacing.xxl + 20) }
+            ]}
+            showsVerticalScrollIndicator={false}
+            overScrollMode="never"
+          >
+            <View style={styles.statsCardContainer}>
+              <Text style={styles.sectionTitle}>History</Text>
+              <Text style={[styles.sectionTitle, { fontSize: 16, fontWeight: 'normal', marginTop: 8 }]}>
+                Your completed goals, habits, and tasks
+              </Text>
+            </View>
+
+            {/* History content will go here */}
+            <View style={{ padding: 20 }}>
+              <Text style={{ color: '#fff', textAlign: 'center' }}>History view coming soon...</Text>
+            </View>
+          </ScrollView>
         )}
         
         <JournalSection 

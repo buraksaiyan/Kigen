@@ -79,12 +79,41 @@ interface ActiveReminder {
   recurring: string;
 }
 
+interface CompletedGoal {
+  id: string;
+  title: string;
+  completedAt: string;
+  originalDeadline: string;
+}
+
+interface CompletedTodo {
+  id: string;
+  title: string;
+  completedAt: string;
+}
+
+interface CompletedHabit {
+  id: string;
+  title: string;
+  finalStreak: number;
+  completedAt: string;
+  targetDays?: number;
+}
+
+interface JournalEntry {
+  id: string;
+  content: string;
+  date: string;
+}
+
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
   const { 
     getSortedSections,
     refreshSections 
   } = useDashboardSections();
+  
+  const [currentView, setCurrentView] = useState<'dashboard' | 'history'>('dashboard');
   
   const [isMonthly, setIsMonthly] = useState(true);
   const [isCardFlipping, setIsCardFlipping] = useState(false);
@@ -100,23 +129,64 @@ export const DashboardScreen: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [usageStats, setUsageStats] = useState<DigitalWellbeingStats | null>(null);
   const [hasUsagePermission, setHasUsagePermission] = useState(false);
+  const [completedGoals, setCompletedGoals] = useState<CompletedGoal[]>([]);
+  const [completedTodos, setCompletedTodos] = useState<CompletedTodo[]>([]);
+  const [completedHabits, setCompletedHabits] = useState<CompletedHabit[]>([]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const toggleTodoCompletion = async (todoId: string) => {
     try {
-      const updatedTodos = activeTodos.map(todo => 
-        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
-      );
-      setActiveTodos(updatedTodos);
-      
-      // Update in AsyncStorage
-      await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedTodos));
+      const todoToToggle = activeTodos.find(todo => todo.id === todoId);
+      if (!todoToToggle) return;
+
+      if (!todoToToggle.completed) {
+        // Completing the todo - move to history
+        const completedAt = new Date().toISOString();
+        
+        const newCompletedTodo: CompletedTodo = {
+          id: todoToToggle.id,
+          title: todoToToggle.title,
+          completedAt
+        };
+        
+        const updatedCompletedTodos = [...completedTodos, newCompletedTodo];
+        setCompletedTodos(updatedCompletedTodos);
+        
+        // Save completed todos to storage
+        await AsyncStorage.setItem('@inzone_completed_todos', JSON.stringify(updatedCompletedTodos));
+        
+        // Remove from active todos
+        const updatedActiveTodos = activeTodos.filter(todo => todo.id !== todoId);
+        setActiveTodos(updatedActiveTodos);
+        
+        // Update active todos storage
+        await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedActiveTodos));
+      } else {
+        // Uncompleting - this shouldn't happen in current UI, but handle it just in case
+        const updatedTodos = activeTodos.map(todo => 
+          todo.id === todoId ? { ...todo, completed: false } : todo
+        );
+        setActiveTodos(updatedTodos);
+        await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedTodos));
+      }
     } catch (error) {
       console.error('Error updating todo:', error);
+      Alert.alert('Error', 'Failed to update todo');
     }
   };
 
   const toggleHabitCompletion = async (habitId: string) => {
     try {
+      let habitCompleted = false;
+      let completedHabitData: CompletedHabit = {
+        id: '',
+        title: '',
+        finalStreak: 0,
+        completedAt: '',
+        targetDays: 21
+      };
+      
       const updatedHabits = activeHabits.map(habit => {
         if (habit.id === habitId) {
           const today = new Date().toDateString();
@@ -124,9 +194,25 @@ export const DashboardScreen: React.FC = () => {
           
           if (!wasCompletedToday) {
             // First completion today - increase streak
+            const newStreak = habit.streak + 1;
+            const targetDays = habit.targetDays || 21;
+            
+            // Check if habit is completed (reached target)
+            if (newStreak >= targetDays) {
+              habitCompleted = true;
+              completedHabitData = {
+                id: habit.id,
+                title: habit.title,
+                finalStreak: newStreak,
+                completedAt: new Date().toISOString(),
+                targetDays: targetDays
+              };
+              return habit; // Don't update the habit since we're removing it
+            }
+            
             return { 
               ...habit, 
-              streak: habit.streak + 1,
+              streak: newStreak,
               lastCompleted: today,
               completedToday: true
             };
@@ -142,12 +228,27 @@ export const DashboardScreen: React.FC = () => {
         }
         return habit;
       });
-      setActiveHabits(updatedHabits);
       
-      // Update in AsyncStorage
-      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+      if (habitCompleted) {
+        // Move habit to completed habits
+        const updatedCompletedHabits = [...completedHabits, completedHabitData];
+        setCompletedHabits(updatedCompletedHabits);
+        await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
+        
+        // Remove from active habits
+        const filteredActiveHabits = updatedHabits.filter(h => h.id !== habitId);
+        setActiveHabits(filteredActiveHabits);
+        await AsyncStorage.setItem('@inzone_habits', JSON.stringify(filteredActiveHabits));
+        
+        Alert.alert('Habit Completed!', `Congratulations! You've completed your ${completedHabitData.targetDays}-day habit with a streak of ${completedHabitData.finalStreak} days!`);
+      } else {
+        // Normal habit update
+        setActiveHabits(updatedHabits);
+        await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+      }
     } catch (error) {
       console.error('Error updating habit:', error);
+      Alert.alert('Error', 'Failed to update habit');
     }
   };
 
@@ -211,15 +312,37 @@ export const DashboardScreen: React.FC = () => {
 
   const completeGoal = async (goalId: string) => {
     try {
-      const updatedGoals = activeGoals.map(goal => 
-        goal.id === goalId ? { ...goal, completed: true, completedAt: new Date().toISOString() } : goal
-      );
-      setActiveGoals(updatedGoals);
+      // Find the goal to complete
+      const goalToComplete = activeGoals.find(goal => goal.id === goalId);
+      if (!goalToComplete) return;
+
+      const completedAt = new Date().toISOString();
       
-      // Update in AsyncStorage
-      await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedGoals));
+      // Add to completed goals
+      const newCompletedGoal: CompletedGoal = {
+        id: goalToComplete.id,
+        title: goalToComplete.title,
+        completedAt,
+        originalDeadline: goalToComplete.deadline
+      };
+      
+      const updatedCompletedGoals = [...completedGoals, newCompletedGoal];
+      setCompletedGoals(updatedCompletedGoals);
+      
+      // Save completed goals to storage
+      await AsyncStorage.setItem('@inzone_completed_goals', JSON.stringify(updatedCompletedGoals));
+      
+      // Remove from active goals
+      const updatedActiveGoals = activeGoals.filter(goal => goal.id !== goalId);
+      setActiveGoals(updatedActiveGoals);
+      
+      // Update active goals storage
+      await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
+      
+      Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
     } catch (error) {
       console.error('Error completing goal:', error);
+      Alert.alert('Error', 'Failed to complete goal');
     }
   };
 
@@ -350,6 +473,28 @@ export const DashboardScreen: React.FC = () => {
         }
       } catch (error) {
         console.error('Error loading usage stats:', error);
+      }
+
+      // Load completed items
+      const completedGoalsData = await AsyncStorage.getItem('@inzone_completed_goals');
+      if (completedGoalsData) {
+        setCompletedGoals(JSON.parse(completedGoalsData));
+      }
+
+      const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
+      if (completedTodosData) {
+        setCompletedTodos(JSON.parse(completedTodosData));
+      }
+
+      const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
+      if (completedHabitsData) {
+        setCompletedHabits(JSON.parse(completedHabitsData));
+      }
+
+      // Load journal entries
+      const journalData = await AsyncStorage.getItem('@inzone_journal_entries');
+      if (journalData) {
+        setJournalEntries(JSON.parse(journalData));
       }
 
     } catch (error) {
@@ -884,6 +1029,131 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+  const renderHistoryContent = () => (
+    <View>
+      {/* Completed Goals */}
+      {completedGoals.length > 0 && (
+        <View style={styles.carouselPanel}>
+          <Text style={styles.sectionTitle}>Completed Goals</Text>
+          <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+            {completedGoals
+              .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+              .map((goal) => (
+                <View key={goal.id} style={styles.historyItem}>
+                  <View style={styles.historyContent}>
+                    <Text style={styles.historyTitle}>{goal.title}</Text>
+                    <Text style={styles.historyDate}>
+                      Completed: {new Date(goal.completedAt).toLocaleDateString()} at {new Date(goal.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                  </View>
+                  <Icon name="check-circle" size={24} color="#34C759" />
+                </View>
+              ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Completed Habits */}
+      {completedHabits.length > 0 && (
+        <View style={styles.carouselPanel}>
+          <Text style={styles.sectionTitle}>Completed Habits</Text>
+          <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+            {completedHabits
+              .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+              .map((habit) => (
+                <View key={habit.id} style={styles.historyItem}>
+                  <View style={styles.historyContent}>
+                    <Text style={styles.historyTitle}>{habit.title}</Text>
+                    <Text style={styles.historySubtitle}>
+                      Final streak: {habit.finalStreak} days (Target: {habit.targetDays})
+                    </Text>
+                    <Text style={styles.historyDate}>
+                      Completed: {new Date(habit.completedAt).toLocaleDateString()} at {new Date(habit.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                  </View>
+                  <Icon name="local-fire-department" size={24} color="#FF6B35" />
+                </View>
+              ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Completed Todos */}
+      {completedTodos.length > 0 && (
+        <View style={styles.carouselPanel}>
+          <Text style={styles.sectionTitle}>Completed Tasks</Text>
+          <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+            {completedTodos
+              .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+              .map((todo) => (
+                <View key={todo.id} style={styles.historyItem}>
+                  <View style={styles.historyContent}>
+                    <Text style={styles.historyTitle}>{todo.title}</Text>
+                    <Text style={styles.historyDate}>
+                      Completed: {new Date(todo.completedAt).toLocaleDateString()} at {new Date(todo.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                  </View>
+                  <Icon name="check-box" size={24} color="#34C759" />
+                </View>
+              ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Journal Entries */}
+      {journalEntries.length > 0 && (
+        <View style={styles.carouselPanel}>
+          <Text style={styles.sectionTitle}>Journal Entries</Text>
+          <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+            {journalEntries
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map((entry) => {
+                const isExpanded = expandedItems.has(entry.id);
+                return (
+                  <TouchableOpacity 
+                    key={entry.id} 
+                    style={styles.expandableHistoryItem}
+                    onPress={() => {
+                      const newExpanded = new Set(expandedItems);
+                      if (isExpanded) {
+                        newExpanded.delete(entry.id);
+                      } else {
+                        newExpanded.add(entry.id);
+                      }
+                      setExpandedItems(newExpanded);
+                    }}
+                  >
+                    <View style={styles.historyContent}>
+                      <Text style={styles.historyTitle}>Journal Entry</Text>
+                      <Text style={styles.historyDate}>
+                        {new Date(entry.date).toLocaleDateString()} at {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                      <Text style={styles.historyPreview} numberOfLines={isExpanded ? undefined : 2}>
+                        {entry.content}
+                      </Text>
+                    </View>
+                    <Icon 
+                      name={isExpanded ? "expand-less" : "expand-more"} 
+                      size={24} 
+                      color={theme.colors.text.secondary} 
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Empty state */}
+      {completedGoals.length === 0 && completedHabits.length === 0 && completedTodos.length === 0 && journalEntries.length === 0 && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>No completed items yet</Text>
+          <Text style={styles.emptyStateSubtext}>Complete goals, habits, and tasks to see them here</Text>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
@@ -896,92 +1166,130 @@ export const DashboardScreen: React.FC = () => {
         <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
       </View>
 
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity 
+          style={[styles.tab, currentView === 'dashboard' && styles.activeTab]}
+          onPress={() => setCurrentView('dashboard')}
+        >
+          <Text style={[styles.tabText, currentView === 'dashboard' && styles.activeTabText]}>
+            Dashboard
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.tab, currentView === 'history' && styles.activeTab]}
+          onPress={() => setCurrentView('history')}
+        >
+          <Text style={[styles.tabText, currentView === 'history' && styles.activeTabText]}>
+            History
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Small hint text between top bar and card - moved into scrollable content so it can scroll away */}
 
-      <ScrollView 
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        bounces={true}
-        nestedScrollEnabled={true}
-        contentContainerStyle={styles.scrollViewContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
-      >
-        <View style={styles.topTapHintContainer}>
-          <Text style={styles.topTapHintText}>Tap to flip</Text>
-        </View>
-        
-        {/* Render sections in custom order with visibility control */}
-        {(() => {
-          const carouselSections = getSortedSections().filter((s) => 
-            ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
-          );
-          const hasCarouselSections = carouselSections.length > 0;
-          let carouselRendered = false;
+      {currentView === 'dashboard' ? (
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+          nestedScrollEnabled={true}
+          contentContainerStyle={styles.scrollViewContent}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
+        >
+          <View style={styles.topTapHintContainer}>
+            <Text style={styles.topTapHintText}>Tap to flip</Text>
+          </View>
           
-          return getSortedSections().map((section) => {
-            const sectionType = section.id;
+          {/* Render sections in custom order with visibility control */}
+          {(() => {
+            const carouselSections = getSortedSections().filter((s) => 
+              ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
+            );
+            const hasCarouselSections = carouselSections.length > 0;
+            let carouselRendered = false;
             
-            switch (sectionType) {
-              case 'userCard':
-                return <View key={sectionType}>{renderUserCard()}</View>;
-              case 'phoneUsage':
-                return <View key={sectionType}>{renderPhoneUsage()}</View>;
-              case 'activeGoals':
-              case 'activeHabits':
-              case 'activeTodos':
-              case 'activeReminders':
-                // Render carousel only once when we encounter the first carousel section
-                if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
-                  carouselRendered = true;
-                  return (
-                    <View key="carousel-group">
-                      <ScrollView
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        nestedScrollEnabled={true}
-                        onScroll={(event) => {
-                          const offsetX = event.nativeEvent.contentOffset.x;
-                          const newIndex = Math.round(offsetX / screenWidth);
-                          if (newIndex !== currentCarouselIndex) {
-                            setCurrentCarouselIndex(newIndex);
-                          }
-                        }}
-                        scrollEventThrottle={16}
-                        style={styles.carousel}
-                      >
-                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
-                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
-                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
-                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
-                      </ScrollView>
+            return getSortedSections().map((section) => {
+              const sectionType = section.id;
+              
+              switch (sectionType) {
+                case 'userCard':
+                  return <View key={sectionType}>{renderUserCard()}</View>;
+                case 'phoneUsage':
+                  return <View key={sectionType}>{renderPhoneUsage()}</View>;
+                case 'activeGoals':
+                case 'activeHabits':
+                case 'activeTodos':
+                case 'activeReminders':
+                  // Render carousel only once when we encounter the first carousel section
+                  if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
+                    carouselRendered = true;
+                    return (
+                      <View key="carousel-group">
+                        <ScrollView
+                          horizontal
+                          pagingEnabled
+                          showsHorizontalScrollIndicator={false}
+                          nestedScrollEnabled={true}
+                          onScroll={(event) => {
+                            const offsetX = event.nativeEvent.contentOffset.x;
+                            const newIndex = Math.round(offsetX / screenWidth);
+                            if (newIndex !== currentCarouselIndex) {
+                              setCurrentCarouselIndex(newIndex);
+                            }
+                          }}
+                          scrollEventThrottle={16}
+                          style={styles.carousel}
+                        >
+                          {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
+                          {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
+                          {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
+                          {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
+                        </ScrollView>
 
-                      {carouselSections.length > 1 && (
-                        <View style={styles.carouselIndicator}>
-                          {carouselSections.map((_, index: number) => (
-                            <View
-                              key={index}
-                              style={[
-                                styles.indicatorDot,
-                                currentCarouselIndex === index && styles.indicatorDotActive,
-                              ]}
-                            />
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  );
-                }
-                // Skip other carousel sections since they're rendered in the carousel above
-                return null;
-              default:
-                return null;
-            }
-          }).filter(Boolean); // Remove null entries
-        })()}
+                        {carouselSections.length > 1 && (
+                          <View style={styles.carouselIndicator}>
+                            {carouselSections.map((_, index: number) => (
+                              <View
+                                key={index}
+                                style={[
+                                  styles.indicatorDot,
+                                  currentCarouselIndex === index && styles.indicatorDotActive,
+                                ]}
+                              />
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    );
+                  }
+                  // Skip other carousel sections since they're rendered in the carousel above
+                  return null;
+                default:
+                  return null;
+              }
+            }).filter(Boolean); // Remove null entries
+          })()}
 
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+      ) : (
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+          contentContainerStyle={styles.scrollViewContent}
+        >
+          <View style={styles.topTapHintContainer}>
+            <Text style={styles.topTapHintText}>Your completed items</Text>
+          </View>
+          
+          {/* History content */}
+          {renderHistoryContent()}
+          
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -1520,5 +1828,70 @@ const styles = StyleSheet.create({
   },
   reminderAction: {
     padding: theme.spacing.sm,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.surface,
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 8,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  activeTab: {
+    backgroundColor: theme.colors.primary,
+  },
+  tabText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
+  historyItem: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 16,
+  },
+  expandableHistoryItem: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 16,
+  },
+  historyContent: {
+    flex: 1,
+  },
+  historyTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  historySubtitle: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  historyDate: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+  },
+  historyPreview: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    marginTop: 8,
   },
 });
