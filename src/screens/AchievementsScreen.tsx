@@ -190,7 +190,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
                 styles.progressFill,
                 { 
                   width: `${progress}%`,
-                  backgroundColor: isUnlocked ? theme.colors.success : theme.colors.primary
+                  backgroundColor: isUnlocked ? theme.colors.success : theme.colors.secondary
                 }
               ]} />
             </View>
