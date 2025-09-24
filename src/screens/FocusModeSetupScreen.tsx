@@ -105,7 +105,12 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
+                    style={[
+                      styles.timeInput,
+                      mode.id === 'executioner'
+                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        : { borderColor: mode.color },
+                    ]}
                     value={hours}
                     onChangeText={setHours}
                     keyboardType="numeric"
@@ -120,7 +125,12 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
+                    style={[
+                      styles.timeInput,
+                      mode.id === 'executioner'
+                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        : { borderColor: mode.color },
+                    ]}
                     value={minutes}
                     onChangeText={setMinutes}
                     keyboardType="numeric"
@@ -160,7 +170,12 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
-                    style={[styles.timeInput, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
+                    style={[
+                      styles.timeInput,
+                      mode.id === 'executioner'
+                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        : { borderColor: mode.color },
+                    ]}
                     value={breakMinutes}
                     onChangeText={setBreakMinutes}
                     keyboardType="numeric"
@@ -183,11 +198,21 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 ].map((preset, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.presetButton, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
+                    style={[
+                      styles.presetButton,
+                      mode.id === 'executioner'
+                        ? { borderWidth: 0, backgroundColor: TRANSPARENT }
+                        : { borderColor: mode.color },
+                    ]}
                     onPress={() => setBreakMinutes(preset.minutes.toString())}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, mode.id === 'executioner' ? {} : { color: mode.color }]}>
+                    <Text
+                      style={[
+                        styles.presetText,
+                        mode.id === 'executioner' ? {} : { color: mode.color },
+                      ]}
+                    >
                       {preset.label}
                     </Text>
                   </TouchableOpacity>
