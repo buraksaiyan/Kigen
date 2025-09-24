@@ -28,6 +28,8 @@ interface Habit {
   createdAt: string;
   streak: number;
   lastCompleted?: string;
+  failedAt?: string; // when the habit was marked as failed
+  failureReason?: 'missed_day' | 'gave_up'; // reason for failure
 }
 
 interface HabitsCreationPageProps {

@@ -62,6 +62,8 @@ interface ActiveHabit {
   completedToday: boolean;
   lastCompleted?: string;
   targetDays?: number;
+  failedAt?: string;
+  failureReason?: 'missed_day' | 'gave_up';
 }
 
 interface ActiveTodo {
@@ -146,6 +148,47 @@ export const DashboardScreen: React.FC = () => {
       await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
     } catch (error) {
       console.error('Error updating habit:', error);
+    }
+  };
+
+  const failHabit = async (habitId: string, reason: 'missed_day' | 'gave_up' = 'gave_up') => {
+    try {
+      // Load all habits from storage
+      const habitsData = await AsyncStorage.getItem('@inzone_habits');
+      if (!habitsData) return;
+
+      const allHabits = JSON.parse(habitsData);
+      
+      // Update the specific habit
+      const updatedHabits = allHabits.map((habit: any) => {
+        if (habit.id === habitId) {
+          return {
+            ...habit,
+            isActive: false,
+            failedAt: new Date().toISOString(),
+            failureReason: reason,
+            // Reset streak if it was a missed day, keep it if giving up
+            streak: reason === 'missed_day' ? 0 : habit.streak
+          };
+        }
+        return habit;
+      });
+
+      // Save back to storage
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+
+      // Remove from active habits list
+      setActiveHabits(prev => prev.filter(habit => habit.id !== habitId));
+
+      Alert.alert(
+        'Habit Failed',
+        reason === 'missed_day' 
+          ? 'Habit streak has been reset due to missed day.'
+          : 'Habit has been marked as failed and moved to history.'
+      );
+    } catch (error) {
+      console.error('Error failing habit:', error);
+      Alert.alert('Error', 'Failed to mark habit as failed');
     }
   };
 
@@ -625,6 +668,22 @@ export const DashboardScreen: React.FC = () => {
                   </Text>
                 </View>
               </View>
+              <TouchableOpacity 
+                style={styles.habitFailButton}
+                onPress={() => {
+                  Alert.alert(
+                    'Fail Habit',
+                    'Choose what to do with this habit:',
+                    [
+                      { text: 'Reset Streak (Missed Day)', onPress: () => failHabit(habit.id, 'missed_day') },
+                      { text: 'Give Up (Move to History)', onPress: () => failHabit(habit.id, 'gave_up') },
+                      { text: 'Cancel', style: 'cancel' }
+                    ]
+                  );
+                }}
+              >
+                <Icon name="close" size={20} color="#FF3B30" />
+              </TouchableOpacity>
             </View>
           ))
         ) : (
@@ -1224,6 +1283,12 @@ const styles = StyleSheet.create({
   habitStreakText: {
     color: theme.colors.text.secondary,
     fontSize: 12,
+  },
+  habitFailButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    padding: 8,
   },
   todoItem: {
     alignItems: 'center',
