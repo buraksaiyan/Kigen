@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.colors.surface,
+    color: theme.colors.text.primary,
   },
   timeInput: {
     borderWidth: 1,

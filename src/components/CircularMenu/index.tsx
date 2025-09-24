@@ -256,7 +256,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
               >
                 <Icon name={item.icon} size={24} color="#FFFFFF" />
               </TouchableOpacity>
-              <Text style={[styles.itemLabel, { color: theme.colors.text.primary }]}>
+              <Text style={[styles.itemLabel, { color: '#000000' }]}>
                 {item.title}
               </Text>
             </Animated.View>
@@ -293,16 +293,15 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     shadowRadius: 12,
     width: ITEM_SIZE,
   },
-  // eslint-disable-next-line react-native/no-color-literals
   itemLabel: {
-    color: theme.colors.surface,
+    color: '#000000',
     fontSize: 13,
     fontWeight: '700',
     marginTop: 8,
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 15, 26, 0.7)', // Semi-transparent version of theme.colors.background
+    textShadowColor: 'rgba(255, 255, 255, 0.8)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    textShadowRadius: 2,
   },
   menuContainer: {
     bottom: 0,
