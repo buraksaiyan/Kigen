@@ -172,6 +172,9 @@ export const DashboardScreen: React.FC = () => {
         
         // Update active todos storage
         await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedActiveTodos));
+        
+        // Record the todo completion in stats
+        await UserStatsService.recordTodoCompletion(todoToToggle.title);
       } else {
         // Uncompleting - this shouldn't happen in current UI, but handle it just in case
         const updatedTodos = activeTodos.map(todo => 
@@ -203,6 +206,9 @@ export const DashboardScreen: React.FC = () => {
         targetDays: 21
       };
       
+      let habitStreakIncreased = false;
+      let newStreakValue = 0;
+      
       const updatedHabits = activeHabits.map(habit => {
         if (habit.id === habitId) {
           const today = new Date().toDateString();
@@ -226,6 +232,9 @@ export const DashboardScreen: React.FC = () => {
               return habit; // Don't update the habit since we're removing it
             }
             
+            habitStreakIncreased = true;
+            newStreakValue = newStreak;
+            
             return { 
               ...habit, 
               streak: newStreak,
@@ -244,6 +253,11 @@ export const DashboardScreen: React.FC = () => {
         }
         return habit;
       });
+      
+      // Record habit streak milestone if streak increased
+      if (habitStreakIncreased) {
+        await UserStatsService.recordHabitStreak(newStreakValue);
+      }
       
       if (habitCompleted) {
         // Move habit to completed habits
@@ -362,6 +376,9 @@ export const DashboardScreen: React.FC = () => {
       await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
       
       Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
+      
+      // Record the goal completion in stats
+      await UserStatsService.recordGoalCompletion();
 
       // Update rank in real-time after goal completion
       await updateRankInRealTime();
