@@ -169,6 +169,10 @@ export class UserStatsService {
   // Stats Calculation and Management
   static async calculateCurrentStats(): Promise<UserStats> {
     try {
+      // Use local date for consistency
+      const todayDate = new Date();
+      const localDate = new Date(todayDate.getTime() - todayDate.getTimezoneOffset() * 60000);
+      
       const today = await this.getTodayActivity();
       
       // Get total focus minutes
@@ -183,6 +187,32 @@ export class UserStatsService {
       const achievementsUnlocked = await this.getTotalUnlockedAchievements();
       const habitStreakWeeks = Math.floor((await this.getDailyStreak()) / 7);
       const completedTodoBullets = await this.getTotalCompletedTodoBullets();
+
+      // Get today's social activities
+      const todayString = localDate.toISOString().slice(0, 10);
+      const todayTimeOutsideEntries = await PointsHistoryService.getPointsHistory(
+        100, // Reasonable limit
+        'time_outside',
+        undefined,
+        todayString,
+        todayString
+      );
+      
+      const todayTimeWithFriendsEntries = await PointsHistoryService.getPointsHistory(
+        100, // Reasonable limit
+        'time_with_friends',
+        undefined,
+        todayString,
+        todayString
+      );
+      
+      const todayHoursOutside = todayTimeOutsideEntries.reduce((sum, entry) => 
+        sum + (entry.metadata?.hoursSpent || 0), 0
+      );
+      
+      const todayHoursWithFriends = todayTimeWithFriendsEntries.reduce((sum, entry) => 
+        sum + (entry.metadata?.hoursSpent || 0), 0
+      );
 
       const stats: UserStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
@@ -208,7 +238,7 @@ export class UserStatsService {
         ),
         MEN: RatingSystem.calculateMentalityPoints(meditationMinutes),
         PHY: RatingSystem.calculatePhysicalPoints(bodyFocusMinutes),
-        SOC: RatingSystem.calculateSocialPoints(),
+        SOC: RatingSystem.calculateSocialPoints(todayHoursOutside, todayHoursWithFriends),
         PRD: RatingSystem.calculateProductivityPoints(today.completedGoals, today.journalEntries, totalFocusMinutes)
       };
 
@@ -285,8 +315,36 @@ export class UserStatsService {
       // Calculate stats using aggregated monthly data
       const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
 
+      // Calculate social points from monthly social activities
+      const monthStartDate = `${currentMonth}-01`;
+      const monthEndDate = `${currentMonth}-${daysInMonth.toString().padStart(2, '0')}`;
+      
+      const timeOutsideEntries = await PointsHistoryService.getPointsHistory(
+        1000, // Large limit to get all entries
+        'time_outside',
+        undefined,
+        monthStartDate,
+        monthEndDate
+      );
+      
+      const timeWithFriendsEntries = await PointsHistoryService.getPointsHistory(
+        1000, // Large limit to get all entries
+        'time_with_friends',
+        undefined,
+        monthStartDate,
+        monthEndDate
+      );
+      
+      const totalHoursOutside = timeOutsideEntries.reduce((sum, entry) => 
+        sum + (entry.metadata?.hoursSpent || 0), 0
+      );
+      
+      const totalHoursWithFriends = timeWithFriendsEntries.reduce((sum, entry) => 
+        sum + (entry.metadata?.hoursSpent || 0), 0
+      );
+
       const productivityPoints = RatingSystem.calculateProductivityPoints(totalCompletedGoals, totalJournalEntries, totalAllFocusMinutes);
-      const socialPoints = RatingSystem.calculateSocialPoints();
+      const socialPoints = RatingSystem.calculateSocialPoints(totalHoursOutside, totalHoursWithFriends);
 
       totalStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
