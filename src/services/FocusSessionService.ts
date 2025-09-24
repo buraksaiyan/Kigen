@@ -150,10 +150,12 @@ class FocusSessionService {
           await this.updateDailyPoints(session.pointsEarned);
         }
         
-        // Update UserStatsService with the completed session
-        await this.updateUserStats(session, actualMinutes);
+        // Update UserStatsService with the completed session (only for truly completed sessions)
+        if (completed) {
+          await this.updateUserStats(session, actualMinutes);
+        }
         
-        console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned`);
+        console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned${completed ? ' (completed)' : ' (not completed)'}`);
       } else {
         console.log(`Session recorded but too short (${actualMinutes} minutes), no points awarded`);
       }

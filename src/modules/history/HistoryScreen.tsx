@@ -366,13 +366,54 @@ export const HistoryScreen: React.FC = () => {
         <Text style={styles.headerTitle}>History</Text>
         {selectedIds.length > 0 ? (
           <TouchableOpacity style={styles.filterButton} onPress={async () => {
-            // Delete selected entries (for now handle journal entries via journalStorage)
+            // Delete selected entries
             try {
               const journals = historyData.journaling;
-              const toDelete = selectedIds.filter(id => journals.some(j => j.id === id));
-              for (const id of toDelete) {
+              const habits = historyData.habits;
+              const goals = historyData.goals;
+              const todos = historyData.todo;
+              
+              // Delete journal entries
+              const journalIds = selectedIds.filter(id => journals.some(j => j.id === id));
+              for (const id of journalIds) {
                 await journalStorage.deleteEntry(id);
               }
+              
+              // Delete habits (from completed habits storage)
+              const habitIds = selectedIds.filter(id => habits.some(h => h.id === id));
+              if (habitIds.length > 0) {
+                const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
+                if (completedHabitsData) {
+                  let completedHabits = JSON.parse(completedHabitsData);
+                  // Remove '_completed' suffix to get original habit ID
+                  const originalHabitIds = habitIds.map(id => id.replace('_completed', ''));
+                  completedHabits = completedHabits.filter((habit: any) => !originalHabitIds.includes(habit.id));
+                  await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(completedHabits));
+                }
+              }
+              
+              // Delete goals (from goals storage)
+              const goalIds = selectedIds.filter(id => goals.some(g => g.id === id));
+              if (goalIds.length > 0) {
+                const goalsData = await AsyncStorage.getItem('@inzone_goals');
+                if (goalsData) {
+                  let goals = JSON.parse(goalsData);
+                  goals = goals.filter((goal: any) => !goalIds.includes(goal.id));
+                  await AsyncStorage.setItem('@inzone_goals', JSON.stringify(goals));
+                }
+              }
+              
+              // Delete todos (from todos storage)
+              const todoIds = selectedIds.filter(id => todos.some(t => t.id === id));
+              if (todoIds.length > 0) {
+                const todosData = await AsyncStorage.getItem('@inzone_todos');
+                if (todosData) {
+                  let todos = JSON.parse(todosData);
+                  todos = todos.filter((todo: any) => !todoIds.includes(todo.id));
+                  await AsyncStorage.setItem('@inzone_todos', JSON.stringify(todos));
+                }
+              }
+              
               // Refresh local data
               await loadHistoryData();
               setSelectedIds([]);
