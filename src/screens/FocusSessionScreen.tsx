@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
-import { Card } from '../components/UI';
 import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
 import { GoalSelectionScreen } from './GoalSelectionScreen';
@@ -42,38 +41,31 @@ interface FocusSessionScreenProps {
 const focusModes: FocusMode[] = [
   {
     id: 'flow',
-    title: 'Flow Focus',
+    title: 'Flow',
     subtitle: 'Deep Work Sessions',
     color: '#14B8A6',
     description: 'Enter a state of deep focus for creative and analytical work.',
   },
   {
     id: 'executioner',
-    title: 'Executioner Focus',
+    title: 'Executioner',
     subtitle: 'High-Intensity Tasks',
     color: '#EF4444',
     description: 'Tackle challenging tasks with maximum intensity and discipline.',
   },
   {
     id: 'meditation',
-    title: 'Meditation Focus',
+    title: 'Meditate',
     subtitle: 'Mindfulness & Awareness',
     color: '#22C55E',
     description: 'Cultivate mindfulness and inner awareness through meditation.',
   },
   {
     id: 'body',
-    title: 'Body Focus',
+    title: 'Body',
     subtitle: 'Physical Training',
     color: '#7C2D42',
     description: 'Focus on physical training and body awareness exercises.',
-  },
-  {
-    id: 'notech',
-    title: 'No Tech Focus',
-    subtitle: 'Digital Detox',
-    color: '#F59E0B',
-    description: 'Disconnect from technology and reconnect with reality.',
   },
 ];
 
@@ -94,6 +86,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [breakMinutes, setBreakMinutes] = useState(5);
 
   const { settings } = useSettings();
+
+  // Destructure focus modes for type safety
+  const [flowMode, executionerMode, meditateMode, bodyMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode];
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
@@ -244,29 +239,55 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <View style={styles.content}>
                 <View style={styles.contentHeader}>
                   <Text style={styles.title}>Select your focus mode</Text>
-                  <Text style={styles.subtitle}>Select the type of focus session to begin</Text>
+                  <Text style={styles.subtitle}>Choose how you want to focus</Text>
                 </View>
 
-                <View style={styles.modesContainer}>
-                  {focusModes.map((mode) => (
+                {/* Custom Focus Mode Button */}
+                <TouchableOpacity
+                  style={styles.customModeButton}
+                  onPress={() => {/* TODO: Handle custom mode */}}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.customModeText}>Custom Focus Mode</Text>
+                </TouchableOpacity>
+
+                {/* 4-Leaf Clover Layout */}
+                <View style={styles.cloverContainer}>
+                  <View style={styles.cloverRow}>
                     <TouchableOpacity
-                      key={mode.id}
-                      onPress={() => handleModeSelect(mode)}
-                      activeOpacity={0.7}
+                      style={[styles.cloverButton, { backgroundColor: flowMode.color }]}
+                      onPress={() => handleModeSelect(flowMode)}
+                      activeOpacity={0.8}
                     >
-                      <Card style={[styles.modeCard, { borderColor: mode.color }]}>
-                        <View style={styles.modeContent}>
-                          <View style={styles.modeHeader}>
-                            <Text style={[styles.modeTitle, { color: mode.color }]}>
-                              {mode.title}
-                            </Text>
-                            <Text style={styles.modeSubtitle}>{mode.subtitle}</Text>
-                          </View>
-                          <Text style={styles.modeDescription}>{mode.description}</Text>
-                        </View>
-                      </Card>
+                      <Text style={styles.cloverButtonText}>{flowMode.title}</Text>
                     </TouchableOpacity>
-                  ))}
+
+                    <TouchableOpacity
+                      style={[styles.cloverButton, { backgroundColor: executionerMode.color }]}
+                      onPress={() => handleModeSelect(executionerMode)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.cloverButtonText}>{executionerMode.title}</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.cloverRow}>
+                    <TouchableOpacity
+                      style={[styles.cloverButton, { backgroundColor: meditateMode.color }]}
+                      onPress={() => handleModeSelect(meditateMode)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.cloverButtonText}>{meditateMode.title}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.cloverButton, { backgroundColor: bodyMode.color }]}
+                      onPress={() => handleModeSelect(bodyMode)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.cloverButtonText}>{bodyMode.title}</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </ScrollView>
@@ -306,8 +327,37 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: '#888691',
+    color: theme.colors.text.secondary,
     fontWeight: '600',
+  },
+  cloverButton: {
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.lg,
+    elevation: 3,
+    flex: 1,
+    height: 120,
+    justifyContent: 'center',
+    margin: theme.spacing.sm,
+    shadowColor: theme.colors.text.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cloverButtonText: {
+    ...theme.typography.h3,
+    color: theme.colors.background,
+    fontWeight: '700',
+  },
+  cloverContainer: {
+    marginTop: theme.spacing.lg,
+  },
+  cloverRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
   },
   container: {
     backgroundColor: theme.colors.background,
@@ -320,9 +370,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
-  logoContainer: {
+  customModeButton: {
     alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
     justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
+  },
+  customModeText: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
   },
   modalHeader: {
     alignItems: 'center',
@@ -330,34 +391,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
-  },
-  modeCard: {
-    borderColor: theme.colors.border,
-    borderWidth: 2,
-  },
-  modeContent: {
-    padding: theme.spacing.md,
-  },
-  modeDescription: {
-    ...theme.typography.body,
-    color: theme.colors.text.tertiary,
-    lineHeight: 20,
-  },
-  modeHeader: {
-    marginBottom: theme.spacing.sm,
-  },
-  modeSubtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
-  },
-  modeTitle: {
-    ...theme.typography.h3,
-    fontWeight: '700',
-    marginBottom: theme.spacing.xs,
-  },
-  modesContainer: {
-    gap: theme.spacing.md,
   },
   placeholder: {
     width: 60,
