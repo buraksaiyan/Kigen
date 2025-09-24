@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -269,11 +270,12 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           />
         ) : (
           <>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            {/* Top bar with logo to match dashboard */}
+            <View style={styles.topBarContainer}>
+              <TouchableOpacity onPress={onClose} style={styles.topBarLeftButton}>
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
-              <View style={styles.placeholder} />
+              <Image source={require('../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
             </View>
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -362,9 +364,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
-  closeButton: {
-    padding: 8,
-  },
   closeButtonText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
@@ -405,28 +404,19 @@ const styles = StyleSheet.create({
   },
   customModeButton: {
     alignItems: 'center',
+    alignSelf: 'stretch',
     backgroundColor: theme.colors.surface,
     borderColor: CUSTOM_MODE_COLOR,
     borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     justifyContent: 'center',
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.lg,
     paddingVertical: theme.spacing.lg,
   },
   customModeText: {
     ...theme.typography.h3,
     color: CUSTOM_MODE_COLOR,
     fontWeight: '600',
-  },
-  modalHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  placeholder: {
-    width: 60,
   },
   scrollView: {
     flex: 1,
@@ -437,5 +427,31 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: theme.spacing.sm,
     textAlign: 'center',
+  },
+  topBarContainer: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    height: 48,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  topBarLeftButton: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    borderRadius: 24,
+    height: 48,
+    justifyContent: 'center',
+    left: 12,
+    position: 'absolute',
+    width: 48,
+    zIndex: 1,
+  },
+  topBarLogo: {
+    height: 128,
+    resizeMode: 'contain',
+    width: 200,
   },
 });
