@@ -480,9 +480,10 @@ export const DashboardScreen: React.FC = () => {
                   }
                 }}>
                   <Image
-                    source={{ uri: profileImageUri || session?.user?.user_metadata?.avatar_url }}
+                    source={profileImageUri || session?.user?.user_metadata?.avatar_url 
+                      ? { uri: profileImageUri || session?.user?.user_metadata?.avatar_url }
+                      : require('../../../assets/images/profile-icon.png')}
                     style={styles.profileImage}
-                    defaultSource={require('../../../assets/images/profile-icon.png')}
                   />
                 </TouchableOpacity>
               </View>
