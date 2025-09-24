@@ -337,18 +337,10 @@ const styles = StyleSheet.create({
     backgroundColor: TRANSPARENT,
     borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
-    elevation: 3,
     flex: 1,
     height: 120,
     justifyContent: 'center',
     margin: theme.spacing.sm,
-    shadowColor: theme.colors.text.primary,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   cloverButtonText: {
     ...theme.typography.h3,
