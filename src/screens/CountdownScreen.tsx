@@ -39,6 +39,7 @@ interface CountdownScreenProps {
   mode: FocusMode;
   totalHours: number;
   totalMinutes: number;
+  breakMinutes: number;
   selectedGoal?: Goal | null; // Add goal support
   onComplete: () => void;
   onPause: () => void;
@@ -409,6 +410,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   mode,
   totalHours,
   totalMinutes,
+  breakMinutes,
   selectedGoal,
   onComplete,
   onPause,
@@ -424,6 +426,11 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     const quotes = FOCUS_QUOTES[mode.id as keyof typeof FOCUS_QUOTES] || FOCUS_QUOTES.meditation;
     return quotes[Math.floor(Math.random() * quotes.length)];
   });
+
+  // Break-related state
+  const [isInBreak, setIsInBreak] = useState(false);
+  const [breakTimeLeft, setBreakTimeLeft] = useState(breakMinutes * 60);
+  const [pausedFocusTime, setPausedFocusTime] = useState(0);
 
   // Set counter state for Body Focus mode
   const [setCount, setSetCount] = useState(0);
@@ -537,7 +544,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   useEffect(() => {
   let interval: ReturnType<typeof globalThis.setInterval>;
     
-    if (isRunning && !isPaused && timeLeft > 0) {
+    if (isRunning && !isPaused && timeLeft > 0 && !isInBreak) {
   interval = globalThis.setInterval(async () => {
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
@@ -564,7 +571,33 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         globalThis.clearInterval(interval);
       }
     };
-  }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume]);
+  }, [isRunning, isPaused, onComplete, settings.timerSoundsEnabled, settings.soundVolume, isInBreak]);
+
+  // Break timer effect
+  useEffect(() => {
+    let breakInterval: ReturnType<typeof globalThis.setInterval>;
+    
+    if (isInBreak && breakTimeLeft > 0) {
+      breakInterval = globalThis.setInterval(() => {
+        setBreakTimeLeft(prevTime => {
+          const newTime = prevTime - 1;
+          
+          if (newTime <= 0) {
+            // Break is over, resume focus session
+            handleBreakComplete();
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (breakInterval) {
+        globalThis.clearInterval(breakInterval);
+      }
+    };
+  }, [isInBreak, breakTimeLeft]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -593,6 +626,26 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     });
     
     onPause();
+  };
+
+  const handleBreak = () => {
+    // Pause the main focus timer
+    setPausedFocusTime(timeLeft);
+    setIsPaused(true);
+    setIsInBreak(true);
+    setBreakTimeLeft(breakMinutes * 60); // Reset break timer
+  };
+
+  const handleBreakComplete = () => {
+    // Resume the main focus timer from where it left off
+    setTimeLeft(pausedFocusTime);
+    setIsInBreak(false);
+    setIsPaused(false);
+  };
+
+  const handleContinueFromBreak = () => {
+    // User manually continues from break
+    handleBreakComplete();
   };
 
   const handleEarlyFinish = async () => {
@@ -626,6 +679,105 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   };
 
   if (!visible) return null;
+
+  // Show break screen if in break mode
+  if (isInBreak) {
+    const breakTime = formatTime(breakTimeLeft);
+    const breakProgressPercentage = breakMinutes > 0 ? ((breakMinutes * 60 - breakTimeLeft) / (breakMinutes * 60)) * 100 : 0;
+
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Break Header */}
+          <View style={styles.header}>
+            <Text style={[styles.modeTitle, { color: '#22C55E' }]}>
+              Break Time
+            </Text>
+            <View style={[styles.progressBar, { backgroundColor: '#22C55E20' }]}>
+              <View 
+                style={[
+                  styles.progressFill, 
+                  { 
+                    backgroundColor: '#22C55E',
+                    width: `${breakProgressPercentage}%` 
+                  }
+                ]} 
+              />
+            </View>
+          </View>
+
+          {/* Break Timer Display */}
+          <View style={styles.circularTimerContainer}>
+            <View style={styles.progressCircle}>
+              <Svg width={340} height={340} style={styles.progressSvg}>
+                {/* Background circle - gray */}
+                <Circle
+                  cx={170}
+                  cy={170}
+                  r={155}
+                  stroke="#333333"
+                  strokeWidth={8}
+                  fill="transparent"
+                />
+                {/* Progress circle - green for break */}
+                <Circle
+                  cx={170}
+                  cy={170}
+                  r={155}
+                  stroke="#22C55E"
+                  strokeWidth={8}
+                  fill="transparent"
+                  strokeDasharray={`${2 * Math.PI * 155}`}
+                  strokeDashoffset={`${2 * Math.PI * 155 * (1 - breakProgressPercentage / 100)}`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 170 170)"
+                />
+              </Svg>
+              
+              {/* Break Time Display */}
+              <View style={styles.timeDisplayContainer}>
+                <View style={styles.primaryTimeContainer}>
+                  <Text style={[styles.primaryTimeText, { color: theme.colors.text.primary }]}>
+                    {breakTime.m1}{breakTime.m2}:{breakTime.s1}{breakTime.s2}
+                  </Text>
+                  <View style={styles.primaryLabelsContainer}>
+                    <Text style={styles.primaryLabel}>MINUTES</Text>
+                    <Text style={styles.primaryLabel}>SECONDS</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Break Controls */}
+          <View style={styles.controls}>
+            <View style={styles.controlButton} />
+            
+            <TouchableOpacity
+              style={[styles.controlButton, { backgroundColor: '#22C55E', borderRadius: 25 }]}
+              onPress={handleContinueFromBreak}
+              activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>
+                Continue Focus
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.controlButton} />
+          </View>
+
+          {/* Break Quote */}
+          <View style={styles.quoteContainer}>
+            <Text style={styles.quoteText}>
+              "Take a deep breath. You've earned this break."
+            </Text>
+            <Text style={styles.quoteAuthor}>— Your Focus Guide</Text>
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -740,14 +892,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
         {/* Controls */}
         <View style={styles.controls}>
-          {/* Abort Button */}
+          {/* Break Button */}
           <TouchableOpacity
-            style={[styles.controlButton, styles.abortButton]}
-            onPress={handleAbort}
+            style={[styles.controlButton, styles.breakButton]}
+            onPress={handleBreak}
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]}>Abort</Text>
+            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]}>Break</Text>
           </TouchableOpacity>
 
           {/* Main Pause/Resume Button */}
@@ -787,6 +939,11 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
 const styles = StyleSheet.create({
   abortButton: {
+    backgroundColor: theme.colors.overlayLight,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
+  },
+  breakButton: {
     backgroundColor: theme.colors.overlayLight,
     borderColor: theme.colors.border,
     borderWidth: 1,

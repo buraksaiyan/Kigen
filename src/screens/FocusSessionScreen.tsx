@@ -91,6 +91,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [showCountdown, setShowCountdown] = useState(false);
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
+  const [breakMinutes, setBreakMinutes] = useState(5);
 
   const { settings } = useSettings();
 
@@ -121,7 +122,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
-  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number) => {
+  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number) => {
     try {
       const totalMinutes = (hours * 60) + minutes;
       const sessionId = await focusSessionService.startSession(mode, totalMinutes, selectedGoal);
@@ -129,10 +130,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setCurrentSessionId(sessionId);
       setSessionHours(hours);
       setSessionMinutes(minutes);
+      setBreakMinutes(breakMin);
       setShowSetup(false);
       setShowCountdown(true);
       
-      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, goal: selectedGoal?.title });
+      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, breakDuration: breakMin, goal: selectedGoal?.title });
     } catch (error) {
       console.error('Error starting focus session:', error);
       // Handle error - could show an alert or toast
@@ -222,6 +224,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             mode={selectedMode}
             totalHours={sessionHours}
             totalMinutes={sessionMinutes}
+            breakMinutes={breakMinutes}
             selectedGoal={selectedGoal} // Pass the selected goal
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}

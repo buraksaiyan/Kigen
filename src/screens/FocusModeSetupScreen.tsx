@@ -24,7 +24,7 @@ interface FocusModeSetupScreenProps {
   visible: boolean;
   onClose: () => void;
   mode: FocusMode | null;
-  onStartSession: (mode: FocusMode, hours: number, minutes: number) => void;
+  onStartSession: (mode: FocusMode, hours: number, minutes: number, breakMinutes: number) => void;
   defaultDuration?: number; // in minutes
 }
 
@@ -40,6 +40,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   
   const [hours, setHours] = useState(defaultHours.toString());
   const [minutes, setMinutes] = useState(defaultMinutes.toString());
+  const [breakMinutes, setBreakMinutes] = useState('5'); // Default 5 minutes break
 
   // Reset to default duration when modal becomes visible
   useEffect(() => {
@@ -54,12 +55,13 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     
     const h = parseInt(hours) || 0;
     const m = parseInt(minutes) || 0;
+    const b = parseInt(breakMinutes) || 0;
     
     if (h === 0 && m === 0) {
       return; // Don't start if no time set
     }
     
-    onStartSession(mode, h, m);
+    onStartSession(mode, h, m, b);
   };
 
   const presetTimes = [
@@ -137,6 +139,48 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                       setHours(preset.hours.toString());
                       setMinutes(preset.minutes.toString());
                     }}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.presetText, { color: mode.color }]}>
+                      {preset.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Card>
+
+            <Card style={styles.setupCard}>
+              <Text style={styles.sectionTitle}>Set Break Duration</Text>
+              
+              {/* Break Duration Input */}
+              <View style={styles.timeInputContainer}>
+                <View style={styles.timeInputGroup}>
+                  <TextInput
+                    style={[styles.timeInput, { borderColor: mode.color }]}
+                    value={breakMinutes}
+                    onChangeText={setBreakMinutes}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    placeholder="5"
+                    placeholderTextColor={theme.colors.text.tertiary}
+                  />
+                  <Text style={styles.timeLabel}>minutes</Text>
+                </View>
+              </View>
+
+              {/* Break Preset Times */}
+              <Text style={styles.presetTitle}>Quick Select</Text>
+              <View style={styles.presetsContainer}>
+                {[
+                  { label: '2 min', minutes: 2 },
+                  { label: '5 min', minutes: 5 },
+                  { label: '10 min', minutes: 10 },
+                  { label: '15 min', minutes: 15 },
+                ].map((preset, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.presetButton, { borderColor: mode.color }]}
+                    onPress={() => setBreakMinutes(preset.minutes.toString())}
                     activeOpacity={0.7}
                   >
                     <Text style={[styles.presetText, { color: mode.color }]}>
