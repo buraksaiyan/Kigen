@@ -108,7 +108,13 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     style={[
                       styles.timeInput,
                       mode.id === 'executioner'
-                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        ? {
+                            borderWidth: 0,
+                            borderColor: TRANSPARENT,
+                            backgroundColor: TRANSPARENT,
+                            elevation: 0,
+                            shadowOpacity: 0,
+                          }
                         : { borderColor: mode.color },
                     ]}
                     value={hours}
@@ -129,7 +135,13 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     style={[
                       styles.timeInput,
                       mode.id === 'executioner'
-                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        ? {
+                            borderWidth: 0,
+                            borderColor: TRANSPARENT,
+                            backgroundColor: TRANSPARENT,
+                            elevation: 0,
+                            shadowOpacity: 0,
+                          }
                         : { borderColor: mode.color },
                     ]}
                     value={minutes}
@@ -175,7 +187,13 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     style={[
                       styles.timeInput,
                       mode.id === 'executioner'
-                        ? { borderWidth: 0, borderColor: TRANSPARENT }
+                        ? {
+                            borderWidth: 0,
+                            borderColor: TRANSPARENT,
+                            backgroundColor: TRANSPARENT,
+                            elevation: 0,
+                            shadowOpacity: 0,
+                          }
                         : { borderColor: mode.color },
                     ]}
                     value={breakMinutes}
@@ -184,6 +202,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     maxLength={2}
                     placeholder="5"
                     placeholderTextColor={theme.colors.text.tertiary}
+                    underlineColorAndroid={TRANSPARENT}
                   />
                   <Text style={styles.timeLabel}>minutes</Text>
                 </View>
@@ -394,12 +413,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: theme.spacing.xl,
   },
-  timeInputGroup: {
-    alignItems: 'center',
-  },
   executionerInputGroup: {
     alignItems: 'center',
     marginHorizontal: 0,
+  },
+  timeInputGroup: {
+    alignItems: 'center',
   },
   timeLabel: {
     ...theme.typography.caption,

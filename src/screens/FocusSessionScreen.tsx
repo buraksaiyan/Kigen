@@ -215,6 +215,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   // Handle Android hardware back button while focus modal is open
   const handleHardwareBack = useCallback(() => {
+    console.log('[FocusSession] hardwareBack pressed', { showSetup, showGoalSelection, showCountdown });
     // If setup screen is open, close it and remain in selection
     if (showSetup) {
       setShowSetup(false);
@@ -237,6 +238,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
 
     // Otherwise close the focus modal (go back to dashboard)
+    console.log('[FocusSession] closing focus modal via back button');
     onClose();
     return true;
   }, [showSetup, showGoalSelection, showCountdown, onClose]);

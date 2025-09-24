@@ -158,6 +158,7 @@ const MainScreen: React.FC = () => {
 
   // Handle Android hardware back button presses to close overlays or go back to Dashboard
   const handleHardwareBack = useCallback(() => {
+    console.log('[MainNavigator] hardwareBack pressed', { isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen });
     // Priority: close sidebar -> close circular menu -> close focus modal -> close points/history/customization -> go to Dashboard
     if (isSidebarOpen) {
       setIsSidebarOpen(false);
@@ -170,9 +171,10 @@ const MainScreen: React.FC = () => {
     }
 
     if (isFocusSessionOpen) {
-      // Close the focus modal
-      setIsFocusSessionOpen(false);
-      return true;
+      // Let the FocusSessionScreen handle its own back navigation (e.g., setup -> selection)
+      // Return false so child listeners can handle the event first.
+      console.log('[MainNavigator] deferring to FocusSessionScreen for back handling');
+      return false;
     }
 
     if (isPointsHistoryOpen) {
