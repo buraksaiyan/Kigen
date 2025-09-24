@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BackHandler, Platform } from 'react-native';
 import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -154,6 +155,54 @@ const MainScreen: React.FC = () => {
       setActiveScreen(screen as ScreenName);
     }
   };
+
+  // Handle Android hardware back button presses to close overlays or go back to Dashboard
+  const handleHardwareBack = useCallback(() => {
+    // Priority: close sidebar -> close circular menu -> close focus modal -> close points/history/customization -> go to Dashboard
+    if (isSidebarOpen) {
+      setIsSidebarOpen(false);
+      return true;
+    }
+
+    if (isCircularMenuOpen) {
+      setIsCircularMenuOpen(false);
+      return true;
+    }
+
+    if (isFocusSessionOpen) {
+      // Close the focus modal
+      setIsFocusSessionOpen(false);
+      return true;
+    }
+
+    if (isPointsHistoryOpen) {
+      setIsPointsHistoryOpen(false);
+      return true;
+    }
+
+    if (isDashboardCustomizationOpen) {
+      setIsDashboardCustomizationOpen(false);
+      return true;
+    }
+
+    // If we're not on the dashboard, navigate back to it
+    if (activeScreen !== 'Dashboard') {
+      setActiveScreen('Dashboard');
+      return true;
+    }
+
+    // Let the OS handle the back button (exit app) when on dashboard
+    return false;
+  }, [isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen]);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      const sub = BackHandler.addEventListener('hardwareBackPress', handleHardwareBack);
+      return () => sub.remove();
+    }
+
+    return;
+  }, [handleHardwareBack]);
 
   const renderCurrentScreen = () => {
     switch (activeScreen) {

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BackHandler, Platform } from 'react-native';
 import {
   View,
   Text,
@@ -210,6 +211,43 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     setShowSetup(false);
     setSelectedMode(null);
   };
+
+  // Handle Android hardware back button while focus modal is open
+  const handleHardwareBack = useCallback(() => {
+    // If setup screen is open, close it and remain in selection
+    if (showSetup) {
+      setShowSetup(false);
+      return true;
+    }
+
+    // If goal selection is open, close it and remain in selection
+    if (showGoalSelection) {
+      setShowGoalSelection(false);
+      setSelectedMode(null);
+      return true;
+    }
+
+    // If countdown is active, close countdown and return to selection
+    if (showCountdown) {
+      setShowCountdown(false);
+      setSelectedMode(null);
+      setCurrentSessionId(null);
+      return true;
+    }
+
+    // Otherwise close the focus modal (go back to dashboard)
+    onClose();
+    return true;
+  }, [showSetup, showGoalSelection, showCountdown, onClose]);
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && visible) {
+      const sub = BackHandler.addEventListener('hardwareBackPress', handleHardwareBack);
+      return () => sub.remove();
+    }
+
+    return;
+  }, [visible, handleHardwareBack]);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
