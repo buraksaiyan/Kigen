@@ -113,51 +113,29 @@ export const HistoryScreen: React.FC = () => {
         });
       }
 
-      // Load habits data from AsyncStorage
-      const habitsData = await AsyncStorage.getItem('@inzone_habits');
+      // Load completed habits data from AsyncStorage
+      const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
       const habitItems: HistoryItem[] = [];
-      if (habitsData) {
-        const habits = JSON.parse(habitsData);
-        habits.forEach((habit: any) => {
-          // Show habit creation and completion history
-          const createdDate = new Date(habit.createdAt);
-          const createdDateStr = createdDate.getFullYear() + '-' + 
-            String(createdDate.getMonth() + 1).padStart(2, '0') + '-' + 
-            String(createdDate.getDate()).padStart(2, '0');
+      if (completedHabitsData) {
+        const completedHabits = JSON.parse(completedHabitsData);
+        completedHabits.forEach((habit: any) => {
+          const completedDate = new Date(habit.completedAt);
+          const completedDateStr = completedDate.getFullYear() + '-' + 
+            String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(completedDate.getDate()).padStart(2, '0');
           
           habitItems.push({
-            id: habit.id + '_created',
-            date: createdDateStr,
-            time: createdDate.toLocaleTimeString('en-US', { 
+            id: habit.id,
+            date: completedDateStr,
+            time: completedDate.toLocaleTimeString('en-US', { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: false 
             }),
             title: habit.title,
-            description: `Habit created - ${habit.frequency} frequency`,
-            type: 'habit_created',
+            description: `Final streak: ${habit.finalStreak} days (Target: ${habit.targetDays})`,
+            type: 'habit_completed',
           });
-
-          // If habit has been completed, show completion history
-          if (habit.lastCompleted) {
-            const completedDate = new Date(habit.lastCompleted);
-            const completedDateStr = completedDate.getFullYear() + '-' + 
-              String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
-              String(completedDate.getDate()).padStart(2, '0');
-            
-            habitItems.push({
-              id: habit.id + '_completed',
-              date: completedDateStr,
-              time: completedDate.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false 
-              }),
-              title: habit.title,
-              description: `Habit completed - Streak: ${habit.streak}`,
-              type: 'habit_completed',
-            });
-          }
         });
       }
 
@@ -385,9 +363,7 @@ export const HistoryScreen: React.FC = () => {
                 const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
                 if (completedHabitsData) {
                   let completedHabits = JSON.parse(completedHabitsData);
-                  // Remove '_completed' suffix to get original habit ID
-                  const originalHabitIds = habitIds.map(id => id.replace('_completed', ''));
-                  completedHabits = completedHabits.filter((habit: any) => !originalHabitIds.includes(habit.id));
+                  completedHabits = completedHabits.filter((habit: any) => !habitIds.includes(habit.id));
                   await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(completedHabits));
                 }
               }
