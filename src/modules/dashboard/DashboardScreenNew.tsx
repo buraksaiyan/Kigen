@@ -296,50 +296,46 @@ export const DashboardScreen: React.FC = () => {
       if (!habitsData) return;
 
       const allHabits = JSON.parse(habitsData);
-      
-      // Update the specific habit
-      const updatedHabits = allHabits.map((habit: any) => {
-        if (habit.id === habitId) {
-          if (action === 'reset_streak') {
+
+      if (action === 'reset_streak') {
+        // Update the specific habit
+        const updatedHabits = allHabits.map((habit: any) => {
+          if (habit.id === habitId) {
             return {
               ...habit,
               streak: 0,
               lastCompleted: undefined,
               completedToday: false
             };
-          } else {
-            // give_up
-            return {
-              ...habit,
-              isActive: false,
-              failedAt: new Date().toISOString(),
-              failureReason: 'gave_up'
-            };
           }
-        }
-        return habit;
-      });
+          return habit;
+        });
 
-      // Save back to storage
-      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+        // Save back to storage
+        await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
 
-      // Update active habits list
-      if (action === 'give_up') {
-        setActiveHabits(prev => prev.filter(habit => habit.id !== habitId));
-      } else {
-        // For reset_streak, update the active habits with reset values
-        setActiveHabits(prev => prev.map(habit => 
-          habit.id === habitId 
+        // Update active habits list with reset values
+        setActiveHabits(prev => prev.map(habit =>
+          habit.id === habitId
             ? { ...habit, streak: 0, lastCompleted: undefined, completedToday: false }
             : habit
         ));
+      } else {
+        // give_up - completely remove the habit from storage
+        const filteredHabits = allHabits.filter((habit: any) => habit.id !== habitId);
+
+        // Save back to storage (habit is completely removed)
+        await AsyncStorage.setItem('@inzone_habits', JSON.stringify(filteredHabits));
+
+        // Remove from active habits list
+        setActiveHabits(prev => prev.filter(habit => habit.id !== habitId));
       }
 
       Alert.alert(
-        action === 'reset_streak' ? 'Habit Reset' : 'Habit Ended',
-        action === 'reset_streak' 
+        action === 'reset_streak' ? 'Habit Reset' : 'Habit Deleted',
+        action === 'reset_streak'
           ? 'Your habit streak has been reset. Keep going!'
-          : 'Habit has been ended and moved to history.'
+          : 'Habit has been completely removed.'
       );
     } catch (error) {
       console.error('Error handling habit action:', error);
@@ -895,7 +891,7 @@ export const DashboardScreen: React.FC = () => {
                     'This will reset your streak to 0. You can start building it again.',
                     [
                       { text: 'Reset Streak', onPress: () => handleHabitAction(habit.id, 'reset_streak') },
-                      { text: 'Give Up (Move to History)', onPress: () => handleHabitAction(habit.id, 'give_up') },
+                      { text: 'Give Up (Delete Habit)', onPress: () => handleHabitAction(habit.id, 'give_up') },
                       { text: 'Cancel', style: 'cancel' }
                     ]
                   );
