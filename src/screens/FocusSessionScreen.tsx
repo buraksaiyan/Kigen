@@ -15,6 +15,9 @@ import { GoalSelectionScreen } from './GoalSelectionScreen';
 import { focusSessionService } from '../services/FocusSessionService';
 import { useSettings } from '../hooks/useSettings';
 
+const CUSTOM_MODE_COLOR = '#F59E0B';
+const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+
 interface FocusMode {
   id: string;
   title: string;
@@ -254,37 +257,37 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                 <View style={styles.cloverContainer}>
                   <View style={styles.cloverRow}>
                     <TouchableOpacity
-                      style={[styles.cloverButton, { backgroundColor: flowMode.color }]}
+                      style={[styles.cloverButton, { borderColor: flowMode.color }]}
                       onPress={() => handleModeSelect(flowMode)}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.cloverButtonText}>{flowMode.title}</Text>
+                      <Text style={[styles.cloverButtonText, { color: flowMode.color }]}>{flowMode.title}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[styles.cloverButton, { backgroundColor: executionerMode.color }]}
+                      style={[styles.cloverButton, { borderColor: executionerMode.color }]}
                       onPress={() => handleModeSelect(executionerMode)}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.cloverButtonText}>{executionerMode.title}</Text>
+                      <Text style={[styles.cloverButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
                     </TouchableOpacity>
                   </View>
 
                   <View style={styles.cloverRow}>
                     <TouchableOpacity
-                      style={[styles.cloverButton, { backgroundColor: meditateMode.color }]}
+                      style={[styles.cloverButton, { borderColor: meditateMode.color }]}
                       onPress={() => handleModeSelect(meditateMode)}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.cloverButtonText}>{meditateMode.title}</Text>
+                      <Text style={[styles.cloverButtonText, { color: meditateMode.color }]}>{meditateMode.title}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[styles.cloverButton, { backgroundColor: bodyMode.color }]}
+                      style={[styles.cloverButton, { borderColor: bodyMode.color }]}
                       onPress={() => handleModeSelect(bodyMode)}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.cloverButtonText}>{bodyMode.title}</Text>
+                      <Text style={[styles.cloverButtonText, { color: bodyMode.color }]}>{bodyMode.title}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -331,7 +334,9 @@ const styles = StyleSheet.create({
   },
   cloverButton: {
     alignItems: 'center',
+    backgroundColor: TRANSPARENT,
     borderRadius: theme.borderRadius.lg,
+    borderWidth: 2,
     elevation: 3,
     flex: 1,
     height: 120,
@@ -347,7 +352,6 @@ const styles = StyleSheet.create({
   },
   cloverButtonText: {
     ...theme.typography.h3,
-    color: theme.colors.background,
     fontWeight: '700',
   },
   cloverContainer: {
@@ -372,7 +376,7 @@ const styles = StyleSheet.create({
   customModeButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
+    borderColor: CUSTOM_MODE_COLOR,
     borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     justifyContent: 'center',
@@ -381,7 +385,7 @@ const styles = StyleSheet.create({
   },
   customModeText: {
     ...theme.typography.h3,
-    color: theme.colors.text.primary,
+    color: CUSTOM_MODE_COLOR,
     fontWeight: '600',
   },
   modalHeader: {
