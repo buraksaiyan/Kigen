@@ -272,7 +272,11 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
 
           {showTimePicker && (
             <DateTimePicker
-              value={new Date(2000, 0, 1, selectedHour, selectedMinute)}
+              value={(() => {
+                const date = new Date();
+                date.setHours(selectedHour, selectedMinute, 0, 0);
+                return date;
+              })()}
               mode="time"
               display="default"
               onChange={(event, date) => {

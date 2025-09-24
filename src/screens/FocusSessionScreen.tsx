@@ -239,7 +239,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
               <View style={styles.content}>
                 <View style={styles.contentHeader}>
                   <Text style={styles.title}>Select your focus mode</Text>
-                  <Text style={styles.subtitle}>Choose how you want to focus</Text>
                 </View>
 
                 {/* Custom Focus Mode Button */}
@@ -397,11 +396,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
   },
   title: {
     ...theme.typography.h2,
