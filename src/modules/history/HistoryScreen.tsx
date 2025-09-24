@@ -89,30 +89,28 @@ export const HistoryScreen: React.FC = () => {
         };
       });
 
-      // Load goal completion data from AsyncStorage
-      const goalsData = await AsyncStorage.getItem('@inzone_goals');
+      // Load completed goals data from AsyncStorage
+      const completedGoalsData = await AsyncStorage.getItem('@inzone_completed_goals');
       const goalItems: HistoryItem[] = [];
-      if (goalsData) {
-        const goals = JSON.parse(goalsData);
-        goals.forEach((goal: any) => {
-          if (goal.completed && goal.completedAt) {
-            const date = new Date(goal.completedAt);
-            const dateStr = date.getFullYear() + '-' + 
-              String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-              String(date.getDate()).padStart(2, '0');
-            goalItems.push({
-              id: goal.id,
-              date: dateStr,
-              time: date.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false 
-              }),
-              title: goal.title,
-              description: 'Goal completed',
-              type: 'goal_completed',
-            });
-          }
+      if (completedGoalsData) {
+        const completedGoals = JSON.parse(completedGoalsData);
+        completedGoals.forEach((goal: any) => {
+          const completedDate = new Date(goal.completedAt);
+          const completedDateStr = completedDate.getFullYear() + '-' + 
+            String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(completedDate.getDate()).padStart(2, '0');
+          goalItems.push({
+            id: goal.id,
+            date: completedDateStr,
+            time: completedDate.toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false 
+            }),
+            title: goal.title,
+            description: 'Goal completed',
+            type: 'goal_completed',
+          });
         });
       }
 
@@ -142,50 +140,29 @@ export const HistoryScreen: React.FC = () => {
         });
       }
 
-      // Load todos data from AsyncStorage
-      const todosData = await AsyncStorage.getItem('@inzone_todos');
+      // Load completed todos data from AsyncStorage
+      const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
       const todoItems: HistoryItem[] = [];
-      if (todosData) {
-        const todos = JSON.parse(todosData);
-        todos.forEach((todo: any) => {
-          const createdDate = new Date(todo.createdAt);
-          const createdDateStr = createdDate.getFullYear() + '-' + 
-            String(createdDate.getMonth() + 1).padStart(2, '0') + '-' + 
-            String(createdDate.getDate()).padStart(2, '0');
+      if (completedTodosData) {
+        const completedTodos = JSON.parse(completedTodosData);
+        completedTodos.forEach((todo: any) => {
+          const completedDate = new Date(todo.completedAt);
+          const completedDateStr = completedDate.getFullYear() + '-' + 
+            String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+            String(completedDate.getDate()).padStart(2, '0');
           
           todoItems.push({
-            id: todo.id + '_created',
-            date: createdDateStr,
-            time: createdDate.toLocaleTimeString('en-US', { 
+            id: todo.id,
+            date: completedDateStr,
+            time: completedDate.toLocaleTimeString('en-US', { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: false 
             }),
             title: todo.title,
-            description: todo.completed ? 'Todo completed' : 'Todo created',
-            type: todo.completed ? 'todo_completed' : 'todo_created',
+            description: 'Todo completed',
+            type: 'todo_completed',
           });
-
-          // If todo is completed, also show completion entry
-          if (todo.completed && todo.completedAt) {
-            const completedDate = new Date(todo.completedAt);
-            const completedDateStr = completedDate.getFullYear() + '-' + 
-              String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
-              String(completedDate.getDate()).padStart(2, '0');
-            
-            todoItems.push({
-              id: todo.id + '_completed',
-              date: completedDateStr,
-              time: completedDate.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false 
-              }),
-              title: todo.title,
-              description: 'Todo completed',
-              type: 'todo_completed',
-            });
-          }
         });
       }
 
@@ -372,25 +349,25 @@ export const HistoryScreen: React.FC = () => {
                 }
               }
               
-              // Delete goals (from goals storage)
+              // Delete goals (from completed goals storage)
               const goalIds = selectedIds.filter(id => goals.some(g => g.id === id));
               if (goalIds.length > 0) {
-                const goalsData = await AsyncStorage.getItem('@inzone_goals');
-                if (goalsData) {
-                  let goals = JSON.parse(goalsData);
-                  goals = goals.filter((goal: any) => !goalIds.includes(goal.id));
-                  await AsyncStorage.setItem('@inzone_goals', JSON.stringify(goals));
+                const completedGoalsData = await AsyncStorage.getItem('@inzone_completed_goals');
+                if (completedGoalsData) {
+                  let completedGoals = JSON.parse(completedGoalsData);
+                  completedGoals = completedGoals.filter((goal: any) => !goalIds.includes(goal.id));
+                  await AsyncStorage.setItem('@inzone_completed_goals', JSON.stringify(completedGoals));
                 }
               }
               
-              // Delete todos (from todos storage)
+              // Delete todos (from completed todos storage)
               const todoIds = selectedIds.filter(id => todos.some(t => t.id === id));
               if (todoIds.length > 0) {
-                const todosData = await AsyncStorage.getItem('@inzone_todos');
-                if (todosData) {
-                  let todos = JSON.parse(todosData);
-                  todos = todos.filter((todo: any) => !todoIds.includes(todo.id));
-                  await AsyncStorage.setItem('@inzone_todos', JSON.stringify(todos));
+                const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
+                if (completedTodosData) {
+                  let completedTodos = JSON.parse(completedTodosData);
+                  completedTodos = completedTodos.filter((todo: any) => !todoIds.includes(todo.id));
+                  await AsyncStorage.setItem('@inzone_completed_todos', JSON.stringify(completedTodos));
                 }
               }
               
