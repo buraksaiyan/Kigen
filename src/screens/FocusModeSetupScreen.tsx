@@ -103,7 +103,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               
               {/* Time Input */}
               <View style={styles.timeInputContainer}>
-                <View style={styles.timeInputGroup}>
+                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
                   <TextInput
                     style={[
                       styles.timeInput,
@@ -117,13 +117,14 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     maxLength={2}
                     placeholder="0"
                     placeholderTextColor={theme.colors.text.tertiary}
+                    underlineColorAndroid={TRANSPARENT}
                   />
                   <Text style={styles.timeLabel}>hours</Text>
                 </View>
                 
                 {mode.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
                 
-                <View style={styles.timeInputGroup}>
+                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
                   <TextInput
                     style={[
                       styles.timeInput,
@@ -137,6 +138,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     maxLength={2}
                     placeholder="0"
                     placeholderTextColor={theme.colors.text.tertiary}
+                    underlineColorAndroid={TRANSPARENT}
                   />
                   <Text style={styles.timeLabel}>minutes</Text>
                 </View>
@@ -394,6 +396,10 @@ const styles = StyleSheet.create({
   },
   timeInputGroup: {
     alignItems: 'center',
+  },
+  executionerInputGroup: {
+    alignItems: 'center',
+    marginHorizontal: 0,
   },
   timeLabel: {
     ...theme.typography.caption,
