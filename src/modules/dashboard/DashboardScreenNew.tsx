@@ -1169,7 +1169,7 @@ export const DashboardScreen: React.FC = () => {
                       </Text>
                       <Text 
                         style={styles.historyPreview} 
-                        {...(isExpanded ? {} : { numberOfLines: 2 })}
+                        numberOfLines={isExpanded ? 1000 : 2}
                       >
                         {entry.content}
                       </Text>
