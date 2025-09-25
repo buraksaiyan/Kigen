@@ -51,6 +51,13 @@ const focusModes: FocusMode[] = [
     description: 'Enter a state of deep focus for creative and analytical work.',
   },
   {
+    id: 'executioner',
+    title: 'Executioner',
+    subtitle: 'High-Intensity Tasks',
+    color: '#EF4444',
+    description: 'Tackle challenging tasks with maximum intensity and discipline.',
+  },
+  {
     id: 'meditation',
     title: 'Meditation',
     subtitle: 'Mindfulness & Awareness',
@@ -90,7 +97,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const { settings } = useSettings();
 
   // Destructure focus modes for type safety
-  const [flowMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode];
+  const [flowMode, executionerMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode, FocusMode];
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
@@ -272,6 +279,14 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                       activeOpacity={0.8}
                     >
                       <Text style={[styles.cloverButtonText, { color: flowMode.color }]}>{flowMode.title}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.cloverButton, { borderColor: executionerMode.color }]}
+                      onPress={() => handleModeSelect(executionerMode)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.cloverButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
