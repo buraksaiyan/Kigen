@@ -10,7 +10,15 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { theme } from '../config/theme';
+im            <TouchableOpacity
+              style={[styles.startButton, { borderColor: mode?.color, borderWidth: 2 }]}
+              onPress={handleStart}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.startButtonText, { color: mode?.color }]}>
+                Start {mode?.title} Session
+              </Text>
+            </TouchableOpacity>eme } from '../config/theme';
 
 const CLOSE_BUTTON_COLOR = '#888691';
 const TRANSPARENT = 'transparent';
@@ -98,7 +106,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     { label: '2 hours', hours: 2, minutes: 0 },
   ];
 
-  if (!mode) return null;
+  if (!mode || mode === null) return null;
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -114,8 +122,8 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <View style={styles.contentHeader}>
-              <Text style={[styles.title, { color: mode.color }]}>{mode.title} Focus</Text>
-              <Text style={styles.subtitle}>{mode.description}</Text>
+              <Text style={[styles.title, { color: mode?.color }]}>{mode?.title} Focus</Text>
+              <Text style={styles.subtitle}>{mode?.description}</Text>
             </View>
 
             <Card style={styles.setupCard}>
@@ -123,8 +131,8 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               
               {/* Time Input */}
               <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
-                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
-                  {mode.id === 'executioner' ? (
+                <View style={[styles.timeInputGroup, mode?.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
+                  {mode?.id === 'executioner' ? (
                     <TouchableOpacity
                       style={styles.executionerTimeInput}
                       onPress={() => openPicker('hours')}
@@ -134,7 +142,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     </TouchableOpacity>
                   ) : (
                     <TextInput
-                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      style={[styles.timeInput, { borderColor: mode?.color }]}
                       value={hours}
                       onChangeText={setHours}
                       keyboardType="numeric"
@@ -147,10 +155,10 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   <Text style={styles.timeLabel}>hours</Text>
                 </View>
                 
-                {mode.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
+                {mode?.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
                 
-                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
-                  {mode.id === 'executioner' ? (
+                <View style={[styles.timeInputGroup, mode?.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
+                  {mode?.id === 'executioner' ? (
                     <TouchableOpacity
                       style={styles.executionerTimeInput}
                       onPress={() => openPicker('minutes')}
@@ -160,7 +168,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     </TouchableOpacity>
                   ) : (
                     <TextInput
-                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      style={[styles.timeInput, { borderColor: mode?.color }]}
                       value={minutes}
                       onChangeText={setMinutes}
                       keyboardType="numeric"
@@ -180,14 +188,14 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 {presetTimes.map((preset, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.presetButton, { borderColor: mode.color }]}
+                    style={[styles.presetButton, { borderColor: mode?.color }]}
                     onPress={() => {
                       setHours(preset.hours.toString());
                       setMinutes(preset.minutes.toString());
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, { color: mode.color }]}>
+                    <Text style={[styles.presetText, { color: mode?.color }]}>
                       {preset.label}
                     </Text>
                   </TouchableOpacity>
@@ -201,7 +209,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               {/* Break Duration Input */}
               <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
                 <View style={styles.timeInputGroup}>
-                  {mode.id === 'executioner' ? (
+                  {mode?.id === 'executioner' ? (
                     <TouchableOpacity
                       style={styles.executionerTimeInput}
                       onPress={() => openPicker('breakMinutes')}
@@ -211,7 +219,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     </TouchableOpacity>
                   ) : (
                     <TextInput
-                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      style={[styles.timeInput, { borderColor: mode?.color }]}
                       value={breakMinutes}
                       onChangeText={setBreakMinutes}
                       keyboardType="numeric"
@@ -238,7 +246,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     key={index}
                     style={[
                       styles.presetButton,
-                      { borderColor: mode.color },
+                      { borderColor: mode?.color },
                     ]}
                     onPress={() => setBreakMinutes(preset.minutes.toString())}
                     activeOpacity={0.7}
@@ -246,7 +254,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     <Text
                       style={[
                         styles.presetText,
-                        { color: mode.color },
+                        { color: mode?.color },
                       ]}
                     >
                       {preset.label}
@@ -258,19 +266,19 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
 
             {/* Start Button */}
             <TouchableOpacity
-              style={[styles.startButton, { borderColor: mode.color, borderWidth: 2 }]}
+              style={[styles.startButton, { borderColor: mode?.color, borderWidth: 2 }]}
               onPress={handleStartSession}
               activeOpacity={0.8}
             >
-              <Text style={[styles.startButtonText, { color: mode.color }]}>
-                Start {mode.title} Session
+              <Text style={[styles.startButtonText, { color: mode?.color }]}>
+                Start {mode?.title} Session
               </Text>
             </TouchableOpacity>
 
             {/* Tips Card */}
             <Card style={styles.tipsCard}>
               <Text style={styles.tipsTitle}>💡 Focus Tips</Text>
-              {mode.id === 'flow' && (
+              {mode?.id === 'flow' && (
                 <Text style={styles.tipsText}>
                   • Find a quiet environment{'\n'}
                   • Turn off notifications{'\n'}
@@ -278,7 +286,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Take breaks every 90 minutes
                 </Text>
               )}
-              {mode.id === 'executioner' && (
+              {mode?.id === 'executioner' && (
                 <Text style={styles.tipsText}>
                   • Set clear, specific goals{'\n'}
                   • Remove all distractions{'\n'}
@@ -286,7 +294,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Stay hydrated
                 </Text>
               )}
-              {mode.id === 'meditation' && (
+              {mode?.id === 'meditation' && (
                 <Text style={styles.tipsText}>
                   • Sit comfortably with spine straight{'\n'}
                   • Focus on your breath{'\n'}
@@ -294,7 +302,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Start with shorter sessions
                 </Text>
               )}
-              {mode.id === 'body' && (
+              {mode?.id === 'body' && (
                 <Text style={styles.tipsText}>
                   • Warm up properly{'\n'}
                   • Stay hydrated{'\n'}
@@ -302,7 +310,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Focus on form over intensity
                 </Text>
               )}
-              /*{mode.id === 'notech' && (
+              /*{mode?.id === 'notech' && (
                 <Text style={styles.tipsText}>
                   • Put devices in another room{'\n'}
                   • Engage with physical activities{'\n'}
