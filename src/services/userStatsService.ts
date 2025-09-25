@@ -46,6 +46,8 @@ export class UserStatsService {
   private static USER_STATS_KEY = '@inzone_user_stats';
   private static MONTHLY_RECORDS_KEY = '@inzone_monthly_records';
   private static DAILY_ACTIVITY_KEY = '@inzone_daily_activity';
+  private static CURRENT_RATING_CACHE_KEY = '@inzone_current_rating_cache';
+  private static CACHE_EXPIRY_HOURS = 24; // Cache for 24 hours
 
   // User Profile Management
   static async createUserProfile(username: string, profileImage?: string): Promise<UserProfile> {
@@ -428,20 +430,56 @@ export class UserStatsService {
   }
 
   static async getCurrentRating(): Promise<UserRating> {
-    // Use current month's stats (all days so far) for monthly display
-    // This ensures monthly and lifetime views match when no months have passed
-    const monthlyStats = await this.calculateCurrentMonthStats();
-    const monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
-    const cardTier = RatingSystem.getCardTier(monthlyPoints);
-    const overallRating = RatingSystem.calculateOverallRating(monthlyStats);
+    try {
+      // Try to get cached rating first
+      const cachedData = await AsyncStorage.getItem(this.CURRENT_RATING_CACHE_KEY);
+      if (cachedData) {
+        const { rating, timestamp } = JSON.parse(cachedData);
+        const cacheAge = Date.now() - timestamp;
+        const cacheExpiryMs = this.CACHE_EXPIRY_HOURS * 60 * 60 * 1000;
 
-    return {
-      stats: monthlyStats,
-      overallRating,
-      totalPoints: monthlyPoints, // This represents monthly total points
-      monthlyPoints,
-      cardTier
-    };
+        // Use cache if it's less than CACHE_EXPIRY_HOURS old
+        if (cacheAge < cacheExpiryMs) {
+          console.log('📊 Using cached rating data (age:', Math.round(cacheAge / 1000 / 60), 'minutes)');
+          return rating;
+        }
+      }
+
+      // Cache miss or expired - calculate fresh rating
+      console.log('📊 Calculating fresh rating data...');
+      const monthlyStats = await this.calculateCurrentMonthStats();
+      const monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
+      const cardTier = RatingSystem.getCardTier(monthlyPoints);
+      const overallRating = RatingSystem.calculateOverallRating(monthlyStats);
+
+      const freshRating: UserRating = {
+        stats: monthlyStats,
+        overallRating,
+        totalPoints: monthlyPoints,
+        monthlyPoints,
+        cardTier
+      };
+
+      // Cache the fresh rating
+      const cacheData = {
+        rating: freshRating,
+        timestamp: Date.now()
+      };
+      await AsyncStorage.setItem(this.CURRENT_RATING_CACHE_KEY, JSON.stringify(cacheData));
+
+      console.log('📊 Cached fresh rating data');
+      return freshRating;
+    } catch (error) {
+      console.error('Error getting current rating:', error);
+      // Return default rating on error
+      return {
+        stats: { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 },
+        overallRating: 0,
+        totalPoints: 0,
+        monthlyPoints: 0,
+        cardTier: CardTier.Bronze
+      };
+    }
   }
 
   // Method to properly update monthly stats when activities occur
@@ -493,9 +531,30 @@ export class UserStatsService {
         };
       }
       
+      const previousPoints = monthlyRecord ? monthlyRecord.totalPoints : 0;
+      
       await this.saveMonthlyRecord(monthlyRecord);
       await AsyncStorage.setItem(lastUpdateKey, todayString);
       console.log('📅 Updated monthly stats for', currentMonth, 'total points:', monthlyRecord.totalPoints);
+      
+      // Invalidate cached rating since stats changed
+      await this.invalidateRatingCache();
+      
+      // Only sync to leaderboard if points actually increased
+      if (monthlyRecord.totalPoints > previousPoints) {
+        console.log('📈 Points increased, syncing to leaderboard');
+        this.syncUserToLeaderboard().catch(e => console.error('Background leaderboard sync failed:', e));
+      }
+    }
+  }
+
+  // Clear cached rating data (call when stats change)
+  static async invalidateRatingCache(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(this.CURRENT_RATING_CACHE_KEY);
+      console.log('🗑️ Cleared rating cache');
+    } catch (error) {
+      console.error('Error clearing rating cache:', error);
     }
   }
 

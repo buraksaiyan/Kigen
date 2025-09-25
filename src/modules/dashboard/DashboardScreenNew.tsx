@@ -570,9 +570,6 @@ export const DashboardScreen: React.FC = () => {
       // Check for achievements on app load
       await achievementService.checkAchievements();
 
-      // Sync leaderboard data with current user stats
-      await UserStatsService.syncUserToLeaderboard();
-
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
