@@ -180,14 +180,14 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 {presetTimes.map((preset, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.presetButton, mode.id === 'executioner' ? {} : { borderColor: mode.color }]}
+                    style={[styles.presetButton, { borderColor: mode.color }]}
                     onPress={() => {
                       setHours(preset.hours.toString());
                       setMinutes(preset.minutes.toString());
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.presetText, mode.id === 'executioner' ? {} : { color: mode.color }]}>
+                    <Text style={[styles.presetText, { color: mode.color }]}>
                       {preset.label}
                     </Text>
                   </TouchableOpacity>
@@ -238,9 +238,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     key={index}
                     style={[
                       styles.presetButton,
-                      mode.id === 'executioner'
-                        ? { borderWidth: 0, backgroundColor: TRANSPARENT }
-                        : { borderColor: mode.color },
+                      { borderColor: mode.color },
                     ]}
                     onPress={() => setBreakMinutes(preset.minutes.toString())}
                     activeOpacity={0.7}
@@ -248,7 +246,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     <Text
                       style={[
                         styles.presetText,
-                        mode.id === 'executioner' ? {} : { color: mode.color },
+                        { color: mode.color },
                       ]}
                     >
                       {preset.label}
@@ -480,13 +478,13 @@ const styles = StyleSheet.create({
   },
   executionerInputGroup: {
     alignItems: 'center',
-    marginHorizontal: 0,
+    marginHorizontal: theme.spacing.md,
   },
   executionerTimeInput: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderWidth: 2,
+    borderColor: '#EF4444', // Executioner mode red color
     minWidth: 80,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
@@ -557,8 +555,6 @@ const styles = StyleSheet.create({
   pickerItem: {
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   pickerItemText: {
     ...theme.typography.bodyLarge,
