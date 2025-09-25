@@ -270,43 +270,39 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                   <Text style={styles.customModeText}>Custom Focus Mode</Text>
                 </TouchableOpacity>
 
-                {/* 4-Leaf Clover Layout */}
+                {/* 4-Leaf Clover Layout - Vertical Stack */}
                 <View style={styles.cloverContainer}>
-                  <View style={styles.cloverRow}>
-                    <TouchableOpacity
-                      style={[styles.cloverButton, { borderColor: flowMode.color }]}
-                      onPress={() => handleModeSelect(flowMode)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.cloverButtonText, { color: flowMode.color }]}>{flowMode.title}</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.fullButton, { borderColor: flowMode.color }]}
+                    onPress={() => handleModeSelect(flowMode)}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.fullButtonText, { color: flowMode.color }]}>{flowMode.title}</Text>
+                  </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[styles.cloverButton, { borderColor: executionerMode.color }]}
-                      onPress={() => handleModeSelect(executionerMode)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.cloverButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity
+                    style={[styles.fullButton, { borderColor: executionerMode.color }]}
+                    onPress={() => handleModeSelect(executionerMode)}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.fullButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
+                  </TouchableOpacity>
 
-                  <View style={styles.cloverRow}>
-                    <TouchableOpacity
-                      style={[styles.cloverButton, { borderColor: meditateMode.color }]}
-                      onPress={() => handleModeSelect(meditateMode)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.cloverButtonText, { color: meditateMode.color }]}>{meditateMode.title}</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.fullButton, { borderColor: meditateMode.color }]}
+                    onPress={() => handleModeSelect(meditateMode)}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.fullButtonText, { color: meditateMode.color }]}>{meditateMode.title}</Text>
+                  </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[styles.cloverButton, { borderColor: bodyMode.color }]}
-                      onPress={() => handleModeSelect(bodyMode)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.cloverButtonText, { color: bodyMode.color }]}>{bodyMode.title}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity
+                    style={[styles.fullButton, { borderColor: bodyMode.color }]}
+                    onPress={() => handleModeSelect(bodyMode)}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.fullButtonText, { color: bodyMode.color }]}>{bodyMode.title}</Text>
+                  </TouchableOpacity>
                 </View>
 
                 {/* Clock Mode Button */}
@@ -426,5 +422,20 @@ const styles = StyleSheet.create({
     height: 128,
     resizeMode: 'contain',
     width: 200,
+  },
+  fullButton: {
+    alignItems: 'center',
+    backgroundColor: TRANSPARENT,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 2,
+    height: 80,
+    justifyContent: 'center',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+  },
+  fullButtonText: {
+    ...theme.typography.h3,
+    fontSize: 20,
+    fontWeight: '700',
   },
 });
