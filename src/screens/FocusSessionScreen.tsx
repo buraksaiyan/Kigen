@@ -335,7 +335,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             setShowSetup(true);
           }}
           onCreateGoal={() => {
-            setShowGoalSelection(false);
             if (onOpenGoals) onOpenGoals();
           }}
         />
