@@ -1619,6 +1619,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 6,
     marginBottom: 12,
+    marginRight: 16,
   },
   progressFill: {
     backgroundColor: theme.colors.success,
