@@ -227,18 +227,6 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
               </View>
             )}
 
-            <Card style={styles.infoCard}>
-              <Text style={styles.infoTitle}>🎯 Executioner Focus</Text>
-              <Text style={styles.infoText}>
-                This mode is designed for high-intensity goal execution. Select a specific goal you want to tackle with maximum focus and discipline.
-              </Text>
-              <Text style={styles.infoText}>
-                • Laser focus on a single objective{'\n'}
-                • Time pressure creates urgency{'\n'}
-                • Maximum productivity mindset{'\n'}
-                • Track goal completion
-              </Text>
-            </Card>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -360,21 +348,6 @@ const styles = StyleSheet.create({
   goalsContainer: {
     gap: theme.spacing.md,
     marginBottom: theme.spacing.lg,
-  },
-  infoCard: {
-    backgroundColor: theme.colors.surface,
-  },
-  infoText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    lineHeight: 22,
-    marginBottom: theme.spacing.sm,
-  },
-  infoTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.md,
   },
   loadingContainer: {
     alignItems: 'center',

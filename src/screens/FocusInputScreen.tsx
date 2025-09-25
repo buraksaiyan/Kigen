@@ -423,21 +423,6 @@ export const FocusInputScreen: React.FC<FocusInputScreenProps> = ({
             </View>
           </View>
 
-          {/* Tips */}
-          <View style={[styles.tipsContainer, { backgroundColor: theme.colors.surface }]}>
-            <MaterialIcons name="lightbulb-outline" size={20} color={theme.colors.warning} />
-            <View style={styles.tipsContent}>
-              <Text style={[styles.tipsTitle, { color: theme.colors.text.primary }]}>
-                Focus Tips
-              </Text>
-              <Text style={[styles.tipsText, { color: theme.colors.text.secondary }]}>
-                • Find a quiet environment
-                {'\n'}• Turn off notifications
-                {'\n'}• Take breaks every 25 minutes
-                {'\n'}• Stay hydrated and breathe deeply
-              </Text>
-            </View>
-          </View>
         </ScrollView>
       </View>
     </Modal>
@@ -603,24 +588,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-  },
-  tipsContainer: {
-    borderRadius: 12,
-    flexDirection: 'row',
-    marginBottom: 40,
-    padding: 16,
-  },
-  tipsContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  tipsText: {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  tipsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 4,
   },
 });

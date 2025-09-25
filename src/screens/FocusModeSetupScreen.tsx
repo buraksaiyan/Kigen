@@ -218,34 +218,6 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               </Text>
             </TouchableOpacity>
 
-            {/* Tips Card */}
-            <Card style={styles.tipsCard}>
-              <Text style={styles.tipsTitle}>💡 Focus Tips</Text>
-              {mode?.id === 'flow' && (
-                <Text style={styles.tipsText}>
-                  • Find a quiet environment{'\n'}
-                  • Turn off notifications{'\n'}
-                  • Have your materials ready{'\n'}
-                  • Take breaks every 90 minutes
-                </Text>
-              )}
-              {mode?.id === 'meditation' && (
-                <Text style={styles.tipsText}>
-                  • Sit comfortably with spine straight{'\n'}
-                  • Focus on your breath{'\n'}
-                  • Don&apos;t judge wandering thoughts{'\n'}
-                  • Start with shorter sessions
-                </Text>
-              )}
-              {mode?.id === 'body' && (
-                <Text style={styles.tipsText}>
-                  • Warm up properly{'\n'}
-                  • Stay hydrated{'\n'}
-                  • Listen to your body{'\n'}
-                  • Focus on form over intensity
-                </Text>
-              )}
-            </Card>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -382,20 +354,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginHorizontal: theme.spacing.md,
-  },
-  tipsCard: {
-    backgroundColor: theme.colors.surface,
-  },
-  tipsText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    lineHeight: 22,
-  },
-  tipsTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.md,
   },
   title: {
     ...theme.typography.h2,
