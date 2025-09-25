@@ -72,6 +72,13 @@ const focusModes: FocusMode[] = [
     color: '#A855F7',
     description: 'Focus on physical training and body awareness exercises.',
   },
+  {
+    id: 'clock',
+    title: 'Clock',
+    subtitle: 'Time Management',
+    color: '#0000FF',
+    description: 'Focus on time management and productivity tracking.',
+  },
 ];
 
 export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({ 
@@ -93,7 +100,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const { settings } = useSettings();
 
   // Destructure focus modes for type safety
-  const [flowMode, executionerMode, meditateMode, bodyMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode];
+  const [flowMode, executionerMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode, FocusMode];
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
@@ -333,6 +340,16 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                     </TouchableOpacity>
                   </View>
                 </View>
+
+                {/* Clock Mode Button */}
+                <TouchableOpacity
+                  style={[styles.customModeButton, { borderColor: clockMode.color }]}
+                  onPress={() => handleModeSelect(clockMode)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.customModeText, { color: clockMode.color }]}>Clock Mode</Text>
+                </TouchableOpacity>
+
               </View>
             </ScrollView>
           </>
@@ -386,7 +403,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   cloverContainer: {
-    marginTop: theme.spacing.lg,
+    marginTop: theme.spacing.sm,
   },
   cloverRow: {
     flexDirection: 'row',
