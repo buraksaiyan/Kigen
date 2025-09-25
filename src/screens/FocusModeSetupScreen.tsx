@@ -10,15 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-im            <TouchableOpacity
-              style={[styles.startButton, { borderColor: mode?.color, borderWidth: 2 }]}
-              onPress={handleStart}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.startButtonText, { color: mode?.color }]}>
-                Start {mode?.title} Session
-              </Text>
-            </TouchableOpacity>eme } from '../config/theme';
+import { theme } from '../config/theme';
 
 const CLOSE_BUTTON_COLOR = '#888691';
 const TRANSPARENT = 'transparent';
