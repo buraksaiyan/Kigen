@@ -107,7 +107,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
           body: reminder.message,
           sound: true,
         },
-        trigger: null, // For immediate notification testing - in production, use proper date trigger
+        trigger: { date: scheduledDateTime } as any, // Schedule for the actual date/time
       });
 
       // Schedule recurring notifications if needed
