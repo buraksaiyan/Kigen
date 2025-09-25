@@ -45,28 +45,28 @@ interface FocusSessionScreenProps {
 const focusModes: FocusMode[] = [
   {
     id: 'flow',
-    title: 'Flow',
+    title: 'Flow Focus',
     subtitle: 'Deep Work Sessions',
     color: '#14B8A6',
     description: 'Enter a state of deep focus for creative and analytical work.',
   },
   {
     id: 'executioner',
-    title: 'Executioner',
+    title: 'Executioner Focus',
     subtitle: 'High-Intensity Tasks',
     color: '#EF4444',
     description: 'Tackle challenging tasks with maximum intensity and discipline.',
   },
   {
     id: 'meditation',
-    title: 'Meditation',
+    title: 'Meditation Focus',
     subtitle: 'Mindfulness & Awareness',
     color: '#22C55E',
     description: 'Cultivate mindfulness and inner awareness through meditation.',
   },
   {
     id: 'body',
-    title: 'Body',
+    title: 'Body Focus',
     subtitle: 'Physical Training',
     color: '#A855F7',
     description: 'Focus on physical training and body awareness exercises.',
@@ -75,7 +75,7 @@ const focusModes: FocusMode[] = [
     id: 'clock',
     title: 'Clock',
     subtitle: 'Time Management',
-    color: '#0000FF',
+    color: '#60A5FA',
     description: 'Focus on time management and productivity tracking.',
   },
 ];
