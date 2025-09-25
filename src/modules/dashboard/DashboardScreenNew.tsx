@@ -284,7 +284,7 @@ export const DashboardScreen: React.FC = () => {
         title: habitToComplete.title,
         finalStreak: habitToComplete.streak,
         completedAt: new Date().toISOString(),
-        targetDays: habitToComplete.targetDays || 21
+        targetDays: habitToComplete.targetDays || 30
       };
 
       // Move habit to completed habits
@@ -470,7 +470,7 @@ export const DashboardScreen: React.FC = () => {
             streak: habit.streak || 0,
             completedToday: habit.lastCompleted === new Date().toDateString(),
             lastCompleted: habit.lastCompleted,
-            targetDays: habit.targetDays || 21 // Default to 21 days if not set
+            targetDays: habit.targetDays || 30 // Default to 30 days if not set
           }));
         setActiveHabits(activeHabitsData);
       }
@@ -904,14 +904,14 @@ export const DashboardScreen: React.FC = () => {
                   <View 
                     style={[
                       styles.progressFill, 
-                      { width: `${Math.min((habit.streak / (habit.targetDays || 21)) * 100, 100)}%` }
+                      { width: `${Math.min((habit.streak / (habit.targetDays || 30)) * 100, 100)}%` }
                     ]} 
                   />
                 </View>
                 <View style={styles.habitStreak}>
                   <Icon name="local-fire-department" size={16} color="#FF6B35" />
                   <Text style={styles.habitStreakText}>
-                    {habit.streak} of {habit.targetDays || 21} days
+                    {habit.streak} of {habit.targetDays || 30} days
                   </Text>
                 </View>
               </View>

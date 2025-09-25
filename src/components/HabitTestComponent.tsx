@@ -27,7 +27,7 @@ export const HabitTestComponent: React.FC = () => {
             streak: habit.streak || 0,
             completedToday: habit.lastCompleted === new Date().toDateString(),
             lastCompleted: habit.lastCompleted,
-            targetDays: habit.targetDays || 21
+            targetDays: habit.targetDays || 30
           }));
         setHabits(activeHabits);
         console.log('Loaded habits:', activeHabits);
