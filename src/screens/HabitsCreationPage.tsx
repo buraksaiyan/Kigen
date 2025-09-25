@@ -145,7 +145,7 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
       setTargetDuration('');
       setReminderTime('');
 
-      Alert.alert('Success', 'Habit created successfully!');
+      // Alert.alert('Success', 'Habit created successfully!'); // Removed annoying success dialog
       navigation.goBack();
     } catch (error) {
       console.error('Error saving habit:', error);

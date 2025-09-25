@@ -110,7 +110,7 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
       setPriority('medium');
       setDueDate('');
       
-      Alert.alert('Success', 'Task added successfully!');
+      // Alert.alert('Success', 'Task added successfully!'); // Removed annoying success dialog
       navigation.goBack();
     } catch (error) {
       console.error('Error saving todo:', error);

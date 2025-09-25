@@ -144,7 +144,7 @@ export default function DashboardCustomizationScreen({
         onSave();
       }
       
-      Alert.alert('Success', 'Dashboard layout saved successfully!');
+      // Alert.alert('Success', 'Dashboard layout saved successfully!'); // Removed annoying success dialog
     } catch (error) {
       console.error('Error saving dashboard layout:', error);
       Alert.alert('Error', 'Failed to save dashboard layout');

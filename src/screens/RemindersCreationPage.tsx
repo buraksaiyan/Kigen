@@ -202,7 +202,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
       setSelectedMinute(0);
       setRecurring('none');
       
-      Alert.alert('Success', 'Reminder created successfully!');
+      // Alert.alert('Success', 'Reminder created successfully!'); // Removed annoying success dialog
       navigation.goBack();
     } catch (error) {
       console.error('Error saving reminder:', error);

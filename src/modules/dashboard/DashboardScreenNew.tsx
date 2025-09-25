@@ -292,7 +292,7 @@ export const DashboardScreen: React.FC = () => {
         setCompletedHabits(updatedCompletedHabits);
         await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
 
-        Alert.alert('Habit Completed!', `Congratulations! You've completed your ${(completedHabitData as CompletedHabit).targetDays}-day habit with a streak of ${(completedHabitData as CompletedHabit).finalStreak} days!`);
+        // Alert.alert('Habit Completed!', `Congratulations! You've completed your ${(completedHabitData as CompletedHabit).targetDays}-day habit with a streak of ${(completedHabitData as CompletedHabit).finalStreak} days!`); // Removed annoying success dialog
       }
 
       // Update the dashboard display (first 3 active habits)
@@ -403,7 +403,7 @@ export const DashboardScreen: React.FC = () => {
       // Update active goals storage
       await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
       
-      Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
+      // Alert.alert('Goal Completed!', 'Congratulations on completing your goal!'); // Removed annoying success dialog
       
       // Record the goal completion in stats
       await UserStatsService.recordGoalCompletion();

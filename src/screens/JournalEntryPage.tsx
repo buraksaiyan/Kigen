@@ -138,7 +138,7 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
       setContent('');
       setCurrentDraftId(null);
       
-      Alert.alert('Success', 'Journal entry saved!');
+      // Alert.alert('Success', 'Journal entry saved!'); // Removed annoying success dialog
       navigation.goBack();
     } catch (error) {
       console.error('Error saving entry:', error);

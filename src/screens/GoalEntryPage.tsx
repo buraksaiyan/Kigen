@@ -70,7 +70,7 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
       // Navigate back to previous screen
       navigation.goBack();
       
-      Alert.alert('Success', 'Goal added successfully!');
+      // Alert.alert('Success', 'Goal added successfully!'); // Removed annoying success dialog
     } catch (error) {
       console.error('Error saving goal:', error);
       Alert.alert('Error', 'Failed to save goal');
