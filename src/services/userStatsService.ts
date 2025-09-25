@@ -218,6 +218,7 @@ export class UserStatsService {
           today.completedSessions,
           today.completedGoals,
           today.journalEntries,
+          0, // executionHours (executioner mode removed)
           bodyFocusMinutes / 60,
           today.abortedSessions
         ),
@@ -347,6 +348,7 @@ export class UserStatsService {
           totalCompletedSessions,
           totalCompletedGoals,
           totalJournalEntries,
+          0, // executionHours (executioner mode removed)
           totalFocusMinutes.body / 60,
           totalAbortedSessions
         ),

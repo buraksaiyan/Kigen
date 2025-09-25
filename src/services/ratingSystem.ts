@@ -104,6 +104,7 @@ export class RatingSystem {
     completedSessions: number,
     completedGoals: number,
     journalEntriesToday: number,
+    executionHours: number,
     bodyFocusHours: number,
     abortedSessions: number
   ): number {
@@ -118,7 +119,8 @@ export class RatingSystem {
     // +5 pts per journal added (once a day cap)
     points += Math.min(journalEntriesToday, this.DAILY_JOURNAL_CAP) * 5;
     
-    // +10 pts per body focus hour
+    // +10 pts per execution & body focus hour
+    points += Math.ceil(executionHours) * 10;
     points += Math.ceil(bodyFocusHours) * 10;
     
     // Aborted session penalty removed
