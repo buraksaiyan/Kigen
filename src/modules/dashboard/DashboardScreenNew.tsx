@@ -33,6 +33,7 @@ import { digitalWellbeingService, DigitalWellbeingStats } from '../../services/d
 import { RatingSystem } from '../../services/ratingSystem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import * as Notifications from 'expo-notifications';
 import { useDashboardSections } from '../../hooks/useDashboardSections';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -197,6 +198,40 @@ export const DashboardScreen: React.FC = () => {
     
     // Check for new achievements
     await achievementService.checkAchievements();
+  };
+
+  const handleDisableReminder = async (reminderId: string) => {
+    try {
+      // Get current reminders
+      const remindersData = await AsyncStorage.getItem('@inzone_reminders');
+      if (!remindersData) return;
+
+      const reminders = JSON.parse(remindersData);
+      
+      // Find and update the reminder
+      const updatedReminders = reminders.map((reminder: any) => {
+        if (reminder.id === reminderId) {
+          // Cancel the notification if it exists
+          if (reminder.notificationId) {
+            Notifications.cancelScheduledNotificationAsync(reminder.notificationId);
+          }
+          return { ...reminder, isActive: false };
+        }
+        return reminder;
+      });
+
+      // Save updated reminders
+      await AsyncStorage.setItem('@inzone_reminders', JSON.stringify(updatedReminders));
+
+      // Refresh the active reminders list
+      await loadDashboardData();
+
+      // Show success message
+      Alert.alert('Success', 'Reminder disabled successfully');
+    } catch (error) {
+      console.error('Error disabling reminder:', error);
+      Alert.alert('Error', 'Failed to disable reminder');
+    }
   };
 
   const toggleHabitCompletion = async (habitId: string) => {
@@ -468,8 +503,18 @@ export const DashboardScreen: React.FC = () => {
       const remindersData = await AsyncStorage.getItem('@inzone_reminders');
       if (remindersData) {
         const reminders = JSON.parse(remindersData);
+        const now = new Date();
         const activeRemindersData = reminders
-          .filter((reminder: any) => reminder.isActive)
+          .filter((reminder: any) => {
+            if (!reminder.isActive) return false;
+            
+            // For recurring reminders, always show if active
+            if (reminder.recurring !== 'none') return true;
+            
+            // For one-time reminders, only show if in the future
+            const reminderTime = new Date(reminder.scheduledTime);
+            return reminderTime > now;
+          })
           .slice(0, 3)
           .map((reminder: any) => ({ 
             id: reminder.id, 
@@ -965,7 +1010,10 @@ export const DashboardScreen: React.FC = () => {
                   )}
                 </View>
               </View>
-              <TouchableOpacity style={styles.reminderAction}>
+              <TouchableOpacity 
+                style={styles.reminderAction}
+                onPress={() => handleDisableReminder(reminder.id)}
+              >
                 <Icon name="notifications-off" size={20} color={theme.colors.text.secondary} />
               </TouchableOpacity>
             </View>
