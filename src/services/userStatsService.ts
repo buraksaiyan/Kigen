@@ -292,6 +292,10 @@ export class UserStatsService {
             totalPhoneUsageMinutes += dayActivity.phoneUsageMinutes;
             totalSocialMediaMinutes += dayActivity.socialMediaMinutes;
 
+            // Accumulate daily JOU points instead of recalculating
+            const dailyJouPoints = RatingSystem.calculateJournalingPoints(dayActivity.journalEntries);
+            totalStats.JOU += dailyJouPoints;
+
             // Sum focus minutes by type
             totalFocusMinutes.flow += dayActivity.focusMinutes.flow;
             totalFocusMinutes.meditation += dayActivity.focusMinutes.meditation;
@@ -353,7 +357,7 @@ export class UserStatsService {
           totalAbortedSessions
         ),
         FOC: RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow),
-        JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries),
+        JOU: totalStats.JOU, // Already accumulated from daily calculations
         DET: RatingSystem.calculateDeterminationPoints(
           totalCompletedGoals,
           totalJournalEntries,
