@@ -149,6 +149,29 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
+  // Function to update stats in real-time
+  const updateStatsInRealTime = async () => {
+    try {
+      const monthlyRating = await UserStatsService.getCurrentRating();
+      const mappedMonthlyStats: UserStats = {
+        discipline: monthlyRating.stats.DIS,
+        focus: monthlyRating.stats.FOC,
+        journaling: monthlyRating.stats.JOU,
+        determination: monthlyRating.stats.DET,
+        productivity: monthlyRating.stats.PRD || 0,
+        mental: monthlyRating.stats.MEN,
+        physical: monthlyRating.stats.PHY,
+        social: monthlyRating.stats.SOC || 0,
+        overallRating: monthlyRating.overallRating,
+      };
+      setMonthlyStats(mappedMonthlyStats);
+      setAllTimeStats(mappedMonthlyStats); // For now, using same as monthly
+      console.log('📊 Stats updated in real-time');
+    } catch (error) {
+      console.error('Error updating stats:', error);
+    }
+  };
+
   const toggleTodoCompletion = async (todoId: string) => {
     try {
       const todoToToggle = activeTodos.find(todo => todo.id === todoId);
@@ -194,6 +217,9 @@ export const DashboardScreen: React.FC = () => {
 
     // Update rank in real-time after todo changes
     await updateRankInRealTime();
+    
+    // Update stats in real-time after todo changes
+    await updateStatsInRealTime();
     
     // Check for new achievements
     await achievementService.checkAchievements();
@@ -273,6 +299,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Update rank in real-time after habit changes
       await updateRankInRealTime();
+      
+      // Update stats in real-time after habit changes
+      await updateStatsInRealTime();
       
       // Check for new achievements
       await achievementService.checkAchievements();
@@ -372,6 +401,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Update rank in real-time after goal completion
       await updateRankInRealTime();
+      
+      // Update stats in real-time after goal completion
+      await updateStatsInRealTime();
       
       // Check for new achievements
       await achievementService.checkAchievements();

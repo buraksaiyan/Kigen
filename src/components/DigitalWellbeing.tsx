@@ -265,9 +265,6 @@ export const DigitalWellbeing: React.FC<DigitalWellbeingProps> = ({ theme }) => 
               <Text style={[styles.todayText, { color: theme.colors.text.primary }]}>
                 TODAY
               </Text>
-              <Text style={[styles.lastUpdated, { color: theme.colors.text.secondary }]}>
-                Last updated: {new Date(usageStats.lastUpdated).toLocaleTimeString()}
-              </Text>
             </View>
 
             <View style={styles.statsRow}>
