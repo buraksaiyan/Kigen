@@ -149,29 +149,6 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
-  // Function to update stats in real-time
-  const updateStatsInRealTime = async () => {
-    try {
-      const monthlyRating = await UserStatsService.getCurrentRating();
-      const mappedMonthlyStats: UserStats = {
-        discipline: monthlyRating.stats.DIS,
-        focus: monthlyRating.stats.FOC,
-        journaling: monthlyRating.stats.JOU,
-        determination: monthlyRating.stats.DET,
-        productivity: monthlyRating.stats.PRD || 0,
-        mental: monthlyRating.stats.MEN,
-        physical: monthlyRating.stats.PHY,
-        social: monthlyRating.stats.SOC || 0,
-        overallRating: monthlyRating.overallRating,
-      };
-      setMonthlyStats(mappedMonthlyStats);
-      setAllTimeStats(mappedMonthlyStats); // For now, using same as monthly
-      console.log('📊 Stats updated in real-time');
-    } catch (error) {
-      console.error('Error updating stats:', error);
-    }
-  };
-
   const toggleTodoCompletion = async (todoId: string) => {
     try {
       const todoToToggle = activeTodos.find(todo => todo.id === todoId);
@@ -217,9 +194,6 @@ export const DashboardScreen: React.FC = () => {
 
     // Update rank in real-time after todo changes
     await updateRankInRealTime();
-    
-    // Update stats in real-time after todo changes
-    await updateStatsInRealTime();
     
     // Check for new achievements
     await achievementService.checkAchievements();
@@ -280,10 +254,17 @@ export const DashboardScreen: React.FC = () => {
       });
       
       if (habitCompleted) {
+        // Move habit to completed habits
+        const updatedCompletedHabits = [...completedHabits, completedHabitData];
+        setCompletedHabits(updatedCompletedHabits);
+        await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
+        
         // Remove from active habits
         const filteredActiveHabits = updatedHabits.filter(h => h.id !== habitId);
         setActiveHabits(filteredActiveHabits);
         await AsyncStorage.setItem('@inzone_habits', JSON.stringify(filteredActiveHabits));
+        
+        Alert.alert('Habit Completed!', `Congratulations! You've completed your ${completedHabitData.targetDays}-day habit with a streak of ${completedHabitData.finalStreak} days!`);
       } else {
         // Normal habit update
         setActiveHabits(updatedHabits);
@@ -292,9 +273,6 @@ export const DashboardScreen: React.FC = () => {
 
       // Update rank in real-time after habit changes
       await updateRankInRealTime();
-      
-      // Update stats in real-time after habit changes
-      await updateStatsInRealTime();
       
       // Check for new achievements
       await achievementService.checkAchievements();
@@ -387,14 +365,13 @@ export const DashboardScreen: React.FC = () => {
       // Update active goals storage
       await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
       
+      Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
+      
       // Record the goal completion in stats
       await UserStatsService.recordGoalCompletion();
 
       // Update rank in real-time after goal completion
       await updateRankInRealTime();
-      
-      // Update stats in real-time after goal completion
-      await updateStatsInRealTime();
       
       // Check for new achievements
       await achievementService.checkAchievements();
@@ -560,6 +537,9 @@ export const DashboardScreen: React.FC = () => {
 
       // Check for achievements on app load
       await achievementService.checkAchievements();
+
+      // Sync leaderboard data with current user stats
+      await UserStatsService.syncUserToLeaderboard();
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
