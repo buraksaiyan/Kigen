@@ -111,7 +111,6 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
         {
           text: 'Create Goal',
           onPress: () => {
-            onClose();
             onCreateGoal();
           },
           style: 'default',
