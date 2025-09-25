@@ -288,7 +288,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                     >
                       <Text style={[styles.cloverButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
                     </TouchableOpacity>
+                  </View>
 
+                  <View style={styles.cloverRow}>
                     <TouchableOpacity
                       style={[styles.cloverButton, { borderColor: meditateMode.color }]}
                       onPress={() => handleModeSelect(meditateMode)}
@@ -296,9 +298,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                     >
                       <Text style={[styles.cloverButtonText, { color: meditateMode.color }]}>{meditateMode.title}</Text>
                     </TouchableOpacity>
-                  </View>
 
-                  <View style={styles.cloverRow}>
                     <TouchableOpacity
                       style={[styles.cloverButton, { borderColor: bodyMode.color }]}
                       onPress={() => handleModeSelect(bodyMode)}
