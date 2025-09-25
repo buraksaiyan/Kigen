@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
-import { GoalSelectionScreen } from './GoalSelectionScreen';
 import { focusSessionService } from '../services/FocusSessionService';
 import { useSettings } from '../hooks/useSettings';
 
@@ -52,13 +51,6 @@ const focusModes: FocusMode[] = [
     description: 'Enter a state of deep focus for creative and analytical work.',
   },
   {
-    id: 'executioner',
-    title: 'Executioner',
-    subtitle: 'High-Intensity Tasks',
-    color: '#EF4444',
-    description: 'Tackle challenging tasks with maximum intensity and discipline.',
-  },
-  {
     id: 'meditation',
     title: 'Meditation',
     subtitle: 'Mindfulness & Awareness',
@@ -88,10 +80,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   onSessionComplete 
 }) => {
   const [selectedMode, setSelectedMode] = useState<FocusMode | null>(null);
-  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
-  const [showGoalSelection, setShowGoalSelection] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
@@ -100,15 +90,12 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const { settings } = useSettings();
 
   // Destructure focus modes for type safety
-  const [flowMode, executionerMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode, FocusMode];
+  const [flowMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode];
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
     
-    // For Executioner mode, show goal selection first
-    if (mode.id === 'executioner') {
-      setShowGoalSelection(true);
-    } else if (mode.id === 'clock') {
+    if (mode.id === 'clock') {
       // Clock mode doesn't use standard setup - handle differently later
       return;
     } else {
@@ -116,26 +103,10 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
-  const handleGoalSelected = (goal: Goal) => {
-    setSelectedGoal(goal);
-    setShowGoalSelection(false);
-    setShowSetup(true);
-  };
-
-  const handleCreateGoal = () => {
-    // Navigate to goal creation screen
-    setShowGoalSelection(false);
-    setSelectedMode(null);
-    onClose(); // Close focus session screen
-    if (onOpenGoals) {
-      onOpenGoals(); // Open goals screen
-    }
-  };
-
   const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number) => {
     try {
       const totalMinutes = (hours * 60) + minutes;
-      const sessionId = await focusSessionService.startSession(mode, totalMinutes, selectedGoal);
+      const sessionId = await focusSessionService.startSession(mode, totalMinutes, null);
       
       setCurrentSessionId(sessionId);
       setSessionHours(hours);
@@ -144,7 +115,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setShowSetup(false);
       setShowCountdown(true);
       
-      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, breakDuration: breakMin, goal: selectedGoal?.title });
+      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, breakDuration: breakMin });
     } catch (error) {
       console.error('Error starting focus session:', error);
       // Handle error - could show an alert or toast
@@ -156,8 +127,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       if (currentSessionId) {
         await focusSessionService.completeSession(currentSessionId, true, 'completed');
         console.log('Focus session completed successfully!', { 
-          mode: selectedMode?.title, 
-          goal: selectedGoal?.title 
+          mode: selectedMode?.title
         });
         
         // Notify dashboard that a session has completed (to refresh stats)
@@ -169,7 +139,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       // Reset all states
       setShowCountdown(false);
       setSelectedMode(null);
-      setSelectedGoal(null);
       setCurrentSessionId(null);
     }
   };
@@ -183,8 +152,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       if (currentSessionId) {
         await focusSessionService.earlyFinishSession(currentSessionId);
         console.log('Focus session finished early with points!', { 
-          mode: selectedMode?.title, 
-          goal: selectedGoal?.title 
+          mode: selectedMode?.title
         });
         
         // Notify dashboard that a session has completed (to refresh stats)
@@ -196,7 +164,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       // Reset all states
       setShowCountdown(false);
       setSelectedMode(null);
-      setSelectedGoal(null);
       setCurrentSessionId(null);
     }
   };
@@ -213,7 +180,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       // Reset all states
       setShowCountdown(false);
       setSelectedMode(null);
-      setSelectedGoal(null);
       setCurrentSessionId(null);
     }
   };
@@ -225,17 +191,10 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
   // Handle Android hardware back button while focus modal is open
   const handleHardwareBack = useCallback(() => {
-    console.log('[FocusSession] hardwareBack pressed', { showSetup, showGoalSelection, showCountdown });
+    console.log('[FocusSession] hardwareBack pressed', { showSetup, showCountdown });
     // If setup screen is open, close it and remain in selection
     if (showSetup) {
       setShowSetup(false);
-      return true;
-    }
-
-    // If goal selection is open, close it and remain in selection
-    if (showGoalSelection) {
-      setShowGoalSelection(false);
-      setSelectedMode(null);
       return true;
     }
 
@@ -251,7 +210,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     console.log('[FocusSession] closing focus modal via back button');
     onClose();
     return true;
-  }, [showSetup, showGoalSelection, showCountdown, onClose]);
+  }, [showSetup, showCountdown, onClose]);
 
   useEffect(() => {
     if (Platform.OS === 'android' && visible) {
@@ -274,7 +233,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             totalHours={sessionHours}
             totalMinutes={sessionMinutes}
             breakMinutes={breakMinutes}
-            selectedGoal={selectedGoal} // Pass the selected goal
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}
             onEarlyFinish={handleEarlyFinish}
@@ -317,23 +275,15 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[styles.cloverButton, { borderColor: executionerMode.color }]}
-                      onPress={() => handleModeSelect(executionerMode)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.cloverButtonText, { color: executionerMode.color }]}>{executionerMode.title}</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.cloverRow}>
-                    <TouchableOpacity
                       style={[styles.cloverButton, { borderColor: meditateMode.color }]}
                       onPress={() => handleModeSelect(meditateMode)}
                       activeOpacity={0.8}
                     >
                       <Text style={[styles.cloverButtonText, { color: meditateMode.color }]}>{meditateMode.title}</Text>
                     </TouchableOpacity>
+                  </View>
 
+                  <View style={styles.cloverRow}>
                     <TouchableOpacity
                       style={[styles.cloverButton, { borderColor: bodyMode.color }]}
                       onPress={() => handleModeSelect(bodyMode)}
@@ -366,20 +316,6 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           onStartSession={handleStartSession}
           defaultDuration={settings.defaultFocusDuration}
         />
-
-        {/* Goal Selection Screen for Executioner Mode */}
-        {selectedMode && (
-          <GoalSelectionScreen
-            visible={showGoalSelection}
-            mode={selectedMode}
-            onClose={() => {
-              setShowGoalSelection(false);
-              setSelectedMode(null);
-            }}
-            onGoalSelected={handleGoalSelected}
-            onCreateGoal={handleCreateGoal}
-          />
-        )}
       </SafeAreaView>
     </Modal>
   );
