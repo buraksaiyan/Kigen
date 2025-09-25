@@ -37,6 +37,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
   const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
     loadLeaderboards();
@@ -44,6 +45,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
 
   const loadLeaderboards = async () => {
     try {
+      // Check Supabase connectivity
+      const isSupabaseAvailable = await LeaderboardService.isSupabaseAvailable();
+      setIsOnline(isSupabaseAvailable);
+
       // Load global leaderboard from LeaderboardService
       const globalData = await LeaderboardService.getGlobalLeaderboard();
       
@@ -131,6 +136,15 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Connection Status Indicator */}
+        {!isOnline && (
+          <View style={styles.connectionStatusBar}>
+            <Text style={styles.connectionStatusText}>
+              🔄 Using cached data - Connection unavailable
+            </Text>
+          </View>
+        )}
 
         {/* Month selector for monthly view */}
         {activeTab === 'monthly' && (
@@ -411,5 +425,19 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '700',
     marginBottom: 4,
+  },
+  connectionStatusBar: {
+    backgroundColor: theme.colors.warning,
+    marginHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+  },
+  connectionStatusText: {
+    ...theme.typography.small,
+    color: theme.colors.text.primary,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });

@@ -88,7 +88,12 @@ class LeaderboardService {
         });
 
       if (error) {
-        console.error('Error syncing with global leaderboard:', error);
+        // Handle specific error codes
+        if (error.code === '522' || error.message?.includes('522')) {
+          console.warn('⚠️ Supabase connection timeout (522). Leaderboard sync will retry later. Using local data for now.');
+        } else {
+          console.error('Error syncing with global leaderboard:', error);
+        }
         return;
       }
 
@@ -98,8 +103,13 @@ class LeaderboardService {
       const globalData = await this.fetchGlobalLeaderboardFromSupabase();
       await this.cacheLeaderboard(globalData);
       
-    } catch (error) {
-      console.error('Error syncing with global leaderboard:', error);
+    } catch (error: any) {
+      // Handle network/connection errors specifically
+      if (error.code === '522' || error.message?.includes('522') || error.message?.includes('timeout')) {
+        console.warn('⚠️ Network timeout while syncing leaderboard. Data will sync when connection improves.');
+      } else {
+        console.error('Error syncing with global leaderboard:', error);
+      }
     }
   }
 
@@ -113,7 +123,12 @@ class LeaderboardService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching global leaderboard:', error);
+        // Handle specific error codes
+        if (error.code === '522' || error.message?.includes('522')) {
+          console.warn('⚠️ Supabase connection timeout (522). Using cached leaderboard data.');
+        } else {
+          console.error('Error fetching global leaderboard:', error);
+        }
         return [];
       }
 
@@ -136,18 +151,37 @@ class LeaderboardService {
     }
   }
 
+  // Check if Supabase is available
+  static async isSupabaseAvailable(): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('leaderboard').select('count').limit(1).single();
+      return !error;
+    } catch {
+      return false;
+    }
+  }
+
   // Get global leaderboard (fetch from Supabase)
   static async getGlobalLeaderboard(limit: number = 100): Promise<LeaderboardEntry[]> {
     try {
+      // Check if Supabase is available
+      const isAvailable = await this.isSupabaseAvailable();
+
+      if (!isAvailable) {
+        console.warn('⚠️ Supabase unavailable. Using cached leaderboard data.');
+        const cached = await this.getCachedLeaderboard();
+        return cached.length > 0 ? cached.slice(0, limit) : this.getMockGlobalLeaderboard();
+      }
+
       // Try to fetch fresh data from Supabase
       const freshData = await this.fetchGlobalLeaderboardFromSupabase(limit);
-      
+
       if (freshData.length > 0) {
         // Cache the fresh data
         await this.cacheLeaderboard(freshData);
         return freshData;
       }
-      
+
       // If Supabase fails, fall back to cached data
       const cached = await this.getCachedLeaderboard();
       if (cached.length > 0) {
