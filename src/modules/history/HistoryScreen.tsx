@@ -18,6 +18,7 @@ import { journalStorage } from '../../services/journalStorage';
 import { PointsHistoryService } from '../../services/PointsHistoryService';
 
 type HistoryTab = 'journaling' | 'goals' | 'todo' | 'habits' | 'focus' | 'points';
+type DateFilter = 'all' | 'today' | 'thisWeek' | 'thisMonth';
 
 interface HistoryItem {
   id: string;
@@ -51,6 +52,7 @@ export const HistoryScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
 
   useEffect(() => {
     loadHistoryData();
@@ -229,7 +231,32 @@ export const HistoryScreen: React.FC = () => {
     }
   };
 
-  const currentData = historyData[activeTab] || [];
+  const getFilteredData = (data: HistoryItem[]) => {
+    if (dateFilter === 'all') return data;
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    return data.filter(item => {
+      const itemDate = new Date(item.date);
+
+      switch (dateFilter) {
+        case 'today':
+          return itemDate >= today;
+        case 'thisWeek':
+          const weekStart = new Date(today);
+          weekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+          return itemDate >= weekStart;
+        case 'thisMonth':
+          const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+          return itemDate >= monthStart;
+        default:
+          return true;
+      }
+    });
+  };
+
+  const currentData = getFilteredData(historyData[activeTab] || []);
 
   const renderTabButton = (tab: typeof historyTabs[0]) => (
     <TouchableOpacity
@@ -382,9 +409,21 @@ export const HistoryScreen: React.FC = () => {
             <Text style={styles.filterButtonText}>Delete ({selectedIds.length})</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.filterButton}>
-            <Icon name="date-range" size={20} color={theme.colors.text.secondary} />
-            <Text style={styles.filterButtonText}>This Week</Text>
+          <TouchableOpacity 
+            style={[styles.filterButton, dateFilter !== 'all' && styles.activeFilterButton]}
+            onPress={() => {
+              const filters: DateFilter[] = ['all', 'today', 'thisWeek', 'thisMonth'];
+              const currentIndex = filters.indexOf(dateFilter);
+              const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % filters.length : 0;
+              setDateFilter(filters[nextIndex]!);
+            }}
+          >
+            <Icon name="date-range" size={20} color={dateFilter !== 'all' ? theme.colors.primary : theme.colors.text.secondary} />
+            <Text style={[styles.filterButtonText, dateFilter !== 'all' && styles.activeFilterText]}>
+              {dateFilter === 'all' ? 'All Time' : 
+               dateFilter === 'today' ? 'Today' : 
+               dateFilter === 'thisWeek' ? 'This Week' : 'This Month'}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -480,6 +519,13 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
     fontSize: 14,
     fontWeight: '500',
+  },
+  activeFilterButton: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  activeFilterText: {
+    color: theme.colors.text.primary,
   },
   header: {
     alignItems: 'center',
