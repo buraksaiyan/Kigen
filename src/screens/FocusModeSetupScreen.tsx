@@ -302,7 +302,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Focus on form over intensity
                 </Text>
               )}
-              {mode.id === 'notech' && (
+              /*{mode.id === 'notech' && (
                 <Text style={styles.tipsText}>
                   • Put devices in another room{'\n'}
                   • Engage with physical activities{'\n'}

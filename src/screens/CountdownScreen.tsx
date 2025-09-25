@@ -329,6 +329,7 @@ const FOCUS_QUOTES = {
       author: "Buddha"
     }
   ],
+  /*
   notech: [
     {
       text: "Almost everything will work again if you unplug it for a few minutes, including you.",
@@ -403,6 +404,7 @@ const FOCUS_QUOTES = {
       author: "Sathya Sai Baba"
     }
   ]
+  */
 };
 
 export const CountdownScreen: React.FC<CountdownScreenProps> = ({
