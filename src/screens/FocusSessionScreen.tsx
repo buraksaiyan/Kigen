@@ -263,11 +263,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
 
                 {/* Custom Focus Mode Button */}
                 <TouchableOpacity
-                  style={styles.customModeButton}
+                  style={[styles.customModeButton, { borderColor: CUSTOM_MODE_COLOR }]}
                   onPress={() => {/* TODO: Handle custom mode */}}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.customModeText}>Custom Focus Mode</Text>
+                  <Text style={[styles.customModeText, { color: CUSTOM_MODE_COLOR }]}>Custom Focus Mode</Text>
                 </TouchableOpacity>
 
                 {/* 4-Leaf Clover Layout - Vertical Stack */}
@@ -373,19 +373,18 @@ const styles = StyleSheet.create({
   },
   customModeButton: {
     alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: theme.colors.surface,
-    borderColor: CUSTOM_MODE_COLOR,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
+    backgroundColor: TRANSPARENT,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 2,
+    height: 80,
     justifyContent: 'center',
-    marginBottom: theme.spacing.lg,
-    paddingVertical: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
   },
   customModeText: {
     ...theme.typography.h3,
-    color: CUSTOM_MODE_COLOR,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
   },
   scrollView: {
     flex: 1,
