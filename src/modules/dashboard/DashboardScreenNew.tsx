@@ -913,6 +913,14 @@ export const DashboardScreen: React.FC = () => {
               </TouchableOpacity>
               <View style={styles.habitContent}>
                 <Text style={styles.habitTitle}>{habit.title}</Text>
+                <View style={styles.progressBar}>
+                  <View 
+                    style={[
+                      styles.progressFill, 
+                      { width: `${Math.min((habit.streak / (habit.targetDays || 21)) * 100, 100)}%` }
+                    ]} 
+                  />
+                </View>
                 <View style={styles.habitStreak}>
                   <Icon name="local-fire-department" size={16} color="#FF6B35" />
                   <Text style={styles.habitStreakText}>
@@ -1603,6 +1611,17 @@ const styles = StyleSheet.create({
   goalDeadline: {
     color: theme.colors.text.secondary,
     fontSize: 12,
+  },
+  progressBar: {
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: 3,
+    height: 6,
+    marginBottom: 12,
+  },
+  progressFill: {
+    backgroundColor: theme.colors.success,
+    borderRadius: 3,
+    height: '100%',
   },
   goalActions: {
     flexDirection: 'row',
