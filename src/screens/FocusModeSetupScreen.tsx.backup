@@ -103,7 +103,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <Text style={styles.sectionTitle}>Set Session Duration</Text>
               
               {/* Time Input */}
-              <View style={styles.timeInputContainer}>
+              <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
                     style={[styles.timeInput, { borderColor: mode?.color }]}
@@ -160,7 +160,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <Text style={styles.sectionTitle}>Set Break Duration</Text>
               
               {/* Break Duration Input */}
-              <View style={styles.timeInputContainer}>
+              <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
                 <View style={styles.timeInputGroup}>
                   <TextInput
                     style={[styles.timeInput, { borderColor: mode?.color }]}
@@ -245,9 +245,62 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   • Focus on form over intensity
                 </Text>
               )}
+              /*{mode?.id === 'notech' && (
+                <Text style={styles.tipsText}>
+                  • Put devices in another room{'\n'}
+                  • Engage with physical activities{'\n'}
+                  • Practice mindful observation{'\n'}
+                  • Connect with nature if possible
+                </Text>
+              )}
             </Card>
           </View>
         </ScrollView>
+      </SafeAreaView>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+          <View style={styles.pickerOverlay}>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerTitle}>
+                Select {pickerField === 'hours' ? 'Hours' : pickerField === 'minutes' ? 'Minutes' : 'Break Minutes'}
+              </Text>
+              {/* <FlatList
+                data={Array.from({ length: pickerMaxValue + 1 }, (_, i) => i)}
+                keyExtractor={(item) => item.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.pickerItem}
+                    onPress={() => selectPickerValue(item)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.pickerItemText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+                showsVerticalScrollIndicator={false}
+                initialScrollIndex={parseInt(
+                  pickerField === 'hours' ? hours : 
+                  pickerField === 'minutes' ? minutes : 
+                  breakMinutes
+                ) || 0}
+                getItemLayout={(data, index) => ({
+                  length: 50,
+                  offset: 50 * index,
+                  index,
+                })}
+              /> */}
+              <TouchableOpacity
+                style={styles.pickerCloseButton}
+                onPress={() => setShowPicker(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.pickerCloseText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </Modal>
   );
