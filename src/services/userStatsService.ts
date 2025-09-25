@@ -32,7 +32,6 @@ interface DailyActivity {
   completedTodoBullets?: number;
   focusMinutes: {
     flow: number;
-    executioner: number;
     meditation: number;
     body: number;
     notech: number;
@@ -135,7 +134,6 @@ export class UserStatsService {
         completedTodoBullets: 0,
         focusMinutes: {
           flow: 0,
-          executioner: 0,
           meditation: 0,
           body: 0,
           notech: 0
@@ -180,7 +178,6 @@ export class UserStatsService {
       // Get total focus minutes
       const totalFocusMinutes = Object.values(today.focusMinutes).reduce((sum, minutes) => sum + minutes, 0);
       const flowFocusMinutes = today.focusMinutes.flow;
-      const executionMinutes = today.focusMinutes.executioner;
       const bodyFocusMinutes = today.focusMinutes.body;
       const meditationMinutes = today.focusMinutes.meditation;
       const noPhoneFocusMinutes = today.focusMinutes.notech;
@@ -221,7 +218,6 @@ export class UserStatsService {
           today.completedSessions,
           today.completedGoals,
           today.journalEntries,
-          executionMinutes / 60,
           bodyFocusMinutes / 60,
           today.abortedSessions
         ),
@@ -271,7 +267,6 @@ export class UserStatsService {
       let totalCompletedGoals = 0;
       let totalFocusMinutes = {
         flow: 0,
-        executioner: 0,
         meditation: 0,
         body: 0,
         notech: 0
@@ -298,7 +293,6 @@ export class UserStatsService {
 
             // Sum focus minutes by type
             totalFocusMinutes.flow += dayActivity.focusMinutes.flow;
-            totalFocusMinutes.executioner += dayActivity.focusMinutes.executioner;
             totalFocusMinutes.meditation += dayActivity.focusMinutes.meditation;
             totalFocusMinutes.body += dayActivity.focusMinutes.body;
             totalFocusMinutes.notech += dayActivity.focusMinutes.notech;
@@ -353,7 +347,6 @@ export class UserStatsService {
           totalCompletedSessions,
           totalCompletedGoals,
           totalJournalEntries,
-          totalFocusMinutes.executioner / 60,
           totalFocusMinutes.body / 60,
           totalAbortedSessions
         ),
@@ -672,9 +665,6 @@ export class UserStatsService {
       switch (type) {
         case 'free':
           today.focusMinutes.flow += minutes;
-          break;
-        case 'executioner':
-          today.focusMinutes.executioner += minutes;
           break;
         case 'meditation':
           today.focusMinutes.meditation += minutes;

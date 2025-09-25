@@ -111,80 +111,6 @@ const FOCUS_QUOTES = {
       author: "Cal Newport"
     }
   ],
-  executioner: [
-    {
-      text: "Excellence is never an accident. It is always the result of high intention and intelligent execution.",
-      author: "Aristotle"
-    },
-    {
-      text: "The way to get started is to quit talking and begin doing.",
-      author: "Walt Disney"
-    },
-    {
-      text: "Success is where preparation and opportunity meet.",
-      author: "Bobby Unser"
-    },
-    {
-      text: "Do something today that your future self will thank you for.",
-      author: "Sean Patrick Flanery"
-    },
-    {
-      text: "The expert in anything was once a beginner who refused to give up.",
-      author: "Helen Hayes"
-    },
-    {
-      text: "Discipline is choosing between what you want now and what you want most.",
-      author: "Abraham Lincoln"
-    },
-    {
-      text: "Action is the foundational key to all success.",
-      author: "Pablo Picasso"
-    },
-    {
-      text: "You don't have to be great to get started, but you have to get started to be great.",
-      author: "Les Brown"
-    },
-    {
-      text: "The future depends on what you do today.",
-      author: "Mahatma Gandhi"
-    },
-    {
-      text: "A goal without a plan is just a wish.",
-      author: "Antoine de Saint-Exupéry"
-    },
-    {
-      text: "Don't wait for opportunity. Create it.",
-      author: "George Bernard Shaw"
-    },
-    {
-      text: "The time for action is now. It's never too late to do something.",
-      author: "Carl Sandburg"
-    },
-    {
-      text: "Execution is everything. Ideas are worthless without action.",
-      author: "Gary Vaynerchuk"
-    },
-    {
-      text: "Stop talking about what you're going to do and start doing it.",
-      author: "Gary Vaynerchuk"
-    },
-    {
-      text: "The difference between ordinary and extraordinary is that little extra.",
-      author: "Jimmy Johnson"
-    },
-    {
-      text: "Champions don't become champions in the ring. They become champions in their training.",
-      author: "Muhammad Ali"
-    },
-    {
-      text: "Success is the sum of small efforts repeated day in and day out.",
-      author: "Robert Collier"
-    },
-    {
-      text: "What we think, we become. What we feel, we attract. What we imagine, we create.",
-      author: "Buddha"
-    }
-  ],
   meditation: [
     {
       text: "Focus on the present moment. It is the only time over which we have dominion.",
@@ -803,19 +729,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           </View>
         </View>
 
-        {/* Selected Goal Display - Only show for Executioner mode */}
-        {mode.id === 'executioner' && selectedGoal && (
-          <View style={styles.goalDisplayContainer}>
-            <Text style={[styles.goalLabel, { color: mode.color }]}>FOCUSING ON</Text>
-            <View style={[styles.goalCard, { borderColor: mode.color }]}>
-              <Text style={styles.goalTitle}>{selectedGoal.title}</Text>
-              {selectedGoal.description && (
-                <Text style={styles.goalDescription}>{selectedGoal.description}</Text>
-              )}
-            </View>
-          </View>
-        )}
-
         {/* Circular Timer Display */}
         <View style={styles.circularTimerContainer}>
           {/* Body Focus Set Counter - only show for body mode */}
@@ -1310,43 +1223,5 @@ const styles = StyleSheet.create({
     marginTop: -170, // Half of SVG height (340/2)
     position: 'absolute',
     top: '50%',
-  },
-  // Goal display styles
-  goalDisplayContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginBottom: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.md,
-    width: '90%',
-  },
-  goalLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: theme.spacing.sm,
-    opacity: 0.8,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  goalCard: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.overlayLight,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 2,
-    padding: theme.spacing.md,
-    width: '100%',
-  },
-  goalTitle: {
-    color: theme.colors.text.primary,
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: theme.spacing.xs,
-    textAlign: 'center',
-  },
-  goalDescription: {
-    color: theme.colors.text.secondary,
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
   },
 });

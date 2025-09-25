@@ -507,9 +507,6 @@ class FocusSessionService {
         case 'flow':
           today.focusMinutes.flow += actualMinutes;
           break;
-        case 'executioner':
-          today.focusMinutes.executioner += actualMinutes;
-          break;
         case 'body':
           today.focusMinutes.body += actualMinutes;
           break;
