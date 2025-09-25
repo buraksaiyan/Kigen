@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
 import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
+import { GoalSelectionScreen } from './GoalSelectionScreen';
 import { focusSessionService } from '../services/FocusSessionService';
 import { useSettings } from '../hooks/useSettings';
 
@@ -90,6 +91,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
+  const [showGoalSelection, setShowGoalSelection] = useState(false);
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
   const [breakMinutes, setBreakMinutes] = useState(5);
@@ -102,7 +104,10 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
     
-    if (mode.id === 'clock') {
+    if (mode.id === 'executioner') {
+      // Executioner mode uses goal selection first
+      setShowGoalSelection(true);
+    } else if (mode.id === 'clock') {
       // Clock mode doesn't use standard setup - handle differently later
       return;
     } else {
@@ -318,6 +323,19 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             </ScrollView>
           </>
         )}
+
+        {/* Goal Selection Screen */}
+        <GoalSelectionScreen
+          visible={showGoalSelection}
+          mode={selectedMode || executionerMode}
+          onClose={() => setShowGoalSelection(false)}
+          onGoalSelected={(goal) => {
+            console.log('Goal selected for executioner mode:', goal.title);
+            setShowGoalSelection(false);
+            setShowSetup(true);
+          }}
+          onCreateGoal={onOpenGoals || (() => {})}
+        />
 
         {/* Setup Screen */}
         <FocusModeSetupScreen
