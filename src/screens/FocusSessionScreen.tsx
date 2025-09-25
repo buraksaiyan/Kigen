@@ -17,7 +17,7 @@ import { GoalSelectionScreen } from './GoalSelectionScreen';
 import { focusSessionService } from '../services/FocusSessionService';
 import { useSettings } from '../hooks/useSettings';
 
-const CUSTOM_MODE_COLOR = '#F59E0B';
+const CUSTOM_MODE_COLOR = theme.colors.focus.custom;
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 
 interface FocusMode {
@@ -48,35 +48,35 @@ const focusModes: FocusMode[] = [
     id: 'flow',
     title: 'Flow Focus',
     subtitle: 'Deep Work Sessions',
-    color: '#14B8A6',
+    color: theme.colors.focus.study,
     description: 'Enter a state of deep focus for creative and analytical work.',
   },
   {
     id: 'executioner',
     title: 'Executioner Focus',
     subtitle: 'High-Intensity Tasks',
-    color: '#EF4444',
+    color: theme.colors.focus.work,
     description: 'Tackle challenging tasks with maximum intensity and discipline.',
   },
   {
     id: 'meditation',
     title: 'Meditation Focus',
     subtitle: 'Mindfulness & Awareness',
-    color: '#22C55E',
+    color: theme.colors.focus.meditation,
     description: 'Cultivate mindfulness and inner awareness through meditation.',
   },
   {
     id: 'body',
     title: 'Body Focus',
     subtitle: 'Physical Training',
-    color: '#A855F7',
+    color: theme.colors.focus.exercise,
     description: 'Focus on physical training and body awareness exercises.',
   },
   {
     id: 'clock',
     title: 'Clock',
     subtitle: 'Time Management',
-    color: '#60A5FA',
+    color: theme.colors.focus.reading,
     description: 'Focus on time management and productivity tracking.',
   },
 ];

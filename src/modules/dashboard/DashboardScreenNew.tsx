@@ -150,7 +150,7 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
-  const toggleTodoCompletion = async (todoId: string) => {
+  const toggleTodoCompletion = useCallback(async (todoId: string) => {
     try {
       const todoToToggle = activeTodos.find(todo => todo.id === todoId);
       if (!todoToToggle) return;
@@ -198,7 +198,7 @@ export const DashboardScreen: React.FC = () => {
     
     // Check for new achievements
     await achievementService.checkAchievements();
-  };
+  }, [activeTodos, completedTodos, setCompletedTodos, updateRankInRealTime]);
 
   const handleDisableReminder = async (reminderId: string) => {
     try {
@@ -234,7 +234,7 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
-  const toggleHabitCompletion = async (habitId: string) => {
+  const toggleHabitCompletion = useCallback(async (habitId: string) => {
     try {
       // Load the full habits list from storage
       const habitsData = await AsyncStorage.getItem('@inzone_habits');
@@ -318,7 +318,7 @@ export const DashboardScreen: React.FC = () => {
       console.error('Error updating habit:', error);
       Alert.alert('Error', 'Failed to update habit');
     }
-  };
+  }, [activeHabits, completedHabits, setCompletedHabits, updateRankInRealTime]);
 
   const handleHabitAction = async (habitId: string, action: 'reset_streak' | 'give_up') => {
     try {
@@ -374,7 +374,7 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
-  const completeGoal = async (goalId: string) => {
+  const completeGoal = useCallback(async (goalId: string) => {
     try {
       // Find the goal to complete
       const goalToComplete = activeGoals.find(goal => goal.id === goalId);
@@ -417,9 +417,9 @@ export const DashboardScreen: React.FC = () => {
       console.error('Error completing goal:', error);
       Alert.alert('Error', 'Failed to complete goal');
     }
-  };
+  }, [activeGoals, completedGoals, setCompletedGoals]);
 
-  const failGoal = async (goalId: string) => {
+  const failGoal = useCallback(async (goalId: string) => {
     try {
       const updatedGoals = activeGoals.map(goal => 
         goal.id === goalId ? { ...goal, failed: true, failedAt: new Date().toISOString() } : goal
@@ -431,7 +431,7 @@ export const DashboardScreen: React.FC = () => {
     } catch (error) {
       console.error('Error failing goal:', error);
     }
-  };
+  }, [activeGoals]);
 
   const currentStats = isMonthly ? monthlyStats : allTimeStats;
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
@@ -661,7 +661,7 @@ export const DashboardScreen: React.FC = () => {
     
   // Get text colors based on rank background using RatingSystem luminance helper
   const textColor = RatingSystem.getCardTextColorFromTier(userRank as any);
-  const secondaryTextColor = textColor === '#000000' ? '#666666' : '#CCCCCC';
+  const secondaryTextColor = textColor === theme.colors.black ? '#666666' : '#CCCCCC';
 
     // Gesture: use Tap for taps and a horizontal Pan for swipes.
     const tapGesture = Gesture.Tap().onEnd(() => {
@@ -1443,7 +1443,7 @@ const styles = StyleSheet.create({
   // Small top gap so the tap hint sits close to the card
   marginTop: 4,
     borderRadius: 20,
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1649,7 +1649,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.white,
     fontSize: 12,
     fontWeight: '500',
   },
@@ -1724,7 +1724,7 @@ const styles = StyleSheet.create({
     width: 8,
   },
   indicatorDotActive: {
-    backgroundColor: '#0000FF',
+    backgroundColor: theme.colors.secondary,
     width: 24,
   },
   usageSection: {
@@ -1802,7 +1802,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   improveButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -1843,7 +1843,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   permissionButtonText: {
-    color: '#FFFFFF',
+    color: theme.colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -1927,7 +1927,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeTabText: {
-    color: '#FFFFFF',
+    color: theme.colors.white,
   },
   historyItem: {
     alignItems: 'center',

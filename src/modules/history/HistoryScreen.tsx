@@ -267,7 +267,7 @@ export const HistoryScreen: React.FC = () => {
       <Icon
         name={tab.icon}
         size={20}
-        color={activeTab === tab.id ? '#FFFFFF' : theme.colors.text.secondary}
+        color={activeTab === tab.id ? theme.colors.white : theme.colors.text.secondary}
         style={styles.tabIcon}
       />
       <Text style={[
@@ -295,14 +295,14 @@ export const HistoryScreen: React.FC = () => {
 
   const getHistoryItemColor = (type: string) => {
     switch (type) {
-      case 'journal_entry': return '#4ECDC4';
+      case 'journal_entry': return theme.colors.menu.journaling;
       case 'goal_completed': return theme.colors.success;
       case 'goal_created': return theme.colors.primary;
       case 'todo_completed': return theme.colors.success;
       case 'todo_created': return theme.colors.warning;
-      case 'habit_completed': return '#96CEB4';
-      case 'focus_session': return '#45B7D1';
-      case 'points_earned': return '#FFD93D';
+      case 'habit_completed': return theme.colors.menu.habit;
+      case 'focus_session': return theme.colors.menu.focus;
+      case 'points_earned': return theme.colors.warning;
       default: return theme.colors.text.secondary;
     }
   };
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 12,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

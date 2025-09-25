@@ -30,13 +30,13 @@ interface CircularMenuProps {
 }
 
 const menuItems: CircularMenuItem[] = [
-  { id: 'goals', title: 'Goals', icon: 'flag', color: '#FF6B6B' },
-  { id: 'journaling', title: 'Journals', icon: 'book', color: '#4ECDC4' },
-  { id: 'focus', title: 'Focus', icon: 'psychology', color: '#45B7D1' },
-  { id: 'reminders', title: 'Reminders', icon: 'notifications', color: '#F6C85F' },
-  { id: 'social', title: 'Social', icon: 'people', color: '#96CEB4' },
-  { id: 'todo', title: 'To-Do', icon: 'check-circle', color: '#FFEAA7' },
-  { id: 'habit', title: 'Habit', icon: 'repeat', color: '#DDA0DD' },
+  { id: 'goals', title: 'Goals', icon: 'flag', color: theme.colors.menu.goals },
+  { id: 'journaling', title: 'Journals', icon: 'book', color: theme.colors.menu.journaling },
+  { id: 'focus', title: 'Focus', icon: 'psychology', color: theme.colors.menu.focus },
+  { id: 'reminders', title: 'Reminders', icon: 'notifications', color: theme.colors.menu.reminders },
+  { id: 'social', title: 'Social', icon: 'people', color: theme.colors.menu.social },
+  { id: 'todo', title: 'To-Do', icon: 'check-circle', color: theme.colors.menu.todo },
+  { id: 'habit', title: 'Habit', icon: 'repeat', color: theme.colors.menu.habit },
 ];
 
 const MENU_RADIUS = 120;
@@ -256,7 +256,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
               >
                 <Icon name={item.icon} size={24} color="#FFFFFF" />
               </TouchableOpacity>
-              <Text style={[styles.itemLabel, { color: '#FFFFFF' }]}>
+              <Text style={[styles.itemLabel, { color: theme.colors.white }]}>
                 {item.title}
               </Text>
             </Animated.View>
@@ -294,7 +294,7 @@ export const CircularMenu: React.FC<CircularMenuProps> = ({
     width: ITEM_SIZE,
   },
   itemLabel: {
-    color: '#000000',
+    color: theme.colors.black,
     fontSize: 13,
     fontWeight: '700',
     marginTop: 8,

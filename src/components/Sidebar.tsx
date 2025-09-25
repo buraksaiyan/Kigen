@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   adminButtonText: {
     ...theme.typography.body,
-    color: '#FFFFFF',
+    color: theme.colors.white,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   authButtonText: {
     ...theme.typography.body,
-    color: '#FFFFFF',
+    color: theme.colors.white,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   menuIcon: {
     height: 40,
     marginRight: theme.spacing.md,
-    tintColor: '#888691',
+    tintColor: theme.colors.text.disabled,
     width: 40,
   },
   menuItem: {

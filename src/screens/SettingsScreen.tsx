@@ -138,7 +138,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 value={settings.timerSoundsEnabled}
                 onValueChange={toggleTimerSounds}
                 trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
-                thumbColor={settings.timerSoundsEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
+                thumbColor={settings.timerSoundsEnabled ? theme.colors.white : theme.colors.text.tertiary}
               />
             </View>
 
@@ -194,7 +194,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 value={settings.focusRemindersEnabled}
                 onValueChange={toggleFocusReminders}
                 trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
-                thumbColor={settings.focusRemindersEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
+                thumbColor={settings.focusRemindersEnabled ? theme.colors.white : theme.colors.text.tertiary}
               />
             </View>
 
@@ -210,7 +210,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 value={settings.digitalWellbeingAlertsEnabled}
                 onValueChange={toggleDigitalWellbeingAlerts}
                 trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
-                thumbColor={settings.digitalWellbeingAlertsEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
+                thumbColor={settings.digitalWellbeingAlertsEnabled ? theme.colors.white : theme.colors.text.tertiary}
               />
             </View>
           </View>
@@ -241,7 +241,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 value={settings.keepScreenOnEnabled}
                 onValueChange={toggleKeepScreenOn}
                 trackColor={{ false: theme.colors.surfaceSecondary, true: theme.colors.secondary }}
-                thumbColor={settings.keepScreenOnEnabled ? '#FFFFFF' : theme.colors.text.tertiary}
+                thumbColor={settings.keepScreenOnEnabled ? theme.colors.white : theme.colors.text.tertiary}
               />
             </View>
           </View>
