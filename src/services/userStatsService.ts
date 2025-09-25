@@ -292,10 +292,6 @@ export class UserStatsService {
             totalPhoneUsageMinutes += dayActivity.phoneUsageMinutes;
             totalSocialMediaMinutes += dayActivity.socialMediaMinutes;
 
-            // Accumulate daily JOU points instead of recalculating
-            const dailyJouPoints = RatingSystem.calculateJournalingPoints(dayActivity.journalEntries);
-            totalStats.JOU += dailyJouPoints;
-
             // Sum focus minutes by type
             totalFocusMinutes.flow += dayActivity.focusMinutes.flow;
             totalFocusMinutes.meditation += dayActivity.focusMinutes.meditation;
@@ -357,7 +353,7 @@ export class UserStatsService {
           totalAbortedSessions
         ),
         FOC: RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow),
-        JOU: totalStats.JOU, // Already accumulated from daily calculations
+        JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries), // Use total calculation, not daily accumulation
         DET: RatingSystem.calculateDeterminationPoints(
           totalCompletedGoals,
           totalJournalEntries,
@@ -683,18 +679,76 @@ export class UserStatsService {
           break;
       }
 
-      // Calculate and record points for focus session - matches determination and productivity calculations
-      const sessionPoints = 5; // 5 points per session (determination: per 10 sessions = 50 points)
-      const hourlyPoints = Math.ceil(minutes / 60) * 5; // 5 points per hour (productivity)
-      const totalPoints = sessionPoints + hourlyPoints;
+      // Focus session affects multiple stats - record all of them
+      
+      // 1. Discipline: +5 points per completed session
+      await PointsHistoryService.recordPoints(
+        'focus_session',
+        5,
+        'DIS',
+        `${type} focus session - Discipline`,
+        { sessionDuration: minutes, taskTitle: `${type} session` }
+      );
+      
+      // 2. Focus: +10 per focused hour + extra +10 for flow focus
+      const focusHours = Math.ceil(minutes / 60);
+      const focusPoints = focusHours * 10;
+      const flowBonus = type === 'free' ? focusHours * 10 : 0; // Extra points for flow focus
+      const totalFocusPoints = focusPoints + flowBonus;
       
       await PointsHistoryService.recordPoints(
         'focus_session',
-        totalPoints,
-        'DET', // Determination for session completion
-        `${type} focus session completed (${minutes} min)`,
+        totalFocusPoints,
+        'FOC',
+        `${type} focus session - Focus (${focusHours}h)`,
         { sessionDuration: minutes, taskTitle: `${type} session` }
       );
+      
+      // 3. Productivity: +5 per focused hour
+      const productivityPoints = focusHours * 5;
+      await PointsHistoryService.recordPoints(
+        'focus_session',
+        productivityPoints,
+        'PRD',
+        `${type} focus session - Productivity (${focusHours}h)`,
+        { sessionDuration: minutes, taskTitle: `${type} session` }
+      );
+      
+      // 4. Determination: +50 points per 10 sessions (show progress)
+      const totalSessions = today.completedSessions;
+      const determinationProgress = totalSessions % 10;
+      
+      if (determinationProgress === 0 && totalSessions > 0) {
+        // Just hit a milestone of 10 sessions
+        await PointsHistoryService.recordPoints(
+          'focus_session',
+          50,
+          'DET',
+          `Focus session milestone - ${totalSessions} sessions completed`,
+          { sessionDuration: minutes, taskTitle: `Session milestone: ${totalSessions}` }
+        );
+      }
+      
+      // 5. Mental/Physical stats for specific session types
+      if (type === 'meditation') {
+        const mentalPoints = Math.ceil(minutes / 60) * 10; // Same as focus calculation
+        await PointsHistoryService.recordPoints(
+          'focus_session',
+          mentalPoints,
+          'MEN',
+          `Meditation session - Mental (${Math.ceil(minutes / 60)}h)`,
+          { sessionDuration: minutes, taskTitle: 'meditation session' }
+        );
+      } else if (type === 'body') {
+        const physicalPoints = Math.ceil(minutes / 60) * 10;
+        await PointsHistoryService.recordPoints(
+          'focus_session',
+          physicalPoints,
+          'PHY',
+          `Body focus session - Physical (${Math.ceil(minutes / 60)}h)`,
+          { sessionDuration: minutes, taskTitle: 'body focus session' }
+        );
+      }
     } else {
       today.abortedSessions += 1;
     }
@@ -724,17 +778,57 @@ export class UserStatsService {
     today.journalEntries += 1;
     await this.saveDailyActivity(today);
 
-    // Calculate points for journal entry - matches productivity calculation (+10 per entry)
-    const points = 10;
+    // Journal entry affects multiple stats - record all of them
     
-    // Record points in history
+    // 1. Discipline: +5 points per journal entry (daily cap of 1)
+    const disciplinePoints = today.journalEntries <= 1 ? 5 : 0;
+    if (disciplinePoints > 0) {
+      await PointsHistoryService.recordPoints(
+        'journal',
+        disciplinePoints,
+        'DIS',
+        'Journal entry - Discipline',
+        { entryContent: 'Journal entry' }
+      );
+    }
+    
+    // 2. Journaling: +20 points per journal entry (daily cap of 1)  
+    const journalingPoints = today.journalEntries <= 1 ? 20 : 0;
+    if (journalingPoints > 0) {
+      await PointsHistoryService.recordPoints(
+        'journal',
+        journalingPoints,
+        'JOU',
+        'Journal entry - Journaling',
+        { entryContent: 'Journal entry' }
+      );
+    }
+    
+    // 3. Productivity: +10 points per journal entry
     await PointsHistoryService.recordPoints(
       'journal',
-      points,
+      10,
       'PRD',
-      'Journal entry completed',
+      'Journal entry - Productivity',
       { entryContent: 'Journal entry' }
     );
+    
+    // 4. Determination: +15 points per 10 journal entries (show progress)
+    // We need total journal entries across all days for this calculation
+    const allDaysData = await this.getAllDailyActivities();
+    const totalJournalEntries = allDaysData.reduce((sum, day) => sum + day.journalEntries, 0);
+    const determinationProgress = totalJournalEntries % 10;
+    
+    if (determinationProgress === 0 && totalJournalEntries > 0) {
+      // Just hit a milestone of 10 journal entries
+      await PointsHistoryService.recordPoints(
+        'journal',
+        15,
+        'DET',
+        `Journal milestone reached - ${totalJournalEntries} entries`,
+        { entryContent: `Journal milestone: ${totalJournalEntries} entries` }
+      );
+    }
 
     // Update monthly accumulation
     await this.updateMonthlyStats();
@@ -757,17 +851,49 @@ export class UserStatsService {
     today.completedGoals += 1;
     await this.saveDailyActivity(today);
     
-    // Calculate points for goal completion - matches productivity calculation (+10 per goal)
-    const points = 10;
+    // Goal completion affects multiple stats - record all of them
     
-    // Record points in history
+    // 1. Discipline: +10 points per goal completed
     await PointsHistoryService.recordPoints(
       'goal_completed',
-      points,
-      'PRD',
-      'Goal completed',
+      10,
+      'DIS',
+      'Goal completed - Discipline',
       { goalTitle: 'Goal completion' }
     );
+    
+    // 2. Productivity: +10 points per goal completed  
+    await PointsHistoryService.recordPoints(
+      'goal_completed',
+      10,
+      'PRD',
+      'Goal completed - Productivity',
+      { goalTitle: 'Goal completion' }
+    );
+    
+    // 3. Determination: +20 points per 10 goals (show progress toward milestone)
+    const totalGoals = today.completedGoals;
+    const determinationProgress = totalGoals % 10;
+    
+    if (determinationProgress === 0 && totalGoals > 0) {
+      // Just hit a milestone of 10 goals
+      await PointsHistoryService.recordPoints(
+        'goal_completed',
+        20,
+        'DET',
+        `Goal milestone reached - ${totalGoals} goals completed`,
+        { goalTitle: `Goal milestone: ${totalGoals} goals` }
+      );
+    } else {
+      // Show progress toward next milestone
+      await PointsHistoryService.recordPoints(
+        'goal_completed',
+        0, // No points yet, but track progress
+        'DET',
+        `Progress toward goal milestone (${determinationProgress}/10)`,
+        { goalTitle: `Goal progress: ${determinationProgress}/10` }
+      );
+    }
     
     // Update monthly accumulation
     await this.updateMonthlyStats();
@@ -790,15 +916,23 @@ export class UserStatsService {
     today.completedTodoBullets = (today.completedTodoBullets || 0) + 1;
     await this.saveDailyActivity(today);
     
-    // Calculate points for todo completion
-    const points = 5; // 5 points per todo completion (determination)
+    // Todo completion affects multiple stats - record all of them
     
-    // Record points in history
+    // 1. Determination: +5 points per todo completion
     await PointsHistoryService.recordPoints(
       'todo_completed',
-      points,
+      5,
       'DET',
-      'Todo completed',
+      'Todo completed - Determination',
+      { taskTitle: title }
+    );
+    
+    // 2. Productivity: Todos are part of productivity tracking
+    await PointsHistoryService.recordPoints(
+      'todo_completed',
+      5,
+      'PRD',
+      'Todo completed - Productivity',
       { taskTitle: title }
     );
     
