@@ -280,17 +280,10 @@ export const DashboardScreen: React.FC = () => {
       });
       
       if (habitCompleted) {
-        // Move habit to completed habits
-        const updatedCompletedHabits = [...completedHabits, completedHabitData];
-        setCompletedHabits(updatedCompletedHabits);
-        await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
-        
         // Remove from active habits
         const filteredActiveHabits = updatedHabits.filter(h => h.id !== habitId);
         setActiveHabits(filteredActiveHabits);
         await AsyncStorage.setItem('@inzone_habits', JSON.stringify(filteredActiveHabits));
-        
-        Alert.alert('Habit Completed!', `Congratulations! You've completed your ${completedHabitData.targetDays}-day habit with a streak of ${completedHabitData.finalStreak} days!`);
       } else {
         // Normal habit update
         setActiveHabits(updatedHabits);
@@ -393,8 +386,6 @@ export const DashboardScreen: React.FC = () => {
       
       // Update active goals storage
       await AsyncStorage.setItem('@inzone_goals', JSON.stringify(updatedActiveGoals));
-      
-      Alert.alert('Goal Completed!', 'Congratulations on completing your goal!');
       
       // Record the goal completion in stats
       await UserStatsService.recordGoalCompletion();
