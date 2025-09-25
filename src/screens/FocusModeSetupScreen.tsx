@@ -258,11 +258,11 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
 
             {/* Start Button */}
             <TouchableOpacity
-              style={[styles.startButton, { backgroundColor: mode.color }]}
+              style={[styles.startButton, { borderColor: mode.color, borderWidth: 2 }]}
               onPress={handleStartSession}
               activeOpacity={0.8}
             >
-              <Text style={styles.startButtonText}>
+              <Text style={[styles.startButtonText, { color: mode.color }]}>
                 Start {mode.title} Session
               </Text>
             </TouchableOpacity>

@@ -108,6 +108,9 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     // For Executioner mode, show goal selection first
     if (mode.id === 'executioner') {
       setShowGoalSelection(true);
+    } else if (mode.id === 'clock') {
+      // Clock mode doesn't use standard setup - handle differently later
+      return;
     } else {
       setShowSetup(true);
     }
