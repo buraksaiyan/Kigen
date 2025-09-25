@@ -122,8 +122,8 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <Text style={styles.sectionTitle}>Set Session Duration</Text>
               
               {/* Time Input */}
-              <View style={styles.timeInputContainer}>
-                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
+              <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
+                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
                   {mode.id === 'executioner' ? (
                     <TouchableOpacity
                       style={styles.executionerTimeInput}
@@ -149,7 +149,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                 
                 {mode.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
                 
-                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
+                <View style={[styles.timeInputGroup, mode.id === 'executioner' ? [styles.executionerInputGroup, { backgroundColor: '#00FF00' }] : null]}>
                   {mode.id === 'executioner' ? (
                     <TouchableOpacity
                       style={styles.executionerTimeInput}
@@ -199,7 +199,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <Text style={styles.sectionTitle}>Set Break Duration</Text>
               
               {/* Break Duration Input */}
-              <View style={styles.timeInputContainer}>
+              <View style={[styles.timeInputContainer, mode?.id === 'executioner' && { backgroundColor: '#FF0000' }]}>
                 <View style={styles.timeInputGroup}>
                   {mode.id === 'executioner' ? (
                     <TouchableOpacity
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   container: {
-    backgroundColor: '#FFFF00', // TEMP: Bright yellow to check if line belongs to container
+    backgroundColor: theme.colors.background,
     flex: 1,
   },
   content: {
@@ -475,12 +475,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: theme.spacing.xl,
-    backgroundColor: '#FF0000', // TEMP: Red background to check container edges
   },
   executionerInputGroup: {
     alignItems: 'center',
     marginHorizontal: theme.spacing.md,
-    backgroundColor: '#00FF00', // TEMP: Green background to check group edges
   },
   executionerTimeInput: {
     backgroundColor: theme.colors.surface,
