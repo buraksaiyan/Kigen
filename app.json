@@ -5,12 +5,12 @@
     "scheme": "inzone",
     "version": "0.1.0-beta.1",
     "orientation": "portrait",
-    "icon": "./assets/images/inzone-logo.png",
+    "icon": "./assets/images/inzone-applogo.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/images/inzone-logo.png",
+      "image": "./assets/images/inzone-applogo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000F1A"
+      "backgroundColor": "#000000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
