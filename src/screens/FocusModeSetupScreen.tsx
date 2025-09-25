@@ -7,6 +7,7 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
@@ -46,6 +47,25 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   const [hours, setHours] = useState(defaultHours.toString());
   const [minutes, setMinutes] = useState(defaultMinutes.toString());
   const [breakMinutes, setBreakMinutes] = useState('5'); // Default 5 minutes break
+
+  // Picker state for Executioner mode
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerField, setPickerField] = useState<'hours' | 'minutes' | 'breakMinutes'>('hours');
+  const [pickerMaxValue, setPickerMaxValue] = useState(99);
+
+  const openPicker = (field: 'hours' | 'minutes' | 'breakMinutes') => {
+    setPickerField(field);
+    setPickerMaxValue(field === 'breakMinutes' ? 60 : 99);
+    setShowPicker(true);
+  };
+
+  const selectPickerValue = (value: number) => {
+    const valueStr = value.toString();
+    if (pickerField === 'hours') setHours(valueStr);
+    else if (pickerField === 'minutes') setMinutes(valueStr);
+    else if (pickerField === 'breakMinutes') setBreakMinutes(valueStr);
+    setShowPicker(false);
+  };
 
   // Reset to default duration when modal becomes visible
   useEffect(() => {
@@ -104,54 +124,52 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               {/* Time Input */}
               <View style={styles.timeInputContainer}>
                 <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
-                  <TextInput
-                    style={[
-                      styles.timeInput,
-                      mode.id === 'executioner'
-                        ? {
-                            borderWidth: 0,
-                            borderColor: TRANSPARENT,
-                            backgroundColor: TRANSPARENT,
-                            elevation: 0,
-                            shadowOpacity: 0,
-                          }
-                        : { borderColor: mode.color },
-                    ]}
-                    value={hours}
-                    onChangeText={setHours}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="0"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
+                  {mode.id === 'executioner' ? (
+                    <TouchableOpacity
+                      style={styles.executionerTimeInput}
+                      onPress={() => openPicker('hours')}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.executionerTimeInputText}>{hours}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TextInput
+                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      value={hours}
+                      onChangeText={setHours}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      placeholder="0"
+                      placeholderTextColor={theme.colors.text.tertiary}
+                      underlineColorAndroid={TRANSPARENT}
+                    />
+                  )}
                   <Text style={styles.timeLabel}>hours</Text>
                 </View>
                 
                 {mode.id !== 'executioner' && <Text style={styles.timeSeparator}>:</Text>}
                 
                 <View style={[styles.timeInputGroup, mode.id === 'executioner' ? styles.executionerInputGroup : null]}>
-                  <TextInput
-                    style={[
-                      styles.timeInput,
-                      mode.id === 'executioner'
-                        ? {
-                            borderWidth: 0,
-                            borderColor: TRANSPARENT,
-                            backgroundColor: TRANSPARENT,
-                            elevation: 0,
-                            shadowOpacity: 0,
-                          }
-                        : { borderColor: mode.color },
-                    ]}
-                    value={minutes}
-                    onChangeText={setMinutes}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="0"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
+                  {mode.id === 'executioner' ? (
+                    <TouchableOpacity
+                      style={styles.executionerTimeInput}
+                      onPress={() => openPicker('minutes')}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.executionerTimeInputText}>{minutes}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TextInput
+                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      value={minutes}
+                      onChangeText={setMinutes}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      placeholder="0"
+                      placeholderTextColor={theme.colors.text.tertiary}
+                      underlineColorAndroid={TRANSPARENT}
+                    />
+                  )}
                   <Text style={styles.timeLabel}>minutes</Text>
                 </View>
               </View>
@@ -183,27 +201,26 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               {/* Break Duration Input */}
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
-                  <TextInput
-                    style={[
-                      styles.timeInput,
-                      mode.id === 'executioner'
-                        ? {
-                            borderWidth: 0,
-                            borderColor: TRANSPARENT,
-                            backgroundColor: TRANSPARENT,
-                            elevation: 0,
-                            shadowOpacity: 0,
-                          }
-                        : { borderColor: mode.color },
-                    ]}
-                    value={breakMinutes}
-                    onChangeText={setBreakMinutes}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="5"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
+                  {mode.id === 'executioner' ? (
+                    <TouchableOpacity
+                      style={styles.executionerTimeInput}
+                      onPress={() => openPicker('breakMinutes')}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.executionerTimeInputText}>{breakMinutes}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TextInput
+                      style={[styles.timeInput, { borderColor: mode.color }]}
+                      value={breakMinutes}
+                      onChangeText={setBreakMinutes}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      placeholder="5"
+                      placeholderTextColor={theme.colors.text.tertiary}
+                      underlineColorAndroid={TRANSPARENT}
+                    />
+                  )}
                   <Text style={styles.timeLabel}>minutes</Text>
                 </View>
               </View>
@@ -298,6 +315,48 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
             </Card>
           </View>
         </ScrollView>
+
+        {/* Number Picker Modal for Executioner Mode */}
+        <Modal visible={showPicker} animationType="slide" transparent={true}>
+          <View style={styles.pickerOverlay}>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerTitle}>
+                Select {pickerField === 'hours' ? 'Hours' : pickerField === 'minutes' ? 'Minutes' : 'Break Minutes'}
+              </Text>
+              <FlatList
+                data={Array.from({ length: pickerMaxValue + 1 }, (_, i) => i)}
+                keyExtractor={(item) => item.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.pickerItem}
+                    onPress={() => selectPickerValue(item)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.pickerItemText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+                showsVerticalScrollIndicator={false}
+                initialScrollIndex={parseInt(
+                  pickerField === 'hours' ? hours : 
+                  pickerField === 'minutes' ? minutes : 
+                  breakMinutes
+                ) || 0}
+                getItemLayout={(data, index) => ({
+                  length: 50,
+                  offset: 50 * index,
+                  index,
+                })}
+              />
+              <TouchableOpacity
+                style={styles.pickerCloseButton}
+                onPress={() => setShowPicker(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.pickerCloseText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </Modal>
   );
@@ -423,6 +482,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 0,
   },
+  executionerTimeInput: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    minWidth: 80,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  executionerTimeInputText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: theme.colors.text.primary,
+    textAlign: 'center',
+  },
   timeInputGroup: {
     alignItems: 'center',
   },
@@ -456,5 +533,46 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: theme.spacing.sm,
     textAlign: 'center',
+  },
+  pickerOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pickerContainer: {
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.borderRadius.lg,
+    maxHeight: '70%',
+    width: '80%',
+    padding: theme.spacing.lg,
+  },
+  pickerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: theme.spacing.lg,
+  },
+  pickerItem: {
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  pickerItemText: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    textAlign: 'center',
+  },
+  pickerCloseButton: {
+    marginTop: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    alignItems: 'center',
+  },
+  pickerCloseText: {
+    ...theme.typography.body,
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
 });
