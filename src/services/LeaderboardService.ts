@@ -163,14 +163,33 @@ class LeaderboardService {
 
   // Get global leaderboard (fetch from Supabase)
   static async getGlobalLeaderboard(limit: number = 100): Promise<LeaderboardEntry[]> {
+    // Always try to include current user data
+    const currentUserData = await AsyncStorage.getItem(this.USER_DATA_KEY);
+    let currentUser: LeaderboardEntry | null = null;
+    if (currentUserData) {
+      currentUser = JSON.parse(currentUserData);
+    }
+
     try {
+
       // Check if Supabase is available
       const isAvailable = await this.isSupabaseAvailable();
 
       if (!isAvailable) {
         console.warn('⚠️ Supabase unavailable. Using cached leaderboard data.');
         const cached = await this.getCachedLeaderboard();
-        return cached.length > 0 ? cached.slice(0, limit) : this.getMockGlobalLeaderboard();
+
+        // Merge current user with cached data
+        let leaderboardData = cached.length > 0 ? cached : await this.getMockGlobalLeaderboard();
+        if (currentUser) {
+          // Remove any existing entry for current user and add updated one
+          leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+          leaderboardData.push(currentUser);
+          // Sort by total points
+          leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+        }
+
+        return leaderboardData.slice(0, limit);
       }
 
       // Try to fetch fresh data from Supabase
@@ -179,27 +198,64 @@ class LeaderboardService {
       if (freshData.length > 0) {
         // Cache the fresh data
         await this.cacheLeaderboard(freshData);
-        return freshData;
+
+        // Merge current user with fresh data
+        let leaderboardData = [...freshData];
+        if (currentUser) {
+          // Remove any existing entry for current user and add updated one
+          leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+          leaderboardData.push(currentUser);
+          // Sort by total points
+          leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+        }
+
+        return leaderboardData.slice(0, limit);
       }
 
       // If Supabase fails, fall back to cached data
       const cached = await this.getCachedLeaderboard();
       if (cached.length > 0) {
-        return cached.slice(0, limit);
+        // Merge current user with cached data
+        let leaderboardData = [...cached];
+        if (currentUser) {
+          leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+          leaderboardData.push(currentUser);
+          leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+        }
+
+        return leaderboardData.slice(0, limit);
       }
       
       // If everything fails, generate mock data for testing
       console.warn('Using mock leaderboard data - check Supabase connection');
       const mockData = await this.getMockGlobalLeaderboard();
-      await this.cacheLeaderboard(mockData);
-      return mockData.slice(0, limit);
+
+      // Merge current user with mock data
+      let leaderboardData = [...mockData];
+      if (currentUser) {
+        leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+        leaderboardData.push(currentUser);
+        leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+      }
+
+      await this.cacheLeaderboard(leaderboardData);
+      return leaderboardData.slice(0, limit);
       
     } catch (error) {
       console.error('Error getting global leaderboard:', error);
       
       // Fall back to cached or mock data
       const cached = await this.getCachedLeaderboard();
-      return cached.length > 0 ? cached.slice(0, limit) : [];
+
+      // Merge current user with fallback data
+      let leaderboardData = cached.length > 0 ? [...cached] : await this.getMockGlobalLeaderboard();
+      if (currentUser) {
+        leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+        leaderboardData.push(currentUser);
+        leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+      }
+
+      return leaderboardData.slice(0, limit);
     }
   }
 

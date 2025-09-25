@@ -480,21 +480,24 @@ export const DashboardScreen: React.FC = () => {
         setActiveReminders(activeRemindersData);
       }
 
-      // Load canonical user profile from UserStatsService (falls back to AsyncStorage keys)
+      // Load canonical user profile from UserStatsService (creates default if none exists)
       try {
-        const userProfile = await UserStatsService.getUserProfile();
+        const userProfile = await UserStatsService.ensureUserProfile();
         if (userProfile) {
           if (userProfile.profileImage) setProfileImageUri(userProfile.profileImage);
           if (userProfile.username) setDisplayName(userProfile.username);
-        } else {
-          // Fallback to legacy keys
+        }
+      } catch (e) {
+        console.error('Error loading user profile', e);
+        // Fallback to legacy keys if profile creation fails
+        try {
           const saved = await AsyncStorage.getItem('@inzone_profile_image');
           if (saved) setProfileImageUri(saved);
           const savedName = await AsyncStorage.getItem('@inzone_profile_name');
           if (savedName) setDisplayName(savedName);
+        } catch (fallbackError) {
+          console.error('Error loading fallback profile data', fallbackError);
         }
-      } catch (e) {
-        console.error('Error loading user profile', e);
       }
 
       setUserRank(monthlyRating.cardTier);
