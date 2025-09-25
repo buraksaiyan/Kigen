@@ -866,9 +866,6 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.goalTitle}>{goal.title}</Text>
                 <Text style={styles.goalDeadline}>{goal.deadline}</Text>
               </View>
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${goal.progress * 100}%` }]} />
-              </View>
               <View style={styles.goalActions}>
                 <TouchableOpacity 
                   style={styles.completeButton}
@@ -1606,17 +1603,6 @@ const styles = StyleSheet.create({
   goalDeadline: {
     color: theme.colors.text.secondary,
     fontSize: 12,
-  },
-  progressBar: {
-    backgroundColor: theme.colors.surfaceSecondary,
-    borderRadius: 3,
-    height: 6,
-    marginBottom: 12,
-  },
-  progressFill: {
-    backgroundColor: theme.colors.success,
-    borderRadius: 3,
-    height: '100%',
   },
   goalActions: {
     flexDirection: 'row',
