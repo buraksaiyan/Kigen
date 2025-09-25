@@ -87,12 +87,16 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
 
   const scheduleNotification = async (reminder: Omit<Reminder, 'notificationId'>): Promise<string | null> => {
     try {
-      // Combine date and time
-      const scheduledDateTime = new Date(selectedDate);
-      scheduledDateTime.setHours(selectedHour);
-      scheduledDateTime.setMinutes(selectedMinute);
-      scheduledDateTime.setSeconds(0);
-      scheduledDateTime.setMilliseconds(0);
+      // Combine date and time properly
+      const scheduledDateTime = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        selectedHour,
+        selectedMinute,
+        0,
+        0
+      );
 
       // Check if the time is in the future
       if (scheduledDateTime <= new Date()) {
