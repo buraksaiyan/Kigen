@@ -205,6 +205,53 @@ export class StatsValidator {
       console.error('❌ Error testing goal completion:', error);
     }
   }
+
+  static async testTodoCompletionPoints(): Promise<void> {
+    console.log('📋 === TESTING TODO COMPLETION POINTS ===');
+    
+    try {
+      // Get initial state
+      console.log('📊 BEFORE Todo Completion:');
+      const initialRating = await UserStatsService.getCurrentRating();
+      console.log('Initial Stats:', initialRating.stats);
+      console.log('Initial DET:', initialRating.stats.DET, 'PRD:', initialRating.stats.PRD);
+      console.log('Initial Overall:', initialRating.overallRating);
+      
+      // Record a todo completion
+      console.log('\n📋 Recording todo completion...');
+      await UserStatsService.recordTodoCompletion('Test Todo - Debug');
+      
+      // Wait a moment for cache invalidation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Get updated state
+      console.log('\n📊 AFTER Todo Completion:');
+      const updatedRating = await UserStatsService.getCurrentRating();
+      console.log('Updated Stats:', updatedRating.stats);
+      console.log('Updated DET:', updatedRating.stats.DET, 'PRD:', updatedRating.stats.PRD);
+      console.log('Updated Overall:', updatedRating.overallRating);
+      
+      // Calculate differences
+      const detChange = updatedRating.stats.DET - initialRating.stats.DET;
+      const prdChange = updatedRating.stats.PRD - initialRating.stats.PRD;
+      const overallChange = updatedRating.overallRating - initialRating.overallRating;
+      
+      console.log('\n📈 CHANGES:');
+      console.log(`📊 DET: ${initialRating.stats.DET} → ${updatedRating.stats.DET} (${detChange > 0 ? '+' : ''}${detChange})`);
+      console.log(`📊 PRD: ${initialRating.stats.PRD} → ${updatedRating.stats.PRD} (${prdChange > 0 ? '+' : ''}${prdChange})`);
+      console.log(`📊 Overall: ${initialRating.overallRating} → ${updatedRating.overallRating} (${overallChange > 0 ? '+' : ''}${overallChange})`);
+      
+      if (detChange === 5 && prdChange === 5) {
+        console.log('✅ TODO COMPLETION POINTS WORKING: +5 DET, +5 PRD as expected');
+      } else {
+        console.log('❌ TODO COMPLETION POINTS NOT WORKING: Expected +5 DET, +5 PRD');
+        console.log('   Actual changes: DET +', detChange, ', PRD +', prdChange);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error testing todo completion:', error);
+    }
+  }
 }
 
 export const validatePointsAndDisplay = async () => {
@@ -212,6 +259,8 @@ export const validatePointsAndDisplay = async () => {
   await StatsValidator.validatePointsIntegration();
   console.log('\n' + '='.repeat(50));
   await StatsValidator.testGoalCompletionPoints();
+  console.log('\n' + '='.repeat(50));
+  await StatsValidator.testTodoCompletionPoints();
   console.log('\n' + '='.repeat(50));
   await StatsValidator.validateStatsConsistency();
 };

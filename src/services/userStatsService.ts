@@ -918,12 +918,16 @@ export class UserStatsService {
   }
 
   static async recordTodoCompletion(title: string): Promise<void> {
+    console.log('📋 Recording todo completion:', title);
+    
     // Ensure user profile exists
     await this.ensureUserProfile();
     
     const today = await this.getTodayActivity();
     today.completedTodoBullets = (today.completedTodoBullets || 0) + 1;
     await this.saveDailyActivity(today);
+    
+    console.log('📋 Updated daily activity, completed todo bullets:', today.completedTodoBullets);
     
     // Todo completion affects multiple stats - record all of them
     
@@ -947,6 +951,13 @@ export class UserStatsService {
     
     // Update monthly accumulation
     await this.updateMonthlyStats();
+    
+    console.log('📋 Todo completion recorded successfully');
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
     
     // Sync with leaderboard asynchronously
     this.syncUserToLeaderboard().catch(error => {

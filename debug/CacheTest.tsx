@@ -63,6 +63,42 @@ export const CacheTest: React.FC = () => {
     }
   };
 
+  const testTodoCompletion = async () => {
+    setIsRunning(true);
+    setOutput('');
+    
+    try {
+      addLog('📋 Testing Todo Completion...');
+      
+      // Get initial rating
+      const initialRating = await UserStatsService.getCurrentRating();
+      addLog(`📊 Initial - DET: ${initialRating.stats.DET}, PRD: ${initialRating.stats.PRD}, OVR: ${initialRating.overallRating}`);
+      
+      // Record todo completion
+      await UserStatsService.recordTodoCompletion('Debug Test Todo');
+      addLog('📋 Todo completion recorded');
+      
+      // Get updated rating
+      const updatedRating = await UserStatsService.getCurrentRating();
+      addLog(`📊 After Todo - DET: ${updatedRating.stats.DET}, PRD: ${updatedRating.stats.PRD}, OVR: ${updatedRating.overallRating}`);
+      
+      // Check if it updated
+      const detIncrease = updatedRating.stats.DET - initialRating.stats.DET;
+      const prdIncrease = updatedRating.stats.PRD - initialRating.stats.PRD;
+      
+      if (detIncrease === 5 && prdIncrease === 5) {
+        addLog('✅ TODO POINTS WORKING: +5 DET, +5 PRD');
+      } else {
+        addLog(`❌ TODO POINTS NOT WORKING: DET +${detIncrease}, PRD +${prdIncrease} (expected +5, +5)`);
+      }
+      
+    } catch (error) {
+      addLog(`❌ Error: ${error}`);
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
   const runValidation = async () => {
     setIsRunning(true);
     setOutput('');
@@ -101,6 +137,14 @@ export const CacheTest: React.FC = () => {
         
         <TouchableOpacity 
           style={[styles.button, isRunning && styles.buttonDisabled]} 
+          onPress={testTodoCompletion}
+          disabled={isRunning}
+        >
+          <Text style={styles.buttonText}>Test Todo Points</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.button, isRunning && styles.buttonDisabled]} 
           onPress={runValidation}
           disabled={isRunning}
         >
@@ -130,15 +174,17 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
     marginBottom: 20,
   },
   button: {
     backgroundColor: '#7c3aed',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
-    minWidth: 120,
+    minWidth: 100,
+    margin: 4,
   },
   buttonDisabled: {
     backgroundColor: '#4c1d95',

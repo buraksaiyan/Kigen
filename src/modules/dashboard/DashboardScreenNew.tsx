@@ -180,6 +180,9 @@ export const DashboardScreen: React.FC = () => {
         
         // Record the todo completion in stats
         await UserStatsService.recordTodoCompletion(todoToToggle.title);
+
+        // Force update rank in real-time after todo completion
+        await updateRankInRealTime();
       } else {
         // Uncompleting - this shouldn't happen in current UI, but handle it just in case
         const updatedTodos = activeTodos.map(todo => 
@@ -602,14 +605,31 @@ export const DashboardScreen: React.FC = () => {
   }, []);
 
   const refreshData = async () => {
+    if (refreshing) return; // Prevent multiple simultaneous refreshes
+    
     setRefreshing(true);
     try {
-      await loadDashboardData();
-      await refreshSections();
-      // No need to set sections anymore - using enabledSections directly
+      // Set timeout to prevent hanging refreshes
+      const timeout = new Promise((resolve) => {
+        setTimeout(() => resolve('timeout'), 8000); // 8 second timeout
+      });
+      
+      const refreshPromise = Promise.all([
+        loadDashboardData(),
+        refreshSections()
+      ]);
+      
+      // Race between refresh operations and timeout
+      const result = await Promise.race([refreshPromise, timeout]);
+      
+      if (result === 'timeout') {
+        console.warn('⚠️ Dashboard refresh timed out');
+      }
+      
     } catch (e) {
       console.error('Error refreshing dashboard', e);
     } finally {
+      // Always set refreshing to false, even on timeout/error
       setRefreshing(false);
     }
   };
