@@ -260,8 +260,36 @@ export class UserStatsService {
 
       // Get all days in current month
       const daysInMonth = new Date(currentYear, currentMonthNum + 1, 0).getDate();
+      const monthStartDate = `${currentMonth}-01`;
+      const monthEndDate = `${currentMonth}-${daysInMonth.toString().padStart(2, '0')}`;
 
-  let totalStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
+      console.log('📅 Calculating stats for month:', currentMonth);
+
+      // NEW APPROACH: Calculate stats from point history entries
+      // This ensures that the user card shows the actual points they've earned
+      let baseStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
+
+      // Get all point entries for this month for each stat category
+      const statCategories: (keyof UserStats)[] = ['DIS', 'FOC', 'JOU', 'DET', 'MEN', 'PHY', 'SOC', 'PRD'];
+      
+      for (const category of statCategories) {
+        const entries = await PointsHistoryService.getPointsHistory(
+          1000, // Large limit to get all entries
+          undefined, // Any action type
+          category,
+          monthStartDate,
+          monthEndDate
+        );
+        
+        // Sum up all points for this category
+        const totalPoints = entries.reduce((sum, entry) => sum + entry.points, 0);
+        baseStats[category] = totalPoints;
+        
+        console.log(`📊 ${category}: ${totalPoints} points from ${entries.length} entries`);
+      }
+
+      // FALLBACK: For focus minutes that might not be fully tracked in points history yet,
+      // we still calculate from daily activities to ensure accuracy
       let totalJournalEntries = 0;
       let totalCompletedSessions = 0;
       let totalAbortedSessions = 0;
@@ -276,7 +304,7 @@ export class UserStatsService {
       let totalSocialMediaMinutes = 0;
       let hasUsagePermission = await this.hasUsageAccess();
 
-      // Aggregate all days in current month
+      // Aggregate all days in current month for fallback calculations
       for (let day = 1; day <= daysInMonth; day++) {
         const dayString = `${currentMonth}-${day.toString().padStart(2, '0')}`;
 
@@ -304,46 +332,16 @@ export class UserStatsService {
         }
       }
 
-      // Compute aggregated supporting inputs for DET over the month
+      const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
+
+      // ENHANCED: Use the higher of point history vs formula calculation to ensure accuracy
+      // This handles cases where some points might be missing from history but captured in formulas
       const achievementsUnlocked = await this.getTotalUnlockedAchievements();
       const habitStreakWeeks = Math.floor((await this.getDailyStreak()) / 7);
       const completedTodoBullets = await this.getTotalCompletedTodoBullets();
 
-      // Calculate stats using aggregated monthly data
-      const totalAllFocusMinutes = Object.values(totalFocusMinutes).reduce((sum, minutes) => sum + minutes, 0);
-
-      // Calculate social points from monthly social activities
-      const monthStartDate = `${currentMonth}-01`;
-      const monthEndDate = `${currentMonth}-${daysInMonth.toString().padStart(2, '0')}`;
-      
-      const timeOutsideEntries = await PointsHistoryService.getPointsHistory(
-        1000, // Large limit to get all entries
-        'time_outside',
-        undefined,
-        monthStartDate,
-        monthEndDate
-      );
-      
-      const timeWithFriendsEntries = await PointsHistoryService.getPointsHistory(
-        1000, // Large limit to get all entries
-        'time_with_friends',
-        undefined,
-        monthStartDate,
-        monthEndDate
-      );
-      
-      const totalHoursOutside = timeOutsideEntries.reduce((sum, entry) => 
-        sum + (entry.metadata?.hoursSpent || 0), 0
-      );
-      
-      const totalHoursWithFriends = timeWithFriendsEntries.reduce((sum, entry) => 
-        sum + (entry.metadata?.hoursSpent || 0), 0
-      );
-
-      const productivityPoints = RatingSystem.calculateProductivityPoints(totalCompletedGoals, totalJournalEntries, totalAllFocusMinutes);
-      const socialPoints = RatingSystem.calculateSocialPoints(totalHoursOutside, totalHoursWithFriends);
-
-      totalStats = {
+      // Calculate fallback formula-based stats
+      const formulaStats = {
         DIS: RatingSystem.calculateDisciplinePoints(
           totalCompletedSessions,
           totalCompletedGoals,
@@ -353,7 +351,7 @@ export class UserStatsService {
           totalAbortedSessions
         ),
         FOC: RatingSystem.calculateFocusPoints(totalAllFocusMinutes, totalFocusMinutes.flow),
-        JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries), // Use total calculation, not daily accumulation
+        JOU: RatingSystem.calculateJournalingPoints(totalJournalEntries),
         DET: RatingSystem.calculateDeterminationPoints(
           totalCompletedGoals,
           totalJournalEntries,
@@ -367,21 +365,32 @@ export class UserStatsService {
         ),
         MEN: RatingSystem.calculateMentalityPoints(totalFocusMinutes.meditation),
         PHY: RatingSystem.calculatePhysicalPoints(totalFocusMinutes.body),
-        SOC: socialPoints,
-        PRD: productivityPoints
+        SOC: baseStats.SOC, // Social points come from point history only
+        PRD: baseStats.PRD  // Productivity points come from point history only
       };
 
-      console.log('📅 Current month stats calculated:', totalStats, {
-        productivityPoints,
-        socialPoints,
-        totalFocusMinutes,
-        totalPhoneUsageMinutes,
-      });
+      // Use the maximum of point history vs formula calculation for each stat
+      // This ensures we capture all earned points while maintaining formula accuracy
+      const finalStats: UserStats = {
+        DIS: Math.max(baseStats.DIS, formulaStats.DIS),
+        FOC: Math.max(baseStats.FOC, formulaStats.FOC),
+        JOU: Math.max(baseStats.JOU, formulaStats.JOU),
+        DET: Math.max(baseStats.DET, formulaStats.DET),
+        MEN: Math.max(baseStats.MEN, formulaStats.MEN),
+        PHY: Math.max(baseStats.PHY, formulaStats.PHY),
+        SOC: baseStats.SOC, // Always use point history for social
+        PRD: baseStats.PRD  // Always use point history for productivity
+      };
 
-      return totalStats;
+      console.log('📅 Current month stats calculated:');
+      console.log('📊 Point History Stats:', baseStats);
+      console.log('📋 Formula Stats:', formulaStats);
+      console.log('🎯 Final Combined Stats:', finalStats);
+
+      return finalStats;
     } catch (error) {
       console.error('Error calculating current month stats:', error);
-  return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
+      return { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
     }
   }
 

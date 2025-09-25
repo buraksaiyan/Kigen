@@ -99,6 +99,10 @@ export class PointsHistoryService {
       // Update daily summary
       await this.updateDailySummary(entry);
 
+      // Invalidate user stats cache so the user card updates immediately
+      const { UserStatsService } = await import('./userStatsService');
+      await UserStatsService.invalidateRatingCache();
+
       console.log(`📊 Points recorded: +${points} ${category} (${source}) - ${description}`);
     } catch (error) {
       console.error('Error recording points:', error);
