@@ -236,9 +236,16 @@ export const DashboardScreen: React.FC = () => {
 
   const toggleHabitCompletion = async (habitId: string) => {
     try {
-      const updatedHabits = activeHabits.map(habit => {
+      // Load the full habits list from storage
+      const habitsData = await AsyncStorage.getItem('@inzone_habits');
+      if (!habitsData) return;
+
+      const allHabits = JSON.parse(habitsData);
+      const today = new Date().toDateString();
+
+      // Update the specific habit
+      const updatedAllHabits = allHabits.map((habit: any) => {
         if (habit.id === habitId) {
-          const today = new Date().toDateString();
           const wasCompletedToday = habit.lastCompleted === today;
 
           if (!wasCompletedToday) {
@@ -248,24 +255,36 @@ export const DashboardScreen: React.FC = () => {
             return {
               ...habit,
               streak: newStreak,
-              lastCompleted: today,
-              completedToday: true
+              lastCompleted: today
             };
           } else {
-            // Already completed today - do nothing, habit stays completed
+            // Already completed today - do nothing
             return habit;
           }
         }
         return habit;
       });
-      
-      // Normal habit update - habits stay active
-      setActiveHabits(updatedHabits);
-      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+
+      // Save the full updated habits list
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedAllHabits));
+
+      // Update the dashboard display (first 3 active habits)
+      const activeHabitsData = updatedAllHabits
+        .filter((habit: any) => habit.isActive)
+        .slice(0, 3)
+        .map((habit: any) => ({
+          id: habit.id,
+          title: habit.title,
+          streak: habit.streak || 0,
+          completedToday: habit.lastCompleted === today,
+          lastCompleted: habit.lastCompleted,
+          targetDays: habit.targetDays || 30
+        }));
+      setActiveHabits(activeHabitsData);
 
       // Update rank in real-time after habit changes
       await updateRankInRealTime();
-      
+
       // Check for new achievements
       await achievementService.checkAchievements();
     } catch (error) {
@@ -276,7 +295,12 @@ export const DashboardScreen: React.FC = () => {
 
   const completeHabit = async (habitId: string) => {
     try {
-      const habitToComplete = activeHabits.find(habit => habit.id === habitId);
+      // Load the full habits list from storage
+      const habitsData = await AsyncStorage.getItem('@inzone_habits');
+      if (!habitsData) return;
+
+      const allHabits = JSON.parse(habitsData);
+      const habitToComplete = allHabits.find((h: any) => h.id === habitId);
       if (!habitToComplete) return;
 
       const completedHabitData: CompletedHabit = {
@@ -291,12 +315,30 @@ export const DashboardScreen: React.FC = () => {
       const updatedCompletedHabits = [...completedHabits, completedHabitData];
       setCompletedHabits(updatedCompletedHabits);
       await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
-      
-      // Remove from active habits
-      const filteredActiveHabits = activeHabits.filter(h => h.id !== habitId);
-      setActiveHabits(filteredActiveHabits);
-      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(filteredActiveHabits));
-      
+
+      // Remove from active habits (mark as inactive)
+      const updatedAllHabits = allHabits.map((habit: any) => {
+        if (habit.id === habitId) {
+          return { ...habit, isActive: false };
+        }
+        return habit;
+      });
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedAllHabits));
+
+      // Update the dashboard display (first 3 active habits)
+      const activeHabitsData = updatedAllHabits
+        .filter((habit: any) => habit.isActive)
+        .slice(0, 3)
+        .map((habit: any) => ({
+          id: habit.id,
+          title: habit.title,
+          streak: habit.streak || 0,
+          completedToday: habit.lastCompleted === new Date().toDateString(),
+          lastCompleted: habit.lastCompleted,
+          targetDays: habit.targetDays || 30
+        }));
+      setActiveHabits(activeHabitsData);
+
       Alert.alert('Habit Completed!', `Congratulations! You've successfully completed your habit with a streak of ${completedHabitData.finalStreak} days!`);
     } catch (error) {
       console.error('Error completing habit:', error);
