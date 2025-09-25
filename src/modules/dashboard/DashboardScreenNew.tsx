@@ -243,6 +243,9 @@ export const DashboardScreen: React.FC = () => {
       const allHabits = JSON.parse(habitsData);
       const today = new Date().toDateString();
 
+      let habitCompleted = false;
+      let completedHabitData: CompletedHabit | null = null;
+
       // Update the specific habit
       const updatedAllHabits = allHabits.map((habit: any) => {
         if (habit.id === habitId) {
@@ -251,6 +254,21 @@ export const DashboardScreen: React.FC = () => {
           if (!wasCompletedToday) {
             // First completion today - increase streak
             const newStreak = habit.streak + 1;
+            const targetDays = habit.targetDays || 30;
+
+            // Check if habit is completed (reached target)
+            if (newStreak >= targetDays) {
+              habitCompleted = true;
+              completedHabitData = {
+                id: habit.id,
+                title: habit.title,
+                finalStreak: newStreak,
+                completedAt: new Date().toISOString(),
+                targetDays: targetDays
+              };
+              // Mark as inactive instead of updating
+              return { ...habit, isActive: false };
+            }
 
             return {
               ...habit,
@@ -267,6 +285,15 @@ export const DashboardScreen: React.FC = () => {
 
       // Save the full updated habits list
       await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedAllHabits));
+
+      // If habit was completed, add to completed habits
+      if (habitCompleted && completedHabitData) {
+        const updatedCompletedHabits = [...completedHabits, completedHabitData];
+        setCompletedHabits(updatedCompletedHabits);
+        await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
+
+        Alert.alert('Habit Completed!', `Congratulations! You've completed your ${(completedHabitData as CompletedHabit).targetDays}-day habit with a streak of ${(completedHabitData as CompletedHabit).finalStreak} days!`);
+      }
 
       // Update the dashboard display (first 3 active habits)
       const activeHabitsData = updatedAllHabits
@@ -290,59 +317,6 @@ export const DashboardScreen: React.FC = () => {
     } catch (error) {
       console.error('Error updating habit:', error);
       Alert.alert('Error', 'Failed to update habit');
-    }
-  };
-
-  const completeHabit = async (habitId: string) => {
-    try {
-      // Load the full habits list from storage
-      const habitsData = await AsyncStorage.getItem('@inzone_habits');
-      if (!habitsData) return;
-
-      const allHabits = JSON.parse(habitsData);
-      const habitToComplete = allHabits.find((h: any) => h.id === habitId);
-      if (!habitToComplete) return;
-
-      const completedHabitData: CompletedHabit = {
-        id: habitToComplete.id,
-        title: habitToComplete.title,
-        finalStreak: habitToComplete.streak,
-        completedAt: new Date().toISOString(),
-        targetDays: habitToComplete.targetDays || 30
-      };
-
-      // Move habit to completed habits
-      const updatedCompletedHabits = [...completedHabits, completedHabitData];
-      setCompletedHabits(updatedCompletedHabits);
-      await AsyncStorage.setItem('@inzone_completed_habits', JSON.stringify(updatedCompletedHabits));
-
-      // Remove from active habits (mark as inactive)
-      const updatedAllHabits = allHabits.map((habit: any) => {
-        if (habit.id === habitId) {
-          return { ...habit, isActive: false };
-        }
-        return habit;
-      });
-      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedAllHabits));
-
-      // Update the dashboard display (first 3 active habits)
-      const activeHabitsData = updatedAllHabits
-        .filter((habit: any) => habit.isActive)
-        .slice(0, 3)
-        .map((habit: any) => ({
-          id: habit.id,
-          title: habit.title,
-          streak: habit.streak || 0,
-          completedToday: habit.lastCompleted === new Date().toDateString(),
-          lastCompleted: habit.lastCompleted,
-          targetDays: habit.targetDays || 30
-        }));
-      setActiveHabits(activeHabitsData);
-
-      Alert.alert('Habit Completed!', `Congratulations! You've successfully completed your habit with a streak of ${completedHabitData.finalStreak} days!`);
-    } catch (error) {
-      console.error('Error completing habit:', error);
-      Alert.alert('Error', 'Failed to complete habit');
     }
   };
 
@@ -957,29 +931,21 @@ export const DashboardScreen: React.FC = () => {
                   </Text>
                 </View>
               </View>
-              <View style={styles.habitActions}>
-                <TouchableOpacity 
-                  style={styles.habitCompleteButton}
-                  onPress={() => completeHabit(habit.id)}
-                >
-                  <Icon name="check-circle" size={20} color="#FFFFFF" />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.habitFailButton}
-                  onPress={() => {
-                    Alert.alert(
-                      'Fail Habit',
-                      'This will mark the habit as failed and remove it from active habits.',
-                      [
-                        { text: 'Fail Habit', onPress: () => handleHabitAction(habit.id, 'give_up') },
-                        { text: 'Cancel', style: 'cancel' }
-                      ]
-                    );
-                  }}
-                >
-                  <Icon name="cancel" size={20} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity 
+                style={styles.habitFailButton}
+                onPress={() => {
+                  Alert.alert(
+                    'Fail Habit',
+                    'This will mark the habit as failed and remove it from active habits.',
+                    [
+                      { text: 'Fail Habit', onPress: () => handleHabitAction(habit.id, 'give_up') },
+                      { text: 'Cancel', style: 'cancel' }
+                    ]
+                  );
+                }}
+              >
+                <Icon name="cancel" size={20} color="#FFFFFF" />
+              </TouchableOpacity>
             </View>
           ))
         ) : (
@@ -1718,18 +1684,6 @@ const styles = StyleSheet.create({
   habitFailButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.danger,
-    borderRadius: 6,
-    justifyContent: 'center',
-    padding: 8,
-  },
-  habitActions: {
-    flexDirection: 'row',
-    gap: 8,
-    marginLeft: 8,
-  },
-  habitCompleteButton: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.success,
     borderRadius: 6,
     justifyContent: 'center',
     padding: 8,
