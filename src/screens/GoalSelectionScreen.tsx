@@ -81,21 +81,7 @@ export const GoalSelectionScreen: React.FC<GoalSelectionScreenProps> = ({
 
   const handleGoalSelect = (goal: Goal) => {
     console.log('Goal selected:', goal.title);
-    Alert.alert(
-      'Start Executioner Focus',
-      `Focus on: "${goal.title}"\n\nThis will help you tackle this goal with maximum intensity and discipline.`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Start Focus',
-          onPress: () => onGoalSelected(goal),
-          style: 'default',
-        },
-      ]
-    );
+    onGoalSelected(goal);
   };
 
   const handleNoGoals = () => {
