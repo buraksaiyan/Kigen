@@ -321,7 +321,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
               <Text style={styles.pickerTitle}>
                 Select {pickerField === 'hours' ? 'Hours' : pickerField === 'minutes' ? 'Minutes' : 'Break Minutes'}
               </Text>
-              <FlatList
+              {/* <FlatList
                 data={Array.from({ length: pickerMaxValue + 1 }, (_, i) => i)}
                 keyExtractor={(item) => item.toString()}
                 renderItem={({ item }) => (
@@ -344,7 +344,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   offset: 50 * index,
                   index,
                 })}
-              />
+              /> */}
               <TouchableOpacity
                 style={styles.pickerCloseButton}
                 onPress={() => setShowPicker(false)}
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   container: {
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#FFFF00', // TEMP: Bright yellow to check if line belongs to container
     flex: 1,
   },
   content: {
@@ -475,16 +475,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: theme.spacing.xl,
+    backgroundColor: '#FF0000', // TEMP: Red background to check container edges
   },
   executionerInputGroup: {
     alignItems: 'center',
     marginHorizontal: theme.spacing.md,
+    backgroundColor: '#00FF00', // TEMP: Green background to check group edges
   },
   executionerTimeInput: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
-    borderWidth: 2,
-    borderColor: '#EF4444', // Executioner mode red color
+    // borderWidth: 2, // TEMP: Commented out to check if vertical line is from border
+    // borderColor: '#EF4444', // TEMP: Commented out to check if vertical line is from border
     minWidth: 80,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
@@ -497,6 +499,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.text.primary,
     textAlign: 'center',
+    letterSpacing: 2, // TEMP: Added letter spacing to check text rendering
   },
   timeInputGroup: {
     alignItems: 'center',
@@ -560,6 +563,8 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyLarge,
     color: theme.colors.text.primary,
     textAlign: 'center',
+    fontWeight: 'bold', // TEMP: Added bold weight to check text rendering
+    letterSpacing: 1, // TEMP: Added letter spacing to check text rendering
   },
   pickerCloseButton: {
     marginTop: theme.spacing.lg,
