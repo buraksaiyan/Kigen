@@ -267,6 +267,7 @@ const MainScreen: React.FC = () => {
         <FocusSessionScreen
           visible={isFocusSessionOpen}
           onClose={() => setIsFocusSessionOpen(false)}
+          onOpenGoals={() => navigation.navigate('GoalEntry')}
         />
         
         {isPointsHistoryOpen && (
