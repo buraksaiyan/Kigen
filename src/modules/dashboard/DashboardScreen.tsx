@@ -197,7 +197,7 @@ export const DashboardScreen: React.FC = () => {
             }
           >
             <View style={styles.statsCardContainer}>
-              <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} />
+              <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} onNotificationPress={() => setIsNotificationsOpen(true)} />
             </View>
 
             <View style={styles.actionsSection}>

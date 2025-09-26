@@ -24,9 +24,10 @@ const { width } = Dimensions.get('window');
 interface FlippableStatsCardProps {
   onPress?: () => void;
   refreshTrigger?: number;
+  onNotificationPress?: () => void;
 }
 
-export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress: _onPress, refreshTrigger }) => {
+export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress: _onPress, refreshTrigger, onNotificationPress }) => {
   const [monthlyRating, setMonthlyRating] = useState<UserRating | null>(null);
   const [lifetimeRating, setLifetimeRating] = useState<UserRating | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -241,7 +242,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
     <>
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
-        <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
+        <TouchableOpacity style={styles.topBarLeftButton} onPress={onNotificationPress}>
           <Text style={styles.topBarButtonText}>🔔</Text>
         </TouchableOpacity>
         {/* center area left empty for app name (to be added later) */}
