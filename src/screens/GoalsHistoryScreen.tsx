@@ -105,7 +105,7 @@ export const GoalsHistoryScreen: React.FC<GoalsHistoryScreenProps> = ({
   }
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       <SafeAreaView style={styles.container}>
 
         <View style={styles.modalHeader}>

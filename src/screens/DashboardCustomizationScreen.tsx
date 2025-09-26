@@ -278,7 +278,7 @@ export default function DashboardCustomizationScreen({
 
   if (loading) {
     return (
-      <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+      <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={handleClose}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity onPress={handleClose} style={styles.backButton}>
@@ -297,7 +297,7 @@ export default function DashboardCustomizationScreen({
   }
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={handleClose}>
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleClose} style={styles.backButton}>

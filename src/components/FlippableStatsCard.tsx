@@ -394,6 +394,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
         visible={isExpanded}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setIsExpanded(false)}
       >
         <ScrollView style={styles.expandedCard} contentContainerStyle={styles.expandedContent}>
           <ImageBackground 
