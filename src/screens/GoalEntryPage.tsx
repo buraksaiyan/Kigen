@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { theme } from '../config/theme';
 
 interface Goal {
@@ -38,6 +40,28 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
   const navigation = useNavigation();
   const [goalText, setGoalText] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Handle Android hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          // If no previous route, navigate to Dashboard
+          navigation.navigate('Main' as never);
+        }
+        return true;
+      };
+
+      if (Platform.OS === 'android') {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => subscription.remove();
+      }
+
+      return undefined;
+    }, [navigation])
+  );
 
   const saveGoal = async () => {
     if (!goalText.trim()) {

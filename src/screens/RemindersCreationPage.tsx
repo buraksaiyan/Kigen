@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { theme } from '../config/theme';
 
@@ -58,6 +60,28 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
   const [recurring, setRecurring] = useState<'none' | 'daily' | 'weekly' | 'monthly'>('none');
   const [loading, setLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
+
+  // Handle Android hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          // If no previous route, navigate to Dashboard
+          navigation.navigate('Main' as never);
+        }
+        return true;
+      };
+
+      if (Platform.OS === 'android') {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => subscription.remove();
+      }
+
+      return undefined;
+    }, [navigation])
+  );
 
   useEffect(() => {
     requestNotificationPermission();

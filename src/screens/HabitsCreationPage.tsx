@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { theme } from '../config/theme';
 
@@ -64,6 +66,25 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
   const [selectedHour, setSelectedHour] = useState(9);
   const [selectedMinute, setSelectedMinute] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  // Android back button handling
+  useFocusEffect(
+    React.useCallback(() => {
+      const backHandler = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('Main' as never);
+        }
+        return true;
+      };
+
+      if (Platform.OS === 'android') {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', backHandler);
+        return () => subscription.remove();
+      }
+    }, [navigation])
+  );
 
   const toggleCustomDay = (dayId: number) => {
     setCustomDays(prev =>

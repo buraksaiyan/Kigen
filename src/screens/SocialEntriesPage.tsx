@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { theme } from '../config/theme';
 import { UserStatsService } from '../services/userStatsService';
 
@@ -58,6 +60,25 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
   const [activity, setActivity] = useState<SocialActivity>('outside');
   const [timeSpent, setTimeSpent] = useState<TimeSpent>('1hour');
   const [loading, setLoading] = useState(false);
+
+  // Android back button handling
+  useFocusEffect(
+    React.useCallback(() => {
+      const backHandler = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('Main' as never);
+        }
+        return true;
+      };
+
+      if (Platform.OS === 'android') {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', backHandler);
+        return () => subscription.remove();
+      }
+    }, [navigation])
+  );
 
   const saveSocialEntry = async () => {
     setLoading(true);

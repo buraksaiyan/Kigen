@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { BackHandler, Platform, Alert, ToastAndroid } from 'react-native';
 import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -84,6 +84,7 @@ const MainScreen: React.FC = () => {
   const [isFocusSessionOpen, setIsFocusSessionOpen] = useState(false);
   const [isPointsHistoryOpen, setIsPointsHistoryOpen] = useState(false);
   const [isDashboardCustomizationOpen, setIsDashboardCustomizationOpen] = useState(false);
+  const [backPressedOnce, setBackPressedOnce] = useState(false);
 
   // Load real streak data
   useEffect(() => {
@@ -173,7 +174,8 @@ const MainScreen: React.FC = () => {
   // Handle Android hardware back button presses to close overlays or go back to Dashboard
   const handleHardwareBack = useCallback(() => {
     console.log('[MainNavigator] hardwareBack pressed', { isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen });
-    // Priority: close sidebar -> close circular menu -> close focus modal -> close points/history/customization -> go to Dashboard
+    
+    // Priority: close modals/overlays first
     if (isSidebarOpen) {
       setIsSidebarOpen(false);
       return true;
@@ -201,15 +203,37 @@ const MainScreen: React.FC = () => {
       return true;
     }
 
-    // If we're not on the dashboard, navigate back to it
+    // Handle navigation between main screens
     if (activeScreen !== 'Dashboard') {
+      // From any bottom bar tab -> back to Dashboard
       setActiveScreen('Dashboard');
       return true;
     }
 
-    // Let the OS handle the back button (exit app) when on dashboard
+    // On Dashboard - implement double tap to exit
+    if (activeScreen === 'Dashboard') {
+      if (backPressedOnce) {
+        // Second tap - exit app
+        return false;
+      } else {
+        // First tap - show toast and set flag
+        setBackPressedOnce(true);
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+        }
+        
+        // Reset flag after 2 seconds
+        setTimeout(() => {
+          setBackPressedOnce(false);
+        }, 2000);
+        
+        return true;
+      }
+    }
+
+    // Default - let OS handle
     return false;
-  }, [isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen]);
+  }, [isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen, backPressedOnce]);
 
   useEffect(() => {
     if (Platform.OS === 'android') {

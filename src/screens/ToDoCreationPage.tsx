@@ -8,11 +8,13 @@ import {
   ScrollView,
   Alert,
   Animated,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { theme as defaultTheme } from '../config/theme';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -218,6 +220,28 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
   const [dueDate, setDueDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkboxAnim] = useState(new Animated.Value(0));
+
+  // Handle Android hardware back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          // If no previous route, navigate to Dashboard
+          navigation.navigate('Main' as never);
+        }
+        return true;
+      };
+
+      if (Platform.OS === 'android') {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => subscription.remove();
+      }
+
+      return undefined;
+    }, [navigation])
+  );
 
   // Checkbox animation for visual feedback
   const animateCheckbox = () => {
