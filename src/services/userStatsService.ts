@@ -266,27 +266,61 @@ export class UserStatsService {
       console.log('📅 Calculating stats for month:', currentMonth);
 
       // NEW APPROACH: Calculate stats from point history entries
-      // This ensures that the user card shows the actual points they've earned
+      // Fetch all entries once for the month, normalize categories, and sum points per stat.
+      // This is more robust against mismatches where entries might have slightly different
+      // category strings or where some legacy entries used source-only tagging.
       let baseStats: UserStats = { DIS: 0, FOC: 0, JOU: 0, DET: 0, MEN: 0, PHY: 0, SOC: 0, PRD: 0 };
 
-      // Get all point entries for this month for each stat category
-      const statCategories: (keyof UserStats)[] = ['DIS', 'FOC', 'JOU', 'DET', 'MEN', 'PHY', 'SOC', 'PRD'];
-      
-      for (const category of statCategories) {
-        const entries = await PointsHistoryService.getPointsHistory(
-          1000, // Large limit to get all entries
-          undefined, // Any action type
-          category,
-          monthStartDate,
-          monthEndDate
-        );
-        
-        // Sum up all points for this category
-        const totalPoints = entries.reduce((sum, entry) => sum + entry.points, 0);
-        baseStats[category] = totalPoints;
-        
-        console.log(`📊 ${category}: ${totalPoints} points from ${entries.length} entries`);
-      }
+      // Pull all history entries for the month in a single read
+      const monthEntries = await PointsHistoryService.getPointsHistory(
+        1000,
+        undefined, // any source
+        undefined, // no category filter
+        monthStartDate,
+        monthEndDate
+      );
+
+      // Normalize and aggregate
+      monthEntries.forEach(entry => {
+        // Normalize category: trim and uppercase to tolerate minor variations
+        const rawCat = (entry.category || '').toString().trim().toUpperCase();
+        let cat: keyof UserStats | null = null;
+
+        if (rawCat === 'DIS' || rawCat === 'DISCIPLINE') cat = 'DIS';
+        else if (rawCat === 'FOC' || rawCat === 'FOCUS') cat = 'FOC';
+        else if (rawCat === 'JOU' || rawCat === 'JOURNAL' || rawCat === 'JOURNALING') cat = 'JOU';
+        else if (rawCat === 'DET' || rawCat === 'DETERMINATION') cat = 'DET';
+        else if (rawCat === 'MEN' || rawCat === 'MENTAL' || rawCat === 'MENTALITY') cat = 'MEN';
+        else if (rawCat === 'PHY' || rawCat === 'PHYSICAL') cat = 'PHY';
+        else if (rawCat === 'SOC' || rawCat === 'SOCIAL') cat = 'SOC';
+        else if (rawCat === 'PRD' || rawCat === 'PRODUCTIVITY') cat = 'PRD';
+
+        // If category couldn't be determined, try mapping from source
+        if (!cat) {
+          const source = (entry.source || '').toString().trim().toLowerCase();
+          if (source === 'journal') cat = 'JOU';
+          else if (source === 'focus_session') cat = 'FOC';
+          else if (source === 'goal_completed') cat = 'PRD';
+          else if (source === 'todo_completed') cat = 'PRD';
+          else if (source === 'social_interaction' || source === 'time_with_friends' || source === 'time_outside') cat = 'SOC';
+          else if (source === 'reminder_completed') cat = 'DET';
+        }
+
+        if (cat) {
+          baseStats[cat] = (baseStats[cat] || 0) + (entry.points || 0);
+        } else {
+          // Unknown category - log for debugging but don't throw
+          console.log('📌 Unmapped points entry (ignored for category totals):', entry);
+        }
+      });
+
+      // Debug output per stat
+      Object.entries(baseStats).forEach(([k, v]) => {
+        console.log(`📊 ${k}: ${v} points from ${monthEntries.filter(e => {
+          const c = (e.category || '').toString().trim().toUpperCase();
+          return c === k || (k === 'JOU' && (c === 'JOURNAL' || e.source === 'journal'));
+        }).length} entries`);
+      });
 
       // FALLBACK: For focus minutes that might not be fully tracked in points history yet,
       // we still calculate from daily activities to ensure accuracy
