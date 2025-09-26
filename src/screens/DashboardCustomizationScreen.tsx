@@ -301,7 +301,7 @@ export default function DashboardCustomizationScreen({
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleClose} style={styles.backButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Ionicons name="close" size={24} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard Settings</Text>
           <TouchableOpacity 
@@ -381,11 +381,6 @@ const styles = StyleSheet.create({
   backButton: {
     alignItems: 'center',
     width: 40,
-  },
-  closeButtonText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
   },
   bottomSpacer: {
     height: 40,
