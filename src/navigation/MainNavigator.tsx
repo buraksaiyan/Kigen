@@ -21,6 +21,7 @@ import { SocialEntriesPage } from '../screens/SocialEntriesPage';
 import { HabitsCreationPage } from '../screens/HabitsCreationPage';
 import PointsHistoryScreen from '../screens/PointsHistoryScreen';
 import DashboardCustomizationScreen from '../screens/DashboardCustomizationScreen';
+import PointRulesScreen from '../screens/PointRulesScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -46,6 +47,7 @@ type RootStackParamList = {
   TodoEntry: undefined;
   SocialEntry: undefined;
   HabitEntry: undefined;
+  PointRules: undefined;
 };
 
 export const MainNavigator: React.FC = () => {
@@ -65,6 +67,7 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
           <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
           <Stack.Screen name="HabitEntry" component={HabitsCreationPage} />
+          <Stack.Screen name="PointRules" component={PointRulesScreen} />
         </Stack.Navigator>
         
       </AuthProvider>
@@ -166,6 +169,8 @@ const MainScreen: React.FC = () => {
       setIsPointsHistoryOpen(true);
     } else if (screen === 'dashboardCustomization') {
       setIsDashboardCustomizationOpen(true);
+    } else if (screen === 'PointRules') {
+      navigation.navigate('PointRules');
     } else {
       setActiveScreen(screen as ScreenName);
     }

@@ -64,6 +64,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       screen: 'Achievements',
     },
     {
+      id: 'point-rules',
+      title: 'Point Rules',
+      icon: 'info',
+      screen: 'PointRules',
+    },
+    {
       id: 'profile',
       title: 'Profile',
       icon: 'person',
