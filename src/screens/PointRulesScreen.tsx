@@ -21,8 +21,8 @@ const PointRulesScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={defaultTheme.colors.text.primary} />
+        <TouchableOpacity onPress={handleBack} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Point Rules</Text>
         <View style={styles.placeholder} />
@@ -200,6 +200,17 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     width: 32,
+  },
+  closeButton: {
+    alignItems: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  closeButtonText: {
+    ...defaultTheme.typography.body,
+    color: defaultTheme.colors.primary,
+    fontWeight: '600',
+    fontSize: 16,
   },
   categoryTitle: {
     color: defaultTheme.colors.primary,
