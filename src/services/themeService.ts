@@ -12,6 +12,20 @@ export interface ColorPreset {
 
 // Dark, non-colliding presets (kept intentionally deeper than focus colors)
 const PRESETS: ColorPreset[] = [
+  // Include the app default theme as an explicit selectable preset
+  {
+    id: 'default',
+    title: 'Default (Deep Blue)',
+    description: 'The app default deep-blue theme',
+    colors: {
+      primary: theme.colors.primary,
+      secondary: theme.colors.secondary,
+      accent: theme.colors.accent,
+      background: theme.colors.background,
+      surface: theme.colors.surface,
+      surfaceSecondary: theme.colors.surfaceSecondary,
+    }
+  },
   {
     id: 'obsidian',
     title: 'Obsidian',

@@ -419,28 +419,32 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={[styles.sectionTitle, { marginBottom: 12 }]}>Choose a color preset</Text>
-        {colorPresets.map((preset) => (
-          <TouchableOpacity
-            key={preset.id}
-            style={[styles.presetRow, currentPresetId === preset.id && styles.presetRowActive]}
-            onPress={async () => {
-              const ok = await themeService.applyPreset(preset.id);
-              if (ok) setCurrentPresetId(preset.id);
-            }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.presetPreview}>
-              <View style={[styles.swatch, { backgroundColor: preset.colors.primary || theme.colors.primary }]} />
-              <View style={[styles.swatch, { backgroundColor: preset.colors.secondary || theme.colors.secondary, marginLeft: 6 }]} />
-              <View style={[styles.swatch, { backgroundColor: preset.colors.accent || theme.colors.accent, marginLeft: 6 }]} />
+        {colorPresets.map((preset) => {
+          const active = currentPresetId === preset.id;
+          return (
+            <View key={preset.id} style={[active ? styles.presetRowActive : {}, { marginBottom: 6 }]}> 
+              <TouchableOpacity
+                style={[styles.presetRow]}
+                onPress={async () => {
+                  const ok = await themeService.applyPreset(preset.id);
+                  if (ok) setCurrentPresetId(preset.id);
+                }}
+                activeOpacity={0.85}
+              >
+                <View style={styles.presetPreview}>
+                  <View style={[styles.swatch, { backgroundColor: preset.colors.primary || theme.colors.primary }]} />
+                  <View style={[styles.swatch, { backgroundColor: preset.colors.secondary || theme.colors.secondary, marginLeft: 6 }]} />
+                  <View style={[styles.swatch, { backgroundColor: preset.colors.accent || theme.colors.accent, marginLeft: 6 }]} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.settingTitle}>{preset.title}</Text>
+                  {preset.description && <Text style={styles.settingDescription}>{preset.description}</Text>}
+                </View>
+                <Text style={styles.chevron}>{active ? '✓' : '›'}</Text>
+              </TouchableOpacity>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.settingTitle}>{preset.title}</Text>
-              {preset.description && <Text style={styles.settingDescription}>{preset.description}</Text>}
-            </View>
-            <Text style={styles.chevron}>{currentPresetId === preset.id ? '✓' : '›'}</Text>
-          </TouchableOpacity>
-        ))}
+          );
+        })}
 
         <View style={{ height: 24 }} />
         <TouchableOpacity
@@ -763,7 +767,18 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   presetRowActive: {
-    backgroundColor: theme.colors.surfaceSecondary,
+    // Softer, rounded highlight for selected preset
+    backgroundColor: 'transparent',
+    borderRadius: theme.borderRadius.md,
+    padding: 6,
+    marginVertical: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
   },
   presetPreview: {
     flexDirection: 'row',
