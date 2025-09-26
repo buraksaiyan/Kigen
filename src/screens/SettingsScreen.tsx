@@ -179,7 +179,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 <View style={styles.settingContent}>
                   <Text style={styles.settingTitle}>Colors</Text>
                   <Text style={styles.settingDescription}>
-                    Pick a color preset for the app (dark palettes)
+                    Pick a color preset for the app
                   </Text>
                 </View>
                 <Text style={styles.chevron}>›</Text>
