@@ -1,5 +1,5 @@
 // The Deep Blue theme - inspired by deep ocean colors
-export const theme = {
+const defaultTheme = {
   colors: {
     primary: '#001428',      // Even deeper navy (less cyan)
     secondary: '#5AAFCC',    // Muted sky blue for accents (less saturated)
@@ -197,3 +197,5 @@ export const theme = {
     },
   },
 };
+
+export const theme = defaultTheme;

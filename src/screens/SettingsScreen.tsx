@@ -15,6 +15,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useTranslation } from '../i18n/I18nProvider';
 import { UserStatsService } from '../services/userStatsService';
 import themeService, { ColorPreset } from '../services/themeService';
+import { useTheme } from '../contexts/ThemeContext';
 // import { SUPPORTED_LANGUAGES, Language } from '../i18n';
 
 interface SettingsScreenProps {
@@ -36,6 +37,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     // updateLanguage,
   } = useSettings();
   const { t } = useTranslation();
+  const { currentPresetId, applyPreset, theme: currentTheme } = useTheme();
   // const { t, language, setLanguage } = useTranslation();
   // const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
@@ -43,7 +45,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [colorPresets, setColorPresets] = useState<ColorPreset[]>([]);
-  const [currentPresetId, setCurrentPresetId] = useState<string | null>(null);
 
   // Handlers for settings actions
   const handleFocusDurationPress = () => {
@@ -86,10 +87,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     const loadPresets = async () => {
       try {
         const presets = themeService.getPresets();
-        const current = await themeService.getCurrentPresetId();
         if (!mounted) return;
         setColorPresets(presets);
-        setCurrentPresetId(current);
       } catch (e) {
         console.error('Failed to load color presets', e);
       }
@@ -425,10 +424,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             <TouchableOpacity
               key={preset.id}
               style={[styles.presetRow, active ? styles.presetRowActive : {}, { marginBottom: 6 }]}
-              onPress={async () => {
-                const ok = await themeService.applyPreset(preset.id);
-                if (ok) setCurrentPresetId(preset.id);
-              }}
+              onPress={() => applyPreset(preset.id)}
               activeOpacity={0.85}
             >
               <View style={styles.presetPreview}>

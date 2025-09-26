@@ -5,6 +5,7 @@ import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
 import { I18nProvider } from './i18n/I18nProvider';
 import { NotificationsProvider } from './contexts/NotificationsContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { clearOldFocusData } from './utils/clearOldData';
 import { theme } from './config/theme';
 
@@ -32,7 +33,9 @@ export default function App() {
           <I18nProvider>
             <AuthProvider>
               <NotificationsProvider>
-                <Navigation />
+                <ThemeProvider>
+                  <Navigation />
+                </ThemeProvider>
               </NotificationsProvider>
             </AuthProvider>
           </I18nProvider>
