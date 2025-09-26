@@ -24,6 +24,13 @@ const PRESETS: ColorPreset[] = [
       background: theme.colors.background,
       surface: theme.colors.surface,
       surfaceSecondary: theme.colors.surfaceSecondary,
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#8FCFDF',
+        tertiary: '#8FCFDFFF',
+        disabled: '#274F63',
+        dark: '#000000',
+      }
     }
   },
   {
@@ -37,6 +44,13 @@ const PRESETS: ColorPreset[] = [
       background: '#1A0F12',
       surface: '#2D1B1F',
       surfaceSecondary: '#3E2529',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#F5CBA7',
+        tertiary: '#F5CBA7CC',
+        disabled: '#8B4513',
+        dark: '#000000',
+      }
     }
   },
   {
@@ -50,6 +64,13 @@ const PRESETS: ColorPreset[] = [
       background: '#041F17',
       surface: '#072B20',
       surfaceSecondary: '#0A3A2B',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#A8DADC',
+        tertiary: '#A8DADC99',
+        disabled: '#1B4332',
+        dark: '#000000',
+      }
     }
   },
   {
@@ -63,6 +84,13 @@ const PRESETS: ColorPreset[] = [
       background: '#2A0A0B',
       surface: '#3A0E10',
       surfaceSecondary: '#4C1313',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#F5B7B1',
+        tertiary: '#F5B7B199',
+        disabled: '#722F37',
+        dark: '#000000',
+      }
     }
   },
   {
@@ -76,6 +104,13 @@ const PRESETS: ColorPreset[] = [
       background: '#12071F',
       surface: '#1A0B2E',
       surfaceSecondary: '#24123D',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#D7BDE2',
+        tertiary: '#D7BDE299',
+        disabled: '#5B2C6F',
+        dark: '#000000',
+      }
     }
   },
   {
@@ -89,6 +124,13 @@ const PRESETS: ColorPreset[] = [
       background: '#0A0E12',
       surface: '#0F1419',
       surfaceSecondary: '#1A2028',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#BDC3C7',
+        tertiary: '#BDC3C799',
+        disabled: '#566573',
+        dark: '#000000',
+      }
     }
   }
 ];

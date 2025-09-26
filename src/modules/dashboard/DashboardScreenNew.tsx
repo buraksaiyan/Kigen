@@ -24,7 +24,8 @@ import {
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
-import { theme } from '../../config/theme';
+import { useTheme } from '../../contexts/ThemeContext';
+import { theme as defaultTheme } from '../../config/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../auth/AuthProvider';
 import { UserStatsService } from '../../services/userStatsService';
@@ -110,6 +111,7 @@ interface JournalEntry {
 
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
+  const { theme } = useTheme();
   const { 
     getSortedSections,
     refreshSections,
@@ -135,6 +137,20 @@ export const DashboardScreen: React.FC = () => {
   const [completedHabits, setCompletedHabits] = useState<CompletedHabit[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const styles = createStyles(theme);
+
+  const StatItem: React.FC<{ 
+    label: string; 
+    value: number; 
+    textColor: string; 
+    secondaryTextColor: string; 
+  }> = ({ label, value, textColor, secondaryTextColor }) => (
+    <View style={styles.statItem}>
+      <Text style={[styles.statLabel, { color: secondaryTextColor }]}>{label}</Text>
+      <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
+    </View>
+  );
 
   // Function to update rank in real-time based on current monthly stats
   const updateRankInRealTime = async () => {
@@ -1386,19 +1402,7 @@ export const DashboardScreen: React.FC = () => {
   );
 };
 
-const StatItem: React.FC<{ 
-  label: string; 
-  value: number; 
-  textColor: string; 
-  secondaryTextColor: string; 
-}> = ({ label, value, textColor, secondaryTextColor }) => (
-  <View style={styles.statItem}>
-    <Text style={[styles.statLabel, { color: secondaryTextColor }]}>{label}</Text>
-    <Text style={[styles.statValue, { color: textColor }]}>{value}</Text>
-  </View>
-);
-
-const styles = StyleSheet.create({
+const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background,
     flex: 1,
