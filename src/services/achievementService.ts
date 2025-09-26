@@ -21,9 +21,9 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'focus_25h', category: 'focus_hours', title: 'Dedicated Mind', description: 'Achieve 25 hours of deep focus', emoji: '🧠', requirement: 25 },
   { id: 'focus_50h', category: 'focus_hours', title: 'Focus Warrior', description: 'Conquer 50 hours of concentrated effort', emoji: '⚔️', requirement: 50 },
   { id: 'focus_100h', category: 'focus_hours', title: 'Century Master', description: '100 hours of unwavering dedication', emoji: '💎', requirement: 100 },
-  { id: 'focus_250h', category: 'focus_hours', title: 'Elite Performer', description: 'Elite level: 250 hours of mastery', emoji: '🏆', requirement: 250 },
+  { id: 'focus_250h', category: 'focus_hours', title: 'Elite Performer', description: 'Elite level: 250 hours of mastery', emoji: '', requirement: 250 },
   { id: 'focus_500h', category: 'focus_hours', title: 'Grand Master', description: '500 hours of exceptional discipline', emoji: '👑', requirement: 500 },
-  { id: 'focus_750h', category: 'focus_hours', title: 'Legendary Focus', description: 'Legendary achievement: 750 hours', emoji: '🔥', requirement: 750 },
+  { id: 'focus_750h', category: 'focus_hours', title: 'Legendary Focus', description: 'Legendary achievement: 750 hours', emoji: '', requirement: 750 },
   { id: 'focus_1000h', category: 'focus_hours', title: 'The Thousand', description: '1000 hours - transcendent focus', emoji: '🌟', requirement: 1000 },
   { id: 'focus_1500h', category: 'focus_hours', title: 'Beyond Limits', description: '1500 hours of boundless determination', emoji: '✨', requirement: 1500 },
   { id: 'focus_3000h', category: 'focus_hours', title: 'Enlightened Mind', description: '3000 hours - enlightenment through focus', emoji: '🧘', requirement: 3000 },
@@ -33,13 +33,13 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
 
   // Current Day Streak Achievements  
   { id: 'streak_1', category: 'current_streak', title: 'Day One', description: 'Start your focus journey', emoji: '🌅', requirement: 1 },
-  { id: 'streak_7', category: 'max_streak', title: 'Week Warrior', description: 'Maintain focus for 7 consecutive days', emoji: '🔥', requirement: 7 },
+  { id: 'streak_7', category: 'max_streak', title: 'Week Warrior', description: 'Maintain focus for 7 consecutive days', emoji: '', requirement: 7 },
   { id: 'streak_15', category: 'max_streak', title: 'Fortnight Focus', description: '15 days of unwavering commitment', emoji: '⚡', requirement: 15 },
   { id: 'streak_30', category: 'max_streak', title: 'Monthly Master', description: 'Complete a full month of focus', emoji: '🗓️', requirement: 30 },
   { id: 'streak_50', category: 'max_streak', title: 'Disciplined Mind', description: '50 days of pure discipline', emoji: '💎', requirement: 50 },
   { id: 'streak_75', category: 'max_streak', title: 'Iron Will', description: '75 days of unbreakable focus', emoji: '🛡️', requirement: 75 },
   { id: 'streak_100', category: 'max_streak', title: 'Centurion', description: '100 days - legendary persistence', emoji: '🏛️', requirement: 100 },
-  { id: 'streak_250', category: 'max_streak', title: 'Eternal Flame', description: '250 days of burning dedication', emoji: '🔥', requirement: 250 },
+  { id: 'streak_250', category: 'max_streak', title: 'Eternal Flame', description: '250 days of burning dedication', emoji: '', requirement: 250 },
   { id: 'streak_500', category: 'max_streak', title: 'Transcendent', description: '500 days - transcend limitations', emoji: '🌟', requirement: 500 },
   { id: 'streak_750', category: 'max_streak', title: 'Phoenix Rising', description: '750 days of phoenix-like rebirth', emoji: '🦅', requirement: 750 },
   { id: 'streak_1000', category: 'max_streak', title: 'The Immortal', description: '1000 days - achieve immortality', emoji: '♾️', requirement: 1000 },
@@ -49,10 +49,10 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'body_5', category: 'body_focus_special', title: 'Physical Warrior', description: '5 body focus sessions completed', emoji: '🏋️', requirement: 5 },
   { id: 'body_10', category: 'body_focus_special', title: 'Strength Builder', description: '10 sessions of body mastery', emoji: '🦾', requirement: 10 },
   { id: 'body_20', category: 'body_focus_special', title: 'Iron Body', description: '20 body focus achievements', emoji: '⚔️', requirement: 20 },
-  { id: 'body_50', category: 'body_focus_special', title: 'Physical Elite', description: '50 sessions of body excellence', emoji: '🏆', requirement: 50 },
+  { id: 'body_50', category: 'body_focus_special', title: 'Physical Elite', description: '50 sessions of body excellence', emoji: '', requirement: 50 },
   { id: 'body_100', category: 'body_focus_special', title: 'Strength Champion', description: '100 sessions of physical discipline', emoji: '👑', requirement: 100 },
   { id: 'body_250', category: 'body_focus_special', title: 'Titan Body', description: '250 sessions - become a titan', emoji: '⚡', requirement: 250 },
-  { id: 'body_500', category: 'body_focus_special', title: 'Legendary Physique', description: '500 sessions of legendary training', emoji: '🔥', requirement: 500 },
+  { id: 'body_500', category: 'body_focus_special', title: 'Legendary Physique', description: '500 sessions of legendary training', emoji: '', requirement: 500 },
   { id: 'body_750', category: 'body_focus_special', title: 'Godlike Form', description: '750 sessions - achieve divine form', emoji: '🌟', requirement: 750 },
   { id: 'body_1000', category: 'body_focus_special', title: 'Eternal Physique', description: '1000 sessions of eternal physical discipline', emoji: '🏛️', requirement: 1000 },
 
@@ -84,11 +84,11 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'journal_1000', category: 'journal_entries', title: 'Infinite Writer', description: '1000 entries of infinite stories', emoji: '♾️', requirement: 1000 },
 
   // Completed Goals Achievements
-  { id: 'goals_1', category: 'completed_goals', title: 'First Victory', description: 'Complete your first goal', emoji: '🎯', requirement: 1 },
+  { id: 'goals_1', category: 'completed_goals', title: 'First Victory', description: 'Complete your first goal', emoji: '', requirement: 1 },
   { id: 'goals_5', category: 'completed_goals', title: 'Goal Crusher', description: 'Complete 5 goals successfully', emoji: '💪', requirement: 5 },
-  { id: 'goals_10', category: 'completed_goals', title: 'Achievement Hunter', description: '10 goals conquered', emoji: '🏆', requirement: 10 },
+  { id: 'goals_10', category: 'completed_goals', title: 'Achievement Hunter', description: '10 goals conquered', emoji: '', requirement: 10 },
   { id: 'goals_25', category: 'completed_goals', title: 'Master Achiever', description: '25 goals mastered', emoji: '👑', requirement: 25 },
-  { id: 'goals_50', category: 'completed_goals', title: 'Goal Legend', description: '50 legendary accomplishments', emoji: '🔥', requirement: 50 },
+  { id: 'goals_50', category: 'completed_goals', title: 'Goal Legend', description: '50 legendary accomplishments', emoji: '', requirement: 50 },
   { id: 'goals_100', category: 'completed_goals', title: 'Century Champion', description: '100 goals completed', emoji: '💎', requirement: 100 },
   { id: 'goals_250', category: 'completed_goals', title: 'Ultimate Victor', description: '250 goals of ultimate victory', emoji: '⚡', requirement: 250 },
   { id: 'goals_500', category: 'completed_goals', title: 'Transcendent Achiever', description: '500 goals transcending limits', emoji: '🌟', requirement: 500 },
@@ -100,7 +100,7 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'habits_5', category: 'completed_habits', title: 'Routine Master', description: 'Complete 5 habits successfully', emoji: '🔄', requirement: 5 },
   { id: 'habits_10', category: 'completed_habits', title: 'Discipline Forge', description: '10 habits of forged discipline', emoji: '⚒️', requirement: 10 },
   { id: 'habits_25', category: 'completed_habits', title: 'Habit Champion', description: '25 habits conquered', emoji: '🏅', requirement: 25 },
-  { id: 'habits_50', category: 'completed_habits', title: 'Routine Legend', description: '50 legendary habits mastered', emoji: '🔥', requirement: 50 },
+  { id: 'habits_50', category: 'completed_habits', title: 'Routine Legend', description: '50 legendary habits mastered', emoji: '', requirement: 50 },
   { id: 'habits_100', category: 'completed_habits', title: 'Century Builder', description: '100 habits of century-level discipline', emoji: '💎', requirement: 100 },
   { id: 'habits_250', category: 'completed_habits', title: 'Ultimate Routine', description: '250 habits of ultimate mastery', emoji: '⚡', requirement: 250 },
   { id: 'habits_500', category: 'completed_habits', title: 'Transcendent Builder', description: '500 habits transcending limitations', emoji: '🌟', requirement: 500 },
@@ -108,12 +108,12 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'habits_1000', category: 'completed_habits', title: 'Infinite Builder', description: '1000 habits - infinite discipline', emoji: '♾️', requirement: 1000 },
 
   // Completed Todos Achievements
-  { id: 'todos_1', category: 'completed_todos', title: 'Task Master', description: 'Complete your first task', emoji: '✅', requirement: 1 },
-  { id: 'todos_10', category: 'completed_todos', title: 'Productive Mind', description: 'Complete 10 tasks successfully', emoji: '📋', requirement: 10 },
+  { id: 'todos_1', category: 'completed_todos', title: 'Task Master', description: 'Complete your first task', emoji: '', requirement: 1 },
+  { id: 'todos_10', category: 'completed_todos', title: 'Productive Mind', description: 'Complete 10 tasks successfully', emoji: '', requirement: 10 },
   { id: 'todos_25', category: 'completed_todos', title: 'Efficiency Expert', description: '25 tasks of expert efficiency', emoji: '⚡', requirement: 25 },
-  { id: 'todos_50', category: 'completed_todos', title: 'Task Champion', description: '50 tasks conquered', emoji: '🏆', requirement: 50 },
+  { id: 'todos_50', category: 'completed_todos', title: 'Task Champion', description: '50 tasks conquered', emoji: '', requirement: 50 },
   { id: 'todos_100', category: 'completed_todos', title: 'Century Completer', description: '100 tasks of century-level productivity', emoji: '💎', requirement: 100 },
-  { id: 'todos_250', category: 'completed_todos', title: 'Ultimate Producer', description: '250 tasks of ultimate productivity', emoji: '🔥', requirement: 250 },
+  { id: 'todos_250', category: 'completed_todos', title: 'Ultimate Producer', description: '250 tasks of ultimate productivity', emoji: '', requirement: 250 },
   { id: 'todos_500', category: 'completed_todos', title: 'Transcendent Doer', description: '500 tasks transcending limits', emoji: '🌟', requirement: 500 },
   { id: 'todos_750', category: 'completed_todos', title: 'Divine Executor', description: '750 tasks of divine execution', emoji: '🕊️', requirement: 750 },
   { id: 'todos_1000', category: 'completed_todos', title: 'Infinite Producer', description: '1000 tasks - infinite productivity', emoji: '♾️', requirement: 1000 },
@@ -121,23 +121,23 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   // Active Reminders Achievements
   { id: 'reminders_1', category: 'active_reminders', title: 'Mindful Reminder', description: 'Set your first reminder', emoji: '⏰', requirement: 1 },
   { id: 'reminders_5', category: 'active_reminders', title: 'Time Keeper', description: 'Maintain 5 active reminders', emoji: '🕐', requirement: 5 },
-  { id: 'reminders_10', category: 'active_reminders', title: 'Schedule Master', description: '10 reminders of masterful organization', emoji: '📅', requirement: 10 },
+  { id: 'reminders_10', category: 'active_reminders', title: 'Schedule Master', description: '10 reminders of masterful organization', emoji: '', requirement: 10 },
   { id: 'reminders_25', category: 'active_reminders', title: 'Time Lord', description: '25 reminders of time lord mastery', emoji: '⚡', requirement: 25 },
   { id: 'reminders_50', category: 'active_reminders', title: 'Chronicle Keeper', description: '50 reminders of legendary timekeeping', emoji: '🏛️', requirement: 50 },
   { id: 'reminders_100', category: 'active_reminders', title: 'Century Organizer', description: '100 reminders of century-level organization', emoji: '💎', requirement: 100 },
-  { id: 'reminders_250', category: 'active_reminders', title: 'Ultimate Scheduler', description: '250 reminders of ultimate scheduling', emoji: '🔥', requirement: 250 },
+  { id: 'reminders_250', category: 'active_reminders', title: 'Ultimate Scheduler', description: '250 reminders of ultimate scheduling', emoji: '', requirement: 250 },
   { id: 'reminders_500', category: 'active_reminders', title: 'Transcendent Planner', description: '500 reminders transcending time', emoji: '🌟', requirement: 500 },
   { id: 'reminders_750', category: 'active_reminders', title: 'Divine Organizer', description: '750 reminders of divine organization', emoji: '🕊️', requirement: 750 },
   { id: 'reminders_1000', category: 'active_reminders', title: 'Infinite Scheduler', description: '1000 reminders - infinite organization', emoji: '♾️', requirement: 1000 },
 
   // Social Media Reduction Achievements
-  { id: 'social_1', category: 'social_reduction', title: 'Digital Balance', description: 'Reduce social media usage by 1 hour', emoji: '📱', requirement: 1 },
+  { id: 'social_1', category: 'social_reduction', title: 'Digital Balance', description: 'Reduce social media usage by 1 hour', emoji: '', requirement: 1 },
   { id: 'social_5', category: 'social_reduction', title: 'Screen Wisdom', description: 'Reduce social media by 5 hours total', emoji: '🧠', requirement: 5 },
   { id: 'social_10', category: 'social_reduction', title: 'Mindful User', description: '10 hours of mindful social reduction', emoji: '🌱', requirement: 10 },
   { id: 'social_25', category: 'social_reduction', title: 'Digital Freedom', description: '25 hours of digital freedom achieved', emoji: '🕊️', requirement: 25 },
   { id: 'social_50', category: 'social_reduction', title: 'Screen Master', description: '50 hours of masterful screen control', emoji: '⚡', requirement: 50 },
   { id: 'social_100', category: 'social_reduction', title: 'Century Liberator', description: '100 hours of century-level liberation', emoji: '💎', requirement: 100 },
-  { id: 'social_250', category: 'social_reduction', title: 'Ultimate Balance', description: '250 hours of ultimate digital balance', emoji: '🔥', requirement: 250 },
+  { id: 'social_250', category: 'social_reduction', title: 'Ultimate Balance', description: '250 hours of ultimate digital balance', emoji: '', requirement: 250 },
   { id: 'social_500', category: 'social_reduction', title: 'Transcendent User', description: '500 hours transcending digital addiction', emoji: '🌟', requirement: 500 },
   { id: 'social_750', category: 'social_reduction', title: 'Divine Balance', description: '750 hours of divine digital harmony', emoji: '🕊️', requirement: 750 },
   { id: 'social_1000', category: 'social_reduction', title: 'Infinite Freedom', description: '1000 hours - infinite digital freedom', emoji: '♾️', requirement: 1000 },
@@ -200,7 +200,7 @@ class AchievementService {
         
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(achievements));
         
-        console.log(`🏆 Achievement Unlocked: ${achievement.title} - ${achievement.description}`);
+  console.log(`Achievement Unlocked: ${achievement.title} - ${achievement.description}`);
         
         // Show achievement notification to user
         showAchievementNotification(achievement.title, achievement.description);

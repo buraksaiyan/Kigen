@@ -90,7 +90,7 @@ class LeaderboardService {
       if (error) {
         // Handle specific error codes
         if (error.code === '522' || error.message?.includes('522')) {
-          console.warn('⚠️ Supabase connection timeout (522). Leaderboard sync will retry later. Using local data for now.');
+          console.warn('Supabase connection timeout (522). Leaderboard sync will retry later. Using local data for now.');
         } else {
           console.error('Error syncing with global leaderboard:', error);
         }
@@ -106,7 +106,7 @@ class LeaderboardService {
     } catch (error: any) {
       // Handle network/connection errors specifically
       if (error.code === '522' || error.message?.includes('522') || error.message?.includes('timeout')) {
-        console.warn('⚠️ Network timeout while syncing leaderboard. Data will sync when connection improves.');
+  console.warn('Network timeout while syncing leaderboard. Data will sync when connection improves.');
       } else {
         console.error('Error syncing with global leaderboard:', error);
       }
@@ -125,7 +125,7 @@ class LeaderboardService {
       if (error) {
         // Handle specific error codes
         if (error.code === '522' || error.message?.includes('522')) {
-          console.warn('⚠️ Supabase connection timeout (522). Using cached leaderboard data.');
+          console.warn('Supabase connection timeout (522). Using cached leaderboard data.');
         } else {
           console.error('Error fetching global leaderboard:', error);
         }
@@ -176,7 +176,7 @@ class LeaderboardService {
       const isAvailable = await this.isSupabaseAvailable();
 
       if (!isAvailable) {
-        console.warn('⚠️ Supabase unavailable. Using cached leaderboard data.');
+  console.warn('Supabase unavailable. Using cached leaderboard data.');
         const cached = await this.getCachedLeaderboard();
 
         // Merge current user with cached data

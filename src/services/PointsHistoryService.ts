@@ -107,7 +107,7 @@ export class PointsHistoryService {
   // Emit an event so UI components can refresh immediately (dashboard/cards)
   try { emitPointsRecorded(); } catch (e) { /* ignore emitter errors */ }
 
-      console.log(`📊 Points recorded: +${points} ${category} (${source}) - ${description}`);
+  console.log(`Points recorded: +${points} ${category} (${source}) - ${description}`);
     } catch (error) {
       console.error('Error recording points:', error);
     }

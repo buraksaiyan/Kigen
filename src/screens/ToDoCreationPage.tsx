@@ -480,7 +480,7 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
         </View>
 
         <View style={styles.tipsSection}>
-          <Text style={styles.tipsTitle}>✅ Task Management Tips</Text>
+          <Text style={styles.tipsTitle}>Task Management Tips</Text>
           <Text style={styles.tipText}>
             • Use priority levels to organize your tasks effectively
           </Text>

@@ -130,6 +130,14 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     { category: 'completed_todos', title: 'Tasks', icon: '✅' },
     { category: 'active_reminders', title: 'Reminders', icon: '⏰' },
     { category: 'social_reduction', title: 'Digital Wellness', icon: '📱' },
+    { category: 'max_streak', title: 'Max Streak', icon: '' },
+    { category: 'completed_goals', title: 'Goals', icon: '' },
+    { category: 'completed_todos', title: 'Tasks', icon: '' },
+    { category: 'social_reduction', title: 'Digital Wellness', icon: '' },
+    { category: 'max_streak', title: 'Max Streak', icon: '' },
+    { category: 'completed_goals', title: 'Goals', icon: '' },
+    { category: 'completed_todos', title: 'Tasks', icon: '' },
+    { category: 'social_reduction', title: 'Digital Wellness', icon: '' },
   ];
 
   const renderAchievement = (achievement: Achievement) => {

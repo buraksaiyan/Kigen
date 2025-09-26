@@ -73,7 +73,7 @@ export class UserStatsService {
       // Create default profile if none exists
       const defaultUsername = `User${Date.now().toString().slice(-6)}`;
       profile = await this.createUserProfile(defaultUsername);
-      console.log('✅ Created default user profile:', defaultUsername);
+  console.log('Created default user profile:', defaultUsername);
     }
     return profile;
   }  static async getUserProfile(): Promise<UserProfile | null> {
@@ -263,7 +263,7 @@ export class UserStatsService {
       const monthStartDate = `${currentMonth}-01`;
       const monthEndDate = `${currentMonth}-${daysInMonth.toString().padStart(2, '0')}`;
 
-      console.log('📅 Calculating stats for month:', currentMonth);
+  console.log('Calculating stats for month:', currentMonth);
 
       // NEW APPROACH: Calculate stats from point history entries
       // Fetch all entries once for the month, normalize categories, and sum points per stat.
@@ -316,7 +316,7 @@ export class UserStatsService {
 
       // Debug output per stat
       Object.entries(baseStats).forEach(([k, v]) => {
-        console.log(`📊 ${k}: ${v} points from ${monthEntries.filter(e => {
+  console.log(`${k}: ${v} points from ${monthEntries.filter(e => {
           const c = (e.category || '').toString().trim().toUpperCase();
           return c === k || (k === 'JOU' && (c === 'JOURNAL' || e.source === 'journal'));
         }).length} entries`);
@@ -361,7 +361,7 @@ export class UserStatsService {
             totalFocusMinutes.notech += dayActivity.focusMinutes.notech;
           } catch (error) {
             // Day might not exist yet, skip
-            console.log(`📅 No data for ${dayString}, skipping`);
+            console.log(`No data for ${dayString}, skipping`);
           }
         }
       }
@@ -416,10 +416,10 @@ export class UserStatsService {
         PRD: baseStats.PRD  // Always use point history for productivity
       };
 
-      console.log('📅 Current month stats calculated:');
-      console.log('📊 Point History Stats:', baseStats);
-      console.log('📋 Formula Stats:', formulaStats);
-      console.log('🎯 Final Combined Stats:', finalStats);
+  console.log('Current month stats calculated:');
+  console.log('Point History Stats:', baseStats);
+  console.log('Formula Stats:', formulaStats);
+  console.log('Final Combined Stats:', finalStats);
 
       return finalStats;
     } catch (error) {
@@ -478,13 +478,13 @@ export class UserStatsService {
 
         // Use cache if it's less than CACHE_EXPIRY_HOURS old
         if (cacheAge < cacheExpiryMs) {
-          console.log('📊 Using cached rating data (age:', Math.round(cacheAge / 1000 / 60), 'minutes)');
+          console.log('Using cached rating data (age:', Math.round(cacheAge / 1000 / 60), 'minutes)');
           return rating;
         }
       }
 
       // Cache miss or expired - calculate fresh rating
-      console.log('📊 Calculating fresh rating data...');
+  console.log('Calculating fresh rating data...');
       const monthlyStats = await this.calculateCurrentMonthStats();
       const monthlyPoints = RatingSystem.calculateTotalPoints(monthlyStats);
       const cardTier = RatingSystem.getCardTier(monthlyPoints);
@@ -505,7 +505,7 @@ export class UserStatsService {
       };
       await AsyncStorage.setItem(this.CURRENT_RATING_CACHE_KEY, JSON.stringify(cacheData));
 
-      console.log('📊 Cached fresh rating data');
+  console.log('Cached fresh rating data');
       return freshRating;
     } catch (error) {
       console.error('Error getting current rating:', error);
@@ -548,7 +548,7 @@ export class UserStatsService {
           totalPoints: todayPoints,
           cardTier: RatingSystem.getCardTier(todayPoints)
         };
-        console.log('📅 New month detected - created fresh monthly record for', currentMonth);
+    console.log('New month detected - created fresh monthly record for', currentMonth);
       } else {
         // Add today's stats to monthly accumulation
         const updatedStats = {
@@ -576,7 +576,7 @@ export class UserStatsService {
       
       await this.saveMonthlyRecord(monthlyRecord);
       await AsyncStorage.setItem(lastUpdateKey, todayString);
-      console.log('📅 Updated monthly stats for', currentMonth, 'total points:', monthlyRecord.totalPoints);
+  console.log('Updated monthly stats for', currentMonth, 'total points:', monthlyRecord.totalPoints);
       
       // Invalidate cached rating since stats changed
       await this.invalidateRatingCache();

@@ -1,6 +1,6 @@
 # 🔐 User Management & Access Guide
 
-## 📊 **How to Access Your Users**
+## How to Access Your Users
 
 Your Kigen app now has **multiple ways** to access and manage user data:
 
@@ -12,12 +12,12 @@ Your Kigen app now has **multiple ways** to access and manage user data:
 3. View user statistics, search users, export data, send promotional emails
 
 **Features:**
-- ✅ **User Statistics**: Total users, new signups, active users
-- ✅ **User Search**: Find users by email or name  
-- ✅ **Export Users**: Download user data as CSV
-- ✅ **Send Promotional Emails**: Bulk email to all users
-- ✅ **Delete Users**: Remove users if needed
-- ✅ **Real-time Data**: Refresh to see latest users
+-- User Statistics: Total users, new signups, active users
+-- User Search: Find users by email or name  
+-- Export Users: Download user data as CSV
+-- Send Promotional Emails: Bulk email to all users
+-- Delete Users: Remove users if needed
+-- Real-time Data: Refresh to see latest users
 
 ### **🌐 Method 2: Supabase Dashboard (Production)**
 
@@ -104,7 +104,7 @@ ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
 -- Create policies as needed for your use case
 ```
 
-## 📊 **User Data Structure**
+## User Data Structure
 
 **Each user has these fields:**
 ```typescript
@@ -155,7 +155,7 @@ const mg = mailgun({apiKey: API_KEY, domain: DOMAIN});
 
 ## 🚦 **Current Status**
 
-**✅ Working Now (Development Mode):**
+**Working Now (Development Mode):**
 - Built-in admin panel with mock users
 - User registration and authentication
 - All user management features
@@ -174,9 +174,9 @@ const mg = mailgun({apiKey: API_KEY, domain: DOMAIN});
 - Add user analytics and insights
 - Implement user segmentation
 
-## 🎯 **Quick Start Checklist**
+## Quick Start Checklist
 
-1. **✅ Test Admin Panel**: Sign in and click "Admin" button
+1. Test Admin Panel: Sign in and click "Admin" button
 2. **🔄 Set up Supabase**: Create project and update environment variables  
 3. **📧 Choose Email Service**: Pick SendGrid, Mailgun, or similar
 4. **🚀 Deploy**: Your user management system is ready!

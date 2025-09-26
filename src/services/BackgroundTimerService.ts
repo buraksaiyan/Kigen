@@ -38,7 +38,7 @@ class BackgroundTimerService {
   // Register background task (only works in development builds, not Expo Go)
   static async registerBackgroundTask() {
     if (isExpoGo) {
-      console.log('📱 Background tasks not available in Expo Go - using foreground timer');
+  console.log('Background tasks not available in Expo Go - using foreground timer');
       return;
     }
 
@@ -74,7 +74,7 @@ class BackgroundTimerService {
       if (!isExpoGo) {
         await this.registerBackgroundTask();
       } else {
-        console.log('📱 Using Expo Go compatible timer (foreground only)');
+  console.log('Using Expo Go compatible timer (foreground only)');
       }
 
       // Schedule completion notification
@@ -187,7 +187,7 @@ class BackgroundTimerService {
         // Schedule notification for when timer completes
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: '🎯 Focus Session Complete!',
+            title: 'Focus Session Complete!',
             body: `Your ${timer.mode.title} session has finished. Great work!`,
             data: { timerId: timer.id },
             priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -211,7 +211,7 @@ class BackgroundTimerService {
     try {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: '🎯 Focus Session Complete!',
+          title: 'Focus Session Complete!',
           body: `Your ${timer.mode.title} session has finished. Great work!`,
           data: { timerId: timer.id },
         },

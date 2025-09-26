@@ -655,7 +655,7 @@ export const DashboardScreen: React.FC = () => {
       const result = await Promise.race([refreshPromise, timeout]);
       
       if (result === 'timeout') {
-        console.warn('⚠️ Dashboard refresh timed out');
+  console.warn('Dashboard refresh timed out');
       }
       
     } catch (e) {

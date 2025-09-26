@@ -272,7 +272,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
           <Text style={styles.label}>Date & Time</Text>
           <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateTimeButton}>
             <Text style={styles.dateTimeButtonText}>
-              📅 {formatDateTime(selectedDate, selectedHour, selectedMinute)}
+              {formatDateTime(selectedDate, selectedHour, selectedMinute)}
             </Text>
           </TouchableOpacity>
 
@@ -354,7 +354,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
         </View>
 
         <View style={styles.infoSection}>
-          <Text style={styles.infoTitle}>📋 Reminder Info</Text>
+          <Text style={styles.infoTitle}>Reminder Info</Text>
           <Text style={styles.infoText}>
             • Reminders require notification permission
           </Text>
@@ -366,7 +366,7 @@ export const RemindersCreationPage: React.FC<RemindersCreationPageProps> = ({
           </Text>
           {!hasPermission && (
             <Text style={styles.warningText}>
-              ⚠️ Notification permission denied. Please enable in Settings.
+              Notification permission denied. Please enable in Settings.
             </Text>
           )}
         </View>

@@ -21,7 +21,7 @@ export const CacheTest: React.FC = () => {
       
       // Get initial rating
       const initialRating = await UserStatsService.getCurrentRating();
-      addLog(`📊 Initial Rating - PRD: ${initialRating.stats.PRD}, OVR: ${initialRating.overallRating}`);
+  addLog(`Initial Rating - PRD: ${initialRating.stats.PRD}, OVR: ${initialRating.overallRating}`);
       
       // Clear cache manually to ensure fresh calculation
       await UserStatsService.invalidateRatingCache();
@@ -29,16 +29,16 @@ export const CacheTest: React.FC = () => {
       
       // Get fresh rating
       const freshRating = await UserStatsService.getCurrentRating();
-      addLog(`📊 Fresh Rating - PRD: ${freshRating.stats.PRD}, OVR: ${freshRating.overallRating}`);
+  addLog(`Fresh Rating - PRD: ${freshRating.stats.PRD}, OVR: ${freshRating.overallRating}`);
       
       // Compare
       if (freshRating.stats.PRD !== initialRating.stats.PRD) {
-        addLog('✅ CACHE INVALIDATION WORKING: Values changed after cache clear');
+  addLog('CACHE INVALIDATION WORKING: Values changed after cache clear');
       } else {
-        addLog('❌ CACHE INVALIDATION ISSUE: Values remained same');
+  addLog('CACHE INVALIDATION ISSUE: Values remained same');
       }
       
-      addLog('\n🎯 Testing Journal Entry...');
+  addLog('\nTesting Journal Entry...');
       
       // Record journal entry
       await UserStatsService.recordJournalEntry();
@@ -46,14 +46,14 @@ export const CacheTest: React.FC = () => {
       
       // Get updated rating
       const updatedRating = await UserStatsService.getCurrentRating();
-      addLog(`📊 After Journal - PRD: ${updatedRating.stats.PRD}, OVR: ${updatedRating.overallRating}`);
+  addLog(`After Journal - PRD: ${updatedRating.stats.PRD}, OVR: ${updatedRating.overallRating}`);
       
       // Check if it updated
       const prdIncrease = updatedRating.stats.PRD - freshRating.stats.PRD;
       if (prdIncrease > 0) {
-        addLog(`✅ JOURNAL POINTS WORKING: PRD increased by ${prdIncrease}`);
+  addLog(`JOURNAL POINTS WORKING: PRD increased by ${prdIncrease}`);
       } else {
-        addLog('❌ JOURNAL POINTS NOT WORKING: No PRD increase detected');
+  addLog('JOURNAL POINTS NOT WORKING: No PRD increase detected');
       }
       
     } catch (error) {

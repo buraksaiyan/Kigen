@@ -12,8 +12,8 @@ export class StatsValidator {
       const monthStartDate = `${currentMonth}-01`;
       const monthEndDate = `${currentMonth}-${daysInMonth.toString().padStart(2, '0')}`;
       
-      console.log('📅 Checking month:', currentMonth);
-      console.log('📅 Date range:', monthStartDate, 'to', monthEndDate);
+  console.log('Checking month:', currentMonth);
+  console.log('Date range:', monthStartDate, 'to', monthEndDate);
       
       // Check point history entries for each category
       const statCategories = ['DIS', 'FOC', 'JOU', 'DET', 'MEN', 'PHY', 'SOC', 'PRD'];
@@ -46,23 +46,23 @@ export class StatsValidator {
           }))
         };
         
-        console.log(`📊 ${category}: ${totalPoints} points from ${entries.length} entries`);
+  console.log(`${category}: ${totalPoints} points from ${entries.length} entries`);
         if (entries.length > 0) {
           console.log(`   Sources: ${JSON.stringify(sourceBreakdown)}`);
         }
       }
       
       // Get current rating calculation
-      console.log('\n🎯 CURRENT MONTH STATS CALCULATION:');
+  console.log('\nCURRENT MONTH STATS CALCULATION:');
       const monthlyStats = await UserStatsService.calculateCurrentMonthStats();
-      console.log('📊 Final Monthly Stats:', monthlyStats);
+  console.log('Final Monthly Stats:', monthlyStats);
       
       // Get current rating displayed on user card
       const currentRating = await UserStatsService.getCurrentRating();
-      console.log('\n📱 USER CARD DISPLAY:');
-      console.log('📊 Card Stats:', currentRating.stats);
-      console.log('🔸 Overall Rating:', currentRating.overallRating);
-      console.log('🏆 Card Tier:', currentRating.cardTier);
+  console.log('\nUSER CARD DISPLAY:');
+  console.log('Card Stats:', currentRating.stats);
+  console.log('Overall Rating:', currentRating.overallRating);
+  console.log('Card Tier:', currentRating.cardTier);
       console.log('💰 Total Points:', currentRating.totalPoints);
       
       // Comparison

@@ -21,7 +21,7 @@ export const env: EnvShape = {
 };
 
 if (env.isDevelopment) {
-  console.warn('⚠️  Using placeholder Supabase credentials');
+  console.warn('Using placeholder Supabase credentials');
   console.warn('📝 To fix: Update EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in .env');
   console.warn('🌐 Get them from: https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api');
 }

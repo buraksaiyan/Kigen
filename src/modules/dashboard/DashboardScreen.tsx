@@ -63,7 +63,7 @@ export const DashboardScreen: React.FC = () => {
   // Refresh stats when returning to dashboard from other screens
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('📊 Dashboard focused - refreshing stats');
+  console.log('Dashboard focused - refreshing stats');
       setRefreshTrigger(prev => prev + 1);
     });
 

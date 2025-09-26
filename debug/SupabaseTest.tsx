@@ -69,7 +69,7 @@ export const SupabaseTest = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        🔍 Supabase Debug Panel
+        Supabase Debug Panel
       </Text>
       
       <Text style={styles.statusText}>
@@ -80,8 +80,8 @@ export const SupabaseTest = () => {
         URL: {env.supabaseUrl}
       </Text>
       
-      <Button title="🔄 Test Connection" onPress={testConnection} />
-      <Button title="➕ Insert Test Data" onPress={testInsert} />
+  <Button title="Test Connection" onPress={testConnection} />
+  <Button title="Insert Test Data" onPress={testInsert} />
       
       <Text style={styles.dataTitle}>
         Current Data ({leaderboardData.length} entries):

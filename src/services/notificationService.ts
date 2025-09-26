@@ -21,7 +21,7 @@ export const showNotification = (title: string, message: string, type: 'success'
 
 export const showAchievementNotification = (achievementTitle: string, achievementDescription: string) => {
   showNotification(
-    `🏆 Achievement Unlocked!`,
+  `Achievement Unlocked!`,
     `${achievementTitle}: ${achievementDescription}`,
     'achievement'
   );

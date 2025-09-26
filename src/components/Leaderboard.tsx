@@ -45,8 +45,8 @@ export const Leaderboard: React.FC = () => {
           rank: index + 1 
         }));
       
-      console.log('📊 Monthly leaderboard data:', monthlyWithRanks.length, 'entries');
-      console.log('📊 Sample monthly data:', monthlyWithRanks.slice(0, 3));
+  console.log('Monthly leaderboard data:', monthlyWithRanks.length, 'entries');
+  console.log('Sample monthly data:', monthlyWithRanks.slice(0, 3));
       setMonthlyLeaderboard(monthlyWithRanks);
     } catch (error) {
       console.error('Error loading leaderboards:', error);

@@ -47,8 +47,8 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({ visible, onClose
         focusSessionService.getCombinedInzoneStatsLogs(20), // Get last 20 combined inzone stats logs (focus + goals)
       ]);
 
-      console.log('📊 Loaded focus sessions for progress:', logs.length, 'sessions');
-      console.log('📋 Recent sessions:', logs.map(s => ({
+  console.log('Loaded focus sessions for progress:', logs.length, 'sessions');
+  console.log('Recent sessions:', logs.map(s => ({
         mode: s.mode.title,
         duration: s.actualDuration,
         type: s.completionType,

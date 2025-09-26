@@ -58,7 +58,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
   });
 
   useEffect(() => {
-    console.log('📱 ProfileScreen visibility changed:', visible);
+  console.log('ProfileScreen visibility changed:', visible);
     if (visible) {
       loadProfile();
       loadStatistics();
@@ -119,7 +119,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ visible, onClose }
 
   // Handle hardware back button
   const handleClose = () => {
-    console.log('📱 ProfileScreen close button pressed');
+  console.log('ProfileScreen close button pressed');
     // Dismiss keyboard before closing
     Keyboard.dismiss();
     onClose();

@@ -33,7 +33,7 @@ export const JournalSection: React.FC<JournalSectionProps> = ({ isExpanded, onCl
   const [inputHeight, setInputHeight] = useState<number>(96);
 
   const handleClose = () => {
-    console.log('📱 JournalSection close button pressed');
+    console.log('JournalSection close button pressed');
     // Dismiss keyboard before closing
     Keyboard.dismiss();
     onClose();

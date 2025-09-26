@@ -116,7 +116,7 @@ const DigitalWellbeingSimple: React.FC<DigitalWellbeingSimpleProps> = ({ theme }
         </View>
         
         <View style={[styles.permissionCard, { backgroundColor: theme.cardBackground }]}>
-          <Text style={[styles.permissionIcon, { color: theme.textSecondary }]}>📱</Text>
+          <Text style={[styles.permissionIcon, { color: theme.textSecondary }]}>Device</Text>
           <Text style={[styles.permissionTitle, { color: theme.text }]}>
             Enable Usage Access
           </Text>

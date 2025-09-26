@@ -14,13 +14,13 @@ const NotificationsScreen: React.FC = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'achievement':
-        return '🏆';
+  return 'Achievement';
       case 'success':
-        return '✅';
+  return 'Success';
       case 'warning':
-        return '⚠️';
+  return 'Warning';
       case 'error':
-        return '❌';
+  return 'Error';
       default:
         return 'ℹ️';
     }
@@ -77,7 +77,7 @@ const NotificationsScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {notifications.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>🔔</Text>
+            <Text style={styles.emptyStateIcon}>Notifications</Text>
             <Text style={styles.emptyStateTitle}>No Notifications</Text>
             <Text style={styles.emptyStateMessage}>You're all caught up! Achievement notifications will appear here.</Text>
           </View>

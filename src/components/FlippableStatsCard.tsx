@@ -47,14 +47,14 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
   const fetchRatings = async () => {
     setIsLoading(true);
     try {
-      console.log('📊 FlippableStatsCard: Starting to fetch ratings');
+  console.log('FlippableStatsCard: Starting to fetch ratings');
       
       // Get user profile, create if doesn't exist
       const profile = await UserStatsService.ensureUserProfile();
-      console.log('📊 FlippableStatsCard: Profile obtained:', profile?.username);
+  console.log('FlippableStatsCard: Profile obtained:', profile?.username);
       
       if (!profile) {
-        console.error('📊 FlippableStatsCard: No profile available');
+        console.error('FlippableStatsCard: No profile available');
         return;
       }
       
@@ -63,7 +63,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
         setProfileImage(profile.profileImage);
       }
 
-      console.log('📊 FlippableStatsCard: Getting ratings');
+  console.log('FlippableStatsCard: Getting ratings');
       
       // Get monthly data using the same logic as leaderboard
       const currentMonth = new Date().toISOString().slice(0, 7);
@@ -86,14 +86,14 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
             monthlyPoints,
             cardTier
           };
-          console.log('📊 Using leaderboard monthly data:', monthlyEntry);
+          console.log('Using leaderboard monthly data:', monthlyEntry);
         } else {
           monthlyRating = await UserStatsService.getCurrentRating();
         }
       } else {
         // Fallback to direct calculation
         monthlyRating = await UserStatsService.getCurrentRating();
-        console.log('📊 No monthly leaderboard data, using direct calculation');
+  console.log('No monthly leaderboard data, using direct calculation');
       }
       
       // Get centralized all-time stats (aggregated monthly records + live current month)
@@ -112,12 +112,12 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
 
       setMonthlyRating(monthlyRating);
       setLifetimeRating(lifetimeRating);
-      console.log('📊 FlippableStatsCard: Ratings updated successfully');
+  console.log('FlippableStatsCard: Ratings updated successfully');
     } catch (error) {
-      console.error('📊 FlippableStatsCard: Error fetching ratings:', error);
+  console.error('FlippableStatsCard: Error fetching ratings:', error);
     } finally {
       setIsLoading(false);
-      console.log('📊 FlippableStatsCard: Loading completed');
+  console.log('FlippableStatsCard: Loading completed');
     }
   };
 
@@ -243,7 +243,7 @@ export const FlippableStatsCard: React.FC<FlippableStatsCardProps> = ({ onPress:
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
         <TouchableOpacity style={styles.topBarLeftButton} onPress={onNotificationPress}>
-          <Text style={styles.topBarButtonText}>🔔</Text>
+          <Text style={styles.topBarButtonText}>Notifications</Text>
         </TouchableOpacity>
         {/* center area left empty for app name (to be added later) */}
         <View style={styles.topBarCenter} />

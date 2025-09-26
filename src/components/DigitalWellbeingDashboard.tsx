@@ -86,7 +86,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
   const renderNoPermission = () => (
     <View style={[styles.permissionContainer, { backgroundColor: theme.cardBackground }]}>
       <View style={styles.iconContainer}>
-        <Text style={styles.iconText}>📱</Text>
+  <Text style={styles.iconText}>Device</Text>
       </View>
       
       <Text style={[styles.permissionTitle, { color: theme.text }]}>
@@ -147,7 +147,7 @@ const DigitalWellbeingDashboard: React.FC<DigitalWellbeingDashboardProps> = ({ t
 
   const renderNoData = () => (
     <View style={[styles.noDataContainer, { backgroundColor: theme.cardBackground }]}>
-      <Text style={[styles.noDataIcon, { color: theme.textSecondary }]}>📊</Text>
+  <Text style={[styles.noDataIcon, { color: theme.textSecondary }]}>Stats</Text>
       <Text style={[styles.noDataTitle, { color: theme.text }]}>
         No Usage Data Available
       </Text>

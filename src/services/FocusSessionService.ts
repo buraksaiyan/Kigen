@@ -170,9 +170,9 @@ class FocusSessionService {
 
   // Early finish session (awards points based on time completed)
   async earlyFinishSession(sessionId: string): Promise<void> {
-    console.log('🔸 Early finishing session:', sessionId);
+  console.log('Early finishing session:', sessionId);
     await this.completeSession(sessionId, false, 'early-finish'); // Mark as early finish with points
-    console.log('✅ Early finish completed for session:', sessionId);
+  console.log('Early finish completed for session:', sessionId);
   }
 
   // Abort session (no points awarded)
@@ -216,7 +216,7 @@ class FocusSessionService {
   // Save a focus session to history
   private async saveFocusSession(session: FocusSession): Promise<void> {
     try {
-      console.log('🔹 Saving focus session:', {
+  console.log('Saving focus session:', {
         id: session.id,
         mode: session.mode.title,
         duration: session.actualDuration,
@@ -235,9 +235,9 @@ class FocusSessionService {
         JSON.stringify(limitedSessions)
       );
       
-      console.log('✅ Focus session saved successfully. Total sessions:', limitedSessions.length);
+  console.log('Focus session saved successfully. Total sessions:', limitedSessions.length);
     } catch (error) {
-      console.error('❌ Error saving focus session:', error);
+  console.error('Error saving focus session:', error);
       throw error;
     }
   }
