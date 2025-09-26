@@ -1,22 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import ClassicCircular from './timerClocks/ClassicCircular';
-import MinimalDigital from './timerClocks/MinimalDigital';
+import ClassicClock from './timerClocks/ClassicClock';
 import FlipClock from './timerClocks/FlipClock';
-import PomodoroRing from './timerClocks/PomodoroRing';
-import GradientBar from './timerClocks/GradientBar';
-import ArcClock from './timerClocks/ArcClock';
-import CustomClock from './timerClocks/CustomClock';
+import GradientBarClock from './timerClocks/GradientBarClock';
 import { theme } from '../config/theme';
 
 export const CLOCK_STYLES = [
-  { id: 'classic', title: 'ClassicCircular', component: ClassicCircular },
-  { id: 'minimal', title: 'MinimalDigital', component: MinimalDigital },
-  { id: 'flip', title: 'FlipClock', component: FlipClock },
-  { id: 'pomodoro', title: 'PomodoroRing', component: PomodoroRing },
-  { id: 'gradient', title: 'GradientBar', component: GradientBar },
-  { id: 'arc', title: 'ArcClock', component: ArcClock },
-  { id: 'custom', title: 'CustomMode', component: CustomClock },
+  { id: 'classic', title: 'Classic Circular', component: ClassicClock },
+  { id: 'flip', title: 'Flip Clock', component: FlipClock },
+  { id: 'gradient', title: 'Gradient Bar', component: GradientBarClock },
 ];
 
 interface Props {
@@ -40,7 +32,13 @@ export default function ClockPreviewCarousel({ selected, onSelect }: Props) {
           return (
             <TouchableOpacity activeOpacity={0.9} onPress={() => onSelect && onSelect(item.id)} style={[styles.card, isSelected && styles.selectedCard]}>
               <View style={styles.previewBox}>
-                <Comp />
+                <Comp 
+                  duration={300} 
+                  elapsed={150} 
+                  size={80} 
+                  strokeWidth={8}
+                  color={theme.colors.primary}
+                />
               </View>
               <Text style={styles.label}>{item.title}</Text>
             </TouchableOpacity>

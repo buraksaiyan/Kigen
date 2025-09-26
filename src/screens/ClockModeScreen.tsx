@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme as defaultTheme } from '../config/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
+import TimerClock from '../components/timerClocks/TimerClock';
 
 interface ClockModeScreenProps {
   visible: boolean;
@@ -173,201 +174,22 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
 });
 
-const DigitalClockDisplay: React.FC<{ theme: typeof defaultTheme }> = ({ theme }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const hours = currentTime.getHours();
-  const minutes = currentTime.getMinutes();
-  const seconds = currentTime.getSeconds();
-
-  const formatNumber = (num: number) => num.toString().padStart(2, '0');
-
-  return (
-    <View style={{
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.xl,
-      minWidth: 200,
-    }}>
-      <Text style={{
-        fontSize: 36,
-        fontWeight: '700',
-        color: theme.colors.text.primary,
-        lineHeight: 42,
-      }}>
-        {formatNumber(hours)}:{formatNumber(minutes)}:{formatNumber(seconds)}
-      </Text>
-      <Text style={{
-        ...theme.typography.bodyLarge,
-        color: theme.colors.text.secondary,
-        fontWeight: '600',
-        marginTop: theme.spacing.sm,
-      }}>
-        {hours >= 12 ? 'PM' : 'AM'}
-      </Text>
-    </View>
-  );
-};
-
-const AnalogClockDisplay: React.FC<{ theme: typeof defaultTheme }> = ({ theme }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const hours = currentTime.getHours() % 12;
-  const minutes = currentTime.getMinutes();
-  const seconds = currentTime.getSeconds();
-
-  const hourAngle = (hours * 30) + (minutes * 0.5);
-  const minuteAngle = minutes * 6;
-  const secondAngle = seconds * 6;
-
-  return (
-    <View style={{
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.colors.surface,
-      borderRadius: 120,
-      width: 240,
-      height: 240,
-      padding: theme.spacing.lg,
-    }}>
-      {/* Clock face */}
-      <View style={{
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: theme.colors.background,
-        position: 'relative',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        {/* Hour markers */}
-        {Array.from({ length: 12 }, (_, i) => (
-          <View
-            key={i}
-            style={[
-              {
-                position: 'absolute',
-                width: 3,
-                height: 15,
-                backgroundColor: theme.colors.text.primary,
-                borderRadius: 1.5,
-              },
-              {
-                transform: [
-                  { rotate: `${i * 30}deg` },
-                  { translateY: -85 }
-                ]
-              }
-            ]}
-          />
-        ))}
-
-        {/* Minute markers */}
-        {Array.from({ length: 60 }, (_, i) => (
-          <View
-            key={i}
-            style={[
-              {
-                position: 'absolute',
-                width: 1,
-                height: 8,
-                backgroundColor: theme.colors.text.tertiary,
-                borderRadius: 0.5,
-              },
-              {
-                transform: [
-                  { rotate: `${i * 6}deg` },
-                  { translateY: -88 }
-                ]
-              }
-            ]}
-          />
-        ))}
-
-        {/* Hour hand */}
-        <View
-          style={[
-            {
-              position: 'absolute',
-              width: 4,
-              height: 60,
-              backgroundColor: theme.colors.text.primary,
-              borderRadius: 2,
-              top: 70,
-              left: 98,
-              transformOrigin: 'bottom center',
-            },
-            { transform: [{ rotate: `${hourAngle}deg` }] }
-          ]}
-        />
-
-        {/* Minute hand */}
-        <View
-          style={[
-            {
-              position: 'absolute',
-              width: 3,
-              height: 80,
-              backgroundColor: theme.colors.text.primary,
-              borderRadius: 1.5,
-              top: 60,
-              left: 98.5,
-              transformOrigin: 'bottom center',
-            },
-            { transform: [{ rotate: `${minuteAngle}deg` }] }
-          ]}
-        />
-
-        {/* Second hand */}
-        <View
-          style={[
-            {
-              position: 'absolute',
-              width: 1,
-              height: 90,
-              backgroundColor: theme.colors.danger,
-              borderRadius: 0.5,
-              top: 55,
-              left: 99.5,
-              transformOrigin: 'bottom center',
-            },
-            { transform: [{ rotate: `${secondAngle}deg` }] }
-          ]}
-        />
-
-        {/* Center dot */}
-        <View style={{
-          position: 'absolute',
-          width: 8,
-          height: 8,
-          backgroundColor: theme.colors.text.primary,
-          borderRadius: 4,
-        }} />
-      </View>
-    </View>
-  );
-};
-
-// Always use the digital clock display for Clock Mode — the analog was visually noisy.
-const getClockComponent = (_styleId: string) => {
-  return DigitalClockDisplay;
+// Map clock style to our supported timer clock types
+const getClockStyle = (styleId: string): 'classic' | 'flip' | 'gradient' => {
+  switch (styleId) {
+    case 'classic':
+    case 'circular':
+    case 'analog':
+      return 'classic';
+    case 'flip':
+      return 'flip';
+    case 'gradient':
+    case 'bar':
+    case 'progress':
+      return 'gradient';
+    default:
+      return 'classic';
+  }
 };
 
 export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
@@ -427,7 +249,7 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
     });
   };
 
-  const ClockComponent = getClockComponent(clockStyle);
+  const clockType = getClockStyle(clockStyle);
 
   if (!visible) return null;
 
@@ -454,7 +276,14 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
           </View>
 
           <View style={styles.clockWrapper}>
-            <ClockComponent theme={theme} />
+            <TimerClock 
+              clockStyle={clockType}
+              duration={3600}
+              elapsed={currentTime.getSeconds() + (currentTime.getMinutes() * 60)}
+              size={200}
+              strokeWidth={12}
+              color={theme.colors.primary}
+            />
           </View>
 
           <Text style={styles.currentTime}>
