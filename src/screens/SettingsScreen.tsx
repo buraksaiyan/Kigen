@@ -14,6 +14,7 @@ import { theme } from '../config/theme';
 import { useSettings } from '../hooks/useSettings';
 import { useTranslation } from '../i18n/I18nProvider';
 import { UserStatsService } from '../services/userStatsService';
+import themeService, { ColorPreset } from '../services/themeService';
 // import { SUPPORTED_LANGUAGES, Language } from '../i18n';
 
 interface SettingsScreenProps {
@@ -40,6 +41,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
 
   const volumeSteps = [0.1, 0.3, 0.5, 0.7, 1.0];
   const [showDurationPicker, setShowDurationPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [colorPresets, setColorPresets] = useState<ColorPreset[]>([]);
+  const [currentPresetId, setCurrentPresetId] = useState<string | null>(null);
 
   // Handlers for settings actions
   const handleFocusDurationPress = () => {
@@ -75,6 +79,25 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       [{ text: 'OK' }]
     );
   };
+
+  // Load color presets when settings opens
+  useEffect(() => {
+    let mounted = true;
+    const loadPresets = async () => {
+      try {
+        const presets = themeService.getPresets();
+        const current = await themeService.getCurrentPresetId();
+        if (!mounted) return;
+        setColorPresets(presets);
+        setCurrentPresetId(current);
+      } catch (e) {
+        console.error('Failed to load color presets', e);
+      }
+    };
+
+    if (visible) loadPresets();
+    return () => { mounted = false; };
+  }, [visible]);
 
   /*
   const handleLanguageSelect = async (languageCode: Language) => {
@@ -360,6 +383,60 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
         </View>
       </View>
     </View>
+  </Modal>
+
+  {/* Color Presets Modal */}
+  <Modal
+    visible={showColorPicker}
+    animationType="slide"
+    onRequestClose={() => setShowColorPicker(false)}
+    presentationStyle="pageSheet"
+  >
+    <SafeAreaView style={[styles.container, { padding: 20 }]}> 
+      <View style={styles.modalHeader}>
+        <TouchableOpacity onPress={() => setShowColorPicker(false)} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Text style={styles.title}>Color Options</Text>
+        </View>
+        <View style={styles.placeholder} />
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={[styles.sectionTitle, { marginBottom: 12 }]}>Choose a color preset</Text>
+        {colorPresets.map((preset) => (
+          <TouchableOpacity
+            key={preset.id}
+            style={[styles.presetRow, currentPresetId === preset.id && styles.presetRowActive]}
+            onPress={async () => {
+              const ok = await themeService.applyPreset(preset.id);
+              if (ok) setCurrentPresetId(preset.id);
+            }}
+            activeOpacity={0.85}
+          >
+            <View style={styles.presetPreview}>
+              <View style={[styles.swatch, { backgroundColor: preset.colors.primary || theme.colors.primary }]} />
+              <View style={[styles.swatch, { backgroundColor: preset.colors.secondary || theme.colors.secondary, marginLeft: 6 }]} />
+              <View style={[styles.swatch, { backgroundColor: preset.colors.accent || theme.colors.accent, marginLeft: 6 }]} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingTitle}>{preset.title}</Text>
+              {preset.description && <Text style={styles.settingDescription}>{preset.description}</Text>}
+            </View>
+            <Text style={styles.chevron}>{currentPresetId === preset.id ? '✓' : '›'}</Text>
+          </TouchableOpacity>
+        ))}
+
+        <View style={{ height: 24 }} />
+        <TouchableOpacity
+          style={[styles.signInButton, { alignSelf: 'stretch' }]}
+          onPress={() => setShowColorPicker(false)}
+        >
+          <Text style={styles.signInText}>Done</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   </Modal>
 
   {/* Language Picker Modal - Commented out for now
@@ -663,5 +740,39 @@ const styles = StyleSheet.create({
   durationOptionTextSelected: {
     color: theme.colors.text.primary,
     fontWeight: '600',
+  },
+  presetRow: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(255,255,255,0.04)',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingVertical: theme.spacing.md,
+  },
+  presetRowActive: {
+    backgroundColor: theme.colors.surfaceSecondary,
+  },
+  presetPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+  },
+  swatch: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)'
+  },
+  signInButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    elevation: 4,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  signInText: {
+    color: '#fff',
+    fontWeight: '700',
   },
 });

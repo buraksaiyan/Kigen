@@ -32,6 +32,7 @@ import { RightSidebar } from '../components/RightSidebar';
 import { theme } from '../config/theme';
 import { AuthProvider } from '../modules/auth/AuthProvider';
 import { UserStatsService } from '../services/userStatsService';
+import themeService from '../services/themeService';
 
 type ScreenName = 
   'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
@@ -73,6 +74,8 @@ export const MainNavigator: React.FC = () => {
 const MainScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
+  // local state used to force re-render when theme changes
+  const [, setThemeVersion] = useState(0);
   const [streakCount, setStreakCount] = useState(0);
   const [isCircularMenuOpen, setIsCircularMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -92,6 +95,15 @@ const MainScreen: React.FC = () => {
     };
     
     loadStreak();
+    // Apply saved theme preset if any
+    themeService.applyPresetIfSaved().catch(console.error);
+
+    // Register theme change listener so navigator (and children) re-render
+    const unregister = themeService.registerThemeChangeListener(() => {
+      setThemeVersion(v => v + 1);
+    });
+
+    return () => unregister();
   }, []);
 
   // Get screen dimensions
