@@ -231,7 +231,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   if (!mode || mode === null) return null;
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       <SafeAreaView style={styles.container}>
         
         <View style={styles.modalHeader}>

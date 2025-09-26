@@ -252,7 +252,12 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   }, [showSetup, showCountdown, showClockSetup, showClockMode, onClose]);
 
   useEffect(() => {
-    if (Platform.OS === 'android' && visible) {
+    // Register hardware back handler when running on Android.
+    // If this component is used as a modal, `visible` will control registration.
+    // If it's mounted as a navigation screen `visible` may be undefined — in that case
+    // we still want the handler active so Android back closes the screen.
+    const shouldRegister = Platform.OS === 'android' && (visible === undefined || visible === true);
+    if (shouldRegister) {
       const sub = BackHandler.addEventListener('hardwareBackPress', handleHardwareBack);
       return () => sub.remove();
     }
@@ -261,7 +266,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   }, [visible, handleHardwareBack]);
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+  <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={handleHardwareBack}>
       <SafeAreaView style={styles.container}>
         
         {/* Show Countdown Screen if active */}
