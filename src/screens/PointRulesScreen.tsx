@@ -181,19 +181,6 @@ const PointRulesScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: defaultTheme.colors.background,
-    flex: 1,
-  },
-  header: {
-    alignItems: 'center',
-    borderBottomColor: defaultTheme.colors.border,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
   backButton: {
     alignItems: 'center',
     backgroundColor: defaultTheme.colors.surface,
@@ -202,15 +189,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 32,
   },
-  headerTitle: {
-    color: defaultTheme.colors.text.primary,
-    fontSize: 20,
+  categoryTitle: {
+    color: defaultTheme.colors.primary,
+    fontSize: 18,
     fontWeight: '600',
+    marginBottom: 12,
   },
-  placeholder: {
-    width: 32,
-  },
-  scrollView: {
+  container: {
+    backgroundColor: defaultTheme.colors.background,
     flex: 1,
   },
   content: {
@@ -223,20 +209,22 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
-  section: {
-    marginBottom: 32,
+  header: {
+    alignItems: 'center',
+    borderBottomColor: defaultTheme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  sectionTitle: {
+  headerTitle: {
     color: defaultTheme.colors.text.primary,
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: '600',
   },
-  sectionDescription: {
-    color: defaultTheme.colors.text.secondary,
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
+  placeholder: {
+    width: 32,
   },
   ruleCard: {
     backgroundColor: defaultTheme.colors.surface,
@@ -244,17 +232,29 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 16,
   },
-  categoryTitle: {
-    color: defaultTheme.colors.primary,
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 12,
-  },
   ruleText: {
     color: defaultTheme.colors.text.primary,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 4,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionDescription: {
+    color: defaultTheme.colors.text.secondary,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    color: defaultTheme.colors.text.primary,
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 8,
   },
   tierGrid: {
     flexDirection: 'row',

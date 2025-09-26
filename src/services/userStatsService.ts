@@ -1397,11 +1397,17 @@ export class UserStatsService {
       const todayStr = new Date().toISOString().split('T')[0];
       let currentDate = new Date(todayStr!);
       
-      // Check if today has both journal entry AND completed focus session
+      // Check if today has both journal entry AND sufficient focus minutes (>=30)
       const todayActivity = activities.find(a => a.date === todayStr);
+      const todayFocusMinutes = todayActivity ? (
+        (todayActivity.focusMinutes?.flow || 0) +
+        (todayActivity.focusMinutes?.meditation || 0) +
+        (todayActivity.focusMinutes?.body || 0) +
+        (todayActivity.focusMinutes?.notech || 0)
+      ) : 0;
       const hasTodayValidStreak = todayActivity && (
         todayActivity.journalEntries > 0 &&
-        todayActivity.completedSessions > 0
+        todayFocusMinutes >= 30
       );
       
       if (!hasTodayValidStreak) {
@@ -1409,21 +1415,29 @@ export class UserStatsService {
         currentDate.setDate(currentDate.getDate() - 1);
       }
       
-      // Count consecutive days with both journal entries AND completed focus sessions
-      while (true) {
+      // Count consecutive days with both journal entries AND sufficient focus minutes
+      let continueCounting = true;
+      while (continueCounting) {
         const dateStr = currentDate.toISOString().split('T')[0];
         const activity = activities.find(a => a.date === dateStr);
-        
+
+        const activityFocusMinutes = activity ? (
+          (activity.focusMinutes?.flow || 0) +
+          (activity.focusMinutes?.meditation || 0) +
+          (activity.focusMinutes?.body || 0) +
+          (activity.focusMinutes?.notech || 0)
+        ) : 0;
+
         const hasValidStreakActivity = activity && (
           activity.journalEntries > 0 &&
-          activity.completedSessions > 0
+          activityFocusMinutes >= 30
         );
-        
+
         if (hasValidStreakActivity) {
           streak++;
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
-          break;
+          continueCounting = false;
         }
       }
       

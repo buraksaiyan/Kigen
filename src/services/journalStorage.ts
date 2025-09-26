@@ -29,10 +29,13 @@ export const journalStorage = {
   addEntry: async (content: string): Promise<void> => {
     try {
       const entries = await journalStorage.getAllEntries();
+      // Store date as YYYY-MM-DD (date-only) to match DailyActivity and summaries
+  // Use slice to guarantee a string (YYYY-MM-DD)
+  const dateOnly = new Date().toISOString().slice(0, 10);
       const newEntry: JournalEntry = {
         id: Date.now().toString(),
         content: content.trim(),
-        date: new Date().toISOString(),
+        date: dateOnly,
       };
       
       entries.unshift(newEntry); // Add to beginning
