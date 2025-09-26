@@ -407,8 +407,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     presentationStyle="pageSheet"
   >
     <SafeAreaView style={[styles.container, { padding: 20 }]}> 
-      <View style={styles.modalHeader}>
-        <TouchableOpacity onPress={() => setShowColorPicker(false)} style={styles.closeButton}>
+      <View style={[styles.modalHeader, styles.modalHeaderWithAbsoluteClose]}>
+        <TouchableOpacity onPress={() => setShowColorPicker(false)} style={[styles.closeButton, styles.colorModalCloseButton]}>
           <Text style={styles.closeButtonText}>{t('common.close')}</Text>
         </TouchableOpacity>
         <View style={styles.logoContainer}>
@@ -671,6 +671,18 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  // Header variant where the close button is absolutely positioned so the title is centered
+  modalHeaderWithAbsoluteClose: {
+    position: 'relative',
+  },
+  colorModalCloseButton: {
+    position: 'absolute',
+    left: 12,
+    top: 12,
+    padding: 8,
+    width: 60,
+    alignItems: 'flex-start',
   },
   languageList: {
     maxHeight: 400,
