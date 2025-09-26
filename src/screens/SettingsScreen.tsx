@@ -164,7 +164,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 }}
               >
                 <View style={styles.settingContent}>
-                  <Text style={styles.settingTitle}>Customization</Text>
+                  <Text style={styles.settingTitle}>Dashboard customization</Text>
                   <Text style={styles.settingDescription}>
                     Change your dashboard lineup and visibility of sections
                   </Text>
