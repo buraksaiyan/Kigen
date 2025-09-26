@@ -17,12 +17,12 @@ const PRESETS: ColorPreset[] = [
     title: 'Obsidian',
     description: 'Deep navy (default)',
     colors: {
-      primary: '#001428',
-      secondary: '#5AAFCC',
-      accent: '#8B5CF6',
-      background: '#000F1A',
-      surface: '#001826',
-      surfaceSecondary: '#002B3A',
+      primary: '#071330',
+      secondary: '#4FA3D9',
+      accent: '#7C5CF6',
+      background: '#071A2B',
+      surface: '#0A2B3D',
+      surfaceSecondary: '#0F3948',
     }
   },
   {
@@ -30,12 +30,12 @@ const PRESETS: ColorPreset[] = [
     title: 'Charcoal',
     description: 'Neutral charcoal slate',
     colors: {
-      primary: '#0B0F12',
+      primary: '#0F1720',
       secondary: '#4A90A8',
       accent: '#7C4DFF',
-      background: '#050607',
-      surface: '#0A0C0E',
-      surfaceSecondary: '#0E1214',
+      background: '#0B0E12',
+      surface: '#0D1216',
+      surfaceSecondary: '#111418',
     }
   },
   {
@@ -43,12 +43,12 @@ const PRESETS: ColorPreset[] = [
     title: 'Forest',
     description: 'Deep green-blue',
     colors: {
-      primary: '#08120E',
-      secondary: '#3B8F76',
-      accent: '#6A9F8A',
-      background: '#07120E',
-      surface: '#0B1914',
-      surfaceSecondary: '#0E241C',
+      primary: '#032A1E',
+      secondary: '#2F8F66',
+      accent: '#5AB98F',
+      background: '#041F17',
+      surface: '#072B20',
+      surfaceSecondary: '#0A3A2B',
     }
   },
   {
@@ -56,12 +56,12 @@ const PRESETS: ColorPreset[] = [
     title: 'Ember',
     description: 'Dark maroon accent',
     colors: {
-      primary: '#12080A',
-      secondary: '#A85A59',
-      accent: '#C06B7A',
-      background: '#0C0607',
-      surface: '#11080A',
-      surfaceSecondary: '#1A0D0E',
+      primary: '#2B0A0D',
+      secondary: '#A23D3D',
+      accent: '#D36B6B',
+      background: '#2A0A0B',
+      surface: '#3A0E10',
+      surfaceSecondary: '#4C1313',
     }
   },
   {
@@ -69,12 +69,12 @@ const PRESETS: ColorPreset[] = [
     title: 'Slate',
     description: 'Muted slate blue',
     colors: {
-      primary: '#0C1420',
-      secondary: '#548CA6',
-      accent: '#8A7FFF',
-      background: '#061018',
-      surface: '#0A1622',
-      surfaceSecondary: '#0E2633',
+      primary: '#0B1A2A',
+      secondary: '#487B9E',
+      accent: '#7A6EF9',
+      background: '#061421',
+      surface: '#0A1F2C',
+      surfaceSecondary: '#0E2A39',
     }
   }
 ];

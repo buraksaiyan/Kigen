@@ -171,6 +171,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 </View>
                 <Text style={styles.chevron}>›</Text>
               </TouchableOpacity>
+
+              {/* Colors entry - opens the color picker modal separately */}
+              <TouchableOpacity
+                style={[styles.settingRow, { marginTop: 8 }]}
+                onPress={() => setShowColorPicker(true)}
+              >
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingTitle}>Colors</Text>
+                  <Text style={styles.settingDescription}>
+                    Pick a color preset for the app (dark palettes)
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </TouchableOpacity>
             </View>
 
           <View style={styles.section}>

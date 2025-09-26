@@ -315,59 +315,7 @@ export default function DashboardCustomizationScreen({
         <ScrollView style={styles.scrollView}>
           {renderUsageStats()}
 
-          {/* Color options row */}
-          <View style={{ paddingHorizontal: 20, marginTop: 12 }}>
-            <Text style={[styles.sectionTitle, { textAlign: 'left' }]}>Dashboard customization</Text>
-            <Text style={styles.sectionDescription}>Customize which sections appear on your dashboard and change app colors.</Text>
-
-            <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity
-                style={[{ backgroundColor: theme.colors.surface, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: theme.colors.border }]}
-                onPress={async () => {
-                  const presetsList = themeService.getPresets();
-                  const current = await themeService.getCurrentPresetId();
-                  setPresets(presetsList);
-                  setCurrentPreset(current);
-                  setColorModalVisible(true);
-                }}
-              >
-                <Text style={{ color: theme.colors.text.primary, fontWeight: '600' }}>Change Colors</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Color preset modal */}
-          <Modal visible={colorModalVisible} animationType="slide" presentationStyle="pageSheet">
-            <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-              <View style={[styles.header, { paddingHorizontal: 16 }]}>
-                <TouchableOpacity onPress={() => setColorModalVisible(false)} style={styles.backButton}>
-                  <Ionicons name="arrow-back" size={24} color={theme.colors.text.primary} />
-                </TouchableOpacity>
-                <Text style={[styles.headerTitle]}>Color Presets</Text>
-                <View style={styles.backButton} />
-              </View>
-
-              <ScrollView contentContainerStyle={{ padding: 20 }}>
-                {presets.map(p => (
-                  <TouchableOpacity key={p.id} style={[{ backgroundColor: theme.colors.surface, padding: 16, borderRadius: 12, marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]} onPress={async () => {
-                    const ok = await themeService.applyPreset(p.id);
-                    if (ok) setCurrentPreset(p.id);
-                  }}>
-                    <View>
-                      <Text style={{ color: theme.colors.text.primary, fontWeight: '700' }}>{p.title}</Text>
-                      {p.description ? <Text style={{ color: theme.colors.text.secondary, marginTop: 4 }}>{p.description}</Text> : null}
-                    </View>
-                    <View style={{ width: 60, height: 36, borderRadius: 8, backgroundColor: p.colors?.primary || theme.colors.primary }} />
-                  </TouchableOpacity>
-                ))}
-
-                <View style={{ height: 24 }} />
-                <TouchableOpacity style={[styles.saveButton, { alignSelf: 'center', paddingHorizontal: 28 }]} onPress={() => setColorModalVisible(false)}>
-                  <Text style={styles.saveButtonText}>Done</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </SafeAreaView>
-          </Modal>
+          {/* Color options were moved to Settings. */}
 
           <View style={styles.sectionsContainer}>
             {enabledSections.length > 0 && (
