@@ -440,7 +440,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
                 <Text style={styles.settingTitle}>{preset.title}</Text>
                 {preset.description && <Text style={styles.settingDescription}>{preset.description}</Text>}
               </View>
-              <Text style={styles.chevron}>{active ? '✓' : '›'}</Text>
+              <Text style={styles.chevron}>{'›'}</Text>
             </TouchableOpacity>
           );
         })}
