@@ -41,6 +41,18 @@ const PointRulesScreen: React.FC = () => {
             </Text>
 
             <View style={styles.ruleCard}>
+              <Text style={styles.categoryTitle}>Categories</Text>
+              <Text style={styles.ruleText}>Discipline — DIS</Text>
+              <Text style={styles.ruleText}>Focus — FOC</Text>
+              <Text style={styles.ruleText}>Journaling — JOU</Text>
+              <Text style={styles.ruleText}>Determination — DET</Text>
+              <Text style={styles.ruleText}>Mentality — MEN</Text>
+              <Text style={styles.ruleText}>Physical — PHY</Text>
+              <Text style={styles.ruleText}>Social — SOC</Text>
+              <Text style={styles.ruleText}>Productivity — PRD</Text>
+            </View>
+
+            <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Discipline (DIS)</Text>
               <Text style={styles.ruleText}>• +5 points per completed focus session</Text>
               <Text style={styles.ruleText}>• +10 points per goal completed</Text>
