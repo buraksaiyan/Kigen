@@ -11,6 +11,7 @@ import { JournalSection } from '../../components/JournalSection';
 import { Sidebar } from '../../components/Sidebar';
 import { DigitalWellbeing } from '../../components/DigitalWellbeing';
 import { UserStatsService } from '../../services/userStatsService';
+import { onPointsRecorded } from '../../utils/pointEvents';
 import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
@@ -50,6 +51,14 @@ export const DashboardScreen: React.FC = () => {
     maybePromptForRating();
     // Ensure profile exists when dashboard loads
     UserStatsService.ensureUserProfile().catch(console.error);
+  }, []);
+
+  // Subscribe to points recorded events to force UI refresh of rating/card
+  useEffect(() => {
+    const unsub = onPointsRecorded(() => {
+      setRefreshTrigger(prev => prev + 1);
+    });
+    return () => unsub();
   }, []);
 
   // Refresh stats when returning to dashboard from other screens

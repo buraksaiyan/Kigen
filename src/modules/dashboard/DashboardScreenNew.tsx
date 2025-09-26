@@ -36,6 +36,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
 import { useDashboardSections } from '../../hooks/useDashboardSections';
+import { onPointsRecorded } from '../../utils/pointEvents';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -130,6 +131,7 @@ export const DashboardScreen: React.FC = () => {
   const [userRank, setUserRank] = useState('Bronze');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [usageStats, setUsageStats] = useState<DigitalWellbeingStats | null>(null);
   const [hasUsagePermission, setHasUsagePermission] = useState(false);
   const [completedGoals, setCompletedGoals] = useState<CompletedGoal[]>([]);
@@ -165,6 +167,14 @@ export const DashboardScreen: React.FC = () => {
       console.error('Error updating rank:', error);
     }
   };
+
+  // Subscribe to points recorded events to force UI refresh
+  React.useEffect(() => {
+    const unsub = onPointsRecorded(() => {
+      setRefreshTrigger(prev => prev + 1);
+    });
+    return () => unsub();
+  }, []);
 
   const toggleTodoCompletion = useCallback(async (todoId: string) => {
     try {

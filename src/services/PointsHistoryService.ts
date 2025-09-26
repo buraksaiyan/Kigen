@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { emitPointsRecorded } from '../utils/pointEvents';
 
 export type PointSource = 
   | 'journal' 
@@ -102,6 +103,9 @@ export class PointsHistoryService {
       // Invalidate user stats cache so the user card updates immediately
       const { UserStatsService } = await import('./userStatsService');
       await UserStatsService.invalidateRatingCache();
+
+  // Emit an event so UI components can refresh immediately (dashboard/cards)
+  try { emitPointsRecorded(); } catch (e) { /* ignore emitter errors */ }
 
       console.log(`📊 Points recorded: +${points} ${category} (${source}) - ${description}`);
     } catch (error) {
