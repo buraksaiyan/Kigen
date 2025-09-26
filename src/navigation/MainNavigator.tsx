@@ -22,6 +22,7 @@ import { HabitsCreationPage } from '../screens/HabitsCreationPage';
 import PointsHistoryScreen from '../screens/PointsHistoryScreen';
 import DashboardCustomizationScreen from '../screens/DashboardCustomizationScreen';
 import PointRulesScreen from '../screens/PointRulesScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -48,6 +49,7 @@ type RootStackParamList = {
   SocialEntry: undefined;
   HabitEntry: undefined;
   PointRules: undefined;
+  Notifications: undefined;
 };
 
 export const MainNavigator: React.FC = () => {

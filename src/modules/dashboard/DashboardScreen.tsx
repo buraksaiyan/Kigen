@@ -16,7 +16,6 @@ import { AdminPanel } from '../../components/AdminPanel';
 import { FlippableStatsCard } from '../../components/FlippableStatsCard';
 import { LeaderboardScreen } from '../../screens/LeaderboardScreen';
 import { useNotifications } from '../../contexts/NotificationsContext';
-import { NotificationsDropdown } from '../../components/NotificationsDropdown';
 import { SupabaseTest } from '../../../debug/SupabaseTest';
 import { env } from '../../config/env';
 
@@ -35,7 +34,7 @@ export const DashboardScreen: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showSupabaseDebug, setShowSupabaseDebug] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  // Notifications are now a full screen in navigation
 
   const { unreadCount } = useNotifications();
 
@@ -136,7 +135,7 @@ export const DashboardScreen: React.FC = () => {
           </View>
           
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => setIsNotificationsOpen(true)} style={styles.notificationsButton}>
+            <TouchableOpacity onPress={() => navigation.navigate('Notifications' as never)} style={styles.notificationsButton}>
               <Image source={notificationIcon} style={styles.notificationsIcon} />
               {unreadCount > 0 && (
                 <View style={styles.notificationBadge}>
@@ -206,7 +205,7 @@ export const DashboardScreen: React.FC = () => {
             }
           >
             <View style={styles.statsCardContainer}>
-              <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} onNotificationPress={() => setIsNotificationsOpen(true)} />
+              <FlippableStatsCard onPress={() => {}} refreshTrigger={refreshTrigger} onNotificationPress={() => navigation.navigate('Notifications' as never)} />
             </View>
 
             <View style={styles.actionsSection}>
@@ -320,10 +319,7 @@ export const DashboardScreen: React.FC = () => {
           onShowAdmin={() => setIsAdminPanelOpen(true)}
         />
 
-        <NotificationsDropdown
-          visible={isNotificationsOpen}
-          onClose={() => setIsNotificationsOpen(false)}
-        />
+        {/* Notifications are now handled by a dedicated screen */}
         
         <JournalSection 
           isExpanded={isJournalOpen}
