@@ -353,198 +353,198 @@ export const HabitsCreationPage: React.FC<HabitsCreationPageProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surface,
     alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    height: 32,
     justifyContent: 'center',
+    width: 32,
   },
   closeButtonText: {
-    fontSize: 18,
     color: theme.colors.text.primary,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: theme.colors.text.primary,
   },
-  headerSpacer: {
-    width: 32,
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
   },
   content: {
     flex: 1,
     padding: 20,
   },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.colors.text.primary,
-    marginBottom: 16,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-    marginBottom: 8,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: theme.colors.text.primary,
-    backgroundColor: theme.colors.surface,
-  },
-  textArea: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
-  frequencyOptions: {
-    gap: 12,
-  },
-  frequencyOption: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    backgroundColor: theme.colors.surface,
-  },
-  frequencyOptionSelected: {
-    borderColor: theme.colors.primary,
-    backgroundColor: theme.colors.primary + '10',
-  },
-  frequencyOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text.primary,
-    marginBottom: 4,
-  },
-  frequencyOptionTitleSelected: {
-    color: theme.colors.text.primary,
-  },
-  frequencyOptionDesc: {
-    fontSize: 14,
-    color: theme.colors.text.secondary,
-  },
-  frequencyOptionDescSelected: {
-    color: theme.colors.text.primary,
-  },
   customDaysContainer: {
     marginTop: 16,
+  },
+  dayButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 20,
+    borderWidth: 1,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  dayButtonSelected: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  dayButtonText: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  dayButtonTextSelected: {
+    color: theme.colors.text.primary,
   },
   daysGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 8,
   },
-  dayButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+  frequencyOption: {
     backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 16,
+  },
+  frequencyOptionContent: {
     alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  dayButtonSelected: {
+  frequencyOptionDesc: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+  },
+  frequencyOptionDescSelected: {
+    color: theme.colors.text.primary,
+  },
+  frequencyOptionSelected: {
+    backgroundColor: theme.colors.primary + '10',
     borderColor: theme.colors.primary,
-    backgroundColor: theme.colors.primary,
   },
-  dayButtonText: {
+  frequencyOptionTextContainer: {
+    flex: 1,
+  },
+  frequencyOptionTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  frequencyOptionTitleSelected: {
+    color: theme.colors.text.primary,
+  },
+  frequencyOptions: {
+    gap: 12,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  headerSpacer: {
+    width: 32,
+  },
+  headerTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    color: theme.colors.text.primary,
     fontSize: 14,
     fontWeight: '600',
-    color: theme.colors.text.primary,
-  },
-  dayButtonTextSelected: {
-    color: theme.colors.text.primary,
+    marginBottom: 8,
   },
   saveButton: {
-    backgroundColor: theme.colors.primary,
-    padding: 16,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
     marginBottom: 40,
+    marginTop: 20,
+    padding: 16,
   },
   saveButtonDisabled: {
     opacity: 0.6,
   },
   saveButtonText: {
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.colors.text.primary,
   },
-  timeInput: {
-    borderWidth: 1,
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  textInput: {
+    backgroundColor: theme.colors.surface,
     borderColor: theme.colors.border,
     borderRadius: 8,
-    padding: 12,
-    backgroundColor: theme.colors.surface,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  timeInputText: {
-    fontSize: 16,
+    borderWidth: 1,
     color: theme.colors.text.primary,
+    fontSize: 16,
+    padding: 12,
+  },
+  timeInput: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+  },
+  timeInputIcon: {
+    color: theme.colors.text.secondary,
+    fontSize: 16,
   },
   timeInputPlaceholder: {
     color: theme.colors.text.secondary,
   },
-  timeInputIcon: {
+  timeInputText: {
+    color: theme.colors.text.primary,
     fontSize: 16,
-    color: theme.colors.text.secondary,
+  },
+  timeOption: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    padding: 12,
+  },
+  timeOptionText: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
   },
   timePickerContainer: {
-    marginTop: 8,
-    maxHeight: 200,
-    borderWidth: 1,
+    backgroundColor: theme.colors.surface,
     borderColor: theme.colors.border,
     borderRadius: 8,
-    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    marginTop: 8,
+    maxHeight: 200,
   },
   timePickerScroll: {
     maxHeight: 200,
-  },
-  timeOption: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  timeOptionText: {
-    fontSize: 16,
-    color: theme.colors.text.primary,
-  },
-  frequencyOptionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  frequencyOptionTextContainer: {
-    flex: 1,
   },
 });

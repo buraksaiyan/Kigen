@@ -698,7 +698,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           {/* Break Quote */}
           <View style={styles.quoteContainer}>
             <Text style={styles.quoteText}>
-              "Take a deep breath. You've earned this break."
+              &quot;Take a deep breath. You&apos;ve earned this break.&quot;
             </Text>
             <Text style={styles.quoteAuthor}>— Your Focus Guide</Text>
           </View>

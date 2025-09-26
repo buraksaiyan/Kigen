@@ -122,8 +122,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       fontWeight: '600',
     },
     logoContainer: {
-      flex: 1,
       alignItems: 'center',
+      flex: 1,
       justifyContent: 'center',
     },
     placeholder: {
@@ -256,18 +256,18 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       fontWeight: 'bold',
     },
     colorModalCloseButtonInline: {
-      position: 'absolute',
       left: 16,
+      padding: 8,
+      position: 'absolute',
       top: 12,
       width: 60,
-      padding: 8,
     },
     modalHeaderCenteredTitle: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
       alignItems: 'center',
       justifyContent: 'center',
+      left: 0,
+      position: 'absolute',
+      right: 0,
     },
     modalCenteredTitleText: {
       marginBottom: 0,
@@ -278,12 +278,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       position: 'relative',
     },
     colorModalCloseButton: {
-      position: 'absolute',
-      left: 16,
-      top: 12,
-      padding: 8,
-      width: 60,
       alignItems: 'flex-start',
+      left: 16,
+      padding: 8,
+      position: 'absolute',
+      top: 12,
+      width: 60,
     },
     languageList: {
       maxHeight: 400,
@@ -389,16 +389,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
       marginVertical: 6,
     },
     presetPreview: {
-      flexDirection: 'row',
       alignItems: 'center',
+      flexDirection: 'row',
       marginRight: defaultTheme.spacing.md,
     },
     swatch: {
-      width: 28,
-      height: 28,
+      borderColor: 'rgba(255,255,255,0.06)',
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.06)'
+      height: 28,
+      width: 28
     },
     signInButton: {
       alignItems: 'center',

@@ -52,10 +52,10 @@ export default function ClockPreviewCarousel({ selected, onSelect }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingVertical: 8 },
+  card: { alignItems: 'center', marginHorizontal: 8, width: 140 },
   contentContainer: { paddingHorizontal: 8 },
-  card: { width: 140, marginHorizontal: 8, alignItems: 'center' },
-  previewBox: { width: 120, height: 120, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surface },
-  label: { marginTop: 8, color: theme.colors.text.primary },
-  selectedCard: { shadowColor: theme.colors.primary, shadowOpacity: 0.35, shadowRadius: 8, borderWidth: 2, borderColor: theme.colors.primary }
+  label: { color: theme.colors.text.primary, marginTop: 8 },
+  previewBox: { alignItems: 'center', backgroundColor: theme.colors.surface, borderRadius: 12, height: 120, justifyContent: 'center', width: 120 },
+  selectedCard: { borderColor: theme.colors.primary, borderWidth: 2, shadowColor: theme.colors.primary, shadowOpacity: 0.35, shadowRadius: 8 },
+  wrap: { paddingVertical: 8 }
 });

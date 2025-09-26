@@ -92,6 +92,20 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   activeTopBarButtonText: {
     color: theme.colors.text.primary,
   },
+  connectionStatusBar: {
+    backgroundColor: theme.colors.warning,
+    borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.sm,
+    marginHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  connectionStatusText: {
+    ...theme.typography.small,
+    color: theme.colors.text.primary,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
   container: {
     backgroundColor: theme.colors.background,
     flex: 1,
@@ -120,6 +134,16 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   medalEmoji: {
     fontSize: 24,
   },
+  monthDisplay: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  monthDisplayText: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '700',
+  },
   monthNavButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
@@ -140,16 +164,6 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
   monthNavButtonTextDisabled: {
     color: theme.colors.text.tertiary,
-  },
-  monthDisplay: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  monthDisplayText: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    fontWeight: '700',
   },
   monthSelector: {
     alignItems: 'center',
@@ -263,20 +277,6 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '700',
     marginBottom: 4,
-  },
-  connectionStatusBar: {
-    backgroundColor: theme.colors.warning,
-    marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.md,
-  },
-  connectionStatusText: {
-    ...theme.typography.small,
-    color: theme.colors.text.primary,
-    fontWeight: '500',
-    textAlign: 'center',
   },
 });
 

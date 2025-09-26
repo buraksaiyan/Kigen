@@ -144,9 +144,50 @@ export const HabitTestComponent: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    marginBottom: 10,
+    padding: 12,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  completedButton: {
+    backgroundColor: '#FF3B30',
+  },
   container: {
-    padding: 20,
     backgroundColor: '#fff',
+    padding: 20,
+  },
+  habitItem: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    marginBottom: 10,
+    padding: 15,
+  },
+  habitStatus: {
+    color: '#666',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  habitStreak: {
+    color: '#666',
+    fontSize: 14,
+    marginBottom: 5,
+  },
+  habitTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  noHabits: {
+    color: '#666',
+    fontSize: 16,
+    marginTop: 20,
+    textAlign: 'center',
   },
   title: {
     fontSize: 24,
@@ -154,55 +195,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
-  },
-  noHabits: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: '#666',
-    marginTop: 20,
-  },
-  habitItem: {
-    backgroundColor: '#f5f5f5',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  habitTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  habitStreak: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  habitStatus: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-  },
   toggleButton: {
     backgroundColor: '#34C759',
-    padding: 10,
     borderRadius: 6,
-  },
-  completedButton: {
-    backgroundColor: '#FF3B30',
+    padding: 10,
   },
   toggleButtonText: {
     color: '#fff',
-    textAlign: 'center',
     fontSize: 14,
+    textAlign: 'center',
   },
 });

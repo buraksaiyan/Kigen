@@ -382,11 +382,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 40,
   },
-  closeButtonText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
-  },
   bottomSpacer: {
     height: 40,
   },
@@ -427,6 +422,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
+  },
+  closeButtonText: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
   },
   container: {
     backgroundColor: theme.colors.background,

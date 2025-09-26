@@ -150,15 +150,8 @@ class DigitalWellbeingService {
    */
   async hasDigitalWellbeingIntegration(): Promise<boolean> {
     if (Platform.OS !== 'android') return false;
-    
-    try {
-      // Check if the device has Digital Wellbeing
-      // This would be implemented in native code to check for
-      // com.google.android.apps.wellbeing package
-      return false; // Placeholder - would need native implementation
-    } catch (error) {
-      return false;
-    }
+    // Placeholder - native implementation required
+    return false;
   }
 
   /**

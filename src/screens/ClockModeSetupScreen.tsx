@@ -21,6 +21,13 @@ interface ClockModeSetupScreenProps {
 }
 
 const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
+  clockSelectionTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+  },
   closeButton: {
     padding: 8,
   },
@@ -38,11 +45,11 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
   contentHeader: {
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
     backgroundColor: theme.colors.background,
-    zIndex: 10,
-    paddingTop: theme.spacing.sm,
+    marginBottom: theme.spacing.xl,
     overflow: 'hidden',
+    paddingTop: theme.spacing.sm,
+    zIndex: 10,
   },
   modalHeader: {
     alignItems: 'center',
@@ -95,9 +102,9 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
   titleInput: {
     backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
     borderRadius: theme.borderRadius.md,
     borderWidth: 2,
-    borderColor: theme.colors.border,
     color: theme.colors.text.primary,
     fontSize: 18,
     fontWeight: '600',
@@ -110,13 +117,6 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: '600',
     marginBottom: theme.spacing.md,
-  },
-  clockSelectionTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.lg,
-    textAlign: 'center',
   },
 });
 

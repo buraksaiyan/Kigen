@@ -15,8 +15,8 @@ export default function PomodoroRing({ focusProgress = 0.6, breakProgress = 0.2,
 }
 
 const styles = StyleSheet.create({
+  centerOverlay: { alignItems: 'center', justifyContent: 'center', position: 'absolute' },
   container: { alignItems: 'center', justifyContent: 'center' },
-  outer: { position: 'absolute' },
   inner: { position: 'absolute' },
-  centerOverlay: { alignItems: 'center', justifyContent: 'center', position: 'absolute' }
+  outer: { position: 'absolute' }
 });

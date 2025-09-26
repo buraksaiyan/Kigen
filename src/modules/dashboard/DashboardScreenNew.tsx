@@ -1440,9 +1440,9 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     borderRadius: 24,
     height: 48,
     justifyContent: 'center',
-    width: 48,
-    position: 'absolute',
     left: 12,
+    position: 'absolute',
+    width: 48,
     zIndex: 1,
   },
   topBarButtonIcon: {
@@ -1453,8 +1453,8 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
   topBarLogo: {
     height: 128,
-    width: 200,
     resizeMode: 'contain',
+    width: 200,
   },
 
   // Small tap hint between top bar and card
@@ -1608,8 +1608,8 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   },
   carousel: {
     flexDirection: 'row',
-    marginTop: 20,
-    height: 350, // Fixed height to prevent vertical stretching
+    height: 350,
+    marginTop: 20, // Fixed height to prevent vertical stretching
   },
   carouselPanel: {
     minHeight: 300,
@@ -1904,10 +1904,10 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     height: 120, // Space for bottom navigation
   },
   reminderItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
+    flexDirection: 'row',
     marginBottom: theme.spacing.md,
     padding: theme.spacing.md,
   },
@@ -1915,42 +1915,42 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     flex: 1,
   },
   reminderTitle: {
+    color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: '600',
-    color: theme.colors.text.primary,
     marginBottom: theme.spacing.xs,
   },
   reminderTime: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   reminderTimeText: {
-    fontSize: 14,
     color: theme.colors.text.secondary,
+    fontSize: 14,
     marginLeft: theme.spacing.xs,
   },
   reminderRecurring: {
-    fontSize: 14,
     color: theme.colors.secondary,
+    fontSize: 14,
     marginLeft: theme.spacing.xs,
   },
   reminderAction: {
     padding: theme.spacing.sm,
   },
   tabContainer: {
-    flexDirection: 'row',
     backgroundColor: theme.colors.surface,
+    borderRadius: 8,
+    flexDirection: 'row',
     marginHorizontal: 16,
     marginTop: 8,
-    borderRadius: 8,
     padding: 4,
   },
   tab: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
     alignItems: 'center',
+    borderRadius: 6,
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   activeTab: {
     backgroundColor: theme.colors.primary,
@@ -2003,8 +2003,8 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     marginTop: 8,
   },
   expandIcon: {
-    fontSize: 16,
     color: theme.colors.text.secondary,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

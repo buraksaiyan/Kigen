@@ -14,7 +14,7 @@ export default function ArcClock({ progress = 0.5, width = 200, height = 100 }: 
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  arcBase: { position: 'absolute', bottom: 0, height: '70%', width: '100%' },
-  arcFill: { position: 'absolute', bottom: 8, left: '10%', borderRadius: 8 }
+  arcBase: { bottom: 0, height: '70%', position: 'absolute', width: '100%' },
+  arcFill: { borderRadius: 8, bottom: 8, left: '10%', position: 'absolute' },
+  container: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }
 });

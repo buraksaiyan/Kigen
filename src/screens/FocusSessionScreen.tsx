@@ -455,6 +455,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
+  fullButton: {
+    alignItems: 'center',
+    backgroundColor: TRANSPARENT,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 2,
+    height: 80,
+    justifyContent: 'center',
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+  },
+  fullButtonText: {
+    ...theme.typography.h3,
+    fontSize: 20,
+    fontWeight: '700',
+  },
   scrollView: {
     flex: 1,
   },
@@ -490,20 +505,5 @@ const styles = StyleSheet.create({
     height: 128,
     resizeMode: 'contain',
     width: 200,
-  },
-  fullButton: {
-    alignItems: 'center',
-    backgroundColor: TRANSPARENT,
-    borderRadius: theme.borderRadius.lg,
-    borderWidth: 2,
-    height: 80,
-    justifyContent: 'center',
-    marginBottom: theme.spacing.md,
-    marginHorizontal: theme.spacing.lg,
-  },
-  fullButtonText: {
-    ...theme.typography.h3,
-    fontSize: 20,
-    fontWeight: '700',
   },
 });

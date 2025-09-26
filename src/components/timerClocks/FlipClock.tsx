@@ -21,8 +21,8 @@ export default function FlipClock({ timeString = '00:25:00', size = 36 }: Props)
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center' },
-  tile: { marginHorizontal: 4, borderRadius: 6, overflow: 'hidden', backgroundColor: '#0f172a' },
-  flipFace: { paddingHorizontal: 12, paddingVertical: 6, alignItems: 'center', justifyContent: 'center' },
-  flipText: { color: '#fff', fontWeight: '800' }
+  flipFace: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 6 },
+  flipText: { color: '#fff', fontWeight: '800' },
+  row: { alignItems: 'center', flexDirection: 'row' },
+  tile: { backgroundColor: '#0f172a', borderRadius: 6, marginHorizontal: 4, overflow: 'hidden' }
 });

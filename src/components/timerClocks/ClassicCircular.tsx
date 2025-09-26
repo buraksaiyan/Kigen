@@ -16,7 +16,7 @@ export default function ClassicCircular({ progress = 0.5, size = 120, strokeWidt
 
   return (
     <View style={[styles.container, { width: size, height: size }]}> 
-      <Animated.View style={[styles.svgWrap]}> 
+      <Animated.View style={styles.svgWrap}> 
         {/* Use view trick to simulate ring with border and overlay */}
         <View style={[styles.ringBackground, { borderRadius: size / 2, borderWidth: strokeWidth, width: size, height: size, borderColor: theme.colors.surface }]} />
         <View style={[styles.ringFill, { borderRadius: size / 2, width: size, height: size, borderWidth: strokeWidth, borderColor: color || theme.colors.primary, transform: [{ rotate: `${-90}deg` }] }]} />
@@ -28,9 +28,9 @@ export default function ClassicCircular({ progress = 0.5, size = 120, strokeWidt
 }
 
 const styles = StyleSheet.create({
+  center: { alignItems: 'center', justifyContent: 'center' },
   container: { alignItems: 'center', justifyContent: 'center' },
-  svgWrap: { alignItems: 'center', justifyContent: 'center' },
   ringBackground: { position: 'absolute' },
-  ringFill: { position: 'absolute', borderStyle: 'solid' },
-  center: { alignItems: 'center', justifyContent: 'center' }
+  ringFill: { borderStyle: 'solid', position: 'absolute' },
+  svgWrap: { alignItems: 'center', justifyContent: 'center' }
 });

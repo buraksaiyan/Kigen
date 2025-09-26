@@ -471,6 +471,13 @@ export const HistoryScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  activeFilterButton: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  activeFilterText: {
+    color: theme.colors.text.primary,
+  },
   activeTabButton: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
@@ -519,13 +526,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text.secondary,
     fontSize: 14,
     fontWeight: '500',
-  },
-  activeFilterButton: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  activeFilterText: {
-    color: theme.colors.text.primary,
   },
   header: {
     alignItems: 'center',

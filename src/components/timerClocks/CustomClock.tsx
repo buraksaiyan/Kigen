@@ -15,7 +15,7 @@ export default function CustomClock({ title = 'Custom', timeString = '25:00', ba
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', justifyContent: 'center', padding: 12, borderRadius: 12, overflow: 'hidden' },
-  title: { fontSize: 12, opacity: 0.9 },
-  time: { fontSize: 26, fontWeight: '700', marginTop: 6 }
+  container: { alignItems: 'center', borderRadius: 12, justifyContent: 'center', overflow: 'hidden', padding: 12 },
+  time: { fontSize: 26, fontWeight: '700', marginTop: 6 },
+  title: { fontSize: 12, opacity: 0.9 }
 });
