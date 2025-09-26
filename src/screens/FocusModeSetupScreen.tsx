@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../config/theme';
+import ClockPreviewCarousel, { CLOCK_STYLES } from '../components/ClockPreviewCarousel';
+import { timerClockService } from '../services/timerClockService';
 
 const CLOSE_BUTTON_COLOR = '#888691';
 const TRANSPARENT = 'transparent';
@@ -47,12 +49,18 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   const [hours, setHours] = useState(defaultHours.toString());
   const [minutes, setMinutes] = useState(defaultMinutes.toString());
   const [breakMinutes, setBreakMinutes] = useState('5'); // Default 5 minutes break
+  const [selectedClock, setSelectedClock] = useState<string | null>(null);
 
   // Reset to default duration when modal becomes visible
   useEffect(() => {
     if (visible) {
       setHours(defaultHours.toString());
       setMinutes(defaultMinutes.toString());
+      // Load saved clock style
+      (async () => {
+        const saved = await timerClockService.getStyle();
+        setSelectedClock(saved || 'classic');
+      })();
     }
   }, [visible, defaultHours, defaultMinutes]);
 
@@ -205,6 +213,14 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   </TouchableOpacity>
                 ))}
               </View>
+            </Card>
+
+            <Card style={styles.setupCard}>
+              <Text style={styles.sectionTitle}>Choose Your Timer Clock Style</Text>
+              <ClockPreviewCarousel selected={selectedClock ?? undefined} onSelect={async (id) => {
+                setSelectedClock(id);
+                await timerClockService.saveStyle(id);
+              }} />
             </Card>
 
             {/* Start Button */}
