@@ -22,7 +22,7 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   centerButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.background,
+    borderColor: theme.colors.surface,
     borderRadius: 42,
     borderWidth: 3,
     elevation: 12,

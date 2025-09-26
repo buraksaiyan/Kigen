@@ -138,18 +138,62 @@ const PRESETS: ColorPreset[] = [
     title: 'Black',
     description: 'Pure black with light accents',
     colors: {
-      primary: '#000000',
-      secondary: '#FFFFFF',
-      accent: '#CCCCCC',
-      background: '#000000',
-      surface: '#111111',
-      surfaceSecondary: '#222222',
+      primary: '#333333',      // Dark gray instead of pure black for buttons
+      secondary: '#666666',    // Medium gray for secondary elements
+      accent: '#CCCCCC',       // Light gray for accents
+      background: '#000000',   // Pure black background
+      surface: '#111111',      // Very dark gray for surfaces
+      surfaceSecondary: '#222222', // Dark gray for secondary surfaces
+      border: '#444444',       // Medium dark gray for borders
+      shadow: '#000000',       // Black shadows
+      overlay: 'rgba(0, 0, 0, 0.8)', // Dark overlay
+      overlayLight: 'rgba(255, 255, 255, 0.05)', // Very light overlay
+      borderLight: 'rgba(255, 255, 255, 0.1)', // Light border
+      white: '#FFFFFF',
+      black: '#000000',
+      transparent: 'transparent',
+      success: '#4CAF50',      // Green for success
+      danger: '#F44336',       // Red for danger
+      warning: '#FF9800',      // Orange for warning
+      progress: {
+        background: '#444444',
+        fill: '#666666',
+        success: '#4CAF50',
+      },
+      button: {
+        primary: '#333333',    // Dark gray buttons
+        secondary: '#666666',  // Medium gray buttons
+        disabled: '#222222',   // Very dark gray for disabled
+        hover: '#444444',      // Medium dark gray for hover
+      },
+      tab: {
+        active: '#CCCCCC',     // Light gray for active tabs
+        inactive: '#666666',   // Medium gray for inactive tabs
+        background: '#111111', // Very dark gray background
+      },
+      menu: {
+        goals: '#FF6B6B',
+        journaling: '#4ECDC4',
+        focus: '#45B7D1',
+        reminders: '#F6C85F',
+        social: '#96CEB4',
+        todo: '#FFEAA7',
+        habit: '#DDA0DD',
+      },
+      focus: {
+        study: '#14B8A6',
+        work: '#EF4444',
+        meditation: '#22C55E',
+        exercise: '#A855F7',
+        reading: '#60A5FA',
+        custom: '#F59E0B',
+      },
       text: {
-        primary: '#FFFFFF',
-        secondary: '#CCCCCC',
-        tertiary: '#999999',
-        disabled: '#666666',
-        dark: '#000000',
+        primary: '#FFFFFF',    // White text for maximum contrast
+        secondary: '#CCCCCC',  // Light gray for secondary text
+        tertiary: '#999999',   // Medium gray for tertiary text
+        disabled: '#666666',   // Medium gray for disabled text
+        dark: '#000000',       // Black text (for light backgrounds)
       }
     }
   }
