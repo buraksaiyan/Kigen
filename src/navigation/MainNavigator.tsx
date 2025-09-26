@@ -219,7 +219,13 @@ const MainScreen: React.FC = () => {
       case 'Profile':
         return <ProfileScreen visible={true} onClose={() => setActiveScreen('Dashboard')} />;
       case 'Settings':
-        return <SettingsScreen visible={true} onClose={() => setActiveScreen('Dashboard')} />;
+        return (
+          <SettingsScreen
+            visible={true}
+            onClose={() => setActiveScreen('Dashboard')}
+            onOpenCustomization={() => setIsDashboardCustomizationOpen(true)}
+          />
+        );
       case 'Goals':
         // Goals screen removed; redirect to Dashboard for now
         return <DashboardScreenNew />;

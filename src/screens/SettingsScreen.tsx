@@ -19,9 +19,11 @@ import { UserStatsService } from '../services/userStatsService';
 interface SettingsScreenProps {
   visible: boolean;
   onClose: () => void;
+  // Optional callback to open dashboard customization modal
+  onOpenCustomization?: () => void;
 }
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose }) => {
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose, onOpenCustomization }) => {
   const { 
     settings, 
     toggleTimerSounds, 
@@ -122,6 +124,31 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
             </View>
 
             <View style={styles.content}>
+
+            {/* Customization entry - opens the dashboard customization modal */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>CUSTOMIZATION</Text>
+
+              <TouchableOpacity
+                style={styles.settingRow}
+                onPress={() => {
+                  if (onOpenCustomization) {
+                    onOpenCustomization();
+                  } else {
+                    // Fallback: inform the user that customization is not available
+                    Alert.alert('Customization', 'Dashboard customization is currently unavailable.');
+                  }
+                }}
+              >
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingTitle}>Customization</Text>
+                  <Text style={styles.settingDescription}>
+                    Change your dashboard lineup and visibility of sections
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </TouchableOpacity>
+            </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('settings.soundsTitle')}</Text>

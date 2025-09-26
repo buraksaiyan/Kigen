@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, c
     { id: 'journals', title: t('sidebar.pastJournals'), icon: pastJournalsIcon },
     { id: 'goalsHistory', title: t('sidebar.pastGoals'), icon: pastGoalsIcon },
     { id: 'pointsHistory', title: 'Points History', icon: progressIcon },
-    { id: 'dashboardCustomization', title: 'Customize Dashboard', icon: settingsIcon },
+    // Dashboard customization moved to Settings -> Customization
     { id: 'achievements', title: t('sidebar.achievements'), icon: achievementsIcon },
     { id: 'profile', title: t('sidebar.profile'), icon: profileIcon },
     { id: 'settings', title: t('sidebar.settings'), icon: settingsIcon },
