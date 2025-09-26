@@ -25,6 +25,7 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNavigation } from '@react-navigation/native';
 import { theme as defaultTheme } from '../../config/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../auth/AuthProvider';
@@ -39,6 +40,10 @@ import { useDashboardSections } from '../../hooks/useDashboardSections';
 import { onPointsRecorded } from '../../utils/pointEvents';
 
 const { width: screenWidth } = Dimensions.get('window');
+
+// Navigation hook (used for top-bar actions)
+// We'll infer the stack params where needed; this file uses navigation.navigate('Notifications')
+// which is registered in MainNavigator.
 
 interface UserStats {
   discipline: number;
@@ -141,6 +146,7 @@ export const DashboardScreen: React.FC = () => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const styles = createStyles(theme);
+  const navigation = useNavigation();
 
   const StatItem: React.FC<{ 
     label: string; 
@@ -1308,7 +1314,7 @@ export const DashboardScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       {/* Top bar - slim, slightly thicker than bottom bar. Notification button on top-left. */}
       <View style={styles.topBarContainer}>
-        <TouchableOpacity style={styles.topBarLeftButton} onPress={() => Alert.alert('Notifications', 'No new notifications')}>
+        <TouchableOpacity style={styles.topBarLeftButton} onPress={() => navigation.navigate('Notifications' as never)}>
           {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
