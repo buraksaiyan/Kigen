@@ -33,6 +33,7 @@ import { theme } from '../config/theme';
 import { AuthProvider } from '../modules/auth/AuthProvider';
 import { UserStatsService } from '../services/userStatsService';
 import themeService from '../services/themeService';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ScreenName = 
   'Dashboard' | 'Leaderboard' | 'History' | 'Achievements' | 'Profile' | 'Settings' | 'Goals' | 'Journals';
@@ -48,6 +49,7 @@ type RootStackParamList = {
 };
 
 export const MainNavigator: React.FC = () => {
+  const { theme } = useTheme();
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
   return (

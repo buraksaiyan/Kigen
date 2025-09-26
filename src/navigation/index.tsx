@@ -2,12 +2,14 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { View, StyleSheet } from 'react-native';
 import { MainNavigator } from './MainNavigator';
-import { theme } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 export const Navigation = () => {
+  const { theme } = useTheme();
+
   return (
     <NavigationContainer>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <MainNavigator />
       </View>
     </NavigationContainer>
@@ -16,7 +18,6 @@ export const Navigation = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.background,
     flex: 1,
   },
 });

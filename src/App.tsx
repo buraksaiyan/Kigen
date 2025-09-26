@@ -5,9 +5,8 @@ import { Navigation } from './navigation';
 import { AuthProvider } from './modules/auth/AuthProvider';
 import { I18nProvider } from './i18n/I18nProvider';
 import { NotificationsProvider } from './contexts/NotificationsContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { clearOldFocusData } from './utils/clearOldData';
-import { theme } from './config/theme';
 
 // Conditional import for web compatibility
 let GestureHandler: any = View;
@@ -20,7 +19,9 @@ try {
   console.log('Using View fallback for web');
 }
 
-export default function App() {
+const AppContent = () => {
+  const { theme } = useTheme();
+
   useEffect(() => {
     // Clear old data to prevent duplicate key issues
     clearOldFocusData();
@@ -29,13 +30,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <GestureHandler style={{ flex: 1 }}>
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
           <I18nProvider>
             <AuthProvider>
               <NotificationsProvider>
-                <ThemeProvider>
-                  <Navigation />
-                </ThemeProvider>
+                <Navigation />
               </NotificationsProvider>
             </AuthProvider>
           </I18nProvider>
@@ -43,11 +42,18 @@ export default function App() {
       </GestureHandler>
     </SafeAreaProvider>
   );
+};
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.background,
     flex: 1,
   },
 });
