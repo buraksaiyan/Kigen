@@ -540,6 +540,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   logoContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -678,7 +679,7 @@ const styles = StyleSheet.create({
   },
   colorModalCloseButton: {
     position: 'absolute',
-    left: 12,
+    left: 16,
     top: 12,
     padding: 8,
     width: 60,
