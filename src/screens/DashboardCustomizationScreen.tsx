@@ -18,6 +18,7 @@ import {
   DashboardSectionType, 
   DashboardLayout 
 } from '../services/DashboardCustomizationService';
+import themeService, { ColorPreset } from '../services/themeService';
 import { theme } from '../config/theme';
 
 interface DashboardCustomizationScreenProps {
@@ -35,16 +36,12 @@ export default function DashboardCustomizationScreen({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [colorModalVisible, setColorModalVisible] = useState(false);
+  const [presets, setPresets] = useState<ColorPreset[]>([]);
+  const [currentPreset, setCurrentPreset] = useState<string | null>(null);
   const [usageStats, setUsageStats] = useState<any>(null);
 
-  const categories = [
-    { id: 'all', label: 'All Sections', icon: 'widgets' },
-    { id: 'core', label: 'Core', icon: 'star' },
-    { id: 'productivity', label: 'Productivity', icon: 'work' },
-    { id: 'wellness', label: 'Wellness', icon: 'favorite' },
-    { id: 'analytics', label: 'Analytics', icon: 'analytics' },
-  ];
+
 
   const loadData = useCallback(async () => {
     try {
@@ -192,12 +189,9 @@ export default function DashboardCustomizationScreen({
     }
   };
 
-  const filteredSections = selectedCategory === 'all' 
-    ? sections 
-    : sections.filter(section => section.category === selectedCategory);
-
-  const enabledSections = filteredSections.filter(s => s.enabled).sort((a, b) => a.order - b.order);
-  const disabledSections = filteredSections.filter(s => !s.enabled);
+  // Keep only All Sections view
+  const enabledSections = sections.filter(s => s.enabled).sort((a, b) => a.order - b.order);
+  const disabledSections = sections.filter(s => !s.enabled);
 
   const renderSectionItem = (section: DashboardSection, index: number, isEnabled: boolean = true) => (
     <View key={section.id} style={[styles.sectionItem, !isEnabled && styles.disabledSection]}>
@@ -256,32 +250,7 @@ export default function DashboardCustomizationScreen({
     </View>
   );
 
-  const renderCategoryTabs = () => (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryTabs}>
-      {categories.map(category => (
-        <TouchableOpacity
-          key={category.id}
-          style={[
-            styles.categoryTab,
-            selectedCategory === category.id && styles.categoryTabActive
-          ]}
-          onPress={() => setSelectedCategory(category.id)}
-        >
-          <MaterialIcons 
-            name={category.icon as any} 
-            size={20} 
-            color={selectedCategory === category.id ? '#FFFFFF' : theme.colors.text.secondary} 
-          />
-          <Text style={[
-            styles.categoryTabText,
-            selectedCategory === category.id && styles.categoryTabTextActive
-          ]}>
-            {category.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
+  // category tabs removed - only All Sections are shown in this customization UI
 
   const renderUsageStats = () => {
     if (!usageStats) return null;
@@ -345,7 +314,60 @@ export default function DashboardCustomizationScreen({
 
         <ScrollView style={styles.scrollView}>
           {renderUsageStats()}
-          {renderCategoryTabs()}
+
+          {/* Color options row */}
+          <View style={{ paddingHorizontal: 20, marginTop: 12 }}>
+            <Text style={[styles.sectionTitle, { textAlign: 'left' }]}>Dashboard customization</Text>
+            <Text style={styles.sectionDescription}>Customize which sections appear on your dashboard and change app colors.</Text>
+
+            <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity
+                style={[{ backgroundColor: theme.colors.surface, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: theme.colors.border }]}
+                onPress={async () => {
+                  const presetsList = themeService.getPresets();
+                  const current = await themeService.getCurrentPresetId();
+                  setPresets(presetsList);
+                  setCurrentPreset(current);
+                  setColorModalVisible(true);
+                }}
+              >
+                <Text style={{ color: theme.colors.text.primary, fontWeight: '600' }}>Change Colors</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Color preset modal */}
+          <Modal visible={colorModalVisible} animationType="slide" presentationStyle="pageSheet">
+            <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+              <View style={[styles.header, { paddingHorizontal: 16 }]}>
+                <TouchableOpacity onPress={() => setColorModalVisible(false)} style={styles.backButton}>
+                  <Ionicons name="arrow-back" size={24} color={theme.colors.text.primary} />
+                </TouchableOpacity>
+                <Text style={[styles.headerTitle]}>Color Presets</Text>
+                <View style={styles.backButton} />
+              </View>
+
+              <ScrollView contentContainerStyle={{ padding: 20 }}>
+                {presets.map(p => (
+                  <TouchableOpacity key={p.id} style={[{ backgroundColor: theme.colors.surface, padding: 16, borderRadius: 12, marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]} onPress={async () => {
+                    const ok = await themeService.applyPreset(p.id);
+                    if (ok) setCurrentPreset(p.id);
+                  }}>
+                    <View>
+                      <Text style={{ color: theme.colors.text.primary, fontWeight: '700' }}>{p.title}</Text>
+                      {p.description ? <Text style={{ color: theme.colors.text.secondary, marginTop: 4 }}>{p.description}</Text> : null}
+                    </View>
+                    <View style={{ width: 60, height: 36, borderRadius: 8, backgroundColor: p.colors?.primary || theme.colors.primary }} />
+                  </TouchableOpacity>
+                ))}
+
+                <View style={{ height: 24 }} />
+                <TouchableOpacity style={[styles.saveButton, { alignSelf: 'center', paddingHorizontal: 28 }]} onPress={() => setColorModalVisible(false)}>
+                  <Text style={styles.saveButtonText}>Done</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </SafeAreaView>
+          </Modal>
 
           <View style={styles.sectionsContainer}>
             {enabledSections.length > 0 && (
