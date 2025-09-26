@@ -236,7 +236,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
         
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Back</Text>
+            <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
           <View style={styles.placeholder} />
         </View>

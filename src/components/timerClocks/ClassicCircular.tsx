@@ -9,7 +9,7 @@ interface Props {
   color?: string;
 }
 
-export default function ClassicCircular({ progress, size = 120, strokeWidth = 10, color }: Props) {
+export default function ClassicCircular({ progress = 0.5, size = 120, strokeWidth = 10, color }: Props) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference * (1 - progress);

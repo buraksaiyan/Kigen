@@ -154,11 +154,11 @@ export const ClockModeSetupScreen: React.FC<ClockModeSetupScreenProps> = ({
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.modalHeader}>
-          <View style={styles.placeholder} />
-          <Text style={styles.sectionTitle}>Clock Mode Setup</Text>
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
+          <Text style={styles.sectionTitle}>Clock Mode Setup</Text>
+          <View style={styles.placeholder} />
         </View>
 
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>

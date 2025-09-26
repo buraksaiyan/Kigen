@@ -32,6 +32,8 @@ export default function ClockPreviewCarousel({ selected, onSelect }: Props) {
         horizontal
         keyExtractor={item => item.id}
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+        pagingEnabled
         renderItem={({ item }) => {
           const Comp: any = item.component;
           const isSelected = selected === item.id;
@@ -51,6 +53,7 @@ export default function ClockPreviewCarousel({ selected, onSelect }: Props) {
 
 const styles = StyleSheet.create({
   wrap: { paddingVertical: 8 },
+  contentContainer: { paddingHorizontal: 8 },
   card: { width: 140, marginHorizontal: 8, alignItems: 'center' },
   previewBox: { width: 120, height: 120, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surface },
   label: { marginTop: 8, color: theme.colors.text.primary },
