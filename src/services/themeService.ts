@@ -27,29 +27,16 @@ const PRESETS: ColorPreset[] = [
     }
   },
   {
-    id: 'obsidian',
-    title: 'Obsidian',
-    description: 'Deep navy (default)',
+    id: 'sunset',
+    title: 'Sunset',
+    description: 'Warm orange and red tones',
     colors: {
-      primary: '#071330',
-      secondary: '#4FA3D9',
-      accent: '#7C5CF6',
-      background: '#071A2B',
-      surface: '#0A2B3D',
-      surfaceSecondary: '#0F3948',
-    }
-  },
-  {
-    id: 'charcoal',
-    title: 'Charcoal',
-    description: 'Neutral charcoal slate',
-    colors: {
-      primary: '#0F1720',
-      secondary: '#4A90A8',
-      accent: '#7C4DFF',
-      background: '#0B0E12',
-      surface: '#0D1216',
-      surfaceSecondary: '#111418',
+      primary: '#2D1B1F',
+      secondary: '#E67E22',
+      accent: '#E74C3C',
+      background: '#1A0F12',
+      surface: '#2D1B1F',
+      surfaceSecondary: '#3E2529',
     }
   },
   {
@@ -79,16 +66,29 @@ const PRESETS: ColorPreset[] = [
     }
   },
   {
-    id: 'slate',
-    title: 'Slate',
-    description: 'Muted slate blue',
+    id: 'midnight',
+    title: 'Midnight Purple',
+    description: 'Deep purple and violet',
     colors: {
-      primary: '#0B1A2A',
-      secondary: '#487B9E',
-      accent: '#7A6EF9',
-      background: '#061421',
-      surface: '#0A1F2C',
-      surfaceSecondary: '#0E2A39',
+      primary: '#1A0B2E',
+      secondary: '#8E44AD',
+      accent: '#9B59B6',
+      background: '#12071F',
+      surface: '#1A0B2E',
+      surfaceSecondary: '#24123D',
+    }
+  },
+  {
+    id: 'arctic',
+    title: 'Arctic',
+    description: 'Cool blue and white accents',
+    colors: {
+      primary: '#0F1419',
+      secondary: '#3498DB',
+      accent: '#ECF0F1',
+      background: '#0A0E12',
+      surface: '#0F1419',
+      surfaceSecondary: '#1A2028',
     }
   }
 ];
