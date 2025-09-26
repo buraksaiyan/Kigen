@@ -12,7 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import LeaderboardService from '../services/LeaderboardService';
 import { RatingSystem, CardTier } from '../services/ratingSystem';
-import { theme } from '../config/theme';
+import { theme as defaultTheme } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 // width not needed currently
 
@@ -75,211 +76,7 @@ function ReconnectHandler({ isOnline, setIsOnline, reconnectAttempts, setReconne
   return null; // no UI — silent handler
 }
 
-export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigateBack: _onNavigateBack }) => {
-  const [activeTab, setActiveTab] = useState<LeaderboardType>('monthly');
-  const [lifetimeLeaderboard, setLifetimeLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
-  const [isOnline, setIsOnline] = useState(true);
-  const [reconnectAttempts, setReconnectAttempts] = useState(0);
-  const maxReconnectAttempts = 3;
-
-  useEffect(() => {
-    loadLeaderboards();
-  }, [selectedMonth]);
-
-  const loadLeaderboards = async () => {
-    try {
-      // Check Supabase connectivity
-      const isSupabaseAvailable = await LeaderboardService.isSupabaseAvailable();
-      setIsOnline(isSupabaseAvailable);
-
-      // Load global leaderboard from LeaderboardService
-      const globalData = await LeaderboardService.getGlobalLeaderboard();
-      
-      // Transform to the expected format
-      const lifetimeWithRanks = globalData
-        .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
-        .map((entry, index) => ({
-          userId: entry.id,
-          username: entry.username,
-          totalPoints: entry.totalPoints,
-          monthlyPoints: entry.monthlyPoints,
-          cardTier: entry.cardTier as CardTier,
-          rank: index + 1
-        }));
-      setLifetimeLeaderboard(lifetimeWithRanks);
-
-      // For monthly, filter by current month (this is a simplified approach)
-      // In a real implementation, you'd want monthly-specific data
-      const monthlyWithRanks = globalData
-        .sort((a, b) => (b.monthlyPoints || 0) - (a.monthlyPoints || 0))
-        .map((entry, index) => ({
-          userId: entry.id,
-          username: entry.username,
-          totalPoints: entry.totalPoints,
-          monthlyPoints: entry.monthlyPoints,
-          cardTier: entry.cardTier as CardTier,
-          rank: index + 1
-        }));
-      setMonthlyLeaderboard(monthlyWithRanks);
-    } catch (error) {
-      console.error('Error loading leaderboards:', error);
-    }
-  };
-
-  const onRefresh = async () => {
-    setIsRefreshing(true);
-    await loadLeaderboards();
-    setIsRefreshing(false);
-  };
-
-  const getTierColors = (tier: CardTier): { primary: string; secondary: string } => {
-    const ratingSystemColors = RatingSystem.getCardTierColors(tier);
-    return { 
-      primary: ratingSystemColors.primary, 
-      secondary: ratingSystemColors.secondary 
-    };
-  };
-
-  const formatMonthYear = (monthStr: string) => {
-    const date = new Date(monthStr + '-01');
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  };
-
-  const getMinMonth = () => {
-    // Allow going back to January 2024 (or whenever the app started)
-    return '2024-01';
-  };
-
-  const currentLeaderboard = activeTab === 'monthly' ? monthlyLeaderboard : lifetimeLeaderboard;
-
-  return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-      <SafeAreaView style={styles.container}>
-        
-        {/* Top Bar with Monthly and All-Time buttons */}
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            style={[styles.topBarButton, activeTab === 'monthly' && styles.activeTopBarButton]}
-            onPress={() => setActiveTab('monthly')}
-          >
-            <Text style={[styles.topBarButtonText, activeTab === 'monthly' && styles.activeTopBarButtonText]}>
-              Monthly
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.topBarDivider} />
-
-          <TouchableOpacity
-            style={[styles.topBarButton, activeTab === 'lifetime' && styles.activeTopBarButton]}
-            onPress={() => setActiveTab('lifetime')}
-          >
-            <Text style={[styles.topBarButtonText, activeTab === 'lifetime' && styles.activeTopBarButtonText]}>
-              All-Time
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Connection handling: when offline we silently retry a few times and reload when available. */}
-
-        {/* Month selector for monthly view */}
-        {activeTab === 'monthly' && (
-          <View style={styles.monthSelectorContainer}>
-            <TouchableOpacity
-              style={[styles.monthNavButton, selectedMonth === getMinMonth() && styles.monthNavButtonDisabled]}
-              onPress={() => {
-                const currentDate = new Date(selectedMonth + '-01');
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                const newMonth = currentDate.toISOString().slice(0, 7);
-                if (newMonth >= getMinMonth()) {
-                  setSelectedMonth(newMonth);
-                }
-              }}
-              disabled={selectedMonth === getMinMonth()}
-            >
-              <Text style={[styles.monthNavButtonText, selectedMonth === getMinMonth() && styles.monthNavButtonTextDisabled]}>‹</Text>
-            </TouchableOpacity>
-
-            <View style={styles.monthDisplay}>
-              <Text style={styles.monthDisplayText}>{formatMonthYear(selectedMonth)}</Text>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.monthNavButton, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
-              onPress={() => {
-                const currentDate = new Date(selectedMonth + '-01');
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                const newMonth = currentDate.toISOString().slice(0, 7);
-                // Don't allow selecting future months
-                if (newMonth <= new Date().toISOString().slice(0, 7)) {
-                  setSelectedMonth(newMonth);
-                }
-              }}
-              disabled={selectedMonth >= new Date().toISOString().slice(0, 7)}
-            >
-              <Text style={[styles.monthNavButtonText, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonTextDisabled]}>›</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <ScrollView
-          style={styles.scrollView}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
-        >
-          {currentLeaderboard.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No data available</Text>
-            </View>
-          ) : (
-            currentLeaderboard.map((entry, _index) => {
-              const tierColors = getTierColors(entry.cardTier);
-              const points = activeTab === 'monthly' ? entry.monthlyPoints : entry.totalPoints;
-              
-              return (
-                <LinearGradient
-                  key={entry.userId}
-                  colors={[tierColors.primary, tierColors.secondary]}
-                  style={styles.leaderboardCard}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <View style={styles.rankContainer}>
-                    {entry.rank <= 3 ? (
-                      <Text style={styles.medalEmoji}>
-                        {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'}
-                      </Text>
-                    ) : (
-                      <Text style={styles.rankNumber}>#{entry.rank}</Text>
-                    )}
-                  </View>
-
-                  <View style={styles.userInfo}>
-                    <Text style={styles.username}>{entry.username}</Text>
-                    <View style={styles.tierBadge}>
-                      <Text style={styles.tierText}>{entry.cardTier}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.pointsContainer}>
-                    <Text style={styles.pointsText}>{points?.toLocaleString() || 0}</Text>
-                    <Text style={styles.pointsLabel}>PTS</Text>
-                  </View>
-                </LinearGradient>
-              );
-            })
-          )}
-        </ScrollView>
-    {/* Background reconnect: when offline, attempt to re-check connection a few times */}
-    <ReconnectHandler isOnline={isOnline} setIsOnline={setIsOnline} reconnectAttempts={reconnectAttempts} setReconnectAttempts={setReconnectAttempts} maxAttempts={maxReconnectAttempts} onReconnected={async () => { await loadLeaderboards(); }} />
-      </SafeAreaView>
-    </>
-  );
-};
-
-const styles = StyleSheet.create({
+const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   activeTab: {
     backgroundColor: theme.colors.primary,
     // Keep a visible outline regardless of theme primary color (e.g., midnight purple)
@@ -482,3 +279,209 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigateBack: _onNavigateBack }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  const [activeTab, setActiveTab] = useState<LeaderboardType>('monthly');
+  const [lifetimeLeaderboard, setLifetimeLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [isOnline, setIsOnline] = useState(true);
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const maxReconnectAttempts = 3;
+
+  useEffect(() => {
+    loadLeaderboards();
+  }, [selectedMonth]);
+
+  const loadLeaderboards = async () => {
+    try {
+      // Check Supabase connectivity
+      const isSupabaseAvailable = await LeaderboardService.isSupabaseAvailable();
+      setIsOnline(isSupabaseAvailable);
+
+      // Load global leaderboard from LeaderboardService
+      const globalData = await LeaderboardService.getGlobalLeaderboard();
+      
+      // Transform to the expected format
+      const lifetimeWithRanks = globalData
+        .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
+        .map((entry, index) => ({
+          userId: entry.id,
+          username: entry.username,
+          totalPoints: entry.totalPoints,
+          monthlyPoints: entry.monthlyPoints,
+          cardTier: entry.cardTier as CardTier,
+          rank: index + 1
+        }));
+      setLifetimeLeaderboard(lifetimeWithRanks);
+
+      // For monthly, filter by current month (this is a simplified approach)
+      // In a real implementation, you'd want monthly-specific data
+      const monthlyWithRanks = globalData
+        .sort((a, b) => (b.monthlyPoints || 0) - (a.monthlyPoints || 0))
+        .map((entry, index) => ({
+          userId: entry.id,
+          username: entry.username,
+          totalPoints: entry.totalPoints,
+          monthlyPoints: entry.monthlyPoints,
+          cardTier: entry.cardTier as CardTier,
+          rank: index + 1
+        }));
+      setMonthlyLeaderboard(monthlyWithRanks);
+    } catch (error) {
+      console.error('Error loading leaderboards:', error);
+    }
+  };
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await loadLeaderboards();
+    setIsRefreshing(false);
+  };
+
+  const getTierColors = (tier: CardTier): { primary: string; secondary: string } => {
+    const ratingSystemColors = RatingSystem.getCardTierColors(tier);
+    return { 
+      primary: ratingSystemColors.primary, 
+      secondary: ratingSystemColors.secondary 
+    };
+  };
+
+  const formatMonthYear = (monthStr: string) => {
+    const date = new Date(monthStr + '-01');
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
+  const getMinMonth = () => {
+    // Allow going back to January 2024 (or whenever the app started)
+    return '2024-01';
+  };
+
+  const currentLeaderboard = activeTab === 'monthly' ? monthlyLeaderboard : lifetimeLeaderboard;
+
+  return (
+    <>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+      <SafeAreaView style={styles.container}>
+        
+        {/* Top Bar with Monthly and All-Time buttons */}
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            style={[styles.topBarButton, activeTab === 'monthly' && styles.activeTopBarButton]}
+            onPress={() => setActiveTab('monthly')}
+          >
+            <Text style={[styles.topBarButtonText, activeTab === 'monthly' && styles.activeTopBarButtonText]}>
+              Monthly
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.topBarDivider} />
+
+          <TouchableOpacity
+            style={[styles.topBarButton, activeTab === 'lifetime' && styles.activeTopBarButton]}
+            onPress={() => setActiveTab('lifetime')}
+          >
+            <Text style={[styles.topBarButtonText, activeTab === 'lifetime' && styles.activeTopBarButtonText]}>
+              All-Time
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Connection handling: when offline we silently retry a few times and reload when available. */}
+
+        {/* Month selector for monthly view */}
+        {activeTab === 'monthly' && (
+          <View style={styles.monthSelectorContainer}>
+            <TouchableOpacity
+              style={[styles.monthNavButton, selectedMonth === getMinMonth() && styles.monthNavButtonDisabled]}
+              onPress={() => {
+                const currentDate = new Date(selectedMonth + '-01');
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                const newMonth = currentDate.toISOString().slice(0, 7);
+                if (newMonth >= getMinMonth()) {
+                  setSelectedMonth(newMonth);
+                }
+              }}
+              disabled={selectedMonth === getMinMonth()}
+            >
+              <Text style={[styles.monthNavButtonText, selectedMonth === getMinMonth() && styles.monthNavButtonTextDisabled]}>‹</Text>
+            </TouchableOpacity>
+
+            <View style={styles.monthDisplay}>
+              <Text style={styles.monthDisplayText}>{formatMonthYear(selectedMonth)}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.monthNavButton, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonDisabled]}
+              onPress={() => {
+                const currentDate = new Date(selectedMonth + '-01');
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                const newMonth = currentDate.toISOString().slice(0, 7);
+                // Don't allow selecting future months
+                if (newMonth <= new Date().toISOString().slice(0, 7)) {
+                  setSelectedMonth(newMonth);
+                }
+              }}
+              disabled={selectedMonth >= new Date().toISOString().slice(0, 7)}
+            >
+              <Text style={[styles.monthNavButtonText, selectedMonth >= new Date().toISOString().slice(0, 7) && styles.monthNavButtonTextDisabled]}>›</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+        >
+          {currentLeaderboard.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>No data available</Text>
+            </View>
+          ) : (
+            currentLeaderboard.map((entry, _index) => {
+              const tierColors = getTierColors(entry.cardTier);
+              const points = activeTab === 'monthly' ? entry.monthlyPoints : entry.totalPoints;
+              
+              return (
+                <LinearGradient
+                  key={entry.userId}
+                  colors={[tierColors.primary, tierColors.secondary]}
+                  style={styles.leaderboardCard}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.rankContainer}>
+                    {entry.rank <= 3 ? (
+                      <Text style={styles.medalEmoji}>
+                        {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'}
+                      </Text>
+                    ) : (
+                      <Text style={styles.rankNumber}>#{entry.rank}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.userInfo}>
+                    <Text style={styles.username}>{entry.username}</Text>
+                    <View style={styles.tierBadge}>
+                      <Text style={styles.tierText}>{entry.cardTier}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.pointsContainer}>
+                    <Text style={styles.pointsText}>{points?.toLocaleString() || 0}</Text>
+                    <Text style={styles.pointsLabel}>PTS</Text>
+                  </View>
+                </LinearGradient>
+              );
+            })
+          )}
+        </ScrollView>
+    {/* Background reconnect: when offline, attempt to re-check connection a few times */}
+    <ReconnectHandler isOnline={isOnline} setIsOnline={setIsOnline} reconnectAttempts={reconnectAttempts} setReconnectAttempts={setReconnectAttempts} maxAttempts={maxReconnectAttempts} onReconnected={async () => { await loadLeaderboards(); }} />
+      </SafeAreaView>
+    </>
+  );
+};

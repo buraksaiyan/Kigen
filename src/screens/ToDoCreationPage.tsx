@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { theme } from '../config/theme';
+import { theme as defaultTheme } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 const TODOS_STORAGE_KEY = '@inzone_todos';
 
@@ -42,11 +43,175 @@ const priorityConfig = {
   urgent: { color: '#8E44AD', icon: 'warning', label: 'Urgent' },
 };
 
+const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
+  checkboxIcon: {
+    padding: theme.spacing.sm,
+  },
+  closeButton: {
+    padding: theme.spacing.sm,
+  },
+  closeButtonText: {
+    color: theme.colors.text.secondary,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: theme.spacing.lg,
+  },
+  dueDateOption: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    marginBottom: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  dueDateOptionSelected: {
+    backgroundColor: theme.colors.secondary,
+    borderColor: theme.colors.secondary,
+  },
+  dueDateOptionText: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  dueDateOptionTextSelected: {
+    color: theme.colors.background,
+  },
+  dueDateOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: theme.spacing.md,
+  },
+  dueDatePreview: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.secondary,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  dueDatePreviewText: {
+    color: theme.colors.text.primary,
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: theme.spacing.sm,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  headerTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    flex: 1,
+    marginHorizontal: theme.spacing.md,
+    textAlign: 'center',
+  },
+  inputSection: {
+    marginBottom: theme.spacing.xl,
+  },
+  label: {
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.sm,
+  },
+  multilineInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  priorityOption: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 2,
+    flexDirection: 'row',
+    marginBottom: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  priorityOptionText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: theme.spacing.xs,
+  },
+  priorityOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: theme.spacing.lg,
+  },
+  saveButton: {
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: theme.spacing.md,
+    padding: theme.spacing.lg,
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonText: {
+    color: theme.colors.background,
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: theme.spacing.sm,
+  },
+  textInput: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    marginBottom: theme.spacing.md,
+    padding: theme.spacing.lg,
+  },
+  tipText: {
+    ...theme.typography.small,
+    color: theme.colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: theme.spacing.sm,
+  },
+  tipsSection: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    padding: theme.spacing.lg,
+  },
+  tipsTitle: {
+    ...theme.typography.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
+  },
+});
+
 export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
   onClose,
   onSave,
 }) => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
@@ -309,165 +474,3 @@ export const ToDoCreationPage: React.FC<ToDoCreationPageProps> = ({
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  checkboxIcon: {
-    padding: theme.spacing.sm,
-  },
-  closeButton: {
-    padding: theme.spacing.sm,
-  },
-  closeButtonText: {
-    color: theme.colors.text.secondary,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  container: {
-    backgroundColor: theme.colors.background,
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: theme.spacing.lg,
-  },
-  dueDateOption: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.sm,
-    borderWidth: 1,
-    marginBottom: theme.spacing.sm,
-    marginRight: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  dueDateOptionSelected: {
-    backgroundColor: theme.colors.secondary,
-    borderColor: theme.colors.secondary,
-  },
-  dueDateOptionText: {
-    color: theme.colors.text.primary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  dueDateOptionTextSelected: {
-    color: theme.colors.background,
-  },
-  dueDateOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: theme.spacing.md,
-  },
-  dueDatePreview: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.sm,
-    borderWidth: 1,
-    flexDirection: 'row',
-    marginBottom: theme.spacing.md,
-    padding: theme.spacing.md,
-  },
-  dueDatePreviewText: {
-    color: theme.colors.text.primary,
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: theme.spacing.sm,
-  },
-  header: {
-    alignItems: 'center',
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-  },
-  headerTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    flex: 1,
-    marginHorizontal: theme.spacing.md,
-    textAlign: 'center',
-  },
-  inputSection: {
-    marginBottom: theme.spacing.xl,
-  },
-  label: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.sm,
-  },
-  multilineInput: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  priorityOption: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
-    borderWidth: 2,
-    flexDirection: 'row',
-    marginBottom: theme.spacing.sm,
-    marginRight: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  priorityOptionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: theme.spacing.xs,
-  },
-  priorityOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: theme.spacing.lg,
-  },
-  saveButton: {
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.md,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: theme.spacing.md,
-    padding: theme.spacing.lg,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: theme.colors.background,
-    fontSize: 18,
-    fontWeight: '600',
-    marginLeft: theme.spacing.sm,
-  },
-  textInput: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    color: theme.colors.text.primary,
-    fontSize: 16,
-    marginBottom: theme.spacing.md,
-    padding: theme.spacing.lg,
-  },
-  tipText: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-    lineHeight: 20,
-    marginBottom: theme.spacing.sm,
-  },
-  tipsSection: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    padding: theme.spacing.lg,
-  },
-  tipsTitle: {
-    ...theme.typography.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
-  },
-});

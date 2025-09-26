@@ -132,6 +132,26 @@ const PRESETS: ColorPreset[] = [
         dark: '#000000',
       }
     }
+  },
+  {
+    id: 'black',
+    title: 'Black',
+    description: 'Pure black with light accents',
+    colors: {
+      primary: '#000000',
+      secondary: '#FFFFFF',
+      accent: '#CCCCCC',
+      background: '#000000',
+      surface: '#111111',
+      surfaceSecondary: '#222222',
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#CCCCCC',
+        tertiary: '#999999',
+        disabled: '#666666',
+        dark: '#000000',
+      }
+    }
   }
 ];
 

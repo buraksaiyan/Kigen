@@ -10,7 +10,8 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { theme } from '../config/theme';
+import { theme as defaultTheme } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import ClockPreviewCarousel, { CLOCK_STYLES } from '../components/ClockPreviewCarousel';
 import { timerClockService } from '../services/timerClockService';
 
@@ -36,6 +37,144 @@ interface FocusModeSetupScreenProps {
   defaultDuration?: number; // in minutes
 }
 
+const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    ...theme.typography.body,
+    color: CLOSE_BUTTON_COLOR,
+    fontWeight: '600',
+  },
+  container: {
+    backgroundColor: theme.colors.background,
+    flex: 1,
+  },
+  content: {
+    padding: theme.spacing.lg,
+  },
+  contentHeader: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.xl,
+    // Ensure the header sits above any underlying elements and masks
+    // tiny stray artifacts (e.g. native caret/underline bleed-through).
+    backgroundColor: theme.colors.background,
+    zIndex: 10,
+    paddingTop: theme.spacing.sm,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  placeholder: {
+    width: 60,
+  },
+  presetButton: {
+    backgroundColor: TRANSPARENT,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  presetText: {
+    ...theme.typography.body,
+    fontWeight: '600',
+  },
+  presetTitle: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.md,
+  },
+  presetsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+    justifyContent: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  sectionTitle: {
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+  },
+  setupCard: {
+    marginBottom: theme.spacing.lg,
+  },
+  startButton: {
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+    elevation: 5,
+    marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
+    shadowColor: SHADOW_COLOR,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  startButtonText: {
+    ...theme.typography.h3,
+    color: WHITE,
+    fontWeight: '700',
+  },
+  subtitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+  },
+  timeInput: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: theme.spacing.sm,
+    minWidth: 80,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    textAlign: 'center',
+  },
+  timeInputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  timeInputGroup: {
+    alignItems: 'center',
+  },
+  timeLabel: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+    fontWeight: '600',
+  },
+  timeSeparator: {
+    color: theme.colors.text.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginHorizontal: theme.spacing.md,
+  },
+  title: {
+    ...theme.typography.h2,
+    fontWeight: '700',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+  },
+});
+
 export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   visible,
   onClose,
@@ -43,6 +182,8 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   onStartSession,
   defaultDuration = 30,
 }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const defaultHours = Math.floor(defaultDuration / 60);
   const defaultMinutes = defaultDuration % 60;
   
@@ -240,141 +381,3 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  closeButton: {
-    padding: 8,
-  },
-  closeButtonText: {
-    ...theme.typography.body,
-    color: CLOSE_BUTTON_COLOR,
-    fontWeight: '600',
-  },
-  container: {
-    backgroundColor: theme.colors.background,
-    flex: 1,
-  },
-  content: {
-    padding: theme.spacing.lg,
-  },
-  contentHeader: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.xl,
-    // Ensure the header sits above any underlying elements and masks
-    // tiny stray artifacts (e.g. native caret/underline bleed-through).
-    backgroundColor: theme.colors.background,
-    zIndex: 10,
-    paddingTop: theme.spacing.sm,
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  placeholder: {
-    width: 60,
-  },
-  presetButton: {
-    backgroundColor: TRANSPARENT,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 1,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  presetText: {
-    ...theme.typography.body,
-    fontWeight: '600',
-  },
-  presetTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.md,
-  },
-  presetsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
-    justifyContent: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  sectionTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-    marginBottom: theme.spacing.lg,
-    textAlign: 'center',
-  },
-  setupCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  startButton: {
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.md,
-    elevation: 5,
-    marginBottom: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.xl,
-    paddingVertical: theme.spacing.lg,
-    shadowColor: SHADOW_COLOR,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  startButtonText: {
-    ...theme.typography.h3,
-    color: WHITE,
-    fontWeight: '700',
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-  timeInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 2,
-    color: theme.colors.text.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: theme.spacing.sm,
-    minWidth: 80,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    textAlign: 'center',
-  },
-  timeInputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: theme.spacing.xl,
-  },
-  timeInputGroup: {
-    alignItems: 'center',
-  },
-  timeLabel: {
-    ...theme.typography.caption,
-    color: theme.colors.text.secondary,
-    fontWeight: '600',
-  },
-  timeSeparator: {
-    color: theme.colors.text.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginHorizontal: theme.spacing.md,
-  },
-  title: {
-    ...theme.typography.h2,
-    fontWeight: '700',
-    marginBottom: theme.spacing.sm,
-    textAlign: 'center',
-  },
-});
