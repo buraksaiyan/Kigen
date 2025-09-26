@@ -14,6 +14,8 @@ import { theme } from '../config/theme';
 import { FocusModeSetupScreen } from './FocusModeSetupScreen';
 import { CountdownScreen } from './CountdownScreen';
 import { GoalSelectionScreen } from './GoalSelectionScreen';
+import { ClockModeSetupScreen } from './ClockModeSetupScreen';
+import { ClockModeScreen } from './ClockModeScreen';
 import { focusSessionService } from '../services/FocusSessionService';
 import { useSettings } from '../hooks/useSettings';
 
@@ -92,6 +94,10 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [showSetup, setShowSetup] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
   const [showGoalSelection, setShowGoalSelection] = useState(false);
+  const [showClockSetup, setShowClockSetup] = useState(false);
+  const [showClockMode, setShowClockMode] = useState(false);
+  const [clockTitle, setClockTitle] = useState('');
+  const [clockStyle, setClockStyle] = useState('classic');
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
   const [breakMinutes, setBreakMinutes] = useState(5);
@@ -108,8 +114,8 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       // Executioner mode uses goal selection first
       setShowGoalSelection(true);
     } else if (mode.id === 'clock') {
-      // Clock mode doesn't use standard setup - handle differently later
-      return;
+      // Clock mode uses its own setup screen
+      setShowClockSetup(true);
     } else {
       setShowSetup(true);
     }
@@ -155,8 +161,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
-  const handleCountdownPause = () => {
-    console.log('Session paused');
+  const handleStartClock = (title: string, style: string) => {
+    setClockTitle(title);
+    setClockStyle(style);
+    setShowClockSetup(false);
+    setShowClockMode(true);
   };
 
   const handleEarlyFinish = async () => {
@@ -201,12 +210,30 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     setSelectedMode(null);
   };
 
+  const handleCountdownPause = () => {
+    console.log('Session paused');
+  };
+
   // Handle Android hardware back button while focus modal is open
   const handleHardwareBack = useCallback(() => {
-    console.log('[FocusSession] hardwareBack pressed', { showSetup, showCountdown });
+    console.log('[FocusSession] hardwareBack pressed', { showSetup, showCountdown, showClockSetup, showClockMode });
     // If setup screen is open, close it and remain in selection
     if (showSetup) {
       setShowSetup(false);
+      return true;
+    }
+
+    // If clock setup is open, close it and remain in selection
+    if (showClockSetup) {
+      setShowClockSetup(false);
+      setSelectedMode(null);
+      return true;
+    }
+
+    // If clock mode is active, close it and return to selection
+    if (showClockMode) {
+      setShowClockMode(false);
+      setSelectedMode(null);
       return true;
     }
 
@@ -222,7 +249,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     console.log('[FocusSession] closing focus modal via back button');
     onClose();
     return true;
-  }, [showSetup, showCountdown, onClose]);
+  }, [showSetup, showCountdown, showClockSetup, showClockMode, onClose]);
 
   useEffect(() => {
     if (Platform.OS === 'android' && visible) {
@@ -347,6 +374,27 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
           onClose={handleSetupClose}
           onStartSession={handleStartSession}
           defaultDuration={settings.defaultFocusDuration}
+        />
+
+        {/* Clock Setup Screen */}
+        <ClockModeSetupScreen
+          visible={showClockSetup}
+          onClose={() => {
+            setShowClockSetup(false);
+            setSelectedMode(null);
+          }}
+          onStartClock={handleStartClock}
+        />
+
+        {/* Clock Mode Screen */}
+        <ClockModeScreen
+          visible={showClockMode}
+          onClose={() => {
+            setShowClockMode(false);
+            setSelectedMode(null);
+          }}
+          title={clockTitle}
+          clockStyle={clockStyle}
         />
       </SafeAreaView>
     </Modal>
