@@ -523,6 +523,9 @@ export class UserStatsService {
   // Method to properly update monthly stats when activities occur
   static async updateMonthlyStats(): Promise<void> {
     // Use local date instead of UTC
+
+          // (removed stray cache write - caching happens in getCurrentRating)
+
     const today = new Date();
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
     const currentMonth = localDate.toISOString().slice(0, 7);
@@ -586,13 +589,14 @@ export class UserStatsService {
     }
   }
 
-  // Clear cached rating data (call when stats change)
+  // Invalidate cached rating so UI can refresh immediately after point writes
   static async invalidateRatingCache(): Promise<void> {
     try {
       await AsyncStorage.removeItem(this.CURRENT_RATING_CACHE_KEY);
-      console.log('🗑️ Cleared rating cache');
+      // Trigger immediate leaderboard sync to ensure cards and dashboard refresh
+      this.syncUserToLeaderboard().catch(() => {});
     } catch (error) {
-      console.error('Error clearing rating cache:', error);
+      console.error('Error invalidating rating cache:', error);
     }
   }
 

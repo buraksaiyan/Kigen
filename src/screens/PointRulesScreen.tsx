@@ -107,6 +107,15 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
+              <Text style={styles.categoryTitle}>🔁 How a Streak Continues</Text>
+              <Text style={styles.ruleText}>• App streak requires BOTH:</Text>
+              <Text style={styles.ruleText}>  - At least one journal entry for the day</Text>
+              <Text style={styles.ruleText}>  - At least 30 minutes of completed focus sessions that day</Text>
+              <Text style={styles.ruleText}>• If both conditions are met, your app streak increments for that day.</Text>
+              <Text style={styles.ruleText}>• Habit streaks are per-habit: completing the habit for 7 consecutive days grants the habit streak reward and +50 Determination points. Habit streak rules are independent of the app streak above.</Text>
+            </View>
+
+            <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>🏆 Streak Achievements</Text>
               <Text style={styles.ruleText}>• 7 days: Week Warrior 🔥</Text>
               <Text style={styles.ruleText}>• 15 days: Fortnight Focus ⚡</Text>
