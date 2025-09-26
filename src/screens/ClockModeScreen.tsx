@@ -365,25 +365,9 @@ const AnalogClockDisplay: React.FC<{ theme: typeof defaultTheme }> = ({ theme })
   );
 };
 
-const getClockComponent = (styleId: string) => {
-  switch (styleId) {
-    case 'classic':
-      return AnalogClockDisplay;
-    case 'minimal':
-      return DigitalClockDisplay;
-    case 'flip':
-      return DigitalClockDisplay;
-    case 'pomodoro':
-      return AnalogClockDisplay;
-    case 'gradient':
-      return DigitalClockDisplay;
-    case 'arc':
-      return AnalogClockDisplay;
-    case 'custom':
-      return DigitalClockDisplay;
-    default:
-      return AnalogClockDisplay;
-  }
+// Always use the digital clock display for Clock Mode — the analog was visually noisy.
+const getClockComponent = (_styleId: string) => {
+  return DigitalClockDisplay;
 };
 
 export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
@@ -460,7 +444,7 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
           onPress={onClose}
           activeOpacity={0.8}
         >
-          <Text style={styles.closeButtonText}>✕</Text>
+          <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
 
         <View style={styles.clockContainer}>
