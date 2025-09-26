@@ -31,6 +31,50 @@ interface LeaderboardScreenProps {
   onNavigateBack?: () => void;
 }
 
+// Small inline component that performs silent reconnect attempts when offline.
+function ReconnectHandler({ isOnline, setIsOnline, reconnectAttempts, setReconnectAttempts, maxAttempts, onReconnected }: {
+  isOnline: boolean;
+  setIsOnline: (v: boolean) => void;
+  reconnectAttempts: number;
+  setReconnectAttempts: (n: number) => void;
+  maxAttempts: number;
+  onReconnected: () => void;
+}) {
+  useEffect(() => {
+    if (isOnline) return; // nothing to do
+
+    let cancelled = false;
+
+    const tryReconnect = async () => {
+      if (cancelled) return;
+      if (reconnectAttempts >= maxAttempts) return;
+
+      setReconnectAttempts(reconnectAttempts + 1);
+
+      try {
+        const avail = await LeaderboardService.isSupabaseAvailable();
+        if (avail && !cancelled) {
+          setIsOnline(true);
+          setReconnectAttempts(0);
+          onReconnected();
+        }
+      } catch (e) {
+        // ignore - we'll try again via interval
+      }
+    };
+
+    // start immediate attempt then periodic retries
+    tryReconnect();
+    const id = setInterval(tryReconnect, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [isOnline, reconnectAttempts, maxAttempts]);
+
+  return null; // no UI — silent handler
+}
+
 export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigateBack: _onNavigateBack }) => {
   const [activeTab, setActiveTab] = useState<LeaderboardType>('monthly');
   const [lifetimeLeaderboard, setLifetimeLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -38,6 +82,8 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [isOnline, setIsOnline] = useState(true);
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const maxReconnectAttempts = 3;
 
   useEffect(() => {
     loadLeaderboards();
@@ -137,14 +183,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
           </TouchableOpacity>
         </View>
 
-        {/* Connection Status Indicator */}
-        {!isOnline && (
-          <View style={styles.connectionStatusBar}>
-            <Text style={styles.connectionStatusText}>
-              🔄 Using cached data - Connection unavailable
-            </Text>
-          </View>
-        )}
+        {/* Connection handling: when offline we silently retry a few times and reload when available. */}
 
         {/* Month selector for monthly view */}
         {activeTab === 'monthly' && (
@@ -233,6 +272,8 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
             })
           )}
         </ScrollView>
+    {/* Background reconnect: when offline, attempt to re-check connection a few times */}
+    <ReconnectHandler isOnline={isOnline} setIsOnline={setIsOnline} reconnectAttempts={reconnectAttempts} setReconnectAttempts={setReconnectAttempts} maxAttempts={maxReconnectAttempts} onReconnected={async () => { await loadLeaderboards(); }} />
       </SafeAreaView>
     </>
   );
