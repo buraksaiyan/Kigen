@@ -42,66 +42,66 @@ const PointRulesScreen: React.FC = () => {
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Categories</Text>
-              <Text style={styles.ruleText}>Discipline</Text>
-              <Text style={styles.ruleText}>Focus</Text>
-              <Text style={styles.ruleText}>Journaling</Text>
-              <Text style={styles.ruleText}>Determination</Text>
-              <Text style={styles.ruleText}>Mentality</Text>
-              <Text style={styles.ruleText}>Physical</Text>
-              <Text style={styles.ruleText}>Social</Text>
-              <Text style={styles.ruleText}>Productivity</Text>
+              <Text style={styles.ruleText}>Discipline — Points for consistent task completion and execution</Text>
+              <Text style={styles.ruleText}>Focus — Points for focused work / sessions</Text>
+              <Text style={styles.ruleText}>Journaling — Points for writing journal entries</Text>
+              <Text style={styles.ruleText}>Determination — Aggregate long-term achievements and streak bonuses</Text>
+              <Text style={styles.ruleText}>Mentality — Points for meditation and mental exercises</Text>
+              <Text style={styles.ruleText}>Physical — Points for body-focused activities and exercise</Text>
+              <Text style={styles.ruleText}>Social — Points for social/outdoor interactions</Text>
+              <Text style={styles.ruleText}>Productivity — Points tied to goals, todos, and efficiency</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Discipline</Text>
-              <Text style={styles.ruleText}>• +5 points per completed focus session</Text>
-              <Text style={styles.ruleText}>• +10 points per goal completed</Text>
-              <Text style={styles.ruleText}>• +5 points per journal entry (1 per day max)</Text>
-              <Text style={styles.ruleText}>• +10 points per hour of execution/body focus</Text>
+              <Text style={styles.ruleText}>• +5 points per completed focus session — Discipline</Text>
+              <Text style={styles.ruleText}>• +10 points per goal completed — Discipline</Text>
+              <Text style={styles.ruleText}>• +5 points per journal entry (1 per day max) — Discipline</Text>
+              <Text style={styles.ruleText}>• +10 points per hour of execution/body focus — Discipline</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Focus</Text>
-              <Text style={styles.ruleText}>• +10 points per hour of focused work</Text>
-              <Text style={styles.ruleText}>• +10 points per hour of flow focus mode</Text>
+              <Text style={styles.ruleText}>• +10 points per hour of focused work — Focus</Text>
+              <Text style={styles.ruleText}>• +10 points per hour of flow focus mode — Focus</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Journaling</Text>
-              <Text style={styles.ruleText}>• +20 points per journal entry (1 per day max)</Text>
+              <Text style={styles.ruleText}>• +20 points per journal entry (1 per day max) — Journaling</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Determination</Text>
-              <Text style={styles.ruleText}>• +20 points per 10 goals completed</Text>
-              <Text style={styles.ruleText}>• +15 points per 10 journal entries</Text>
-              <Text style={styles.ruleText}>• +50 points per 10 focus sessions</Text>
-              <Text style={styles.ruleText}>• +5 points per achievement unlocked</Text>
-              <Text style={styles.ruleText}>• +50 points per completed 7-day habit streak</Text>
-              <Text style={styles.ruleText}>• +5 points per completed todo item</Text>
+              <Text style={styles.ruleText}>• +20 points per 10 goals completed — Determination</Text>
+              <Text style={styles.ruleText}>• +15 points per 10 journal entries — Determination</Text>
+              <Text style={styles.ruleText}>• +50 points per 10 focus sessions — Determination</Text>
+              <Text style={styles.ruleText}>• +5 points per achievement unlocked — Determination</Text>
+              <Text style={styles.ruleText}>• +50 points per completed 7-day habit streak — Determination</Text>
+              <Text style={styles.ruleText}>• +5 points per completed todo item — Determination</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Mentality</Text>
-              <Text style={styles.ruleText}>• +2 points per minute of meditation</Text>
+              <Text style={styles.ruleText}>• +2 points per minute of meditation — Mentality</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Physical</Text>
-              <Text style={styles.ruleText}>• +20 points per 30 minutes of body focus</Text>
+              <Text style={styles.ruleText}>• +20 points per 30 minutes of body focus — Physical</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Social</Text>
-              <Text style={styles.ruleText}>• +15 points per hour spent outside</Text>
-              <Text style={styles.ruleText}>• +20 points per hour spent with friends</Text>
+              <Text style={styles.ruleText}>• +15 points per hour spent outside — Social</Text>
+              <Text style={styles.ruleText}>• +20 points per hour spent with friends — Social</Text>
             </View>
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Productivity</Text>
-              <Text style={styles.ruleText}>• +10 points per goal completed</Text>
-              <Text style={styles.ruleText}>• +10 points per journal entry</Text>
-              <Text style={styles.ruleText}>• +5 points per hour of focus sessions</Text>
+              <Text style={styles.ruleText}>• +10 points per goal completed — Productivity</Text>
+              <Text style={styles.ruleText}>• +10 points per journal entry — Productivity</Text>
+              <Text style={styles.ruleText}>• +5 points per hour of focus sessions — Productivity</Text>
             </View>
           </View>
 
