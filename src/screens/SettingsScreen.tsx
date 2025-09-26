@@ -407,11 +407,11 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ visible, onClose
     presentationStyle="pageSheet"
   >
     <SafeAreaView style={[styles.container, { padding: 20 }]}> 
-      <View style={[styles.modalHeader, styles.modalHeaderWithAbsoluteClose]}>
-        <TouchableOpacity onPress={() => setShowColorPicker(false)} style={[styles.closeButton, styles.colorModalCloseButton]}>
+      <View style={styles.modalHeader}>
+        <TouchableOpacity onPress={() => setShowColorPicker(false)} style={[styles.closeButton, styles.colorModalCloseButtonInline]}>
           <Text style={styles.closeButtonText}>{t('common.close')}</Text>
         </TouchableOpacity>
-        <View style={styles.logoContainer}>
+        <View style={styles.modalHeaderCenteredTitle} pointerEvents="none">
           <Text style={styles.title}>Color Options</Text>
         </View>
         <View style={styles.placeholder} />
@@ -672,6 +672,24 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  colorModalCloseButtonInline: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    width: 60,
+    padding: 8,
+  },
+  modalHeaderCenteredTitle: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCenteredTitleText: {
+    marginBottom: 0,
+    textAlign: 'center',
   },
   // Header variant where the close button is absolutely positioned so the title is centered
   modalHeaderWithAbsoluteClose: {
