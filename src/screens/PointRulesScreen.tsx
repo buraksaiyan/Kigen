@@ -230,15 +230,15 @@ const styles = StyleSheet.create({
   closeButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 32,
+    width: 56,
     height: 32,
-    padding: 0,
+    paddingHorizontal: 6,
   },
   closeButtonText: {
     ...defaultTheme.typography.body,
     color: defaultTheme.colors.text.secondary,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 14,
   },
   categoryTitle: {
     color: defaultTheme.colors.primary,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   placeholder: {
-    width: 32,
+    width: 56,
   },
   titleContainer: {
     alignItems: 'center',
