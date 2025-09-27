@@ -291,12 +291,12 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   ruleCard: {
-    backgroundColor: defaultTheme.colors.surface,
-    borderRadius: 10,
-    marginBottom: 12,
-    paddingHorizontal: 14,
-    paddingTop: 4,
-    paddingBottom: 10,
+    backgroundColor: 'transparent',
+    borderRadius: 4,
+    marginBottom: 10,
+    paddingHorizontal: 6,
+    paddingTop: 2,
+    paddingBottom: 8,
   },
   ruleText: {
     color: defaultTheme.colors.text.primary,
@@ -340,11 +340,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   tierItem: {
-    backgroundColor: defaultTheme.colors.surface,
-    borderRadius: 8,
+    backgroundColor: 'transparent',
+    borderRadius: 4,
     flex: 1,
     minWidth: '45%',
-    padding: 12,
+    padding: 8,
   },
   tierName: {
     color: defaultTheme.colors.text.primary,
