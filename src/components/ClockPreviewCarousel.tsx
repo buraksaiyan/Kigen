@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   card: { alignItems: 'center', marginHorizontal: 8, width: 140 },
   contentContainer: { paddingHorizontal: 8 },
   label: { color: theme.colors.text.primary, marginTop: 8 },
-  previewBox: { alignItems: 'center', backgroundColor: theme.colors.surface, borderRadius: 12, height: 120, justifyContent: 'center', width: 120 },
+  previewBox: { alignItems: 'center', backgroundColor: theme.colors.surfaceSecondary, borderColor: theme.colors.border, borderRadius: 12, borderWidth: 1, height: 120, justifyContent: 'center', width: 120 },
   selectedCard: { borderColor: theme.colors.primary, borderWidth: 2, shadowColor: theme.colors.primary, shadowOpacity: 0.35, shadowRadius: 8 },
   wrap: { paddingVertical: 8 }
 });

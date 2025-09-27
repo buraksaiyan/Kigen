@@ -33,7 +33,7 @@ export default function ClassicClock({
       width={strokeWidth}
       fill={progress}
       tintColor={color}
-      backgroundColor={theme.colors.surface}
+      backgroundColor={theme.colors.surfaceSecondary}
       rotation={0}
     />
   );

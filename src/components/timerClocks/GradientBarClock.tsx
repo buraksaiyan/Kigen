@@ -35,7 +35,7 @@ export default function GradientBarClock({
         width={width}
         height={height}
         color={color}
-        unfilledColor={theme.colors.surface}
+        unfilledColor={theme.colors.surfaceSecondary}
         borderWidth={0}
       />
     </View>

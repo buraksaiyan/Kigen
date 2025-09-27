@@ -29,7 +29,7 @@ export default function FlipClock({
       colors={color as any}
       size={size}
       strokeWidth={strokeWidth}
-      trailColor={theme.colors.surface as any}
+      trailColor={theme.colors.surfaceSecondary as any}
       onComplete={() => {
         if (onComplete) onComplete();
         return { shouldRepeat: false };
