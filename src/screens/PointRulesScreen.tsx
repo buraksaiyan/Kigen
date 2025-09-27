@@ -38,6 +38,7 @@ const PointRulesScreen: React.FC = () => {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Points System</Text>
+            <Text style={styles.explainTitle}>How points are earned</Text>
             <Text style={styles.sectionDescription}>
               Points are earned across 8 categories that contribute to your overall rating and card tier.
             </Text>
@@ -117,6 +118,7 @@ const PointRulesScreen: React.FC = () => {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Streak Rules</Text>
+            <Text style={styles.explainTitle}>App & habit streaks explained</Text>
             <Text style={styles.sectionDescription}>
               Streaks are consecutive days with at least one focus session. Maintain them for bonus achievements and points.
             </Text>
@@ -161,6 +163,7 @@ const PointRulesScreen: React.FC = () => {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Card Tiers</Text>
+            <Text style={styles.explainTitle}>How tiers are assigned</Text>
             <Text style={styles.sectionDescription}>
               Your total points determine your card tier with special colors and backgrounds.
             </Text>
@@ -302,6 +305,12 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 22,
     fontWeight: '700',
+    marginBottom: 8,
+  },
+  explainTitle: {
+    color: defaultTheme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '600',
     marginBottom: 8,
   },
   tierGrid: {
