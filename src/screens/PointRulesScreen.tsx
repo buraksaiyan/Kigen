@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.primary,
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   container: {
     backgroundColor: defaultTheme.colors.background,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.primary,
     fontSize: 15,
     fontWeight: '600',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   ruleCard: {
     backgroundColor: 'transparent',
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 13,
     lineHeight: 18,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   scrollView: {
     flex: 1,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 19,
     fontWeight: '800',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   tierGrid: {
     flexDirection: 'row',
