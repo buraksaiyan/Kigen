@@ -213,6 +213,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 4,
+    backgroundColor: defaultTheme.colors.surface,
+    borderRadius: 6,
   },
   closeButtonText: {
     ...defaultTheme.typography.body,
@@ -253,6 +255,8 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 20,
     fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
   },
   placeholder: {
     width: 32,
