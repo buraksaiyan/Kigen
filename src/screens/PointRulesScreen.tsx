@@ -134,6 +134,7 @@ const PointRulesScreen: React.FC = () => {
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Current Streak</Text>
+              <Text style={styles.cardHeader}>Current Streak</Text>
               <Text style={styles.ruleText}>• Counts consecutive days with focus sessions</Text>
               <Text style={styles.ruleText}>• Resets to 0 if you miss a day</Text>
               <Text style={styles.ruleText}>• Displayed on your profile card</Text>
@@ -141,6 +142,7 @@ const PointRulesScreen: React.FC = () => {
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>How a Streak Continues</Text>
+              <Text style={styles.cardHeader}>How a Streak Continues</Text>
               <Text style={styles.ruleText}>• App streak requires BOTH:</Text>
               <Text style={styles.ruleText}>  - At least one journal entry for the day</Text>
               <Text style={styles.ruleText}>  - At least 30 minutes of completed focus sessions that day</Text>
@@ -150,6 +152,7 @@ const PointRulesScreen: React.FC = () => {
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Streak Achievements</Text>
+              <Text style={styles.cardHeader}>Streak Achievements</Text>
               <Text style={styles.ruleText}>• 7 days: Week Warrior</Text>
               <Text style={styles.ruleText}>• 15 days: Fortnight Focus</Text>
               <Text style={styles.ruleText}>• 30 days: Monthly Master</Text>
@@ -164,6 +167,7 @@ const PointRulesScreen: React.FC = () => {
 
             <View style={styles.ruleCard}>
               <Text style={styles.categoryTitle}>Habit Streaks</Text>
+              <Text style={styles.cardHeader}>Habit Streaks</Text>
               <Text style={styles.ruleText}>• Complete 7 consecutive days of a habit</Text>
               <Text style={styles.ruleText}>• Earn +50 Determination points per streak</Text>
               <Text style={styles.ruleText}>• Multiple habits can run simultaneously</Text>
@@ -240,7 +244,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.primary,
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   container: {
     backgroundColor: defaultTheme.colors.background,
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 12,
     paddingHorizontal: 14,
-    paddingTop: 6,
+    paddingTop: 4,
     paddingBottom: 10,
   },
   ruleText: {
@@ -328,7 +332,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 19,
     fontWeight: '800',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   tierGrid: {
     flexDirection: 'row',
