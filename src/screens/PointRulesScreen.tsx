@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...defaultTheme.typography.body,
-    color: defaultTheme.colors.primary,
+    color: defaultTheme.colors.text.primary,
     fontWeight: '600',
     fontSize: 16,
   },
