@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 10,
     paddingHorizontal: 6,
-    paddingTop: 2,
+    paddingTop: 8,
     paddingBottom: 8,
   },
   ruleText: {
