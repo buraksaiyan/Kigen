@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.primary,
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   container: {
     backgroundColor: defaultTheme.colors.background,
@@ -289,10 +289,10 @@ const styles = StyleSheet.create({
   ruleCard: {
     backgroundColor: defaultTheme.colors.surface,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     paddingHorizontal: 14,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingTop: 6,
+    paddingBottom: 10,
   },
   ruleText: {
     color: defaultTheme.colors.text.primary,
@@ -326,9 +326,9 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     color: defaultTheme.colors.text.primary,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 10,
+    fontSize: 19,
+    fontWeight: '800',
+    marginBottom: 6,
   },
   tierGrid: {
     flexDirection: 'row',
