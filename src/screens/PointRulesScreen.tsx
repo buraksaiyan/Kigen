@@ -44,7 +44,6 @@ const PointRulesScreen: React.FC = () => {
             </Text>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Categories</Text>
               <Text style={styles.cardHeader}>Overview of categories</Text>
               <Text style={styles.ruleText}>Discipline — Points for consistent task completion and execution</Text>
               <Text style={styles.ruleText}>Focus — Points for focused work / sessions</Text>
@@ -57,7 +56,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Discipline</Text>
               <Text style={styles.cardHeader}>Discipline Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Discipline</Text>
               <Text style={styles.ruleText}>• +5 points per completed focus session</Text>
@@ -67,7 +65,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Focus</Text>
               <Text style={styles.cardHeader}>Focus Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Focus</Text>
               <Text style={styles.ruleText}>• +10 points per hour of focused work</Text>
@@ -75,14 +72,12 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Journaling</Text>
               <Text style={styles.cardHeader}>Journaling Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Journaling</Text>
               <Text style={styles.ruleText}>• +20 points per journal entry (1 per day max)</Text>
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Determination</Text>
               <Text style={styles.cardHeader}>Determination Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Determination</Text>
               <Text style={styles.ruleText}>• +20 points per 10 goals completed</Text>
@@ -94,21 +89,18 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Mentality</Text>
               <Text style={styles.cardHeader}>Mentality Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Mentality</Text>
               <Text style={styles.ruleText}>• +2 points per minute of meditation</Text>
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Physical</Text>
               <Text style={styles.cardHeader}>Physical Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Physical</Text>
               <Text style={styles.ruleText}>• +20 points per 30 minutes of body focus</Text>
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Social</Text>
               <Text style={styles.cardHeader}>Social Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Social</Text>
               <Text style={styles.ruleText}>• +15 points per hour spent outside</Text>
@@ -116,7 +108,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Productivity</Text>
               <Text style={styles.cardHeader}>Productivity Points</Text>
               <Text style={styles.subCategoryTitle}>What counts for Productivity</Text>
               <Text style={styles.ruleText}>• +10 points per goal completed</Text>
@@ -133,7 +124,6 @@ const PointRulesScreen: React.FC = () => {
             </Text>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Current Streak</Text>
               <Text style={styles.cardHeader}>Current Streak</Text>
               <Text style={styles.ruleText}>• Counts consecutive days with focus sessions</Text>
               <Text style={styles.ruleText}>• Resets to 0 if you miss a day</Text>
@@ -141,7 +131,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>How a Streak Continues</Text>
               <Text style={styles.cardHeader}>How a Streak Continues</Text>
               <Text style={styles.ruleText}>• App streak requires BOTH:</Text>
               <Text style={styles.ruleText}>  - At least one journal entry for the day</Text>
@@ -151,7 +140,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Streak Achievements</Text>
               <Text style={styles.cardHeader}>Streak Achievements</Text>
               <Text style={styles.ruleText}>• 7 days: Week Warrior</Text>
               <Text style={styles.ruleText}>• 15 days: Fortnight Focus</Text>
@@ -166,7 +154,6 @@ const PointRulesScreen: React.FC = () => {
             </View>
 
             <View style={styles.ruleCard}>
-              <Text style={styles.categoryTitle}>Habit Streaks</Text>
               <Text style={styles.cardHeader}>Habit Streaks</Text>
               <Text style={styles.ruleText}>• Complete 7 consecutive days of a habit</Text>
               <Text style={styles.ruleText}>• Earn +50 Determination points per streak</Text>
