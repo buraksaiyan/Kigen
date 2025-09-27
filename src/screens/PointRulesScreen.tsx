@@ -291,7 +291,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 12,
   },
   ruleText: {
     color: defaultTheme.colors.text.primary,
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 18,
     fontWeight: '700',
-    marginBottom: 6,
+    marginBottom: 10,
   },
   tierGrid: {
     flexDirection: 'row',
