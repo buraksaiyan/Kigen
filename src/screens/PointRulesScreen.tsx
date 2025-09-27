@@ -24,7 +24,9 @@ const PointRulesScreen: React.FC = () => {
         <TouchableOpacity onPress={handleBack} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Point Rules</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.headerTitle}>Point Rules</Text>
+        </View>
         <View style={styles.placeholder} />
       </View>
 
@@ -213,12 +215,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: defaultTheme.colors.surface,
-    borderRadius: 6,
   },
   closeButtonText: {
     ...defaultTheme.typography.body,
-    color: defaultTheme.colors.text.primary,
+    color: defaultTheme.colors.text.secondary,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -255,11 +255,14 @@ const styles = StyleSheet.create({
     color: defaultTheme.colors.text.primary,
     fontSize: 20,
     fontWeight: '600',
-    flex: 1,
-    textAlign: 'center',
   },
   placeholder: {
     width: 32,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   subCategoryTitle: {
     color: defaultTheme.colors.primary,

@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     ...theme.typography.body,
-    color: theme.colors.primary,
+    color: theme.colors.text.secondary,
     fontWeight: '600',
   },
   headerButton: {

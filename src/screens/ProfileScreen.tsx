@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   closeButtonText: {
-    color: theme.colors.text.primary,
+    color: theme.colors.text.secondary,
     fontSize: 16,
     fontWeight: '600',
   },
