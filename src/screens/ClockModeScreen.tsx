@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme as defaultTheme } from '../config/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
-import TimerClock from '../components/timerClocks/TimerClock';
+import Svg, { Circle } from 'react-native-svg';
 
 interface ClockModeScreenProps {
   visible: boolean;
@@ -172,6 +172,51 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
   },
+  // Styles reused from CountdownScreen for visual parity
+  progressSvg: {
+    left: '50%',
+    marginLeft: -170,
+    marginTop: -170,
+    position: 'absolute',
+    top: '50%',
+  },
+  progressCircle: {
+    alignItems: 'center',
+    height: 420,
+    justifyContent: 'center',
+    marginTop: -30,
+    position: 'relative',
+    width: 420,
+  },
+  timeDisplayContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
+  },
+  primaryTimeContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  primaryTimeText: {
+    color: theme.colors.text.primary,
+    fontFamily: 'monospace',
+    fontSize: 64,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    textAlign: 'center',
+  },
+  primaryLabelsContainer: {
+    flexDirection: 'row',
+    gap: theme.spacing.lg,
+    marginTop: theme.spacing.xs,
+  },
+  primaryLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
 });
 
 // Map clock style to our supported timer clock types
@@ -198,23 +243,36 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
   title,
   clockStyle,
 }) => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const { theme: ctxTheme } = useTheme();
+  const styles = createStyles(ctxTheme);
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update time every second
+  // Update time every minute (seconds are not shown)
   useEffect(() => {
     if (!visible) return;
 
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    // Sync at start of minute then tick every 60s
+    const update = () => setCurrentTime(new Date());
+    update();
+    const now = new Date();
+    const msToNextMinute = (60 - now.getSeconds()) * 1000;
 
-    return () => clearInterval(interval);
+    const timeout = setTimeout(() => {
+      update();
+      const interval = setInterval(update, 60 * 1000);
+      // store interval on closure cleanup
+      (timeout as any)._interval = interval;
+    }, msToNextMinute);
+
+    return () => {
+      clearTimeout(timeout as any);
+      const interval = (timeout as any)._interval as ReturnType<typeof setInterval> | undefined;
+      if (interval) clearInterval(interval);
+    };
   }, [visible]);
 
-  // Android back button handling
+  // Android back handling while focused
   useFocusEffect(
     React.useCallback(() => {
       if (!visible) return;
@@ -231,15 +289,6 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
     }, [visible, onClose])
   );
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour12: true,
-      hour: 'numeric',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  };
-
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -249,7 +298,15 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
     });
   };
 
-  const clockType = getClockStyle(clockStyle);
+  // Extract hours and minutes for display
+  const hours = currentTime.getHours();
+  const minutes = currentTime.getMinutes();
+
+  // Break hours into two digits
+  const h1 = Math.floor(hours / 10).toString();
+  const h2 = (hours % 10).toString();
+  const m1 = Math.floor(minutes / 10).toString();
+  const m2 = (minutes % 10).toString();
 
   if (!visible) return null;
 
@@ -276,23 +333,31 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
           </View>
 
           <View style={styles.clockWrapper}>
-            <TimerClock 
-              clockStyle={clockType}
-              duration={3600}
-              elapsed={currentTime.getSeconds() + (currentTime.getMinutes() * 60)}
-              size={200}
-              strokeWidth={12}
-              color={theme.colors.primary}
-            />
+            {/* Circular progress ring for visual parity with CountdownScreen */}
+            <View style={styles.progressCircle as any}>
+              <Svg width={340} height={340} style={styles.progressSvg as any}>
+                <Circle cx={170} cy={170} r={155} stroke="#333333" strokeWidth={8} fill="transparent" />
+                {/* Static ring for clock mode */}
+                <Circle cx={170} cy={170} r={155} stroke={ctxTheme.colors.primary} strokeWidth={8} fill="transparent" strokeDasharray={`${2 * Math.PI * 155}`} strokeLinecap="round" transform="rotate(-90 170 170)" />
+              </Svg>
+
+              <View style={styles.timeDisplayContainer}>
+                <View style={styles.primaryTimeContainer}>
+                  <Text style={[styles.primaryTimeText, { color: ctxTheme.colors.text.primary }]}>
+                    {h1}{h2}:{m1}{m2}
+                  </Text>
+                  <View style={styles.primaryLabelsContainer}>
+                    <Text style={styles.primaryLabel}>HOURS</Text>
+                    <Text style={styles.primaryLabel}>MINUTES</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
           </View>
 
-          <Text style={styles.currentTime}>
-            {formatTime(currentTime)}
-          </Text>
+          <Text style={styles.currentTime}>{/* Keep for accessibility but empty since we show big digits */}</Text>
 
-          <Text style={styles.dateText}>
-            {formatDate(currentTime)}
-          </Text>
+          <Text style={styles.dateText}>{formatDate(currentTime)}</Text>
         </View>
       </SafeAreaView>
     </Modal>
