@@ -108,6 +108,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [sessionHours, setSessionHours] = useState(0);
   const [sessionMinutes, setSessionMinutes] = useState(0);
   const [breakMinutes, setBreakMinutes] = useState(5);
+  const [skippableBreaks, setSkippableBreaks] = useState(false);
 
   const { settings } = useSettings();
 
@@ -128,7 +129,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
-  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number) => {
+  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number, skippable: boolean = false) => {
     try {
       const totalMinutes = (hours * 60) + minutes;
       const sessionId = await focusSessionService.startSession(mode, totalMinutes, null);
@@ -137,6 +138,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setSessionHours(hours);
       setSessionMinutes(minutes);
       setBreakMinutes(breakMin);
+      setSkippableBreaks(skippable);
       setShowSetup(false);
       setShowCountdown(true);
       

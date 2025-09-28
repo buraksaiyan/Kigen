@@ -43,12 +43,18 @@ const STORAGE_KEYS = {
   SESSION_STATS: '@inzone_session_stats',
   DAILY_POINTS: '@inzone_daily_points',
   LAST_SESSION_DATE: '@inzone_last_session_date',
+  POMODORO_RUN: '@inzone_pomodoro_run', // persist current continuous pomodoro run info
   GOAL_COMPLETION_LOGS: '@inzone_goal_completion_logs',
 };
 
 class FocusSessionService {
   // Calculate points based on session duration and completion
   private calculatePoints(actualMinutes: number, completed: boolean, mode: string): number {
+    // Pomodoro special handling: fixed awarding is done elsewhere (category-specific)
+    if (mode === 'pomodoro') {
+      // For pomodoro base calculation we return 0 here because Pomodoro points are handled explicitly
+      return 0;
+    }
     // Exception for meditation: every minute counts (no minimum threshold)
     if (mode === 'meditation') {
       // For meditation, use +2 points per minute (like ratingSystem.ts)
@@ -138,27 +144,80 @@ class FocusSessionService {
       session.actualDuration = actualMinutes; // Set actual time spent
       
       // Calculate points (may be 0 if session is too short)
-      session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
+      // Pomodoro awards are handled differently (fixed per completed pomodoro)
+      if (session.mode.id === 'pomodoro') {
+        // Only count as a completed pomodoro if actualMinutes >= 25 (or close enough, allow 23+ minutes)
+        const qualifies = actualMinutes >= 23; // tolerate small variances
+
+        if (qualifies && completed) {
+          // Manage pomodoro run state
+          const run = await this.getPomodoroRun();
+          let consecutive = (run?.consecutive || 0) + 1;
+
+          // If the previous run timestamp is too old (>30 minutes since last pomodoro end), reset consecutive
+          if (run?.lastEndAt) {
+            const last = new Date(run.lastEndAt).getTime();
+            const now = new Date().getTime();
+            const gapMinutes = Math.floor((now - last) / (1000 * 60));
+            // If more than 30 minutes passed between pomodoros, treat as new run
+            if (gapMinutes > 30) {
+              consecutive = 1;
+            }
+          }
+
+          // Calculate multiplier based on consecutive completed cycles
+          // After 4 sessions -> 2x from 5th, after 8 sessions -> 3x from 9th, etc. We'll compute multiplier as:
+          // multiplier = 1 + floor(consecutive / 4)
+          const multiplier = 1 + Math.floor((Math.max(0, consecutive - 1)) / 4);
+
+          // Base per-session category points
+          const basePoints = 5; // per category
+          const categories = ['DIS', 'FOC', 'DET', 'PRD'];
+
+          // Total points across categories
+          const pointsPerCategory = basePoints * multiplier;
+          const totalPoints = pointsPerCategory * categories.length;
+
+          session.pointsEarned = totalPoints;
+
+          // Persist the updated pomodoro run
+          await this.savePomodoroRun({ consecutive, lastEndAt: endTime });
+
+          // Record category-specific points in the PointsHistoryService
+          try {
+            const { PointsHistoryService } = await import('./PointsHistoryService');
+            for (const cat of categories) {
+              // PointsHistoryService.recordPoints(source, points, category, description, metadata?)
+              await PointsHistoryService.recordPoints('focus_session', pointsPerCategory, cat, `Pomodoro ${cat}`, { sessionDuration: actualMinutes });
+            }
+          } catch (e) {
+            console.warn('PointsHistoryService unavailable to record pomodoro category points', e);
+          }
+        } else {
+          // Did not qualify as a full pomodoro -> no points
+          session.pointsEarned = 0;
+          // Reset pomodoro run because session didn't qualify
+          await this.savePomodoroRun({ consecutive: 0, lastEndAt: endTime });
+        }
+      } else {
+        session.pointsEarned = this.calculatePoints(actualMinutes, completed, session.mode.id);
+      }
 
       // Always save session for tracking purposes (users should see their attempts)
       await this.saveFocusSession(session);
       await this.updateSessionStats(session);
       
-      // Only award points and update daily points if session meets minimum threshold OR is meditation
-      if (actualMinutes >= 5 || session.mode.id === 'meditation') {
-        if (session.pointsEarned > 0) {
-          await this.updateDailyPoints(session.pointsEarned);
-        }
-        
-        // Update UserStatsService with the completed session (only for truly completed sessions)
-        if (completed) {
-          await this.updateUserStats(session, actualMinutes);
-        }
-        
-        console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned${completed ? ' (completed)' : ' (not completed)'}`);
-      } else {
-        console.log(`Session recorded but too short (${actualMinutes} minutes), no points awarded`);
+      // Only award daily points if any points were earned
+      if (session.pointsEarned > 0) {
+        await this.updateDailyPoints(session.pointsEarned);
       }
+
+      // Update UserStatsService with the completed session (only for truly completed sessions)
+      if (completed) {
+        await this.updateUserStats(session, actualMinutes);
+      }
+
+      console.log(`Focus session recorded: ${actualMinutes} minutes, ${session.pointsEarned} points earned (${session.mode.id})`);
 
       // Clear current session
       await AsyncStorage.removeItem('@inzone_current_session');
@@ -284,6 +343,25 @@ class FocusSessionService {
     } catch (error) {
       console.error('Error updating daily points:', error);
       throw error;
+    }
+  }
+
+  // Persist and retrieve pomodoro run info (consecutive completed pomodoros and last end timestamp)
+  async savePomodoroRun(run: { consecutive: number; lastEndAt?: string }): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.POMODORO_RUN, JSON.stringify(run));
+    } catch (error) {
+      console.error('Error saving pomodoro run state:', error);
+    }
+  }
+
+  async getPomodoroRun(): Promise<{ consecutive: number; lastEndAt?: string } | null> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.POMODORO_RUN);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Error reading pomodoro run state:', error);
+      return null;
     }
   }
 

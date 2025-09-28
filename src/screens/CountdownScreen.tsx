@@ -45,6 +45,9 @@ interface CountdownScreenProps {
   onPause: () => void;
   onEarlyFinish: () => void;
   onAbort: () => void;
+  // For Pomodoro: whether breaks are skippable and a callback to update current session id
+  skippableBreaks?: boolean;
+  onSessionIdChange?: (id: string) => void;
 }
 
 // Mode-specific quote databases
@@ -344,6 +347,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   onPause,
   onEarlyFinish,
   onAbort,
+  skippableBreaks,
+  onSessionIdChange,
 }) => {
   const [timeLeft, setTimeLeft] = useState(totalHours * 3600 + totalMinutes * 60);
   const [isRunning, setIsRunning] = useState(true);
@@ -486,7 +491,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           
           if (newTime <= 0) {
             setIsRunning(false);
-            onComplete();
+            // If this is a pomodoro mode, handle loop logic here
+            if (mode.id === 'pomodoro') {
+              handlePomodoroWorkComplete().catch(err => console.error('Pomodoro work completion error', err));
+            } else {
+              onComplete();
+            }
             return 0;
           }
           return newTime;
@@ -571,9 +581,72 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
     setIsPaused(false);
   };
 
+  // For pomodoro flow: on finishing a work session
+  const handlePomodoroWorkComplete = async () => {
+    try {
+      // Complete and record the current stored session (FocusSessionService reads @inzone_current_session)
+      const { focusSessionService } = await import('../services/FocusSessionService');
+      const current = await focusSessionService.getCurrentSession();
+      if (current?.id) {
+        await focusSessionService.completeSession(current.id, true, 'completed');
+      }
+
+      // Decide if this break should be a long break
+      const run = await focusSessionService.getPomodoroRun();
+      const consecutive = run?.consecutive || 0;
+      const isLongBreak = consecutive > 0 && (consecutive % 4 === 0);
+
+      // Set break duration accordingly
+      const effectiveBreakMinutes = isLongBreak ? 30 : breakMinutes;
+      setBreakTimeLeft(effectiveBreakMinutes * 60);
+      setIsInBreak(true);
+      setPausedFocusTime(0);
+      setIsPaused(true);
+      setIsRunning(false);
+    } catch (error) {
+      console.error('Error handling pomodoro completion:', error);
+      onComplete();
+    }
+  };
+
+  const startNextPomodoro = async () => {
+    try {
+      // Start a fresh pomodoro work session
+      const { focusSessionService } = await import('../services/FocusSessionService');
+      const workTotalMinutes = totalHours * 60 + totalMinutes; // compute work minutes from props
+      const sessionId = await focusSessionService.startSession({ id: 'pomodoro', title: 'Pomodoro', color: mode.color }, workTotalMinutes, null);
+      // Notify parent to keep currentSessionId in sync
+      onSessionIdChange?.(sessionId);
+
+      // Reset timers and resume
+      setTimeLeft(totalHours * 3600 + totalMinutes * 60);
+      setIsInBreak(false);
+      setIsPaused(false);
+      setIsRunning(true);
+    } catch (error) {
+      console.error('Error starting next pomodoro session:', error);
+    }
+  };
+
   const handleContinueFromBreak = () => {
     // User manually continues from break
-    handleBreakComplete();
+    // If pomodoro, this resumes to next work session
+    if (mode.id === 'pomodoro') {
+      // If user clicked Continue during break, we resume to next work session by starting it
+      startNextPomodoro().catch(err => console.error('Error resuming pomodoro after continue', err));
+    } else {
+      handleBreakComplete();
+    }
+  };
+
+  const handleSkipBreak = async () => {
+    // Skip break and begin the next pomodoro immediately
+    try {
+      // Start next pomodoro
+      await startNextPomodoro();
+    } catch (error) {
+      console.error('Error skipping break:', error);
+    }
   };
 
   const handleEarlyFinish = async () => {
@@ -583,6 +656,11 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
       setIsRunning(false);
       
       // Call the original early finish handler
+      // If pomodoro, reset run state
+      if (mode.id === 'pomodoro') {
+        const { focusSessionService } = await import('../services/FocusSessionService');
+        await focusSessionService.savePomodoroRun({ consecutive: 0, lastEndAt: new Date().toISOString() });
+      }
       onEarlyFinish();
     } catch (error) {
       console.error('Error stopping timer on early finish:', error);
@@ -597,6 +675,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
       await BackgroundTimerService.stopTimer();
       setIsRunning(false);
       
+      // Reset pomodoro run state if applicable
+      if (mode.id === 'pomodoro') {
+        const { focusSessionService } = await import('../services/FocusSessionService');
+        await focusSessionService.savePomodoroRun({ consecutive: 0, lastEndAt: new Date().toISOString() });
+      }
+
       // Call the original abort handler
       onAbort();
     } catch (error) {
@@ -691,6 +775,18 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
                 Continue
               </Text>
             </TouchableOpacity>
+
+            {/* Skip Break for Pomodoro if enabled */}
+            {mode.id === 'pomodoro' && skippableBreaks && (
+              <TouchableOpacity
+                style={[styles.controlButton, styles.continueButton, { backgroundColor: '#FF66B2', borderRadius: 25 }]}
+                onPress={handleSkipBreak}
+                activeOpacity={0.6}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>Skip Break</Text>
+              </TouchableOpacity>
+            )}
 
             <View style={styles.controlButton} />
           </View>

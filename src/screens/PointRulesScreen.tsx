@@ -114,6 +114,22 @@ const PointRulesScreen: React.FC = () => {
               <Text style={styles.ruleText}>• +10 points per journal entry</Text>
               <Text style={styles.ruleText}>• +5 points per hour of focus sessions</Text>
             </View>
+
+            <View style={styles.ruleCard}>
+              <Text style={styles.cardHeader}>Pomodoro Rules</Text>
+              <Text style={styles.subCategoryTitle}>How Pomodoro sessions earn points</Text>
+              <Text style={styles.ruleText}>• Default Pomodoro: 25 minutes work, 5 minutes short break (configurable at start).</Text>
+              <Text style={styles.ruleText}>• Each completed 25-minute Pomodoro awards +5 Discipline, +5 Focus, +5 Determination, +5 Productivity (total +20 base).</Text>
+              <Text style={styles.ruleText}>• After completing 4 Pomodoros in a continuous run (i.e., done back-to-back with breaks and without a gap greater than 30 minutes), you are given a 30-minute long break. This long break is skippable.</Text>
+              <Text style={styles.ruleText}>• Multipliers: once you complete 4 consecutive Pomodoros and return to the 5th session, points are multiplied:</Text>
+              <Text style={styles.ruleText}>  - Sessions 1–4: 1x (base)</Text>
+              <Text style={styles.ruleText}>  - Sessions 5–8: 2x base points</Text>
+              <Text style={styles.ruleText}>  - Sessions 9–12: 3x base points</Text>
+              <Text style={styles.ruleText}>  - Multiplier increases by +1 for each additional block of 4 consecutive completed Pomodoros.</Text>
+              <Text style={styles.ruleText}>• Continuous run definition: if more than 30 minutes pass between the end of one Pomodoro and the start of the next, the run resets and multipliers start over.</Text>
+              <Text style={styles.ruleText}>• Pomodoros loop automatically — you don't need to restart them; the system will start the next work sprint after each break unless you abort the run.</Text>
+              <Text style={styles.ruleText}>• Breaks (short or long) can be made skippable at the start of the Pomodoro session. Skipping a break begins the next Pomodoro immediately and continues the run.</Text>
+            </View>
           </View>
 
           <View style={styles.section}>

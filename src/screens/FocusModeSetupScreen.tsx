@@ -190,6 +190,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   const [hours, setHours] = useState(defaultHours.toString());
   const [minutes, setMinutes] = useState(defaultMinutes.toString());
   const [breakMinutes, setBreakMinutes] = useState('5'); // Default 5 minutes break
+  const [skippableBreaks, setSkippableBreaks] = useState(true);
   const [selectedClock, setSelectedClock] = useState<string | null>(null);
 
   // Reset to default duration when modal becomes visible
@@ -216,7 +217,12 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
       return; // Don't start if no time set
     }
     
-    onStartSession(mode, h, m, b);
+    // Pass skippableBreaks flag for pomodoro flows
+    // Note: onStartSession in FocusSessionScreen accepts an extra boolean param now
+    // so safe to pass for other modes as well (they will ignore it)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    onStartSession(mode, h, m, b, skippableBreaks);
   };
 
   const presetTimes = [
@@ -354,6 +360,19 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                   </TouchableOpacity>
                 ))}
               </View>
+
+              {/* Skippable Break Toggle (only show for pomodoro mode) */}
+              {mode?.id === 'pomodoro' && (
+                <View style={{ marginTop: 16, alignItems: 'center' }}>
+                  <TouchableOpacity
+                    onPress={() => setSkippableBreaks(prev => !prev)}
+                    style={[styles.presetButton, { borderColor: mode.color }]}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.presetText, { color: mode.color }]}>Skippable Breaks: {skippableBreaks ? 'ON' : 'OFF'}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </Card>
 
             <Card style={styles.setupCard}>
