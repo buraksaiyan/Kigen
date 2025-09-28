@@ -15,6 +15,7 @@ import { theme } from '../config/theme';
 import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import { useSettings } from '../hooks/useSettings';
+import useOrientation from '../hooks/useOrientation';
 
 const { width } = Dimensions.get('window');
 
@@ -375,6 +376,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const totalSeconds = totalHours * 3600 + totalMinutes * 60;
   const progressPercentage = totalSeconds > 0 ? ((totalSeconds - timeLeft) / totalSeconds) * 100 : 0;
 
+  // Orientation-aware sizing for SVG timer
+  const { orientation, screen } = useOrientation();
+  const isLandscape = orientation === 'landscape';
+  const svgSize = Math.min(screen.width, screen.height) * (isLandscape ? 0.6 : 0.75); // responsive size
+  const svgRadius = Math.floor(svgSize / 2) - 15; // padding for stroke
+
   useEffect(() => {
     StatusBar.setHidden(true);
     
@@ -721,28 +728,28 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           {/* Break Timer Display */}
           <View style={styles.circularTimerContainer}>
             <View style={styles.progressCircle}>
-              <Svg width={340} height={340} style={styles.progressSvg}>
+              <Svg width={svgSize} height={svgSize} style={[styles.progressSvg, { marginLeft: -svgSize / 2, marginTop: -svgSize / 2 }]}>
                 {/* Background circle - gray */}
                 <Circle
-                  cx={170}
-                  cy={170}
-                  r={155}
+                  cx={svgSize / 2}
+                  cy={svgSize / 2}
+                  r={svgRadius}
                   stroke="#333333"
                   strokeWidth={8}
                   fill="transparent"
                 />
                 {/* Progress circle - green for break */}
                 <Circle
-                  cx={170}
-                  cy={170}
-                  r={155}
+                  cx={svgSize / 2}
+                  cy={svgSize / 2}
+                  r={svgRadius}
                   stroke="#22C55E"
                   strokeWidth={8}
                   fill="transparent"
-                  strokeDasharray={`${2 * Math.PI * 155}`}
-                  strokeDashoffset={`${2 * Math.PI * 155 * (1 - breakProgressPercentage / 100)}`}
+                  strokeDasharray={`${2 * Math.PI * svgRadius}`}
+                  strokeDashoffset={`${2 * Math.PI * svgRadius * (1 - breakProgressPercentage / 100)}`}
                   strokeLinecap="round"
-                  transform="rotate(-90 170 170)"
+                  transform={`rotate(-90 ${svgSize / 2} ${svgSize / 2})`}
                 />
               </Svg>
               
@@ -851,29 +858,29 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           )}
 
           {/* Progress Circle */}
-          <View style={styles.progressCircle}>
-            <Svg width={340} height={340} style={styles.progressSvg}>
+              <View style={[styles.progressCircle, { width: svgSize, height: svgSize }]}>
+            <Svg width={svgSize} height={svgSize} style={[styles.progressSvg, { marginLeft: -svgSize / 2, marginTop: -svgSize / 2 }]}>
               {/* Background circle - gray */}
               <Circle
-                cx={170}
-                cy={170}
-                r={155}
+                cx={svgSize / 2}
+                cy={svgSize / 2}
+                r={svgRadius}
                 stroke="#333333"
                 strokeWidth={8}
                 fill="transparent"
               />
               {/* Progress circle - colored based on mode */}
               <Circle
-                cx={170}
-                cy={170}
-                r={155}
+                cx={svgSize / 2}
+                cy={svgSize / 2}
+                r={svgRadius}
                 stroke={mode.color}
                 strokeWidth={8}
                 fill="transparent"
-                strokeDasharray={`${2 * Math.PI * 155}`}
-                strokeDashoffset={`${2 * Math.PI * 155 * (1 - progressPercentage / 100)}`}
+                strokeDasharray={`${2 * Math.PI * svgRadius}`}
+                strokeDashoffset={`${2 * Math.PI * svgRadius * (1 - progressPercentage / 100)}`}
                 strokeLinecap="round"
-                transform="rotate(-90 170 170)"
+                transform={`rotate(-90 ${svgSize / 2} ${svgSize / 2})`}
               />
             </Svg>
             
@@ -1127,11 +1134,9 @@ const styles = StyleSheet.create({
   },
   progressCircle: {
     alignItems: 'center',
-    height: 420,
     justifyContent: 'center',
-    marginTop: -30,
     position: 'relative',
-    width: 420, // Move circle up slightly
+    // size is controlled by the Svg inline styles (svgSize)
   },
   progressFill: {
     borderRadius: 2,
@@ -1315,9 +1320,8 @@ const styles = StyleSheet.create({
   // SVG progress circle styles
   progressSvg: {
     left: '50%',
-    marginLeft: -170, // Half of SVG width (340/2)
-    marginTop: -170, // Half of SVG height (340/2)
     position: 'absolute',
     top: '50%',
+    // margin offsets are provided dynamically where the Svg is rendered
   },
 });

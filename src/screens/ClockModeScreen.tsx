@@ -7,6 +7,7 @@ import {
   Modal,
   BackHandler,
   Platform,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme as defaultTheme } from '../config/theme';
@@ -173,18 +174,15 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   // Styles reused from CountdownScreen for visual parity
   progressSvg: {
     left: '50%',
-    marginLeft: -170,
-    marginTop: -170,
     position: 'absolute',
     top: '50%',
+    // margin offsets applied dynamically where Svg is rendered
   },
   progressCircle: {
     alignItems: 'center',
-    height: 420,
     justifyContent: 'center',
-    marginTop: -30,
     position: 'relative',
-    width: 420,
+    // sizing controlled via Svg inline styles
   },
   timeDisplayContainer: {
     alignItems: 'center',
@@ -246,6 +244,13 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
 }) => {
   const { theme: ctxTheme } = useTheme();
   const styles = createStyles(ctxTheme);
+
+  // Orientation-aware sizing
+  // Note: use a small inline calculation here to keep the component self-contained
+  // and to provide a sensible default until all clocks are fully responsive.
+  const { width: screenW, height: screenH } = Dimensions.get('window');
+  const isLandscape = screenW > screenH;
+  const svgSize = Math.min(screenW, screenH) * (isLandscape ? 0.6 : 0.75);
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -336,7 +341,7 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
           <View style={styles.clockWrapper}>
             {/* Circular progress ring for visual parity with CountdownScreen */}
             <View style={styles.progressCircle as any}>
-              <Svg width={340} height={340} style={styles.progressSvg as any}>
+              <Svg width={svgSize} height={svgSize} style={[styles.progressSvg as any, { marginLeft: -svgSize / 2, marginTop: -svgSize / 2 }]}>
                 <Circle cx={170} cy={170} r={155} stroke="#333333" strokeWidth={8} fill="transparent" />
                 {/* Static ring for clock mode */}
                 <Circle cx={170} cy={170} r={155} stroke={ctxTheme.colors.primary} strokeWidth={8} fill="transparent" strokeDasharray={`${2 * Math.PI * 155}`} strokeLinecap="round" transform="rotate(-90 170 170)" />
