@@ -139,19 +139,7 @@ const PointRulesScreen: React.FC = () => {
               <Text style={styles.ruleText}>• Habit streaks are per-habit: completing the habit for 7 consecutive days grants the habit streak reward and +50 Determination points. Habit streak rules are independent of the app streak above.</Text>
             </View>
 
-            <View style={styles.ruleCard}>
-              <Text style={styles.cardHeader}>Streak Achievements</Text>
-              <Text style={styles.ruleText}>• 7 days: Week Warrior</Text>
-              <Text style={styles.ruleText}>• 15 days: Fortnight Focus</Text>
-              <Text style={styles.ruleText}>• 30 days: Monthly Master</Text>
-              <Text style={styles.ruleText}>• 50 days: Disciplined Mind</Text>
-              <Text style={styles.ruleText}>• 75 days: Iron Will</Text>
-              <Text style={styles.ruleText}>• 100 days: Centurion</Text>
-              <Text style={styles.ruleText}>• 250 days: Eternal Flame</Text>
-              <Text style={styles.ruleText}>• 500 days: Transcendent</Text>
-              <Text style={styles.ruleText}>• 750 days: Phoenix Rising</Text>
-              <Text style={styles.ruleText}>• 1000 days: The Immortal</Text>
-            </View>
+            {/* Streak Achievements removed — duplicated on Achievements page */}
 
             <View style={styles.ruleCard}>
               <Text style={styles.cardHeader}>Habit Streaks</Text>
