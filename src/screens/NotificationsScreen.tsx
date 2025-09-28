@@ -77,7 +77,6 @@ const NotificationsScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {notifications.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>Notifications</Text>
             <Text style={styles.emptyStateTitle}>No Notifications</Text>
             <Text style={styles.emptyStateMessage}>You're all caught up! Achievement notifications will appear here.</Text>
           </View>
@@ -151,11 +150,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: theme.spacing.xxl,
-  },
-  emptyStateIcon: {
-    fontSize: 48,
-    marginBottom: theme.spacing.md,
-    opacity: 0.5,
   },
   emptyStateTitle: {
     ...theme.typography.h4,
