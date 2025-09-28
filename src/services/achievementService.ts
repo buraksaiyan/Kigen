@@ -166,14 +166,38 @@ class AchievementService {
       if (!data) {
         achievements = await this.initializeAchievements();
       } else {
-        achievements = JSON.parse(data);
-        
+        // Parse stored achievements
+        const parsed: Achievement[] = JSON.parse(data);
+
+        // Dedupe by id in case storage was corrupted or duplicates were introduced
+        const mapById = new Map<string, Achievement>();
+        for (const a of parsed) {
+          if (!mapById.has(a.id)) {
+            mapById.set(a.id, a);
+          }
+        }
+
+        const uniqueAchievements = Array.from(mapById.values());
+        if (uniqueAchievements.length !== parsed.length) {
+          const removed = parsed.length - uniqueAchievements.length;
+          console.warn(`achievementService: removed ${removed} duplicate achievement(s) from storage`);
+          // Persist cleaned list back to storage to avoid repeated duplicate rendering
+          try {
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(uniqueAchievements));
+            console.log('achievementService: persisted deduplicated achievements to storage');
+          } catch (err) {
+            console.error('achievementService: failed to persist deduped achievements', err);
+          }
+        }
+
+        achievements = uniqueAchievements;
+
         // Check if we need to add new achievements (migration)
         const existingIds = new Set(achievements.map(a => a.id));
         const missingAchievements = ACHIEVEMENT_DEFINITIONS
           .filter(def => !existingIds.has(def.id))
           .map(def => ({ ...def, unlocked: false }));
-        
+
         if (missingAchievements.length > 0) {
           achievements.push(...missingAchievements);
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(achievements));

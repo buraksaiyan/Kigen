@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -119,26 +119,56 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     }
   };
 
-  const categories: Array<{category: Achievement['category'], title: string, icon: string}> = [
-    { category: 'focus_hours', title: 'Focus Hours', icon: '⏰' },
-    { category: 'max_streak', title: 'Max Streak', icon: '🔥' },
-    { category: 'body_focus_special', title: 'Body Focus', icon: '💪' },
-    { category: 'meditation_special', title: 'Meditation', icon: '🧘' },
-    { category: 'journal_entries', title: 'Journal', icon: '📝' },
-    { category: 'completed_goals', title: 'Goals', icon: '🎯' },
-    { category: 'completed_habits', title: 'Habits', icon: '🔄' },
-    { category: 'completed_todos', title: 'Tasks', icon: '✅' },
-    { category: 'active_reminders', title: 'Reminders', icon: '⏰' },
-    { category: 'social_reduction', title: 'Digital Wellness', icon: '📱' },
-    { category: 'max_streak', title: 'Max Streak', icon: '' },
-    { category: 'completed_goals', title: 'Goals', icon: '' },
-    { category: 'completed_todos', title: 'Tasks', icon: '' },
-    { category: 'social_reduction', title: 'Digital Wellness', icon: '' },
-    { category: 'max_streak', title: 'Max Streak', icon: '' },
-    { category: 'completed_goals', title: 'Goals', icon: '' },
-    { category: 'completed_todos', title: 'Tasks', icon: '' },
-    { category: 'social_reduction', title: 'Digital Wellness', icon: '' },
-  ];
+  const categoryMeta: Record<string, { title: string; icon: string }> = {
+    focus_hours: { title: 'Focus Hours', icon: '⏰' },
+    max_streak: { title: 'Max Streak', icon: '🔥' },
+    body_focus_special: { title: 'Body Focus', icon: '💪' },
+    meditation_special: { title: 'Meditation', icon: '🧘' },
+    journal_entries: { title: 'Journal', icon: '📝' },
+    completed_goals: { title: 'Goals', icon: '🎯' },
+    completed_habits: { title: 'Habits', icon: '🔄' },
+    completed_todos: { title: 'Tasks', icon: '✅' },
+    active_reminders: { title: 'Reminders', icon: '⏰' },
+    social_reduction: { title: 'Digital Wellness', icon: '📱' },
+    current_streak: { title: 'Current Streak', icon: '🔥' },
+  };
+
+  const categories = useMemo(() => {
+    // Preserve a sensible default ordering; include any categories discovered in achievements
+    const preferredOrder: Achievement['category'][] = [
+      'focus_hours',
+      'max_streak',
+      'current_streak',
+      'body_focus_special',
+      'meditation_special',
+      'journal_entries',
+      'completed_goals',
+      'completed_habits',
+      'completed_todos',
+      'active_reminders',
+      'social_reduction',
+    ];
+
+    const seen = new Set<Achievement['category']>();
+    // start with preferred order
+    const ordered: Achievement['category'][] = [];
+    for (const c of preferredOrder) {
+      if (achievements.some(a => a.category === c)) {
+        ordered.push(c);
+        seen.add(c);
+      }
+    }
+
+    // append any remaining categories found in achievements
+    for (const a of achievements) {
+      if (!seen.has(a.category)) {
+        seen.add(a.category);
+        ordered.push(a.category);
+      }
+    }
+
+    return ordered.map(cat => ({ category: cat, title: categoryMeta[cat]?.title || cat, icon: categoryMeta[cat]?.icon || '' }));
+  }, [achievements]);
 
   const renderAchievement = (achievement: Achievement) => {
     let currentValue = getCurrentValue(achievement.category);
