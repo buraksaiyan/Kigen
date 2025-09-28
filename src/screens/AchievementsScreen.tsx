@@ -184,7 +184,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     const isUnlocked = achievement.unlocked;
 
     return (
-      <View key={achievement.id} style={[
+      <View key={`achievement-${achievement.id}`} style={[
         styles.achievementCard,
         isUnlocked && styles.achievementCardUnlocked
       ]}>
@@ -296,7 +296,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
           >
             {categories.map(({ category, title, icon }) => (
               <TouchableOpacity
-                key={category}
+                key={`ach-category-${category}`}
                 style={[
                   styles.categoryTab,
                   selectedCategory === category && styles.categoryTabActive
