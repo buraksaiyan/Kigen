@@ -20,12 +20,12 @@ import { UserStatsService } from '../services/userStatsService';
 const SOCIAL_ENTRIES_STORAGE_KEY = '@inzone_social_entries';
 
 type SocialActivity = 'outside' | 'with_friends';
-type TimeSpent = '15min' | '30min' | '1hour' | '2hours' | '3hours' | 'halfday' | 'fullday';
 
 interface SocialEntry {
   id: string;
   activity: SocialActivity;
-  timeSpent: TimeSpent;
+  // minutes spent
+  timeSpentMinutes: number;
   createdAt: string;
 }
 
@@ -39,15 +39,7 @@ const activityConfig: Record<SocialActivity, { icon: string; label: string; colo
   with_friends: { icon: 'people', label: 'With Friends', color: '#3498DB' },
 };
 
-const timeSpentConfig: Record<TimeSpent, { label: string; minutes: number }> = {
-  '15min': { label: '15 minutes', minutes: 15 },
-  '30min': { label: '30 minutes', minutes: 30 },
-  '1hour': { label: '1 hour', minutes: 60 },
-  '2hours': { label: '2 hours', minutes: 120 },
-  '3hours': { label: '3+ hours', minutes: 180 },
-  'halfday': { label: 'Half day', minutes: 240 },
-  'fullday': { label: 'Full day', minutes: 480 },
-};
+// No presets: user-entered minutes for precise recording
 
 const moodEmojis = ['😢', '😕', '😐', '😊', '😄'];
 const moodLabels = ['Poor', 'Fair', 'Okay', 'Good', 'Great'];
@@ -58,7 +50,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
 }) => {
   const navigation = useNavigation();
   const [activity, setActivity] = useState<SocialActivity>('outside');
-  const [timeSpent, setTimeSpent] = useState<TimeSpent>('1hour');
+  const [timeMinutes, setTimeMinutes] = useState<number>(60);
   const [loading, setLoading] = useState(false);
 
   // Android back button handling
@@ -86,7 +78,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       const newEntry: SocialEntry = {
         id: Date.now().toString(),
         activity,
-        timeSpent,
+        timeSpentMinutes: timeMinutes,
         createdAt: new Date().toISOString(),
       };
 
@@ -104,7 +96,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
       await AsyncStorage.setItem(SOCIAL_ENTRIES_STORAGE_KEY, JSON.stringify(trimmedEntries));
 
       // Record points and time for social activity
-      const hoursSpent = timeSpentConfig[timeSpent].minutes / 60;
+  const hoursSpent = (timeMinutes || 0) / 60;
       
       if (activity === 'outside') {
         await UserStatsService.recordTimeSpentOutside(hoursSpent);
@@ -114,7 +106,7 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
 
   // Clear form
   setActivity('outside');
-  setTimeSpent('1hour');
+  setTimeMinutes(60);
       
   // Navigate back once
   navigation.goBack();
@@ -157,25 +149,19 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
             ))}
           </View>
 
-          <Text style={styles.label}>How long did you spend?</Text>
-          <View style={styles.timeOptions}>
-            {Object.entries(timeSpentConfig).map(([key, config]) => (
-              <TouchableOpacity
-                key={key}
-                onPress={() => setTimeSpent(key as TimeSpent)}
-                style={[
-                  styles.timeOption,
-                  timeSpent === key && styles.timeOptionSelected,
-                ]}
-              >
-                <Text style={[
-                  styles.timeOptionText,
-                  timeSpent === key && styles.timeOptionTextSelected,
-                ]}>
-                  {config.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          <Text style={styles.label}>How many minutes did you spend?</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <TextInput
+              style={[styles.textInput, { flex: 1 }]}
+              keyboardType="numeric"
+              value={String(timeMinutes)}
+              onChangeText={(t) => {
+                const n = parseInt(t.replace(/[^0-9]/g, ''), 10);
+                setTimeMinutes(Number.isNaN(n) ? 0 : n);
+              }}
+              placeholder="Minutes"
+            />
+            <Text style={{ color: theme.colors.text.secondary }}>minutes</Text>
           </View>
 
           <TouchableOpacity
