@@ -342,13 +342,13 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                   </TouchableOpacity>
                 </View>
 
-                {/* Clock Mode Button */}
+                {/* Clock Mode Button - align with other full buttons */}
                 <TouchableOpacity
-                  style={[styles.customModeButton, { borderColor: clockMode.color }]}
+                  style={[styles.fullButton, { borderColor: clockMode.color }]}
                   onPress={() => handleModeSelect(clockMode)}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.customModeText, { color: clockMode.color }]}>Clock Mode</Text>
+                  <Text style={[styles.fullButtonText, { color: clockMode.color }]}>Clock Mode</Text>
                 </TouchableOpacity>
 
               </View>
