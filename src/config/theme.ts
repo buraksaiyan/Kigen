@@ -59,6 +59,7 @@ const defaultTheme = {
     // Focus session modes
     focus: {
       study: '#14B8A6',
+      pomodoro: '#FF66B2',
       work: '#EF4444',
       meditation: '#22C55E',
       exercise: '#A855F7',

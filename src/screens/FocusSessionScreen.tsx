@@ -75,6 +75,13 @@ const focusModes: FocusMode[] = [
     description: 'Focus on physical training and body awareness exercises.',
   },
   {
+    id: 'pomodoro',
+    title: 'Pomodoro',
+    subtitle: 'Timed Work Sprints',
+    color: theme.colors.focus.pomodoro,
+    description: 'Work in focused sprints with short breaks (Pomodoro technique).',
+  },
+  {
     id: 'clock',
     title: 'Clock',
     subtitle: 'Time Management',
@@ -105,7 +112,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const { settings } = useSettings();
 
   // Destructure focus modes for type safety
-  const [flowMode, executionerMode, meditateMode, bodyMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode, FocusMode];
+  const [flowMode, executionerMode, meditateMode, bodyMode, pomodoroMode, clockMode] = focusModes as [FocusMode, FocusMode, FocusMode, FocusMode, FocusMode, FocusMode];
 
   const handleModeSelect = (mode: FocusMode) => {
     setSelectedMode(mode);
@@ -341,6 +348,15 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
                     <Text style={[styles.fullButtonText, { color: bodyMode.color }]}>{bodyMode.title}</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* Pomodoro Mode Button (inserted above Clock) */}
+                <TouchableOpacity
+                  style={[styles.fullButton, { borderColor: pomodoroMode.color }]}
+                  onPress={() => handleModeSelect(pomodoroMode)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.fullButtonText, { color: pomodoroMode.color }]}>{pomodoroMode.title}</Text>
+                </TouchableOpacity>
 
                 {/* Clock Mode Button - align with other full buttons */}
                 <TouchableOpacity
