@@ -33,7 +33,7 @@ interface FocusModeSetupScreenProps {
   visible: boolean;
   onClose: () => void;
   mode: FocusMode | null;
-  onStartSession: (mode: FocusMode, hours: number, minutes: number, breakMinutes: number) => void;
+  onStartSession: (mode: FocusMode, hours: number, minutes: number, breakMinutes: number, skippable?: boolean) => void;
   defaultDuration?: number; // in minutes
 }
 
@@ -196,8 +196,17 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   // Reset to default duration when modal becomes visible
   useEffect(() => {
     if (visible) {
-      setHours(defaultHours.toString());
-      setMinutes(defaultMinutes.toString());
+      // If pomodoro mode selected, default to 25 minutes work / 5 minutes break
+      if (mode?.id === 'pomodoro') {
+        setHours('0');
+        setMinutes('25');
+        setBreakMinutes('5');
+        setSkippableBreaks(true);
+      } else {
+        setHours(defaultHours.toString());
+        setMinutes(defaultMinutes.toString());
+        setBreakMinutes('5');
+      }
       // Load saved clock style
       (async () => {
         const saved = await timerClockService.getStyle();
@@ -218,10 +227,6 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
     }
     
     // Pass skippableBreaks flag for pomodoro flows
-    // Note: onStartSession in FocusSessionScreen accepts an extra boolean param now
-    // so safe to pass for other modes as well (they will ignore it)
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     onStartSession(mode, h, m, b, skippableBreaks);
   };
 
