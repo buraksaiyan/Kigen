@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { theme } from '../config/theme';
 
@@ -25,6 +25,19 @@ export const JournalViewScreen: React.FC = () => {
 
     load();
   }, [params?.id]);
+
+  // Ensure hardware back closes this screen when focused
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.goBack();
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [navigation])
+  );
 
   return (
     <SafeAreaView style={styles.container}>

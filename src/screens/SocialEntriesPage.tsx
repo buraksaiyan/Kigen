@@ -112,15 +112,12 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
         await UserStatsService.recordTimeSpentWithFriends(hoursSpent);
       }
 
-      // Clear form
-      setActivity('outside');
-      setTimeSpent('1hour');
+  // Clear form
+  setActivity('outside');
+  setTimeSpent('1hour');
       
-      // Alert.alert('Success', 'Social interaction logged successfully!'); // Removed annoying success dialog
-      navigation.goBack();
-      
-      // Alert.alert('Success', 'Social interaction logged successfully!'); // Removed annoying success dialog
-      navigation.goBack();
+  // Navigate back once
+  navigation.goBack();
     } catch (error) {
       console.error('Error saving social entry:', error);
       Alert.alert('Error', 'Failed to log social interaction');

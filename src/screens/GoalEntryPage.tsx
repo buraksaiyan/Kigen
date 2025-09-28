@@ -41,27 +41,8 @@ export const GoalEntryPage: React.FC<GoalEntryPageProps> = ({
   const [goalText, setGoalText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Handle Android hardware back button
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-        } else {
-          // If no previous route, navigate to Dashboard
-          navigation.navigate('Main' as never);
-        }
-        return true;
-      };
-
-      if (Platform.OS === 'android') {
-        const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-        return () => subscription.remove();
-      }
-
-      return undefined;
-    }, [navigation])
-  );
+  // Handle Android hardware back button: default to stack behavior. If unsaved-changes handling
+  // is required later, implement a useFocusEffect here that prompts the user.
 
   const saveGoal = async () => {
     if (!goalText.trim()) {

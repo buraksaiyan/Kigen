@@ -49,13 +49,9 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-        } else {
-          // If no previous route, navigate to Dashboard
-          navigation.navigate('Main' as never);
-        }
-        return true;
+        // Reuse the close handler so unsaved changes prompt appears
+        handleClose();
+        return true; // we've handled the back press
       };
 
       if (Platform.OS === 'android') {
@@ -64,7 +60,7 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
       }
 
       return undefined;
-    }, [navigation])
+    }, [navigation, title, content, currentDraftId])
   );
 
   useEffect(() => {
