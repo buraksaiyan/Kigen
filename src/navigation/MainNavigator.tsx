@@ -184,7 +184,13 @@ const MainScreen: React.FC = () => {
 
   // Handle Android hardware back button presses to close overlays or go back to Dashboard
   const handleHardwareBack = useCallback(() => {
-    console.log('[MainNavigator] hardwareBack pressed', { isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen });
+    console.log('[MainNavigator] hardwareBack pressed', { isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen, canGoBack: navigation.canGoBack() });
+
+    // If a stacked screen (pushed via navigation) is open, let the stack handle the back press
+    if (navigation.canGoBack && navigation.canGoBack()) {
+      console.log('[MainNavigator] delegating back to stack navigator');
+      return false; // allow the stack navigator to handle going back
+    }
     
     // Priority: close modals/overlays first
     if (isSidebarOpen) {
@@ -244,7 +250,7 @@ const MainScreen: React.FC = () => {
 
     // Default - let OS handle
     return false;
-  }, [isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen, backPressedOnce]);
+  }, [isSidebarOpen, isCircularMenuOpen, isFocusSessionOpen, isPointsHistoryOpen, isDashboardCustomizationOpen, activeScreen, backPressedOnce, navigation]);
 
   useEffect(() => {
     if (Platform.OS === 'android') {
