@@ -1,10 +1,13 @@
 import React from 'react';
 import ClassicClock from './ClassicClock';
-import FlipClock from './FlipClock';
-import GradientBarClock from './GradientBarClock';
+import DigitalClock from './DigitalClock';
+import CircularClock from './CircularClock';
+import ArcClock from './ArcClock';
+import ProgressBarClock from './ProgressBarClock';
+import CustomFlipClock from './CustomFlipClock';
 
 interface Props {
-  clockStyle: 'classic' | 'flip' | 'gradient';
+  clockStyle: 'classic' | 'digital' | 'circular' | 'arc' | 'progress' | 'flip';
   duration: number; // Total duration in seconds
   elapsed: number; // Elapsed time in seconds
   onComplete?: () => void;
@@ -34,9 +37,9 @@ export default function TimerClock({
           color={color}
         />
       );
-    case 'flip':
+    case 'digital':
       return (
-        <FlipClock
+        <DigitalClock
           duration={duration}
           elapsed={elapsed}
           onComplete={onComplete}
@@ -45,14 +48,47 @@ export default function TimerClock({
           color={color}
         />
       );
-    case 'gradient':
+    case 'circular':
       return (
-        <GradientBarClock
+        <CircularClock
           duration={duration}
           elapsed={elapsed}
           onComplete={onComplete}
-          width={size}
-          height={strokeWidth}
+          size={size}
+          strokeWidth={strokeWidth}
+          color={color}
+        />
+      );
+    case 'arc':
+      return (
+        <ArcClock
+          duration={duration}
+          elapsed={elapsed}
+          onComplete={onComplete}
+          size={size}
+          strokeWidth={strokeWidth}
+          color={color}
+        />
+      );
+    case 'progress':
+      return (
+        <ProgressBarClock
+          duration={duration}
+          elapsed={elapsed}
+          onComplete={onComplete}
+          size={size}
+          strokeWidth={strokeWidth}
+          color={color}
+        />
+      );
+    case 'flip':
+      return (
+        <CustomFlipClock
+          duration={duration}
+          elapsed={elapsed}
+          onComplete={onComplete}
+          size={size}
+          strokeWidth={strokeWidth}
           color={color}
         />
       );

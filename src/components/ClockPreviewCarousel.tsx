@@ -1,14 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import ClassicClock from './timerClocks/ClassicClock';
-import FlipClock from './timerClocks/FlipClock';
-import GradientBarClock from './timerClocks/GradientBarClock';
+import DigitalClock from './timerClocks/DigitalClock';
+import CircularClock from './timerClocks/CircularClock';
+import ArcClock from './timerClocks/ArcClock';
+import ProgressBarClock from './timerClocks/ProgressBarClock';
+import CustomFlipClock from './timerClocks/CustomFlipClock';
 import { theme } from '../config/theme';
 
 export const CLOCK_STYLES = [
   { id: 'classic', title: 'Classic Circular', component: ClassicClock },
-  { id: 'flip', title: 'Flip Clock', component: FlipClock },
-  { id: 'gradient', title: 'Gradient Bar', component: GradientBarClock },
+  { id: 'digital', title: 'Digital Clock', component: DigitalClock },
+  { id: 'circular', title: 'Circular Progress', component: CircularClock },
+  { id: 'arc', title: 'Arc Dashboard', component: ArcClock },
+  { id: 'progress', title: 'Progress Bar', component: ProgressBarClock },
+  { id: 'flip', title: 'Flip Clock', component: CustomFlipClock },
 ];
 
 interface Props {

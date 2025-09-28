@@ -218,18 +218,21 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
 });
 
 // Map clock style to our supported timer clock types
-const getClockStyle = (styleId: string): 'classic' | 'flip' | 'gradient' => {
+const getClockStyle = (styleId: string): 'classic' | 'digital' | 'circular' | 'arc' | 'progress' | 'flip' => {
   switch (styleId) {
     case 'classic':
     case 'circular':
-    case 'analog':
       return 'classic';
-    case 'flip':
-      return 'flip';
+    case 'digital':
+      return 'digital';
+    case 'arc':
+      return 'arc';
+    case 'progress':
     case 'gradient':
     case 'bar':
-    case 'progress':
-      return 'gradient';
+      return 'progress';
+    case 'flip':
+      return 'flip';
     default:
       return 'classic';
   }

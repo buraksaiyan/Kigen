@@ -42,7 +42,7 @@ export default function TimerClock({ styleId = 'classic', progress = 0.5, timeSt
     case 'pomodoro':
       return <NewTimerClock clockStyle="classic" duration={duration} elapsed={elapsed} />;
     case 'gradient':
-      return <NewTimerClock clockStyle="gradient" duration={duration} elapsed={elapsed} />;
+      return <NewTimerClock clockStyle="progress" duration={duration} elapsed={elapsed} />;
     case 'arc':
       return <NewTimerClock clockStyle="classic" duration={duration} elapsed={elapsed} />;
     case 'custom':
