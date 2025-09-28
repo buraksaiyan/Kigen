@@ -70,6 +70,7 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />
           <Stack.Screen name="HabitEntry" component={HabitsCreationPage} />
           <Stack.Screen name="PointRules" component={PointRulesScreen} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} />
         </Stack.Navigator>
         
       </AuthProvider>

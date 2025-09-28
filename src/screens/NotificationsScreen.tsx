@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: theme.spacing.sm,
+     marginRight: theme.spacing.md,
   },
   headerButtonText: {
     color: theme.colors.primary,
@@ -208,6 +209,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: theme.colors.text.tertiary,
     fontSize: 14,
+     marginLeft: theme.spacing.xs,
   },
 });
 
