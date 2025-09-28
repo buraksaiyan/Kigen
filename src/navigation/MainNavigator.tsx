@@ -15,6 +15,7 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusSessionScreen } from '../screens/FocusSessionScreen';
 import { GoalEntryPage } from '../screens/GoalEntryPage';
 import { JournalEntryPage } from '../screens/JournalEntryPage';
+import JournalViewScreen from '../screens/JournalViewScreen';
 import { RemindersCreationPage } from '../screens/RemindersCreationPage';
 import { ToDoCreationPage } from '../screens/ToDoCreationPage';
 import { SocialEntriesPage } from '../screens/SocialEntriesPage';
@@ -44,6 +45,7 @@ type RootStackParamList = {
   Main: undefined;
   GoalEntry: undefined;
   JournalEntry: undefined;
+  JournalView: { id: string } | undefined;
   ReminderEntry: undefined;
   TodoEntry: undefined;
   SocialEntry: undefined;
@@ -65,6 +67,7 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="Main" component={MainScreen} />
           <Stack.Screen name="GoalEntry" component={GoalEntryPage} />
           <Stack.Screen name="JournalEntry" component={JournalEntryPage} />
+          <Stack.Screen name="JournalView" component={JournalViewScreen} />
           <Stack.Screen name="ReminderEntry" component={RemindersCreationPage} />
           <Stack.Screen name="TodoEntry" component={ToDoCreationPage} />
           <Stack.Screen name="SocialEntry" component={SocialEntriesPage} />

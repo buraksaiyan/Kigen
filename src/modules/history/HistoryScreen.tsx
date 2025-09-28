@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
@@ -41,6 +42,7 @@ const historyTabs = [
 
 export const HistoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<HistoryTab>('journaling');
+  const navigation = useNavigation();
   const [historyData, setHistoryData] = useState<Record<HistoryTab, HistoryItem[]>>({
     journaling: [],
     goals: [],
@@ -85,8 +87,10 @@ export const HistoryScreen: React.FC = () => {
             minute: '2-digit',
             hour12: false 
           }),
-          title: 'Journal Entry',
-          description: entry.content, // Show actual journal content
+          // Use the first line of stored content as the entry title (users may have supplied a title)
+          title: (entry.content || '').split('\n')[0] || 'Journal Entry',
+          // Keep full content available via journal id; do not include description here to keep list collapsed
+          description: undefined,
           type: 'journal_entry',
         };
       });
@@ -317,6 +321,13 @@ export const HistoryScreen: React.FC = () => {
         // If we have active selection, tap toggles selection
         if (selectedIds.length > 0) {
           setSelectedIds(prev => prev.includes(item.id) ? prev.filter(id => id !== item.id) : [...prev, item.id]);
+          return;
+        }
+
+        // For journal entries, open the dedicated view page instead of expanding inline
+        if (item.type === 'journal_entry') {
+          (navigation as any).navigate('JournalView', { id: item.id });
+          return;
         }
       }}
       style={[styles.historyItem, selectedIds.includes(item.id) && styles.historyItemSelected]}
@@ -334,7 +345,8 @@ export const HistoryScreen: React.FC = () => {
           <Text style={styles.historyItemTime}>{item.time}</Text>
         </View>
         <Text style={styles.historyItemDate}>{item.date}</Text>
-        {item.description && (
+        {/* Show only the description for non-journal items to keep journals collapsed */}
+        {item.type !== 'journal_entry' && item.description && (
           <Text style={styles.historyItemDescription}>{item.description}</Text>
         )}
         {item.value && (
@@ -345,6 +357,7 @@ export const HistoryScreen: React.FC = () => {
       </View>
     </TouchableOpacity>
   );
+
 
   return (
     <SafeAreaView style={styles.container}>
