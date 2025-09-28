@@ -127,7 +127,7 @@ const PointRulesScreen: React.FC = () => {
               <Text style={styles.cardHeader}>Current Streak</Text>
               <Text style={styles.ruleText}>• Counts consecutive days with focus sessions</Text>
               <Text style={styles.ruleText}>• Resets to 0 if you miss a day</Text>
-              <Text style={styles.ruleText}>• Displayed on your profile card</Text>
+              <Text style={styles.ruleText}>• Displayed under your profile statistics</Text>
             </View>
 
             <View style={styles.ruleCard}>
