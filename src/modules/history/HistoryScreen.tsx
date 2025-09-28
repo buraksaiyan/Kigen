@@ -431,7 +431,7 @@ export const HistoryScreen: React.FC = () => {
               setDateFilter(filters[nextIndex]!);
             }}
           >
-            <Icon name="date-range" size={20} color={dateFilter !== 'all' ? theme.colors.primary : theme.colors.text.secondary} />
+            <Icon style={styles.filterIcon} name="date-range" size={18} color={dateFilter !== 'all' ? theme.colors.white : theme.colors.text.secondary} />
             <Text style={[styles.filterButtonText, dateFilter !== 'all' && styles.activeFilterText]}>
               {dateFilter === 'all' ? 'All Time' : 
                dateFilter === 'today' ? 'Today' : 
@@ -484,12 +484,35 @@ export const HistoryScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  // Icon spacing for the date filter button
+  filterIcon: {
+    marginRight: theme.spacing.xs,
+  },
+  // Text-first filter button: transparent background by default so label reads like a link/button
+  filterButton: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    flexDirection: 'row',
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    alignSelf: 'flex-start',
+  },
+  // When active, use a tight pill background sized to content
   activeFilterButton: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 6,
+  },
+  filterButtonText: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
   },
   activeFilterText: {
-    color: theme.colors.text.primary,
+    color: theme.colors.white,
   },
   activeTabButton: {
     backgroundColor: theme.colors.primary,
@@ -526,20 +549,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: 'center',
   },
-  filterButton: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  filterButtonText: {
-    color: theme.colors.text.secondary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
+  // (filterButton and filterButtonText are defined above with text-first and active styles)
   header: {
     alignItems: 'center',
     borderBottomColor: theme.colors.border,
