@@ -579,21 +579,38 @@ class FocusSessionService {
   private async updateUserStats(session: FocusSession, actualMinutes: number): Promise<void> {
     try {
       const today = await UserStatsService.getTodayActivity();
-      
-      // Update focus minutes for the specific mode
-      switch(session.mode.id) {
-        case 'flow':
-          today.focusMinutes.flow += actualMinutes;
-          break;
-        case 'body':
-          today.focusMinutes.body += actualMinutes;
-          break;
-        case 'meditation':
-          today.focusMinutes.meditation += actualMinutes;
-          break;
-        case 'notech':
-          today.focusMinutes.notech += actualMinutes;
-          break;
+      // Guard: ignore extremely short sessions
+      if (actualMinutes <= 0) {
+        console.log('Session too short to record user stats minutes:', actualMinutes);
+      } else {
+        // Update focus minutes for the specific mode
+        // Modes that should contribute to streak: clock, custom, pomodoro, meditation, flow, executioner, body
+        // Map non-explicit buckets into the closest existing bucket for aggregation
+        switch(session.mode.id) {
+          case 'flow':
+            today.focusMinutes.flow += actualMinutes;
+            break;
+          case 'body':
+            today.focusMinutes.body += actualMinutes;
+            break;
+          case 'meditation':
+            today.focusMinutes.meditation += actualMinutes;
+            break;
+          case 'notech':
+            today.focusMinutes.notech += actualMinutes;
+            break;
+          case 'pomodoro':
+          case 'clock':
+          case 'custom':
+          case 'executioner':
+            // Treat these as 'flow' style focus for streak and stats purposes
+            today.focusMinutes.flow += actualMinutes;
+            break;
+          default:
+            // Unknown modes: default to flow bucket so they still count toward streak
+            today.focusMinutes.flow += actualMinutes;
+            break;
+        }
       }
       
       // Update completed sessions count
