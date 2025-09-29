@@ -261,114 +261,99 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
 
             <Card style={styles.setupCard}>
               <Text style={styles.sectionTitle}>Set Session Duration</Text>
-              
-              {/* Time Input */}
-              <View style={styles.timeInputContainer}>
-                <View style={styles.timeInputGroup}>
-                  <TextInput
-                    style={[styles.timeInput, { borderColor: mode?.color }]}
-                    value={hours}
-                    onChangeText={setHours}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="0"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
-                  <Text style={styles.timeLabel}>hours</Text>
-                </View>
-                
-                <Text style={styles.timeSeparator}>:</Text>
-                
-                <View style={styles.timeInputGroup}>
-                  <TextInput
-                    style={[styles.timeInput, { borderColor: mode?.color }]}
-                    value={minutes}
-                    onChangeText={setMinutes}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="0"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
-                  <Text style={styles.timeLabel}>minutes</Text>
-                </View>
-              </View>
 
-              {/* Preset Times */}
-              <Text style={styles.presetTitle}>Quick Select</Text>
-              <View style={styles.presetsContainer}>
-                {presetTimes.map((preset, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[styles.presetButton, { borderColor: mode?.color }]}
-                    onPress={() => {
-                      setHours(preset.hours.toString());
-                      setMinutes(preset.minutes.toString());
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.presetText, { color: mode?.color }]}>
-                      {preset.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              {/* For pomodoro mode we only allow presets (25/5 and 50/10) */}
+              {mode?.id === 'pomodoro' ? (
+                <>
+                  <Text style={styles.presetTitle}>Pomodoro Presets</Text>
+                  <View style={styles.presetsContainer}>
+                    <TouchableOpacity
+                      style={[styles.presetButton, { borderColor: mode?.color }]}
+                      onPress={() => {
+                        setHours('0');
+                        setMinutes('25');
+                        setBreakMinutes('5');
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.presetText, { color: mode?.color }]}>25 / 5</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.presetButton, { borderColor: mode?.color }]}
+                      onPress={() => {
+                        setHours('0');
+                        setMinutes('50');
+                        setBreakMinutes('10');
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.presetText, { color: mode?.color }]}>50 / 10</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              ) : (
+                <>
+                  {/* Time Input */}
+                  <View style={styles.timeInputContainer}>
+                    <View style={styles.timeInputGroup}>
+                      <TextInput
+                        style={[styles.timeInput, { borderColor: mode?.color }]}
+                        value={hours}
+                        onChangeText={setHours}
+                        keyboardType="numeric"
+                        maxLength={2}
+                        placeholder="0"
+                        placeholderTextColor={theme.colors.text.tertiary}
+                        underlineColorAndroid={TRANSPARENT}
+                      />
+                      <Text style={styles.timeLabel}>hours</Text>
+                    </View>
+                    
+                    <Text style={styles.timeSeparator}>:</Text>
+                    
+                    <View style={styles.timeInputGroup}>
+                      <TextInput
+                        style={[styles.timeInput, { borderColor: mode?.color }]}
+                        value={minutes}
+                        onChangeText={setMinutes}
+                        keyboardType="numeric"
+                        maxLength={2}
+                        placeholder="0"
+                        placeholderTextColor={theme.colors.text.tertiary}
+                        underlineColorAndroid={TRANSPARENT}
+                      />
+                      <Text style={styles.timeLabel}>minutes</Text>
+                    </View>
+                  </View>
+
+                  {/* Preset Times */}
+                  <Text style={styles.presetTitle}>Quick Select</Text>
+                  <View style={styles.presetsContainer}>
+                    {presetTimes.map((preset, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={[styles.presetButton, { borderColor: mode?.color }]}
+                        onPress={() => {
+                          setHours(preset.hours.toString());
+                          setMinutes(preset.minutes.toString());
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[styles.presetText, { color: mode?.color }]}>
+                          {preset.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              )}
             </Card>
 
+            {/* For pomodoro we don't show separate break duration inputs; presets set both work and break durations. */}
             <Card style={styles.setupCard}>
-              <Text style={styles.sectionTitle}>Set Break Duration</Text>
-              
-              {/* Break Duration Input */}
-              <View style={styles.timeInputContainer}>
-                <View style={styles.timeInputGroup}>
-                  <TextInput
-                    style={[styles.timeInput, { borderColor: mode?.color }]}
-                    value={breakMinutes}
-                    onChangeText={setBreakMinutes}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    placeholder="5"
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    underlineColorAndroid={TRANSPARENT}
-                  />
-                  <Text style={styles.timeLabel}>minutes</Text>
-                </View>
-              </View>
-
-              {/* Break Preset Times */}
-              <Text style={styles.presetTitle}>Quick Select</Text>
-              <View style={styles.presetsContainer}>
-                {[
-                  { label: '2 min', minutes: 2 },
-                  { label: '5 min', minutes: 5 },
-                  { label: '10 min', minutes: 10 },
-                  { label: '15 min', minutes: 15 },
-                ].map((preset, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.presetButton,
-                      { borderColor: mode?.color },
-                    ]}
-                    onPress={() => setBreakMinutes(preset.minutes.toString())}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.presetText,
-                        { color: mode?.color },
-                      ]}
-                    >
-                      {preset.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              {/* Skippable Break Toggle (only show for pomodoro mode) */}
-              {mode?.id === 'pomodoro' && (
-                <View style={{ marginTop: 16, alignItems: 'center' }}>
+              {mode?.id === 'pomodoro' ? (
+                <View style={{ marginTop: 8, alignItems: 'center' }}>
                   <TouchableOpacity
                     onPress={() => setSkippableBreaks(prev => !prev)}
                     style={[styles.presetButton, { borderColor: mode.color }]}
@@ -377,6 +362,57 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
                     <Text style={[styles.presetText, { color: mode.color }]}>Skippable Breaks: {skippableBreaks ? 'ON' : 'OFF'}</Text>
                   </TouchableOpacity>
                 </View>
+              ) : (
+                <>
+                  <Text style={styles.sectionTitle}>Set Break Duration</Text>
+                  
+                  {/* Break Duration Input */}
+                  <View style={styles.timeInputContainer}>
+                    <View style={styles.timeInputGroup}>
+                      <TextInput
+                        style={[styles.timeInput, { borderColor: mode?.color }]}
+                        value={breakMinutes}
+                        onChangeText={setBreakMinutes}
+                        keyboardType="numeric"
+                        maxLength={2}
+                        placeholder="5"
+                        placeholderTextColor={theme.colors.text.tertiary}
+                        underlineColorAndroid={TRANSPARENT}
+                      />
+                      <Text style={styles.timeLabel}>minutes</Text>
+                    </View>
+                  </View>
+
+                  {/* Break Preset Times */}
+                  <Text style={styles.presetTitle}>Quick Select</Text>
+                  <View style={styles.presetsContainer}>
+                    {[
+                      { label: '2 min', minutes: 2 },
+                      { label: '5 min', minutes: 5 },
+                      { label: '10 min', minutes: 10 },
+                      { label: '15 min', minutes: 15 },
+                    ].map((preset, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.presetButton,
+                          { borderColor: mode?.color },
+                        ]}
+                        onPress={() => setBreakMinutes(preset.minutes.toString())}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.presetText,
+                            { color: mode?.color },
+                          ]}
+                        >
+                          {preset.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
               )}
             </Card>
 
