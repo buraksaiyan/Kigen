@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FlipClockIcon from './icons/FlipClockIcon';
 import { theme } from '../config/theme';
 
 export const CLOCK_STYLES = [
@@ -9,7 +10,7 @@ export const CLOCK_STYLES = [
   { id: 'circular', title: 'Circular Progress', icon: 'progress-clock' },
   { id: 'arc', title: 'Arc Dashboard', icon: 'gauge' },
   { id: 'progress', title: 'Progress Bar', icon: 'chart-timeline-variant' },
-  { id: 'flip', title: 'Flip Clock', icon: 'flip-vertical' },
+  { id: 'flip', title: 'Flip Clock', icon: 'flip-vertical', customIcon: FlipClockIcon },
 ];
 
 interface Props {
@@ -36,11 +37,15 @@ export default function ClockPreviewCarousel({ selected, onSelect }: Props) {
               style={[styles.card, isSelected && styles.selectedCard]}
             >
               <View style={[styles.previewBox, isSelected && styles.previewBoxSelected]}>
-                <MaterialCommunityIcons
-                  name={item.icon}
-                  size={56}
-                  color={isSelected ? theme.colors.white : theme.colors.primary}
-                />
+                {item.customIcon ? (
+                  React.createElement(item.customIcon, { size: 56, color: isSelected ? theme.colors.white : theme.colors.primary })
+                ) : (
+                  <MaterialCommunityIcons
+                    name={item.icon}
+                    size={56}
+                    color={isSelected ? theme.colors.white : theme.colors.primary}
+                  />
+                )}
               </View>
               <Text style={styles.label} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
             </TouchableOpacity>
