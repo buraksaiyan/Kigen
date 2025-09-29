@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../config/theme';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -107,7 +107,7 @@ export default function ProgressBarClock({
           ]}
         >
           <LinearGradient
-            colors={gradientColors}
+            colors={gradientColors as any}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.progressBar}

@@ -9,6 +9,7 @@ module.exports = function(api) {
           globals: ['__scanFaces'],
         },
       ],
+      'react-native-reanimated/plugin',
     ],
   };
 };
