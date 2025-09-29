@@ -146,57 +146,68 @@ class FocusSessionService {
       // Calculate points (may be 0 if session is too short)
       // Pomodoro awards are handled differently (fixed per completed pomodoro)
       if (session.mode.id === 'pomodoro') {
-        // Only count as a completed pomodoro if actualMinutes >= 25 (or close enough, allow 23+ minutes)
-        const qualifies = actualMinutes >= 23; // tolerate small variances
+        // Determine how many 25-minute pomodoros this session represents.
+        // We allow a small tolerance (23 minutes) when counting an extra partial chunk.
+        const chunk = 25;
+        const tolerancePerChunk = 23; // minutes
 
-        if (qualifies && completed) {
-          // Manage pomodoro run state
+        // Compute earned pomodoros from actual time
+        let earned = Math.floor(actualMinutes / chunk);
+        const remainder = actualMinutes % chunk;
+        if (remainder >= tolerancePerChunk) {
+          earned += 1;
+        }
+
+        // Also consider planned session length: don't award more pomodoros than planned
+        const plannedCount = Math.max(1, Math.floor((session.duration || chunk) / chunk));
+        earned = Math.min(earned, plannedCount);
+
+        if (earned > 0 && completed) {
+          // Manage pomodoro run state. Update consecutive by the number of earned pomodoros.
           const run = await this.getPomodoroRun();
-          let consecutive = (run?.consecutive || 0) + 1;
+          let baseConsecutive = run?.consecutive || 0;
 
-          // If the previous run timestamp is too old (>30 minutes since last pomodoro end), reset consecutive
+          // If the previous run timestamp is too old (>30 minutes since last pomodoro end), reset baseConsecutive
           if (run?.lastEndAt) {
             const last = new Date(run.lastEndAt).getTime();
             const now = new Date().getTime();
             const gapMinutes = Math.floor((now - last) / (1000 * 60));
-            // If more than 30 minutes passed between pomodoros, treat as new run
             if (gapMinutes > 30) {
-              consecutive = 1;
+              baseConsecutive = 0;
             }
           }
 
-          // Calculate multiplier based on consecutive completed cycles
-          // After 4 sessions -> 2x from 5th, after 8 sessions -> 3x from 9th, etc. We'll compute multiplier as:
-          // multiplier = 1 + floor(consecutive / 4)
-          const multiplier = 1 + Math.floor((Math.max(0, consecutive - 1)) / 4);
-
-          // Base per-session category points
-          const basePoints = 5; // per category
           const categories = ['DIS', 'FOC', 'DET', 'PRD'];
+          const basePoints = 5; // per category per single pomodoro
 
-          // Total points across categories
-          const pointsPerCategory = basePoints * multiplier;
-          const totalPoints = pointsPerCategory * categories.length;
+          // For multi-pomodoro sessions, compute per-pomodoro multiplier based on the consecutive value at that pomodoro
+          let sumPointsPerCategory = 0;
+          for (let i = 1; i <= earned; i++) {
+            const consecutiveForThis = baseConsecutive + i;
+            const multiplierForThis = 1 + Math.floor((Math.max(0, consecutiveForThis - 1)) / 4);
+            sumPointsPerCategory += basePoints * multiplierForThis;
+          }
 
+          // Total points across all categories
+          const totalPoints = sumPointsPerCategory * categories.length;
           session.pointsEarned = totalPoints;
 
-          // Persist the updated pomodoro run
-          await this.savePomodoroRun({ consecutive, lastEndAt: endTime });
+          // Persist the updated pomodoro run (increment by earned)
+          const finalConsecutive = baseConsecutive + earned;
+          await this.savePomodoroRun({ consecutive: finalConsecutive, lastEndAt: endTime });
 
-          // Record category-specific points in the PointsHistoryService
+          // Record category-specific points (single entry per category with the summed points)
           try {
             const { PointsHistoryService } = await import('./PointsHistoryService');
             for (const cat of categories) {
-              // PointsHistoryService.recordPoints(source, points, category, description, metadata?)
-              await PointsHistoryService.recordPoints('focus_session', pointsPerCategory, cat, `Pomodoro ${cat}`, { sessionDuration: actualMinutes });
+              await PointsHistoryService.recordPoints('focus_session', sumPointsPerCategory, cat, `Pomodoro x${earned} ${cat}`, { sessionDuration: actualMinutes });
             }
           } catch (e) {
             console.warn('PointsHistoryService unavailable to record pomodoro category points', e);
           }
         } else {
-          // Did not qualify as a full pomodoro -> no points
+          // Did not qualify as any full pomodoro -> no points, reset run
           session.pointsEarned = 0;
-          // Reset pomodoro run because session didn't qualify
           await this.savePomodoroRun({ consecutive: 0, lastEndAt: endTime });
         }
       } else {

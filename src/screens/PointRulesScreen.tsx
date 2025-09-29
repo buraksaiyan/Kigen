@@ -118,8 +118,8 @@ const PointRulesScreen: React.FC = () => {
             <View style={styles.ruleCard}>
               <Text style={styles.cardHeader}>Pomodoro Rules</Text>
               <Text style={styles.subCategoryTitle}>How Pomodoro sessions earn points</Text>
-              <Text style={styles.ruleText}>• Default Pomodoro: 25 minutes work, 5 minutes short break (configurable at start).</Text>
-              <Text style={styles.ruleText}>• Each completed 25-minute Pomodoro awards +5 Discipline, +5 Focus, +5 Determination, +5 Productivity (total +20 base).</Text>
+              <Text style={styles.ruleText}>• Default Pomodoro: 25 minutes work, 5 minutes short break (configurable at start). Longer presets count as multiple Pomodoros (e.g., 50/10 counts as two 25-minute Pomodoros).</Text>
+              <Text style={styles.ruleText}>• Each completed 25-minute Pomodoro awards +5 Discipline, +5 Focus, +5 Determination, +5 Productivity (total +20 base). Multi-chunk sessions sum points across chunks and apply multipliers per chunk.</Text>
               <Text style={styles.ruleText}>• After completing 4 Pomodoros in a continuous run (i.e., done back-to-back with breaks and without a gap greater than 30 minutes), you are given a 30-minute long break. This long break is skippable.</Text>
               <Text style={styles.ruleText}>• Multipliers: once you complete 4 consecutive Pomodoros and return to the 5th session, points are multiplied:</Text>
               <Text style={styles.ruleText}>  - Sessions 1–4: 1x (base)</Text>
