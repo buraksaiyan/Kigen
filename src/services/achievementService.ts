@@ -380,17 +380,14 @@ class AchievementService {
     }
   }
 
-  // Check social media reduction achievements
+  // Check social time achievements
   private async checkSocialAchievements(): Promise<void> {
     try {
-      // For social achievements, we'll track total hours of social media usage reduction
-      // This could be based on time spent in focus sessions vs social media time
-      // For now, let's use a simple approach - total social media hours tracked
+      // Track total hours spent socializing (outside + with friends)
       const { UserStatsService } = await import('./userStatsService');
-      const monthlyStats = await UserStatsService.calculateCurrentMonthStats();
-      const totalSocialHours = Math.floor(monthlyStats.SOC / 60); // Convert minutes to hours
-      
-      const socialAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'social_reduction');
+      const totalSocialHours = await UserStatsService.getTotalSocialTimeHours();
+
+      const socialAchievements = ACHIEVEMENT_DEFINITIONS.filter(a => a.category === 'social_time');
       for (const achievement of socialAchievements) {
         if (totalSocialHours >= achievement.requirement) {
           await this.unlockAchievement(achievement.id);
@@ -488,6 +485,12 @@ class AchievementService {
             break;
           case 'completed_goals':
             shouldBeUnlocked = totalGoals >= def.requirement;
+            break;
+          case 'social_time':
+            // Calculate total social time hours for reconciliation
+            const { UserStatsService } = await import('./userStatsService');
+            const totalSocialTime = await UserStatsService.getTotalSocialTimeHours();
+            shouldBeUnlocked = totalSocialTime >= def.requirement;
             break;
           default:
             shouldBeUnlocked = stored.unlocked;
