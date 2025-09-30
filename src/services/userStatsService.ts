@@ -1545,4 +1545,24 @@ export class UserStatsService {
       return 0;
     }
   }
+
+  static async getTotalSocialTimeHours(): Promise<number> {
+    try {
+      const { PointsHistoryService } = await import('./PointsHistoryService');
+      const history = await PointsHistoryService.getHistory();
+
+      // Sum up hours from time_outside and time_with_friends entries
+      let totalHours = 0;
+      for (const entry of history) {
+        if ((entry.source === 'time_outside' || entry.source === 'time_with_friends') && entry.metadata?.hoursSpent) {
+          totalHours += entry.metadata.hoursSpent;
+        }
+      }
+
+      return Math.floor(totalHours);
+    } catch (error) {
+      console.error('Error getting total social time hours:', error);
+      return 0;
+    }
+  }
 }

@@ -5,7 +5,7 @@ import { showAchievementNotification } from './notificationService';
 
 export interface Achievement {
   id: string;
-  category: 'focus_hours' | 'current_streak' | 'max_streak' | 'completed_goals' | 'journal_entries' | 'body_focus_special' | 'meditation_special' | 'completed_habits' | 'completed_todos' | 'active_reminders' | 'social_reduction';
+  category: 'focus_hours' | 'current_streak' | 'max_streak' | 'completed_goals' | 'journal_entries' | 'body_focus_special' | 'meditation_special' | 'completed_habits' | 'completed_todos' | 'active_reminders' | 'social_time';
   title: string;
   description: string;
   emoji: string;
@@ -130,17 +130,17 @@ const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = 
   { id: 'reminders_750', category: 'active_reminders', title: 'Divine Organizer', description: '750 reminders of divine organization', emoji: '🕊️', requirement: 750 },
   { id: 'reminders_1000', category: 'active_reminders', title: 'Infinite Scheduler', description: '1000 reminders - infinite organization', emoji: '♾️', requirement: 1000 },
 
-  // Social Media Reduction Achievements
-  { id: 'social_1', category: 'social_reduction', title: 'Digital Balance', description: 'Reduce social media usage by 1 hour', emoji: '', requirement: 1 },
-  { id: 'social_5', category: 'social_reduction', title: 'Screen Wisdom', description: 'Reduce social media by 5 hours total', emoji: '🧠', requirement: 5 },
-  { id: 'social_10', category: 'social_reduction', title: 'Mindful User', description: '10 hours of mindful social reduction', emoji: '🌱', requirement: 10 },
-  { id: 'social_25', category: 'social_reduction', title: 'Digital Freedom', description: '25 hours of digital freedom achieved', emoji: '🕊️', requirement: 25 },
-  { id: 'social_50', category: 'social_reduction', title: 'Screen Master', description: '50 hours of masterful screen control', emoji: '⚡', requirement: 50 },
-  { id: 'social_100', category: 'social_reduction', title: 'Century Liberator', description: '100 hours of century-level liberation', emoji: '💎', requirement: 100 },
-  { id: 'social_250', category: 'social_reduction', title: 'Ultimate Balance', description: '250 hours of ultimate digital balance', emoji: '', requirement: 250 },
-  { id: 'social_500', category: 'social_reduction', title: 'Transcendent User', description: '500 hours transcending digital addiction', emoji: '🌟', requirement: 500 },
-  { id: 'social_750', category: 'social_reduction', title: 'Divine Balance', description: '750 hours of divine digital harmony', emoji: '🕊️', requirement: 750 },
-  { id: 'social_1000', category: 'social_reduction', title: 'Infinite Freedom', description: '1000 hours - infinite digital freedom', emoji: '♾️', requirement: 1000 },
+  // Social Time Achievements (time spent outside + with friends)
+  { id: 'social_1', category: 'social_time', title: 'Social Butterfly', description: 'Spend 1 hour socializing (outside or with friends)', emoji: '🦋', requirement: 1 },
+  { id: 'social_5', category: 'social_time', title: 'Friendly Spirit', description: '5 hours of quality social time', emoji: '👥', requirement: 5 },
+  { id: 'social_10', category: 'social_time', title: 'Community Builder', description: '10 hours connecting with others', emoji: '🤝', requirement: 10 },
+  { id: 'social_25', category: 'social_time', title: 'Social Champion', description: '25 hours of meaningful social interactions', emoji: '🏆', requirement: 25 },
+  { id: 'social_50', category: 'social_time', title: 'Relationship Master', description: '50 hours nurturing relationships', emoji: '💕', requirement: 50 },
+  { id: 'social_100', category: 'social_time', title: 'Century Connector', description: '100 hours of social excellence', emoji: '💎', requirement: 100 },
+  { id: 'social_250', category: 'social_time', title: 'Ultimate Socializer', description: '250 hours of ultimate social mastery', emoji: '🌟', requirement: 250 },
+  { id: 'social_500', category: 'social_time', title: 'Transcendent Friend', description: '500 hours transcending social boundaries', emoji: '✨', requirement: 500 },
+  { id: 'social_750', category: 'social_time', title: 'Divine Connector', description: '750 hours of divine social harmony', emoji: '🕊️', requirement: 750 },
+  { id: 'social_1000', category: 'social_time', title: 'Infinite Socializer', description: '1000 hours - infinite social connections', emoji: '♾️', requirement: 1000 },
 ];
 
 const STORAGE_KEY = '@inzone_achievements';
