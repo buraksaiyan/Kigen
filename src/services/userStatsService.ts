@@ -1549,7 +1549,7 @@ export class UserStatsService {
   static async getTotalSocialTimeHours(): Promise<number> {
     try {
       const { PointsHistoryService } = await import('./PointsHistoryService');
-      const history = await PointsHistoryService.getHistory();
+      const history = await PointsHistoryService.getPointsHistory(1000); // Get up to 1000 entries
 
       // Sum up hours from time_outside and time_with_friends entries
       let totalHours = 0;
