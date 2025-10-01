@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../config/theme';
 
-const COLOR_PRESET_KEY = '@kigen_color_preset';
+const COLOR_PRESET_KEY = '@inzone_color_preset';
 
 export interface ColorPreset {
   id: string;

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
-import { KigenLogo } from './KigenLogo';
+import { InZoneLogo } from './InZoneLogo';
 import { theme } from '../config/theme';
 
 interface SplashScreenProps {
@@ -58,7 +58,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           },
         ]}
       >
-        <KigenLogo size="large" variant="image" showJapanese={false} />
+        <InZoneLogo size="large" variant="image" showJapanese={false} />
       </Animated.View>
     </View>
   );

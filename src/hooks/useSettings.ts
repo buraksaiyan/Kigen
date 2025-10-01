@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS: Settings = {
   selectedLanguage: 'en' as Language,
 };
 
-const SETTINGS_STORAGE_KEY = 'kigen_app_settings';
+const SETTINGS_STORAGE_KEY = 'inzone_app_settings';
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);

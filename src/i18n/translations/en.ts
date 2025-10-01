@@ -23,7 +23,7 @@ export const en = {
     welcomeBack: 'Welcome Back',
     createYourAccount: 'Create your account',
     signInToYourAccount: 'Sign in to your account',
-    joinKigen: 'Join inzone and start your digital wellbeing journey',
+    joinInZone: 'Join InZone and start your digital wellbeing journey',
     welcomeBackPleaseSignIn: 'Welcome back! Please sign in to continue',
     username: 'Username',
     email: 'Email Address',

@@ -24,7 +24,7 @@ export const tr = {
     welcomeBack: 'Tekrar Hoş Geldiniz',
     createYourAccount: 'Hesabınızı oluşturun',
     signInToYourAccount: 'Hesabınıza giriş yapın',
-    joinKigen: 'inzone\'e katılın ve dijital refah yolculuğunuza başlayın',
+    joinInZone: 'InZone\'e katılın ve dijital refah yolculuğunuza başlayın',
     welcomeBackPleaseSignIn: 'Tekrar hoş geldiniz! Devam etmek için lütfen giriş yapın',
     username: 'Kullanıcı Adı',
     email: 'E-posta Adresi',

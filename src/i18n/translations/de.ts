@@ -24,7 +24,7 @@ export const de = {
     welcomeBack: 'Willkommen zurück',
     createYourAccount: 'Erstelle dein Konto',
     signInToYourAccount: 'Melde dich bei deinem Konto an',
-    joinKigen: 'Tritt inzone bei und beginne deine Reise zum digitalen Wohlbefinden',
+    joinInZone: 'Tritt InZone bei und beginne deine Reise zum digitalen Wohlbefinden',
     welcomeBackPleaseSignIn: 'Willkommen zurück! Bitte melde dich an, um fortzufahren',
     username: 'Benutzername',
     email: 'E-Mail-Adresse',

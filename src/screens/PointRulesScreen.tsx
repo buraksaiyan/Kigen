@@ -33,7 +33,7 @@ const PointRulesScreen: React.FC = () => {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <Text style={styles.description}>
-            Understanding how you earn points in Kigen and maintain streaks for maximum rewards.
+            Understanding how you earn points in InZone and maintain streaks for maximum rewards.
           </Text>
 
           <View style={styles.section}>

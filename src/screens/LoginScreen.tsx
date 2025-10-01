@@ -222,7 +222,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, theme }) => {
                 {isSignUp ? t('login.createYourAccount') : t('login.signInToYourAccount')}
               </Text>
               <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
-                {isSignUp ? t('login.joinKigen') : t('login.welcomeBackPleaseSignIn')}
+                {isSignUp ? t('login.joinInZone') : t('login.welcomeBackPleaseSignIn')}
               </Text>
             </View>
 
