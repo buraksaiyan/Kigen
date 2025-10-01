@@ -62,6 +62,8 @@ interface ActiveGoal {
   title: string;
   progress: number;
   deadline: string;
+  context?: string;
+  entryDate: string;
 }
 
 interface ActiveHabit {
@@ -73,12 +75,17 @@ interface ActiveHabit {
   targetDays?: number;
   failedAt?: string;
   failureReason?: 'missed_day' | 'gave_up';
+  startDate: string;
+  projectedEndDate?: string;
+  context?: string;
 }
 
 interface ActiveTodo {
   id: string;
   title: string;
   completed: boolean;
+  context?: string;
+  entryDate: string;
 }
 
 interface ActiveReminder {
@@ -86,6 +93,8 @@ interface ActiveReminder {
   title: string;
   scheduledTime: string;
   recurring: string;
+  context?: string;
+  entryDate: string;
 }
 
 interface CompletedGoal {
@@ -911,181 +920,384 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const renderActiveGoals = () => (
-    <View style={styles.carouselPanel}>
+    <View style={styles.swipeableSection}>
       <Text style={styles.sectionTitle}>Active Goals</Text>
-      <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
-        {activeGoals.length > 0 ? (
-          activeGoals.map((goal) => (
-            <View key={goal.id} style={styles.goalItem}>
-              <View style={styles.goalHeader}>
-                <Text style={styles.goalTitle}>{goal.title}</Text>
-                <Text style={styles.goalDeadline}>{goal.deadline}</Text>
-              </View>
-              <View style={styles.goalActions}>
-                <TouchableOpacity 
-                  style={styles.completeButton}
-                  onPress={() => completeGoal(goal.id)}
-                >
-                  <Icon name="check" size={16} color="#FFFFFF" />
-                  <Text style={styles.actionButtonText}>Complete</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.failButton}
-                  onPress={() => failGoal(goal.id)}
-                >
-                  <Icon name="close" size={16} color="#FFFFFF" />
-                  <Text style={styles.actionButtonText}>Fail</Text>
-                </TouchableOpacity>
+      {activeGoals.length > 0 ? (
+        <ScrollView 
+          horizontal 
+          pagingEnabled 
+          showsHorizontalScrollIndicator={false}
+          style={styles.swipeableContainer}
+        >
+          {activeGoals.map((goal) => (
+            <View key={goal.id} style={styles.fullSwipePage}>
+              <View style={styles.swipeCard}>
+                <Text style={styles.swipeCardTitle}>{goal.title}</Text>
+                
+                {goal.context && (
+                  <View style={styles.swipeContextSection}>
+                    <Text style={styles.swipeContextLabel}>Context:</Text>
+                    <Text style={styles.swipeContextText}>{goal.context}</Text>
+                  </View>
+                )}
+                
+                <View style={styles.swipeInfoRow}>
+                  <View style={styles.swipeInfoItem}>
+                    <Icon name="event" size={20} color={theme.colors.text.secondary} />
+                    <View style={styles.swipeInfoTextContainer}>
+                      <Text style={styles.swipeInfoLabel}>Entry Date</Text>
+                      <Text style={styles.swipeInfoValue}>
+                        {new Date(goal.entryDate || Date.now()).toLocaleDateString()}
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.swipeInfoItem}>
+                    <Icon name="flag" size={20} color={theme.colors.text.secondary} />
+                    <View style={styles.swipeInfoTextContainer}>
+                      <Text style={styles.swipeInfoLabel}>Deadline</Text>
+                      <Text style={styles.swipeInfoValue}>{goal.deadline}</Text>
+                    </View>
+                  </View>
+                </View>
+                
+                <View style={styles.swipeActions}>
+                  <TouchableOpacity 
+                    style={styles.swipeCompleteButton}
+                    onPress={() => completeGoal(goal.id)}
+                  >
+                    <Icon name="check-circle" size={24} color="#FFFFFF" />
+                    <Text style={styles.swipeActionButtonText}>Complete Goal</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.swipeDismissButton}
+                    onPress={() => failGoal(goal.id)}
+                  >
+                    <Icon name="cancel" size={24} color="#FFFFFF" />
+                    <Text style={styles.swipeActionButtonText}>Dismiss</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No active goals yet</Text>
-            <Text style={styles.emptyStateSubtext}>Set your first goal to get started!</Text>
-          </View>
-        )}
-      </ScrollView>
+          ))}
+        </ScrollView>
+      ) : (
+        <View style={styles.swipeableEmptyState}>
+          <Icon name="track-changes" size={48} color={theme.colors.text.secondary} style={styles.emptyIcon} />
+          <Text style={styles.emptyStateText}>No active goals</Text>
+          <Text style={styles.emptyStateSubtext}>Set your first goal to get started!</Text>
+        </View>
+      )}
     </View>
   );
 
   const renderActiveHabits = () => (
-    <View style={styles.carouselPanel}>
+    <View style={styles.swipeableSection}>
       <Text style={styles.sectionTitle}>Active Habits</Text>
-      <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
-        {activeHabits.length > 0 ? (
-          activeHabits.map((habit) => (
-            <View key={habit.id} style={styles.habitItem}>
-              <TouchableOpacity 
-                style={styles.habitCheckbox}
-                onPress={() => toggleHabitCompletion(habit.id)}
-              >
-                <Icon
-                  name={habit.completedToday ? 'check-box' : 'check-box-outline-blank'}
-                  size={24}
-                  color={habit.completedToday ? theme.colors.success : theme.colors.text.secondary}
-                />
-              </TouchableOpacity>
-              <View style={styles.habitContent}>
-                <Text style={styles.habitTitle}>{habit.title}</Text>
-                <View style={styles.progressBar}>
-                  <View 
+      {activeHabits.length > 0 ? (
+        <ScrollView 
+          horizontal 
+          pagingEnabled 
+          showsHorizontalScrollIndicator={false}
+          style={styles.swipeableContainer}
+        >
+          {activeHabits.map((habit) => {
+            const progressPercent = Math.min((habit.streak / (habit.targetDays || 30)) * 100, 100);
+            const projectedEnd = habit.projectedEndDate || new Date(
+              new Date(habit.startDate).getTime() + ((habit.targetDays || 30) - habit.streak) * 24 * 60 * 60 * 1000
+            ).toLocaleDateString();
+            
+            return (
+              <View key={habit.id} style={styles.fullSwipePage}>
+                <View style={styles.swipeCard}>
+                  {/* Header with title and dismiss button */}
+                  <View style={styles.habitSwipeHeader}>
+                    <Text style={styles.swipeCardTitle}>{habit.title}</Text>
+                    <TouchableOpacity 
+                      style={styles.habitDismissButton}
+                      onPress={() => {
+                        Alert.alert(
+                          'Dismiss Habit',
+                          'This will remove the habit from your active list.',
+                          [
+                            { text: 'Dismiss', onPress: () => handleHabitAction(habit.id, 'give_up') },
+                            { text: 'Cancel', style: 'cancel' }
+                          ]
+                        );
+                      }}
+                    >
+                      <Icon name="close" size={18} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  </View>
+                  
+                  {/* Context if available */}
+                  {habit.context && (
+                    <View style={styles.swipeContextSection}>
+                      <Text style={styles.swipeContextLabel}>Context:</Text>
+                      <Text style={styles.swipeContextText}>{habit.context}</Text>
+                    </View>
+                  )}
+                  
+                  {/* Streak information */}
+                  <View style={styles.habitStreakInfo}>
+                    <View style={styles.habitStreakRow}>
+                      <Icon name="local-fire-department" size={32} color="#FF6B35" />
+                      <Text style={styles.habitStreakNumber}>{habit.streak}</Text>
+                      <Text style={styles.swipeInfoLabel}> / {habit.targetDays || 30} days</Text>
+                    </View>
+                    <View style={styles.habitProgressBar}>
+                      <View 
+                        style={[
+                          styles.habitProgressFill, 
+                          { width: `${progressPercent}%` }
+                        ]} 
+                      />
+                    </View>
+                  </View>
+                  
+                  {/* Dates row */}
+                  <View style={styles.habitDatesRow}>
+                    <View style={styles.habitDateItem}>
+                      <Text style={styles.habitDateLabel}>Start Date</Text>
+                      <Text style={styles.habitDateValue}>
+                        {new Date(habit.startDate).toLocaleDateString()}
+                      </Text>
+                    </View>
+                    <View style={styles.habitDateItem}>
+                      <Text style={styles.habitDateLabel}>Projected End</Text>
+                      <Text style={styles.habitDateValue}>{projectedEnd}</Text>
+                    </View>
+                  </View>
+                  
+                  {/* Daily completion button */}
+                  <TouchableOpacity 
                     style={[
-                      styles.progressFill, 
-                      { width: `${Math.min((habit.streak / (habit.targetDays || 30)) * 100, 100)}%` }
-                    ]} 
-                  />
-                </View>
-                <View style={styles.habitStreak}>
-                  <Icon name="local-fire-department" size={16} color="#FF6B35" />
-                  <Text style={styles.habitStreakText}>
-                    {habit.streak} of {habit.targetDays || 30} days
-                  </Text>
+                      styles.habitDailyButton,
+                      habit.completedToday && styles.habitDailyButtonCompleted
+                    ]}
+                    onPress={() => toggleHabitCompletion(habit.id)}
+                    disabled={habit.completedToday}
+                  >
+                    <Icon 
+                      name={habit.completedToday ? 'check-circle' : 'check-circle-outline'} 
+                      size={24} 
+                      color="#FFFFFF" 
+                    />
+                    <Text style={styles.habitDailyButtonText}>
+                      {habit.completedToday ? 'Completed Today ✓' : 'Mark as Complete'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity 
-                style={styles.habitFailButton}
-                onPress={() => {
-                  Alert.alert(
-                    'Fail Habit',
-                    'This will mark the habit as failed and remove it from active habits.',
-                    [
-                      { text: 'Fail Habit', onPress: () => handleHabitAction(habit.id, 'give_up') },
-                      { text: 'Cancel', style: 'cancel' }
-                    ]
-                  );
-                }}
-              >
-                <Icon name="cancel" size={20} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No active habits yet</Text>
-            <Text style={styles.emptyStateSubtext}>Build healthy routines by adding daily habits</Text>
-          </View>
-        )}
-      </ScrollView>
+            );
+          })}
+        </ScrollView>
+      ) : (
+        <View style={styles.swipeableEmptyState}>
+          <Icon name="self-improvement" size={48} color={theme.colors.text.secondary} style={styles.emptyIcon} />
+          <Text style={styles.emptyStateText}>No active habits</Text>
+          <Text style={styles.emptyStateSubtext}>Build healthy routines by adding daily habits</Text>
+        </View>
+      )}
     </View>
   );
 
-  const renderActiveTodos = () => (
-    <View style={styles.carouselPanel}>
-      <Text style={styles.sectionTitle}>Active To-Do Lists</Text>
-      <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+  const renderActiveTodos = () => {
+    // Group todos into pages of max 3
+    const todosPerPage = 3;
+    const todoPages: ActiveTodo[][] = [];
+    for (let i = 0; i < activeTodos.length; i += todosPerPage) {
+      todoPages.push(activeTodos.slice(i, i + todosPerPage));
+    }
+    
+    const handleDismissTodo = async (todoId: string) => {
+      try {
+        const updatedTodos = activeTodos.filter(todo => todo.id !== todoId);
+        setActiveTodos(updatedTodos);
+        await AsyncStorage.setItem('@inzone_todos', JSON.stringify(updatedTodos));
+      } catch (error) {
+        console.error('Error dismissing todo:', error);
+        Alert.alert('Error', 'Failed to dismiss todo');
+      }
+    };
+    
+    return (
+      <View style={styles.swipeableSection}>
+        <Text style={styles.sectionTitle}>Active To-Dos</Text>
         {activeTodos.length > 0 ? (
-          activeTodos.map((todo) => (
-            <View key={todo.id} style={styles.todoItem}>
-              <TouchableOpacity 
-                style={styles.todoCheckbox}
-                onPress={() => toggleTodoCompletion(todo.id)}
-              >
-                <Icon
-                  name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
-                  size={24}
-                  color={todo.completed ? theme.colors.success : theme.colors.text.secondary}
-                />
-              </TouchableOpacity>
-              <Text style={[
-                styles.todoTitle,
-                todo.completed && styles.todoTitleCompleted
-              ]}>
-                {todo.title}
-              </Text>
-            </View>
-          ))
+          <ScrollView 
+            horizontal 
+            pagingEnabled 
+            showsHorizontalScrollIndicator={false}
+            style={styles.swipeableContainer}
+          >
+            {todoPages.map((page, pageIndex) => (
+              <View key={`todo-page-${pageIndex}`} style={styles.bulletSwipePage}>
+                <View style={styles.bulletContainer}>
+                  {page.map((todo, index) => (
+                    <View 
+                      key={todo.id} 
+                      style={[
+                        styles.bulletItem,
+                        index === page.length - 1 && styles.bulletItemLast
+                      ]}
+                    >
+                      <TouchableOpacity 
+                        style={styles.bulletCheckbox}
+                        onPress={() => toggleTodoCompletion(todo.id)}
+                      >
+                        <Icon
+                          name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
+                          size={24}
+                          color={todo.completed ? theme.colors.success : theme.colors.text.secondary}
+                        />
+                      </TouchableOpacity>
+                      
+                      <View style={styles.bulletContent}>
+                        <Text style={styles.bulletTitle}>{todo.title}</Text>
+                        {todo.context && (
+                          <Text style={styles.bulletContext}>{todo.context}</Text>
+                        )}
+                        <Text style={styles.bulletDate}>
+                          Added: {new Date(todo.entryDate || Date.now()).toLocaleDateString()}
+                        </Text>
+                      </View>
+                      
+                      <TouchableOpacity 
+                        style={styles.bulletDismissButton}
+                        onPress={() => {
+                          Alert.alert(
+                            'Dismiss To-Do',
+                            'Remove this task without completing it?',
+                            [
+                              { text: 'Dismiss', onPress: () => handleDismissTodo(todo.id), style: 'destructive' },
+                              { text: 'Cancel', style: 'cancel' }
+                            ]
+                          );
+                        }}
+                      >
+                        <Icon name="close" size={14} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         ) : (
-          <View style={styles.emptyState}>
+          <View style={styles.swipeableEmptyState}>
+            <Icon name="checklist" size={48} color={theme.colors.text.secondary} style={styles.emptyIcon} />
             <Text style={styles.emptyStateText}>No active tasks</Text>
             <Text style={styles.emptyStateSubtext}>Stay organized by adding tasks to your to-do list</Text>
           </View>
         )}
-      </ScrollView>
-    </View>
-  );
+      </View>
+    );
+  };
 
-  const renderActiveReminders = () => (
-    <View style={styles.carouselPanel}>
-      <Text style={styles.sectionTitle}>Active Reminders</Text>
-      <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
+  const renderActiveReminders = () => {
+    // Group reminders into pages of max 3
+    const remindersPerPage = 3;
+    const reminderPages: ActiveReminder[][] = [];
+    for (let i = 0; i < activeReminders.length; i += remindersPerPage) {
+      reminderPages.push(activeReminders.slice(i, i + remindersPerPage));
+    }
+    
+    return (
+      <View style={styles.swipeableSection}>
+        <Text style={styles.sectionTitle}>Active Reminders</Text>
         {activeReminders.length > 0 ? (
-          activeReminders.map((reminder) => (
-            <View key={reminder.id} style={styles.reminderItem}>
-              <View style={styles.reminderContent}>
-                <Text style={styles.reminderTitle}>{reminder.title}</Text>
-                <View style={styles.reminderTime}>
-                  <Icon name="schedule" size={16} color={theme.colors.text.secondary} />
-                  <Text style={styles.reminderTimeText}>
-                    {new Date(reminder.scheduledTime).toLocaleTimeString([], { 
+          <ScrollView 
+            horizontal 
+            pagingEnabled 
+            showsHorizontalScrollIndicator={false}
+            style={styles.swipeableContainer}
+          >
+            {reminderPages.map((page, pageIndex) => (
+              <View key={`reminder-page-${pageIndex}`} style={styles.bulletSwipePage}>
+                <View style={styles.bulletContainer}>
+                  {page.map((reminder, index) => {
+                    const reminderDate = new Date(reminder.scheduledTime);
+                    const isToday = reminderDate.toDateString() === new Date().toDateString();
+                    const dateStr = isToday ? 'Today' : reminderDate.toLocaleDateString();
+                    const timeStr = reminderDate.toLocaleTimeString([], { 
                       hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </Text>
-                  {reminder.recurring !== 'none' && (
-                    <Text style={styles.reminderRecurring}>
-                      • {reminder.recurring}
-                    </Text>
-                  )}
+                      minute: '2-digit',
+                      hour12: true
+                    });
+                    
+                    return (
+                      <View 
+                        key={reminder.id} 
+                        style={[
+                          styles.bulletItem,
+                          index === page.length - 1 && styles.bulletItemLast
+                        ]}
+                      >
+                        <View style={styles.bulletContent}>
+                          <Text style={styles.bulletTitle}>{reminder.title}</Text>
+                          {reminder.context && (
+                            <Text style={styles.bulletContext}>{reminder.context}</Text>
+                          )}
+                          <Text style={styles.bulletDate}>
+                            Added: {new Date(reminder.entryDate || Date.now()).toLocaleDateString()}
+                          </Text>
+                          
+                          {/* Reminder date/time display */}
+                          <View style={styles.bulletReminderTime}>
+                            <Icon name="alarm" size={16} color={theme.colors.primary} />
+                            <Text style={styles.bulletReminderTimeText}>
+                              {dateStr} at {timeStr}
+                            </Text>
+                          </View>
+                          
+                          {reminder.recurring !== 'none' && (
+                            <View style={[styles.bulletReminderTime, { backgroundColor: theme.colors.secondary + '20' }]}>
+                              <Icon name="repeat" size={16} color={theme.colors.secondary} />
+                              <Text style={[styles.bulletReminderTimeText, { color: theme.colors.secondary }]}>
+                                {reminder.recurring}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                        
+                        <TouchableOpacity 
+                          style={styles.bulletDismissButton}
+                          onPress={() => {
+                            Alert.alert(
+                              'Cancel Reminder',
+                              'This will permanently cancel this reminder.',
+                              [
+                                { 
+                                  text: 'Cancel Reminder', 
+                                  onPress: () => handleDisableReminder(reminder.id),
+                                  style: 'destructive'
+                                },
+                                { text: 'Keep', style: 'cancel' }
+                              ]
+                            );
+                          }}
+                        >
+                          <Icon name="close" size={14} color="#FFFFFF" />
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  })}
                 </View>
               </View>
-              <TouchableOpacity 
-                style={styles.reminderAction}
-                onPress={() => handleDisableReminder(reminder.id)}
-              >
-                <Icon name="notifications-off" size={20} color={theme.colors.text.secondary} />
-              </TouchableOpacity>
-            </View>
-          ))
+            ))}
+          </ScrollView>
         ) : (
-          <View style={styles.emptyState}>
+          <View style={styles.swipeableEmptyState}>
+            <Icon name="notifications-active" size={48} color={theme.colors.text.secondary} style={styles.emptyIcon} />
             <Text style={styles.emptyStateText}>No active reminders</Text>
             <Text style={styles.emptyStateSubtext}>Set up reminders to stay on track</Text>
           </View>
         )}
-      </ScrollView>
-    </View>
-  );
+      </View>
+    );
+  };
 
   const renderPhoneUsage = () => {
     if (!hasUsagePermission) {
@@ -2044,5 +2256,274 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     color: theme.colors.text.secondary,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  // New swipeable tracking section styles
+  swipeableSection: {
+    marginBottom: 20,
+    marginHorizontal: 16,
+    marginTop: 12,
+  },
+  swipeableContainer: {
+    marginTop: 12,
+  },
+  fullSwipePage: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: screenWidth - 32,
+  },
+  swipeCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    elevation: 4,
+    padding: 20,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    width: '100%',
+  },
+  swipeCardTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  swipeContextSection: {
+    backgroundColor: theme.colors.background,
+    borderLeftColor: theme.colors.primary,
+    borderLeftWidth: 3,
+    borderRadius: 8,
+    marginBottom: 16,
+    padding: 12,
+  },
+  swipeContextLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  swipeContextText: {
+    color: theme.colors.text.primary,
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  swipeInfoRow: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  swipeInfoItem: {
+    alignItems: 'flex-start',
+    flex: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+  },
+  swipeInfoTextContainer: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  swipeInfoLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  swipeInfoValue: {
+    color: theme.colors.text.primary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  swipeActions: {
+    flexDirection: 'column',
+    gap: 12,
+  },
+  swipeCompleteButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.success,
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 14,
+  },
+  swipeDismissButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.danger,
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 14,
+  },
+  swipeActionButtonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  swipeableEmptyState: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    justifyContent: 'center',
+    marginTop: 12,
+    minHeight: 200,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+    opacity: 0.5,
+  },
+  // Habit-specific swipe styles
+  habitSwipeHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  habitDismissButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.danger,
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    width: 32,
+  },
+  habitStreakInfo: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 12,
+    marginBottom: 16,
+    padding: 16,
+  },
+  habitStreakRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  habitStreakNumber: {
+    color: theme.colors.primary,
+    fontSize: 36,
+    fontWeight: '700',
+    marginLeft: 12,
+  },
+  habitProgressBar: {
+    backgroundColor: theme.colors.border,
+    borderRadius: 8,
+    height: 12,
+    marginTop: 8,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  habitProgressFill: {
+    backgroundColor: theme.colors.primary,
+    height: '100%',
+  },
+  habitDatesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  habitDateItem: {
+    flex: 1,
+    paddingHorizontal: 4,
+  },
+  habitDateLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: 11,
+    marginBottom: 4,
+  },
+  habitDateValue: {
+    color: theme.colors.text.primary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  habitDailyButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 12,
+    paddingVertical: 14,
+  },
+  habitDailyButtonCompleted: {
+    backgroundColor: theme.colors.success,
+  },
+  habitDailyButtonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  // Todo/Reminder bullet styles
+  bulletSwipePage: {
+    width: screenWidth - 32,
+  },
+  bulletContainer: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    elevation: 4,
+    padding: 20,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  bulletItem: {
+    backgroundColor: theme.colors.background,
+    borderLeftColor: theme.colors.primary,
+    borderLeftWidth: 4,
+    borderRadius: 10,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 14,
+  },
+  bulletItemLast: {
+    marginBottom: 0,
+  },
+  bulletCheckbox: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  bulletContent: {
+    flex: 1,
+  },
+  bulletTitle: {
+    color: theme.colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  bulletContext: {
+    color: theme.colors.text.secondary,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 6,
+  },
+  bulletDate: {
+    color: theme.colors.text.secondary,
+    fontSize: 12,
+  },
+  bulletDismissButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.danger,
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    marginLeft: 12,
+    width: 24,
+  },
+  bulletReminderTime: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary + '20',
+    borderRadius: 6,
+    flexDirection: 'row',
+    marginTop: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  bulletReminderTimeText: {
+    color: theme.colors.primary,
+    fontSize: 13,
+    fontWeight: '600',
+    marginLeft: 4,
   },
 });
