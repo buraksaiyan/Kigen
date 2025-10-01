@@ -107,17 +107,9 @@ class NativeUsageTracker {
       // Show helpful instructions
       Alert.alert(
         'Enable Usage Access',
-        'In the settings that just opened:\n\n1. Find "Expo Go" or your app in the list\n2. Toggle the switch to enable usage access\n3. Return to this app\n\nWe\'ll automatically detect when you grant permission.',
+        'In the settings that just opened:\n\n1. Find "InZone" in the list\n2. Toggle the switch to enable usage access\n3. Return to this app\n\nWe\'ll automatically detect when you grant permission.',
         [
-          { text: 'Got it' },
-          {
-            text: 'I Already Granted It',
-            onPress: async () => {
-              // User claims they already granted permission
-              await this.setPermissionGranted();
-              this.stopPermissionMonitoring();
-            }
-          }
+          { text: 'Got it' }
         ]
       );
       
@@ -127,17 +119,9 @@ class NativeUsageTracker {
       // Provide manual instructions as fallback
       Alert.alert(
         'Manual Setup Required', 
-        'Please manually go to:\n\nSettings > Apps > Special app access > Usage access\n\nThen find "Expo Go" and enable usage access.',
+        'Please manually go to:\n\nSettings > Apps > Special app access > Usage access\n\nThen find "InZone" and enable usage access.',
         [
           { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'I Already Granted It',
-            onPress: async () => {
-              // User claims they already granted permission
-              await this.setPermissionGranted();
-              Alert.alert('Permission Set', 'Usage access permission has been manually confirmed. You may need to restart the app for changes to take effect.');
-            }
-          },
           { 
             text: 'Open Settings', 
             onPress: () => {

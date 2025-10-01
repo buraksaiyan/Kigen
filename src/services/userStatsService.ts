@@ -1048,6 +1048,35 @@ export class UserStatsService {
     });
   }
 
+  static async grantAchievementDETBonus(achievementId?: string): Promise<void> {
+    console.log('🏆 Granting achievement DET bonus');
+    
+    // Ensure user profile exists
+    await this.ensureUserProfile();
+    
+    // Award DET points for achievement unlock (+5 per achievement as per rating system rules)
+    const points = 5;
+    
+    // Record points in history
+    await PointsHistoryService.recordPoints(
+      'achievement_unlocked',
+      points,
+      'DET',
+      'Achievement unlocked - Determination bonus',
+      { achievementId: achievementId || 'unknown' }
+    );
+    
+    // Update monthly accumulation
+    await this.updateMonthlyStats();
+    
+    console.log('🏆 Achievement DET bonus granted:', points, 'points');
+    
+    // Sync with leaderboard asynchronously
+    this.syncUserToLeaderboard().catch(error => {
+      console.error('Background leaderboard sync failed:', error);
+    });
+  }
+
   static async recordGoalCreation(title: string): Promise<void> {
     // Ensure user profile exists
     await this.ensureUserProfile();

@@ -253,27 +253,8 @@ export default function DashboardCustomizationScreen({
   // category tabs removed - only All Sections are shown in this customization UI
 
   const renderUsageStats = () => {
-    if (!usageStats) return null;
-    
-    return (
-      <View style={styles.statsContainer}>
-        <Text style={styles.statsTitle}>Dashboard Overview</Text>
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{usageStats.enabledSections}</Text>
-            <Text style={styles.statLabel}>Active Sections</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{usageStats.disabledSections}</Text>
-            <Text style={styles.statLabel}>Hidden Sections</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{Object.keys(usageStats.categories).length}</Text>
-            <Text style={styles.statLabel}>Categories</Text>
-          </View>
-        </View>
-      </View>
-    );
+    // Dashboard Overview section removed
+    return null;
   };
 
   if (loading) {
@@ -427,6 +408,8 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text.secondary,
     fontWeight: '600',
+    flexShrink: 0,
+    minWidth: 50,
   },
   container: {
     backgroundColor: theme.colors.background,

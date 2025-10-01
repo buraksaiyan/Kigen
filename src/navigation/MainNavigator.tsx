@@ -26,6 +26,7 @@ import PointRulesScreen from '../screens/PointRulesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import HabitStreakTestScreen from '../debug/HabitStreakTestScreen';
 import ResponsiveTestScreen from '../debug/ResponsiveTestScreen';
+import { LoginScreen } from '../screens/LoginScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -35,7 +36,7 @@ import { RightSidebar } from '../components/RightSidebar';
 
 // Import services and utilities
 import { theme } from '../config/theme';
-import { AuthProvider } from '../modules/auth/AuthProvider';
+import { AuthProvider, useAuth } from '../modules/auth/AuthProvider';
 import { UserStatsService } from '../services/userStatsService';
 import themeService from '../services/themeService';
 import { useTheme } from '../contexts/ThemeContext';
@@ -90,6 +91,8 @@ export const MainNavigator: React.FC = () => {
 // Main Screen component that handles the custom navigation system
 const MainScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { theme: appTheme } = useTheme();
+  const { isLoginScreenVisible, hideLoginScreen } = useAuth();
   const [activeScreen, setActiveScreen] = useState<ScreenName>('Dashboard');
   // local state used to force re-render when theme changes
   const [, setThemeVersion] = useState(0);
@@ -352,6 +355,13 @@ const MainScreen: React.FC = () => {
               setIsDashboardCustomizationOpen(false);
               // Refresh dashboard here if needed
             }}
+          />
+        )}
+
+        {isLoginScreenVisible && (
+          <LoginScreen
+            onClose={hideLoginScreen}
+            theme={appTheme}
           />
         )}
     </View>

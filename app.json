@@ -40,7 +40,8 @@
       "package": "com.inzone.app",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.PACKAGE_USAGE_STATS"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",

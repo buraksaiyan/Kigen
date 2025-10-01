@@ -1389,9 +1389,6 @@ export const DashboardScreen: React.FC = () => {
             );
           })}
         </View>
-        <TouchableOpacity style={styles.improveButton}>
-          <Text style={styles.improveButtonText}>Improve Focus</Text>
-        </TouchableOpacity>
       </View>
     );
   };

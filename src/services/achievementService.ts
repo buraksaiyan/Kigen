@@ -228,6 +228,13 @@ class AchievementService {
         
         // Show achievement notification to user
         showAchievementNotification(achievement.title, achievement.description);
+
+        // Award DET points for achievement completion (+5 per achievement)
+        try {
+          await UserStatsService.grantAchievementDETBonus(achievement.id);
+        } catch (error) {
+          console.error('Error granting achievement DET bonus:', error);
+        }
       }
     } catch (error) {
       console.error('Error unlocking achievement:', error);

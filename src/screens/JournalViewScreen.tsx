@@ -54,7 +54,7 @@ export const JournalViewScreen: React.FC = () => {
           <>
             <Text style={styles.title}>{entry.content.split('\n')[0] || 'Journal Entry'}</Text>
             <Text style={styles.date}>{entry.date}</Text>
-            <Text style={styles.body}>{entry.content}</Text>
+            <Text style={styles.body}>{entry.content.split('\n').slice(1).join('\n') || entry.content}</Text>
           </>
         ) : (
           <Text style={styles.missing}>Entry not found.</Text>

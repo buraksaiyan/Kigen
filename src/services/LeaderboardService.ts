@@ -176,17 +176,17 @@ class LeaderboardService {
       const isAvailable = await this.isSupabaseAvailable();
 
       if (!isAvailable) {
-  console.warn('Supabase unavailable. Using cached leaderboard data.');
+        console.warn('Supabase unavailable. Using cached leaderboard data.');
         const cached = await this.getCachedLeaderboard();
 
         // Merge current user with cached data
-        let leaderboardData = cached.length > 0 ? cached : await this.getMockGlobalLeaderboard();
+        let leaderboardData: LeaderboardEntry[] = [...cached];
         if (currentUser) {
           // Remove any existing entry for current user and add updated one
-          leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
+          leaderboardData = leaderboardData.filter((entry: LeaderboardEntry) => entry.id !== currentUser!.id);
           leaderboardData.push(currentUser);
           // Sort by total points
-          leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+          leaderboardData.sort((a: LeaderboardEntry, b: LeaderboardEntry) => (b.totalPoints || 0) - (a.totalPoints || 0));
         }
 
         return leaderboardData.slice(0, limit);
@@ -226,29 +226,18 @@ class LeaderboardService {
         return leaderboardData.slice(0, limit);
       }
       
-      // If everything fails, generate mock data for testing
-      console.warn('Using mock leaderboard data - check Supabase connection');
-      const mockData = await this.getMockGlobalLeaderboard();
-
-      // Merge current user with mock data
-      let leaderboardData = [...mockData];
-      if (currentUser) {
-        leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
-        leaderboardData.push(currentUser);
-        leaderboardData.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
-      }
-
-      await this.cacheLeaderboard(leaderboardData);
-      return leaderboardData.slice(0, limit);
+      // If everything fails, return empty array
+      console.warn('No leaderboard data available - check Supabase connection');
+      return currentUser ? [currentUser] : [];
       
     } catch (error) {
       console.error('Error getting global leaderboard:', error);
       
-      // Fall back to cached or mock data
+      // Fall back to cached data only
       const cached = await this.getCachedLeaderboard();
 
       // Merge current user with fallback data
-      let leaderboardData = cached.length > 0 ? [...cached] : await this.getMockGlobalLeaderboard();
+      let leaderboardData = [...cached];
       if (currentUser) {
         leaderboardData = leaderboardData.filter(entry => entry.id !== currentUser!.id);
         leaderboardData.push(currentUser);
@@ -277,28 +266,6 @@ class LeaderboardService {
     }
   }
 
-  // Mock global leaderboard for testing
-  private static async getMockGlobalLeaderboard(): Promise<LeaderboardEntry[]> {
-    const mockNames = [
-      'ZenMaster', 'FocusWarrior', 'MindfulSage', 'ProductivityNinja', 'FlowState',
-      'DeepThinker', 'ConcentrationKing', 'MeditationGuru', 'TaskCrusher', 'MindfulWarrior'
-    ];
-
-    const mockCountries = ['US', 'JP', 'DE', 'CA', 'AU', 'UK', 'FR', 'NL', 'SE', 'NO'];
-    const cardTiers = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond'];
-
-    return mockNames.map((name, index) => ({
-      id: `mock_user_${index}`,
-      username: name,
-      totalPoints: Math.floor(Math.random() * 5000) + 1000,
-      monthlyPoints: Math.floor(Math.random() * 1000) + 200,
-      weeklyPoints: Math.floor(Math.random() * 300) + 50,
-      overallRating: Math.floor(Math.random() * 100) + 50,
-      cardTier: cardTiers[Math.floor(Math.random() * cardTiers.length)] || 'Bronze',
-      country: mockCountries[Math.floor(Math.random() * mockCountries.length)],
-      lastUpdated: new Date().toISOString(),
-    })).sort((a, b) => b.totalPoints - a.totalPoints);
-  }
 }
 
 export default LeaderboardService;
