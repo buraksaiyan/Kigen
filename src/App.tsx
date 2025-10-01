@@ -7,6 +7,8 @@ import { I18nProvider } from './i18n/I18nProvider';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { clearOldFocusData } from './utils/clearOldData';
+import { HabitStreakService } from './services/habitStreakService';
+import { HabitBackgroundService } from './services/habitBackgroundService';
 
 // Conditional import for web compatibility
 let GestureHandler: any = View;
@@ -25,6 +27,23 @@ const AppContent = () => {
   useEffect(() => {
     // Clear old data to prevent duplicate key issues
     clearOldFocusData();
+    
+    // Initialize habit streak service for daily checks and notifications
+    const initializeServices = async () => {
+      try {
+        await HabitStreakService.initialize();
+        await HabitBackgroundService.initialize();
+      } catch (error) {
+        console.error('Failed to initialize habit services:', error);
+      }
+    };
+    
+    initializeServices();
+
+    // Cleanup on unmount
+    return () => {
+      HabitBackgroundService.cleanup();
+    };
   }, []);
 
   return (

@@ -24,6 +24,7 @@ import PointsHistoryScreen from '../screens/PointsHistoryScreen';
 import DashboardCustomizationScreen from '../screens/DashboardCustomizationScreen';
 import PointRulesScreen from '../screens/PointRulesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import HabitStreakTestScreen from '../debug/HabitStreakTestScreen';
 // Journals/new-entry UI has been removed. Navigation will point to History for journaling access.
 
 // Import components
@@ -52,6 +53,7 @@ type RootStackParamList = {
   HabitEntry: undefined;
   PointRules: undefined;
   Notifications: undefined;
+  HabitStreakTest: undefined;
 };
 
 export const MainNavigator: React.FC = () => {
@@ -74,6 +76,7 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="HabitEntry" component={HabitsCreationPage} />
           <Stack.Screen name="PointRules" component={PointRulesScreen} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen name="HabitStreakTest" component={HabitStreakTestScreen} />
         </Stack.Navigator>
         
       </AuthProvider>

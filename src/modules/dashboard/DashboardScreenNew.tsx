@@ -1318,6 +1318,11 @@ export const DashboardScreen: React.FC = () => {
           {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
+        {__DEV__ && (
+          <TouchableOpacity style={styles.topBarDebugButton} onPress={() => navigation.navigate('HabitStreakTest' as never)}>
+            <Icon name="bug-report" size={20} color={theme.colors.accent} />
+          </TouchableOpacity>
+        )}
         {/* center area with app logo - centered in the top bar */}
         <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
       </View>
@@ -1449,6 +1454,17 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     left: 12,
     position: 'absolute',
     width: 48,
+    zIndex: 1,
+  },
+  topBarDebugButton: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    left: 68,
+    position: 'absolute',
+    width: 40,
     zIndex: 1,
   },
   topBarButtonIcon: {
