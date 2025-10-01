@@ -137,6 +137,107 @@ export default function HabitStreakTestScreen() {
     }
   };
 
+  const createOldHabitForTesting = async () => {
+    try {
+      const testHabit = {
+        id: `old-habit-${Date.now()}`,
+        title: 'Old Habit - 5 Days Ago',
+        description: 'Test habit last completed 5 days ago',
+        frequency: 'daily',
+        targetDays: 30,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        streak: 5, // Had a 5-day streak
+        lastCompleted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toDateString(), // Completed 5 days ago
+      };
+
+      const existingHabits = await AsyncStorage.getItem('@inzone_habits');
+      const habitsArray = existingHabits ? JSON.parse(existingHabits) : [];
+      habitsArray.push(testHabit);
+
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(habitsArray));
+      append(`Created old habit with 5-day streak, last completed 5 days ago (should reset to 0)`);
+      await loadHabits();
+    } catch (error) {
+      append(`Error creating old habit: ${error}`);
+    }
+  };
+
+  const simulateHabitCompletion = async () => {
+    try {
+      const testHabit = habits.find(h => h.streak === 0 || h.streak === undefined);
+      if (!testHabit) {
+        append('No habit with 0 streak found to test completion');
+        return;
+      }
+
+      const today = new Date().toDateString();
+      const updatedHabits = habits.map(h => 
+        h.id === testHabit.id 
+          ? { ...h, streak: (h.streak || 0) + 1, lastCompleted: today }
+          : h
+      );
+
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(updatedHabits));
+      append(`Simulated completion for "${testHabit.title}" - streak: ${testHabit.streak || 0} → ${(testHabit.streak || 0) + 1}`);
+      await loadHabits();
+    } catch (error) {
+      append(`Error simulating completion: ${error}`);
+    }
+  };
+
+  const runStreakLogicTest = async () => {
+    append('=== RUNNING STREAK LOGIC TEST ===');
+    
+    // Test 1: Create a habit completed yesterday (should not reset)
+    append('Test 1: Creating habit completed yesterday (should not reset)');
+    const yesterdayHabit = {
+      id: `yesterday-${Date.now()}`,
+      title: 'Yesterday Habit',
+      frequency: 'daily',
+      targetDays: 7,
+      isActive: true,
+      streak: 3,
+      lastCompleted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toDateString(), // Yesterday
+    };
+
+    // Test 2: Create a habit completed 3 days ago (should reset)
+    append('Test 2: Creating habit completed 3 days ago (should reset)');
+    const oldHabit = {
+      id: `old-${Date.now()}`,
+      title: 'Old Habit (3 days)',
+      frequency: 'daily',
+      targetDays: 7,
+      isActive: true,
+      streak: 4,
+      lastCompleted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toDateString(), // 3 days ago
+    };
+
+    try {
+      const existingHabits = await AsyncStorage.getItem('@inzone_habits');
+      const habitsArray = existingHabits ? JSON.parse(existingHabits) : [];
+      habitsArray.push(yesterdayHabit, oldHabit);
+
+      await AsyncStorage.setItem('@inzone_habits', JSON.stringify(habitsArray));
+      append('Test habits created');
+      await loadHabits();
+
+      // Run the streak check
+      append('Running streak check...');
+      const result = await HabitStreakService.checkAndResetMissedStreaks();
+      
+      append(`Check results: ${result.habitsResetCount} habits reset`);
+      result.resetHabits.forEach(habit => {
+        append(`- Reset "${habit.title}" from ${habit.previousStreak} to 0 days`);
+      });
+
+      await loadHabits();
+      append('=== TEST COMPLETE ===');
+    } catch (error) {
+      append(`Error in streak logic test: ${error}`);
+    }
+  };
+
   useEffect(() => {
     loadHabits();
     append('Habit Streak Test Screen loaded');
@@ -161,14 +262,25 @@ export default function HabitStreakTestScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Test Actions</Text>
+        <Text style={styles.sectionTitle}>Basic Test Actions</Text>
         <Button title="Create Test Habit (2-day old streak)" onPress={createTestHabit} />
-        <Button title="Force Streak Check" onPress={forceStreakCheck} />
-        <Button title="Schedule Midday Reminders" onPress={scheduleReminders} />
-        <Button title="Get Habits Needing Attention" onPress={getHabitsNeedingAttention} />
-        <Button title="Force Background Check" onPress={forceBackgroundCheck} />
-        <Button title="Reset Test Habit Manually" onPress={resetTestHabitManually} />
+        <Button title="Create Old Habit (5 days ago)" onPress={createOldHabitForTesting} />
+        <Button title="Simulate Habit Completion" onPress={simulateHabitCompletion} />
         <Button title="Clear All Habits" onPress={clearAllHabits} color="#ff4444" />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Streak System Tests</Text>
+        <Button title="🧪 Run Full Streak Logic Test" onPress={runStreakLogicTest} />
+        <Button title="Force Streak Check" onPress={forceStreakCheck} />
+        <Button title="Reset Test Habit Manually" onPress={resetTestHabitManually} />
+        <Button title="Get Habits Needing Attention" onPress={getHabitsNeedingAttention} />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Background & Notifications</Text>
+        <Button title="Schedule Midday Reminders" onPress={scheduleReminders} />
+        <Button title="Force Background Check" onPress={forceBackgroundCheck} />
       </View>
 
       <View style={styles.section}>

@@ -18,14 +18,7 @@ import { journalStorage, JournalEntry } from '../services/journalStorage';
 import { UserStatsService } from '../services/userStatsService';
 import { theme } from '../config/theme';
 
-const JOURNAL_DRAFTS_KEY = '@inzone_journal_drafts';
 
-interface JournalDraft {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-}
 
 interface JournalEntryPageProps {
   visible?: boolean;
@@ -41,9 +34,6 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [drafts, setDrafts] = useState<JournalDraft[]>([]);
-  const [showDraftMenu, setShowDraftMenu] = useState(false);
-  const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
 
   // Handle Android hardware back button
   useFocusEffect(
@@ -60,76 +50,10 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
       }
 
       return undefined;
-    }, [navigation, title, content, currentDraftId])
+    }, [navigation, title, content])
   );
 
-  useEffect(() => {
-    loadDrafts();
-  }, []);
 
-  // Auto-save as draft every 5 seconds if there's content
-  useEffect(() => {
-    if (!title.trim() && !content.trim()) return;
-
-    const autoSaveTimer = setInterval(() => {
-      saveAsDraft(true); // silent auto-save
-    }, 5000);
-
-    return () => clearInterval(autoSaveTimer);
-  }, [title, content]);
-
-  const loadDrafts = async () => {
-    try {
-      const draftsData = await AsyncStorage.getItem(JOURNAL_DRAFTS_KEY);
-      if (draftsData) {
-        const parsedDrafts = JSON.parse(draftsData);
-        setDrafts(parsedDrafts);
-        
-        // If there's a recent draft, load it
-        if (parsedDrafts.length > 0 && !title && !content) {
-          const latestDraft = parsedDrafts[0];
-          setTitle(latestDraft.title);
-          setContent(latestDraft.content);
-          setCurrentDraftId(latestDraft.id);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading drafts:', error);
-    }
-  };
-
-  const saveAsDraft = async (silent = false) => {
-    if (!title.trim() && !content.trim()) return;
-
-    try {
-      const draft: JournalDraft = {
-        id: currentDraftId || Date.now().toString(),
-        title: title.trim() || `Draft - ${new Date().toLocaleDateString()}`,
-        content: content.trim(),
-        createdAt: new Date().toISOString(),
-      };
-
-      // Remove existing draft with same ID if updating
-      const updatedDrafts = drafts.filter(d => d.id !== draft.id);
-      updatedDrafts.unshift(draft); // Add to beginning
-
-      // Keep only latest 5 drafts
-      const trimmedDrafts = updatedDrafts.slice(0, 5);
-      
-      await AsyncStorage.setItem(JOURNAL_DRAFTS_KEY, JSON.stringify(trimmedDrafts));
-      setDrafts(trimmedDrafts);
-      setCurrentDraftId(draft.id);
-
-      if (!silent) {
-        Alert.alert('Draft Saved', 'Your entry has been saved as a draft');
-      }
-    } catch (error) {
-      console.error('Error saving draft:', error);
-      if (!silent) {
-        Alert.alert('Error', 'Failed to save draft');
-      }
-    }
-  };
 
   const saveEntry = async () => {
     if (!title.trim() && !content.trim()) {
@@ -146,17 +70,9 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
 
       await journalStorage.addEntry(fullContent);
 
-      // Remove current draft if it exists
-      if (currentDraftId) {
-        const updatedDrafts = drafts.filter(d => d.id !== currentDraftId);
-        await AsyncStorage.setItem(JOURNAL_DRAFTS_KEY, JSON.stringify(updatedDrafts));
-        setDrafts(updatedDrafts);
-      }
-
       // Clear form
       setTitle('');
       setContent('');
-      setCurrentDraftId(null);
       
       // Alert.alert('Success', 'Journal entry saved!'); // Removed annoying success dialog
       navigation.goBack();
@@ -168,36 +84,14 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
     }
   };
 
-  const loadDraft = (draft: JournalDraft) => {
-    setTitle(draft.title);
-    setContent(draft.content);
-    setCurrentDraftId(draft.id);
-    setShowDraftMenu(false);
-  };
-
-  const deleteDraft = async (draftId: string) => {
-    try {
-      const updatedDrafts = drafts.filter(d => d.id !== draftId);
-      await AsyncStorage.setItem(JOURNAL_DRAFTS_KEY, JSON.stringify(updatedDrafts));
-      setDrafts(updatedDrafts);
-      
-      if (currentDraftId === draftId) {
-        setCurrentDraftId(null);
-      }
-    } catch (error) {
-      console.error('Error deleting draft:', error);
-    }
-  };
-
   const handleClose = () => {
     if (title.trim() || content.trim()) {
       Alert.alert(
         'Unsaved Changes',
-        'You have unsaved changes. Would you like to save as draft before closing?',
+        'You have unsaved changes. Do you want to discard them?',
         [
+          { text: 'Keep Writing', style: 'cancel' },
           { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
-          { text: 'Save as Draft', onPress: () => { saveAsDraft(); navigation.goBack(); } },
-          { text: 'Cancel', style: 'cancel' },
         ]
       );
     } else {
@@ -212,53 +106,18 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>New Journal Entry</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            onPress={() => setShowDraftMenu(!showDraftMenu)}
-            style={styles.draftButton}
-          >
-            <Text style={styles.draftButtonText}>Drafts</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={saveEntry}
-            disabled={loading}
-            style={[styles.saveButton, loading && styles.saveButtonDisabled]}
-          >
-            <Text style={styles.saveButtonText}>
-              {loading ? 'Saving...' : 'Save'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={saveEntry}
+          disabled={loading}
+          style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+        >
+          <Text style={styles.saveButtonText}>
+            {loading ? 'Saving...' : 'Save'}
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {showDraftMenu && (
-        <View style={styles.draftMenu}>
-          <View style={styles.draftMenuHeader}>
-            <Text style={styles.draftMenuTitle}>Drafts & Actions</Text>
-          </View>
-          <TouchableOpacity onPress={() => { saveAsDraft(); setShowDraftMenu(false); }} style={styles.draftMenuItem}>
-            <Text style={styles.draftMenuItemText}>Save as Draft</Text>
-          </TouchableOpacity>
-          {drafts.length > 0 && (
-            <>
-              <View style={styles.draftMenuDivider} />
-              {drafts.map((draft) => (
-                <View key={draft.id} style={styles.draftItem}>
-                  <TouchableOpacity onPress={() => loadDraft(draft)} style={styles.draftItemContent}>
-                    <Text style={styles.draftItemTitle}>{draft.title}</Text>
-                    <Text style={styles.draftItemDate}>
-                      {new Date(draft.createdAt).toLocaleDateString()}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => deleteDraft(draft.id)} style={styles.draftDeleteButton}>
-                    <Text style={styles.draftDeleteText}>🗑️</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </>
-          )}
-        </View>
-      )}
+
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.inputSection}>
@@ -286,9 +145,6 @@ export const JournalEntryPage: React.FC<JournalEntryPageProps> = ({
           <Text style={styles.statsText}>
             Words: {content.trim().split(/\s+/).filter(word => word.length > 0).length}
           </Text>
-          {currentDraftId && (
-            <Text style={styles.draftIndicator}>Auto-saving as draft</Text>
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -325,71 +181,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     textAlignVertical: 'top',
   },
-  draftButton: {
-    marginRight: theme.spacing.sm,
-    padding: theme.spacing.sm,
-  },
-  draftButtonText: {
-    color: theme.colors.text.primary,
-    fontSize: 18,
-  },
-  draftDeleteButton: {
-    padding: theme.spacing.sm,
-  },
-  draftDeleteText: {
-    fontSize: 16,
-  },
-  draftIndicator: {
-    ...theme.typography.small,
-    color: theme.colors.secondary,
-    fontStyle: 'italic',
-  },
-  draftItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  draftItemContent: {
-    flex: 1,
-  },
-  draftItemDate: {
-    ...theme.typography.small,
-    color: theme.colors.text.secondary,
-  },
-  draftItemTitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    marginBottom: 2,
-  },
-  draftMenu: {
-    backgroundColor: theme.colors.surface,
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    maxHeight: 300,
-  },
-  draftMenuDivider: {
-    backgroundColor: theme.colors.border,
-    height: 1,
-    marginVertical: theme.spacing.sm,
-  },
-  draftMenuHeader: {
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    padding: theme.spacing.md,
-  },
-  draftMenuItem: {
-    padding: theme.spacing.md,
-  },
-  draftMenuItemText: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-  },
-  draftMenuTitle: {
-    ...theme.typography.body,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-  },
+
   header: {
     alignItems: 'center',
     borderBottomColor: theme.colors.border,
@@ -399,10 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
   },
-  headerActions: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
+
   headerTitle: {
     ...theme.typography.h3,
     color: theme.colors.text.primary,
