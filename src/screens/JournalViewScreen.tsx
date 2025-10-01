@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   headerTitle: { ...theme.typography.h4, color: theme.colors.text.primary },
   placeholder: { width: 48 },
   content: { padding: theme.spacing.lg },
-  title: { ...theme.typography.h3, marginBottom: theme.spacing.sm },
+  title: { ...theme.typography.h3, color: theme.colors.text.primary, marginBottom: theme.spacing.sm },
   date: { color: theme.colors.text.secondary, marginBottom: theme.spacing.md },
   body: { ...theme.typography.body, color: theme.colors.text.primary, lineHeight: 22 },
   missing: { color: theme.colors.text.secondary },
