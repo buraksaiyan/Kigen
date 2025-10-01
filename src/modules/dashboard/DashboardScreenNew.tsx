@@ -1319,9 +1319,14 @@ export const DashboardScreen: React.FC = () => {
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
         {__DEV__ && (
-          <TouchableOpacity style={styles.topBarDebugButton} onPress={() => navigation.navigate('HabitStreakTest' as never)}>
-            <Icon name="bug-report" size={20} color={theme.colors.accent} />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity style={styles.topBarDebugButton} onPress={() => navigation.navigate('HabitStreakTest' as never)}>
+              <Icon name="bug-report" size={20} color={theme.colors.accent} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.topBarResponsiveButton} onPress={() => navigation.navigate('ResponsiveTest' as never)}>
+              <Icon name="aspect-ratio" size={18} color={theme.colors.secondary} />
+            </TouchableOpacity>
+          </>
         )}
         {/* center area with app logo - centered in the top bar */}
         <Image source={require('../../../assets/images/inzone-logo.png')} style={styles.topBarLogo} />
@@ -1465,6 +1470,17 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     left: 68,
     position: 'absolute',
     width: 40,
+    zIndex: 1,
+  },
+  topBarResponsiveButton: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 18,
+    height: 36,
+    justifyContent: 'center',
+    left: 112,
+    position: 'absolute',
+    width: 36,
     zIndex: 1,
   },
   topBarButtonIcon: {
