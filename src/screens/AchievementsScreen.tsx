@@ -129,7 +129,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
     completed_habits: { title: 'Habits', icon: '🔄' },
     completed_todos: { title: 'Tasks', icon: '✅' },
     active_reminders: { title: 'Reminders', icon: '⏰' },
-    social_reduction: { title: 'Digital Wellness', icon: '📱' },
+  social_time: { title: 'Digital Wellness', icon: '📱' },
     current_streak: { title: 'Current Streak', icon: '🔥' },
   };
 
@@ -146,7 +146,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ visible,
       'completed_habits',
       'completed_todos',
       'active_reminders',
-      'social_reduction',
+  'social_time',
     ];
 
     const seen = new Set<Achievement['category']>();
