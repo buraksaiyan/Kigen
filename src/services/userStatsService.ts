@@ -1475,7 +1475,8 @@ export class UserStatsService {
       }
       
       // Count consecutive previous days with valid streak activity
-      while (true) {
+      let continueCounting = true;
+      while (continueCounting) {
         const dateStr = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000)
           .toISOString()
           .split('T')[0];
@@ -1485,7 +1486,7 @@ export class UserStatsService {
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
           // Found a day without valid activity, stop counting
-          break;
+          continueCounting = false;
         }
       }
       

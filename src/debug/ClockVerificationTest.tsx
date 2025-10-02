@@ -12,9 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const { width } = Dimensions.get('window');
 const timerSize = Math.min(width * 0.7, 300);
 
-interface ClockVerificationTestProps {}
-
-export const ClockVerificationTest: React.FC<ClockVerificationTestProps> = () => {
+export const ClockVerificationTest: React.FC = () => {
   // Test with 10 minutes total, 5 minutes elapsed (5 minutes remaining)
   const testDuration = 600; // 10 minutes total
   const testElapsed = 300; // 5 minutes elapsed

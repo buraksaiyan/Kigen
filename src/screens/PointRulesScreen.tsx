@@ -127,7 +127,7 @@ const PointRulesScreen: React.FC = () => {
               <Text style={styles.ruleText}>  - Sessions 9–12: 3x base points</Text>
               <Text style={styles.ruleText}>  - Multiplier increases by +1 for each additional block of 4 consecutive completed Pomodoros.</Text>
               <Text style={styles.ruleText}>• Continuous run definition: if more than 30 minutes pass between the end of one Pomodoro and the start of the next, the run resets and multipliers start over.</Text>
-              <Text style={styles.ruleText}>• Pomodoros loop automatically — you don't need to restart them; the system will start the next work sprint after each break unless you abort the run.</Text>
+              <Text style={styles.ruleText}>• Pomodoros loop automatically — you don&apos;t need to restart them; the system will start the next work sprint after each break unless you abort the run.</Text>
               <Text style={styles.ruleText}>• Breaks (short or long) can be made skippable at the start of the Pomodoro session. Skipping a break begins the next Pomodoro immediately and continues the run.</Text>
             </View>
           </View>

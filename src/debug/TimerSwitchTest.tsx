@@ -6,9 +6,7 @@ import { CLOCK_STYLES } from '../components/ClockPreviewCarousel';
 const { width } = Dimensions.get('window');
 const timerSize = Math.min(width * 0.8, 320);
 
-interface TimerSwitchTestProps {}
-
-export const TimerSwitchTest: React.FC<TimerSwitchTestProps> = () => {
+export const TimerSwitchTest: React.FC = () => {
   const [currentClockIndex, setCurrentClockIndex] = useState(0);
   const [testProgress, setTestProgress] = useState(0);
 

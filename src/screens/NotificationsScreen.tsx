@@ -78,7 +78,7 @@ const NotificationsScreen: React.FC = () => {
         {notifications.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateTitle}>No Notifications</Text>
-            <Text style={styles.emptyStateMessage}>You're all caught up! Achievement notifications will appear here.</Text>
+            <Text style={styles.emptyStateMessage}>You&apos;re all caught up! Achievement notifications will appear here.</Text>
           </View>
         ) : (
           notifications.map((notification) => (
