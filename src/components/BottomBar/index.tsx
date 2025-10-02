@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -36,6 +37,32 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     width: 84,
+  },
+  centerButtonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 84,
+    width: 84,
+  },
+  glowingOutline: {
+    position: 'absolute',
+    borderRadius: 42,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    height: 84,
+    width: 84,
+  },
+  glowingEffect: {
+    position: 'absolute',
+    borderRadius: 42,
+    height: 84,
+    width: 84,
+    shadowColor: '#FFFFFF',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 12,
   },
   centerSection: {
     alignItems: 'center',
@@ -110,6 +137,39 @@ export const BottomBar: React.FC<BottomBarProps> = ({
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
   
+  // Animated value for the glowing effect
+  const glowAnim = useRef(new Animated.Value(0)).current;
+  
+  useEffect(() => {
+    // Create a looping pulse animation for the glow
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+      ])
+    );
+    
+    pulseAnimation.start();
+    
+    return () => {
+      pulseAnimation.stop();
+    };
+  }, [glowAnim]);
+  
+  // Interpolate opacity for the glow effect
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.8],
+  });
+  
   const bottomPadding = Platform.OS === 'android' 
     ? Math.max(insets.bottom, 12) 
     : insets.bottom + 12;
@@ -146,15 +206,31 @@ export const BottomBar: React.FC<BottomBarProps> = ({
       </View>
 
       <View style={styles.centerSection}>
-        <TouchableOpacity
-          onPress={onToggleMenu}
-          style={styles.centerButton}
-          accessibilityLabel={`Daily streak: ${streakCount} days. Tap to open menu`}
-          accessibilityRole="button"
-        >
-          <Text style={styles.streakNumber}>{streakCount}</Text>
-          <Text style={styles.streakLabel}>STREAK</Text>
-        </TouchableOpacity>
+        <View style={styles.centerButtonContainer}>
+          {/* Static white outline */}
+          <View style={styles.glowingOutline} />
+          
+          {/* Animated glowing effect */}
+          <Animated.View 
+            style={[
+              styles.glowingEffect,
+              { 
+                shadowOpacity: glowOpacity,
+              }
+            ]} 
+          />
+          
+          {/* Main button */}
+          <TouchableOpacity
+            onPress={onToggleMenu}
+            style={styles.centerButton}
+            accessibilityLabel={`Daily streak: ${streakCount} days. Tap to open menu`}
+            accessibilityRole="button"
+          >
+            <Text style={styles.streakNumber}>{streakCount}</Text>
+            <Text style={styles.streakLabel}>STREAK</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.rightSection}>

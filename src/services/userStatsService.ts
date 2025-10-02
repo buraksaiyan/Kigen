@@ -1423,50 +1423,69 @@ export class UserStatsService {
       activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
       let streak = 0;
-      const todayStr = new Date().toISOString().split('T')[0];
-      let currentDate = new Date(todayStr!);
       
-      // Check if today has both journal entry AND sufficient focus minutes (>=30)
-      const todayActivity = activities.find(a => a.date === todayStr);
-      const todayFocusMinutes = todayActivity ? (
-        (todayActivity.focusMinutes?.flow || 0) +
-        (todayActivity.focusMinutes?.meditation || 0) +
-        (todayActivity.focusMinutes?.body || 0) +
-        (todayActivity.focusMinutes?.notech || 0)
-      ) : 0;
-      const hasTodayValidStreak = todayActivity && (
-        todayActivity.journalEntries > 0 &&
-        todayFocusMinutes >= 30
-      );
+      // Get today's date in local timezone (YYYY-MM-DD)
+      const now = new Date();
+      const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
       
-      if (!hasTodayValidStreak) {
-        // If no valid streak activity today, check yesterday
-        currentDate.setDate(currentDate.getDate() - 1);
-      }
-      
-      // Count consecutive days with both journal entries AND sufficient focus minutes
-      let continueCounting = true;
-      while (continueCounting) {
-        const dateStr = currentDate.toISOString().split('T')[0];
+      // Helper function to check if a date has valid streak activity
+      const hasValidStreakActivity = (dateStr: string): boolean => {
         const activity = activities.find(a => a.date === dateStr);
-
-        const activityFocusMinutes = activity ? (
+        if (!activity) return false;
+        
+        const focusMinutes = (
           (activity.focusMinutes?.flow || 0) +
           (activity.focusMinutes?.meditation || 0) +
           (activity.focusMinutes?.body || 0) +
           (activity.focusMinutes?.notech || 0)
-        ) : 0;
-
-        const hasValidStreakActivity = activity && (
-          activity.journalEntries > 0 &&
-          activityFocusMinutes >= 30
         );
-
-        if (hasValidStreakActivity) {
+        
+        // Streak requirements: 1+ journal entry AND 30+ minutes of completed focus
+        return activity.journalEntries > 0 && focusMinutes >= 30;
+      };
+      
+      // Check if today has valid streak activity
+      const hasTodayValidStreak = hasValidStreakActivity(todayStr!);
+      
+      // Get yesterday's date
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = new Date(yesterday.getTime() - yesterday.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+      
+      const hasYesterdayValidStreak = hasValidStreakActivity(yesterdayStr!);
+      
+      // Determine starting point for streak calculation
+      let currentDate: Date;
+      
+      if (hasTodayValidStreak) {
+        // Start counting from today
+        currentDate = new Date(todayStr! + 'T00:00:00');
+        streak = 1; // Today counts as 1
+        currentDate.setDate(currentDate.getDate() - 1); // Move to yesterday to continue counting
+      } else if (hasYesterdayValidStreak) {
+        // Today was skipped but yesterday was valid, so streak is broken - return 0
+        return 0;
+      } else {
+        // Neither today nor yesterday has valid activity - streak is 0
+        return 0;
+      }
+      
+      // Count consecutive previous days with valid streak activity
+      while (true) {
+        const dateStr = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .split('T')[0];
+        
+        if (hasValidStreakActivity(dateStr!)) {
           streak++;
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
-          continueCounting = false;
+          // Found a day without valid activity, stop counting
+          break;
         }
       }
       
