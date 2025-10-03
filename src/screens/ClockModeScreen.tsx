@@ -18,6 +18,7 @@ import Svg, { Circle } from 'react-native-svg';
 interface ClockModeScreenProps {
   visible: boolean;
   onClose: () => void;
+  onComplete?: (duration: number) => void; // Duration in minutes
   title: string;
   clockStyle: string;
 }
@@ -213,6 +214,18 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
+  finishButton: {
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.md,
+    marginTop: theme.spacing.xxl,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xl,
+    minWidth: 200,
+  },
+  finishButtonText: {
+    ...theme.typography.bodyLarge,
+    fontWeight: '700',
+  },
 });
 
 // Map clock style to our supported timer clock types
@@ -239,6 +252,7 @@ const getClockStyle = (styleId: string): 'classic' | 'digital' | 'circular' | 'a
 export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
   visible,
   onClose,
+  onComplete,
   title,
   clockStyle,
 }) => {
@@ -253,6 +267,32 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
   const svgSize = Math.min(screenW, screenH) * (isLandscape ? 0.6 : 0.75);
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+
+  // Start session tracking when screen becomes visible
+  useEffect(() => {
+    if (visible && !sessionStartTime) {
+      setSessionStartTime(Date.now());
+      
+      // Start focus session
+      const startSession = async () => {
+        try {
+          const { focusSessionService } = await import('../services/FocusSessionService');
+          await focusSessionService.startSession(
+            { id: 'clock', title: 'Clock Mode', color: ctxTheme.colors.primary },
+            0, // Duration is unknown for clock mode
+            null
+          );
+        } catch (error) {
+          console.error('Error starting clock mode session:', error);
+        }
+      };
+      startSession();
+    } else if (!visible && sessionStartTime) {
+      // Reset when closed
+      setSessionStartTime(null);
+    }
+  }, [visible, sessionStartTime, ctxTheme.colors.primary]);
 
   // Update time every minute (seconds are not shown)
   useEffect(() => {
@@ -314,6 +354,40 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
   const m1 = Math.floor(minutes / 10).toString();
   const m2 = (minutes % 10).toString();
 
+  const handleFinish = async () => {
+    if (!sessionStartTime) {
+      onClose();
+      return;
+    }
+
+    // Calculate duration
+    const durationMs = Date.now() - sessionStartTime;
+    const durationMinutes = Math.floor(durationMs / 60000);
+
+    try {
+      // Complete the session and award points
+      const { focusSessionService } = await import('../services/FocusSessionService');
+      const current = await focusSessionService.getCurrentSession();
+      if (current?.id) {
+        await focusSessionService.completeSession(current.id, true, 'completed');
+      }
+
+      // Call onComplete callback with duration
+      if (onComplete) {
+        onComplete(durationMinutes);
+      }
+
+      // Reset session tracking
+      setSessionStartTime(null);
+      
+      // Close the screen
+      onClose();
+    } catch (error) {
+      console.error('Error finishing clock mode session:', error);
+      onClose();
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -364,6 +438,17 @@ export const ClockModeScreen: React.FC<ClockModeScreenProps> = ({
           <Text style={styles.currentTime}>{/* Keep for accessibility but empty since we show big digits */}</Text>
 
           <Text style={styles.dateText}>{formatDate(currentTime)}</Text>
+
+          {/* Finish Button */}
+          <TouchableOpacity
+            style={[styles.finishButton, { backgroundColor: ctxTheme.colors.primary }]}
+            onPress={handleFinish}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.finishButtonText, { color: ctxTheme.colors.text.primary }]}>
+              Finish Session
+            </Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </Modal>

@@ -28,11 +28,11 @@ export const FocusCompletionScreen: React.FC<FocusCompletionScreenProps> = ({
   onGoToDashboard,
 }) => {
   // Create gradient colors based on mode color
-  const gradientColors: string[] = [
+  const gradientColors = [
     `${modeColor}20`,
     `${modeColor}40`,
     defaultTheme.colors.background,
-  ] as string[];
+  ] as const;
 
   const formatDuration = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);

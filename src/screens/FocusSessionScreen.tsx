@@ -109,6 +109,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
   const [sessionMinutes, setSessionMinutes] = useState(0);
   const [breakMinutes, setBreakMinutes] = useState(5);
   const [skippableBreaks, setSkippableBreaks] = useState(false);
+  const [pomodoroLoopCount, setPomodoroLoopCount] = useState(4);
 
   const { settings } = useSettings();
 
@@ -129,7 +130,7 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
     }
   };
 
-  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number, skippable: boolean = false) => {
+  const handleStartSession = async (mode: FocusMode, hours: number, minutes: number, breakMin: number, skippable: boolean = false, loops: number = 1) => {
     try {
       const totalMinutes = (hours * 60) + minutes;
       const sessionId = await focusSessionService.startSession(mode, totalMinutes, null);
@@ -139,10 +140,11 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
       setSessionMinutes(minutes);
       setBreakMinutes(breakMin);
       setSkippableBreaks(skippable);
+      setPomodoroLoopCount(loops);
       setShowSetup(false);
       setShowCountdown(true);
       
-      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, breakDuration: breakMin });
+      console.log('Focus session started:', { sessionId, mode: mode.title, duration: totalMinutes, breakDuration: breakMin, loops });
     } catch (error) {
       console.error('Error starting focus session:', error);
       // Handle error - could show an alert or toast
@@ -286,10 +288,13 @@ export const FocusSessionScreen: React.FC<FocusSessionScreenProps> = ({
             totalHours={sessionHours}
             totalMinutes={sessionMinutes}
             breakMinutes={breakMinutes}
+            skippableBreaks={skippableBreaks}
             onComplete={handleCountdownComplete}
             onPause={handleCountdownPause}
             onEarlyFinish={handleEarlyFinish}
             onAbort={handleAbort}
+            onSessionIdChange={(id) => setCurrentSessionId(id)}
+            loopCount={pomodoroLoopCount}
           />
         ) : (
           <>

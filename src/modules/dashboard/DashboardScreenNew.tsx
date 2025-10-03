@@ -86,6 +86,7 @@ interface ActiveTodo {
   completed: boolean;
   context?: string;
   entryDate: string;
+  urgency?: 'low' | 'medium' | 'high';
 }
 
 interface ActiveReminder {
@@ -190,6 +191,20 @@ export const DashboardScreen: React.FC = () => {
     });
     return () => unsub();
   }, []);
+
+  // Helper function to get urgency color
+  const getUrgencyColor = (urgency?: 'low' | 'medium' | 'high') => {
+    switch (urgency) {
+      case 'high':
+        return '#EF4444'; // Red
+      case 'medium':
+        return '#F59E0B'; // Yellow/Orange
+      case 'low':
+        return '#10B981'; // Green
+      default:
+        return theme.colors.text.secondary; // Default gray
+    }
+  };
 
   const toggleTodoCompletion = useCallback(async (todoId: string) => {
     try {
@@ -542,7 +557,17 @@ export const DashboardScreen: React.FC = () => {
         const activeTodosData = todos
           .filter((todo: any) => !todo.completed)
           .slice(0, 3)
-          .map((todo: any) => ({ id: todo.id, title: todo.title, completed: false }));
+          .map((todo: any) => ({ 
+            id: todo.id, 
+            title: todo.title, 
+            completed: false,
+            context: todo.context,
+            entryDate: todo.createdAt || todo.entryDate,
+            // Map priority to urgency (handle both old and new format)
+            urgency: todo.urgency || (todo.priority === 'urgent' || todo.priority === 'high' ? 'high' : 
+                                     todo.priority === 'medium' ? 'medium' : 
+                                     todo.priority === 'low' ? 'low' : undefined)
+          }));
         setActiveTodos(activeTodosData);
       }
 
@@ -1150,7 +1175,7 @@ export const DashboardScreen: React.FC = () => {
                         <Icon
                           name={todo.completed ? 'check-box' : 'check-box-outline-blank'}
                           size={24}
-                          color={todo.completed ? theme.colors.success : theme.colors.text.secondary}
+                          color={todo.completed ? theme.colors.success : getUrgencyColor(todo.urgency)}
                         />
                       </TouchableOpacity>
                       

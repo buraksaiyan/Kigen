@@ -149,19 +149,25 @@ export const SocialEntriesPage: React.FC<SocialEntriesPageProps> = ({
             ))}
           </View>
 
-          <Text style={styles.label}>How many minutes did you spend?</Text>
+          <Text style={styles.label}>How many hours did you spend?</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <TextInput
               style={[styles.textInput, { flex: 1 }]}
-              keyboardType="numeric"
-              value={String(timeMinutes)}
+              keyboardType="decimal-pad"
+              value={timeMinutes > 0 ? String((timeMinutes / 60).toFixed(1)) : ''}
               onChangeText={(t) => {
-                const n = parseInt(t.replace(/[^0-9]/g, ''), 10);
-                setTimeMinutes(Number.isNaN(n) ? 0 : n);
+                // Allow decimal input (e.g., 2.5 hours)
+                const hours = parseFloat(t.replace(/[^0-9.]/g, ''));
+                if (!Number.isNaN(hours) && hours >= 0) {
+                  // Convert hours to minutes for storage
+                  setTimeMinutes(Math.round(hours * 60));
+                } else if (t === '' || t === '.') {
+                  setTimeMinutes(0);
+                }
               }}
-              placeholder="Minutes"
+              placeholder="0.0"
             />
-            <Text style={{ color: theme.colors.text.secondary }}>minutes</Text>
+            <Text style={{ color: theme.colors.text.secondary }}>hours</Text>
           </View>
 
           <TouchableOpacity

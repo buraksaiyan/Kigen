@@ -33,7 +33,7 @@ interface FocusModeSetupScreenProps {
   visible: boolean;
   onClose: () => void;
   mode: FocusMode | null;
-  onStartSession: (mode: FocusMode, hours: number, minutes: number, breakMinutes: number, skippable?: boolean) => void;
+  onStartSession: (mode: FocusMode, hours: number, minutes: number, breakMinutes: number, skippable?: boolean, loopCount?: number) => void;
   defaultDuration?: number; // in minutes
 }
 
@@ -192,6 +192,7 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
   const [breakMinutes, setBreakMinutes] = useState('5'); // Default 5 minutes break
   const [skippableBreaks, setSkippableBreaks] = useState(true);
   const [selectedClock, setSelectedClock] = useState<string | null>(null);
+  const [loopCount, setLoopCount] = useState(4); // Number of pomodoro loops (1-8)
 
   // Reset to default duration when modal becomes visible
   useEffect(() => {
@@ -226,8 +227,8 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
       return; // Don't start if no time set
     }
     
-    // Pass skippableBreaks flag for pomodoro flows
-    onStartSession(mode, h, m, b, skippableBreaks);
+    // Pass skippableBreaks flag and loopCount for pomodoro flows
+    onStartSession(mode, h, m, b, skippableBreaks, loopCount);
   };
 
   const presetTimes = [
@@ -354,13 +355,48 @@ export const FocusModeSetupScreen: React.FC<FocusModeSetupScreenProps> = ({
             <Card style={styles.setupCard}>
               {mode?.id === 'pomodoro' ? (
                 <View style={{ marginTop: 8, alignItems: 'center' }}>
-                  <TouchableOpacity
-                    onPress={() => setSkippableBreaks(prev => !prev)}
-                    style={[styles.presetButton, { borderColor: mode.color }]}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.presetText, { color: mode.color }]}>Skippable Breaks: {skippableBreaks ? 'ON' : 'OFF'}</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.sectionTitle}>Pomodoro Loops</Text>
+                  <Text style={[styles.presetTitle, { marginTop: 8, fontSize: 14 }]}>
+                    How many loops? (1 loop = work + break)
+                  </Text>
+                  <View style={styles.presetsContainer}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
+                      <TouchableOpacity
+                        key={count}
+                        style={[
+                          styles.presetButton,
+                          {
+                            borderColor: loopCount === count ? mode.color : theme.colors.text.tertiary,
+                            backgroundColor: loopCount === count ? mode.color + '20' : 'transparent',
+                          },
+                        ]}
+                        onPress={() => setLoopCount(count)}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.presetText,
+                            {
+                              color: loopCount === count ? mode.color : theme.colors.text.secondary,
+                              fontWeight: loopCount === count ? '700' : '600',
+                            },
+                          ]}
+                        >
+                          {count}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <View style={{ marginTop: 16 }}>
+                    <TouchableOpacity
+                      onPress={() => setSkippableBreaks(prev => !prev)}
+                      style={[styles.presetButton, { borderColor: mode.color }]}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.presetText, { color: mode.color }]}>Skippable Breaks: {skippableBreaks ? 'ON' : 'OFF'}</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ) : (
                 <>

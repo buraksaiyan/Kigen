@@ -49,6 +49,8 @@ interface CountdownScreenProps {
   // For Pomodoro: whether breaks are skippable and a callback to update current session id
   skippableBreaks?: boolean;
   onSessionIdChange?: (id: string) => void;
+  // For Pomodoro: number of loops to complete (default 1)
+  loopCount?: number;
 }
 
 // Mode-specific quote databases
@@ -350,6 +352,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   onAbort,
   skippableBreaks,
   onSessionIdChange,
+  loopCount = 1,
 }) => {
   const [timeLeft, setTimeLeft] = useState(totalHours * 3600 + totalMinutes * 60);
   const [isRunning, setIsRunning] = useState(true);
@@ -365,6 +368,10 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const [isInBreak, setIsInBreak] = useState(false);
   const [breakTimeLeft, setBreakTimeLeft] = useState(breakMinutes * 60);
   const [pausedFocusTime, setPausedFocusTime] = useState(0);
+
+  // Pomodoro loop tracking
+  const [currentLoop, setCurrentLoop] = useState(1);
+  const [maxLoops] = useState(loopCount);
 
   // Set counter state for Body Focus mode
   const [setCount, setSetCount] = useState(0);
@@ -598,6 +605,14 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
         await focusSessionService.completeSession(current.id, true, 'completed');
       }
 
+      // Check if all loops are completed
+      if (currentLoop >= maxLoops) {
+        // All loops done! Show completion screen
+        onComplete();
+        return;
+      }
+
+      // More loops to go, take a break
       // Decide if this break should be a long break
       const run = await focusSessionService.getPomodoroRun();
       const consecutive = run?.consecutive || 0;
@@ -618,6 +633,9 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
   const startNextPomodoro = async () => {
     try {
+      // Increment loop counter
+      setCurrentLoop(prev => prev + 1);
+
       // Start a fresh pomodoro work session
       const { focusSessionService } = await import('../services/FocusSessionService');
       const workTotalMinutes = totalHours * 60 + totalMinutes; // compute work minutes from props
@@ -819,6 +837,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           <Text style={[styles.modeTitle, { color: mode.color }]}>
             {mode.title}
           </Text>
+          {/* Pomodoro Loop Counter */}
+          {mode.id === 'pomodoro' && maxLoops > 1 && (
+            <Text style={[styles.loopCounter, { color: mode.color }]}>
+              Loop {currentLoop} of {maxLoops}
+            </Text>
+          )}
           <View style={[styles.progressBar, { backgroundColor: `${mode.color}20` }]}>
             <View 
               style={[
@@ -910,31 +934,39 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
         {/* Controls */}
         <View style={styles.controls}>
-          {/* Break Button */}
-          <TouchableOpacity
-            style={[styles.controlButton, styles.breakButton]}
-            onPress={handleBreak}
-            activeOpacity={0.6}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]}>Break</Text>
-          </TouchableOpacity>
+          {/* Hide Break button for Pomodoro and Clock modes */}
+          {mode.id !== 'pomodoro' && mode.id !== 'clock' && (
+            <TouchableOpacity
+              style={[styles.controlButton, styles.breakButton]}
+              onPress={handleBreak}
+              activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={[styles.secondaryButtonText, { color: theme.colors.text.tertiary }]}>Break</Text>
+            </TouchableOpacity>
+          )}
 
-          {/* Main Pause/Resume Button */}
-          <TouchableOpacity
-            style={[styles.controlButton, { backgroundColor: mode.color, borderRadius: 25 }]}
-            onPress={handlePause}
-            activeOpacity={0.6}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>
-              {isPaused ? 'Resume' : 'Pause'}
-            </Text>
-          </TouchableOpacity>
+          {/* Hide Pause button for Pomodoro and Clock modes */}
+          {mode.id !== 'pomodoro' && mode.id !== 'clock' && (
+            <TouchableOpacity
+              style={[styles.controlButton, { backgroundColor: mode.color, borderRadius: 25 }]}
+              onPress={handlePause}
+              activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={[styles.primaryButtonText, { color: theme.colors.text.primary }]}>
+                {isPaused ? 'Resume' : 'Pause'}
+              </Text>
+            </TouchableOpacity>
+          )}
 
-          {/* Early Finish Button */}
+          {/* Early Finish Button - make it wider when pause/break are hidden */}
           <TouchableOpacity
-            style={[styles.controlButton, styles.earlyFinishButton]}
+            style={[
+              styles.controlButton, 
+              styles.earlyFinishButton,
+              (mode.id === 'pomodoro' || mode.id === 'clock') && { minWidth: 200 }
+            ]}
             onPress={handleEarlyFinish}
             activeOpacity={0.6}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1074,6 +1106,13 @@ const styles = StyleSheet.create({
     ...theme.typography.h2,
     fontWeight: '700',
     marginBottom: theme.spacing.md,
+  },
+  loopCounter: {
+    ...theme.typography.body,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
   },
   primaryButton: {
     elevation: 8,
