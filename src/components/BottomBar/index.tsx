@@ -55,14 +55,23 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
   glowingEffect: {
     position: 'absolute',
     borderRadius: 42,
-    height: 84,
-    width: 84,
-    shadowColor: '#FFFFFF',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowRadius: 12,
+    height: 90,
+    width: 90,
+    backgroundColor: '#FFFFFF',
+    // Use elevation for Android glow effect
+    ...Platform.select({
+      ios: {
+        shadowColor: '#FFFFFF',
+        shadowOffset: {
+          width: 0,
+          height: 0,
+        },
+        shadowRadius: 15,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   centerSection: {
     alignItems: 'center',
@@ -215,7 +224,8 @@ export const BottomBar: React.FC<BottomBarProps> = ({
             style={[
               styles.glowingEffect,
               { 
-                shadowOpacity: glowOpacity,
+                opacity: glowOpacity,
+                ...(Platform.OS === 'ios' ? { shadowOpacity: glowOpacity } : {}),
               }
             ]} 
           />

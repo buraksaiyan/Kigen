@@ -1561,75 +1561,27 @@ export const DashboardScreen: React.FC = () => {
           <Text style={styles.topTapHintText}>Tap to flip</Text>
         </View>
         
-        {/* Render sections in custom order with visibility control */}
-        {(() => {
-          const carouselSections = enabledSections.filter((s) => 
-            ['activeGoals', 'activeHabits', 'activeTodos', 'activeReminders'].includes(s.id)
-          );
-          const hasCarouselSections = carouselSections.length > 0;
-          let carouselRendered = false;
+        {/* Render sections in custom order - each section is independent and vertically stacked */}
+        {enabledSections.map((section) => {
+          const sectionType = section.id;
           
-          return enabledSections.map((section) => {
-            const sectionType = section.id;
-            
-            switch (sectionType) {
-              case 'userCard':
-                return <View key={sectionType}>{renderUserCard()}</View>;
-              case 'phoneUsage':
-                return <View key={sectionType}>{renderPhoneUsage()}</View>;
-              case 'activeGoals':
-              case 'activeHabits':
-              case 'activeTodos':
-              case 'activeReminders':
-                // Render carousel only once when we encounter the first carousel section
-                if (hasCarouselSections && !carouselRendered && carouselSections[0]?.id === sectionType) {
-                  carouselRendered = true;
-                  return (
-                    <View key="carousel-group">
-                      <ScrollView
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        nestedScrollEnabled={true}
-                        onScroll={(event) => {
-                          const offsetX = event.nativeEvent.contentOffset.x;
-                          const newIndex = Math.round(offsetX / screenWidth);
-                          if (newIndex !== currentCarouselIndex) {
-                            setCurrentCarouselIndex(newIndex);
-                          }
-                        }}
-                        scrollEventThrottle={16}
-                        style={styles.carousel}
-                      >
-                        {carouselSections.some(s => s.id === 'activeGoals') && renderActiveGoals()}
-                        {carouselSections.some(s => s.id === 'activeHabits') && renderActiveHabits()}
-                        {carouselSections.some(s => s.id === 'activeTodos') && renderActiveTodos()}
-                        {carouselSections.some(s => s.id === 'activeReminders') && renderActiveReminders()}
-                      </ScrollView>
-
-                      {carouselSections.length > 1 && (
-                        <View style={styles.carouselIndicator}>
-                          {carouselSections.map((_, index: number) => (
-                            <View
-                              key={index}
-                              style={[
-                                styles.indicatorDot,
-                                currentCarouselIndex === index && styles.indicatorDotActive,
-                              ]}
-                            />
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  );
-                }
-                // Skip other carousel sections since they're rendered in the carousel above
-                return null;
-              default:
-                return null;
-            }
-          }).filter(Boolean); // Remove null entries
-        })()}
+          switch (sectionType) {
+            case 'userCard':
+              return <View key={sectionType}>{renderUserCard()}</View>;
+            case 'activeGoals':
+              return <View key={sectionType}>{renderActiveGoals()}</View>;
+            case 'activeHabits':
+              return <View key={sectionType}>{renderActiveHabits()}</View>;
+            case 'activeTodos':
+              return <View key={sectionType}>{renderActiveTodos()}</View>;
+            case 'activeReminders':
+              return <View key={sectionType}>{renderActiveReminders()}</View>;
+            case 'phoneUsage':
+              return <View key={sectionType}>{renderPhoneUsage()}</View>;
+            default:
+              return null;
+          }
+        }).filter(Boolean)}
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
