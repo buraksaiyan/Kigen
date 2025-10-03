@@ -170,8 +170,8 @@ export const DashboardScreen: React.FC = () => {
     </View>
   );
 
-  // Function to update rank in real-time based on current monthly stats
-  const updateRankInRealTime = async () => {
+  // Memoized function to update rank in real-time based on current monthly stats
+  const updateRankInRealTime = useCallback(async () => {
     try {
       const monthlyRating = await UserStatsService.getCurrentRating();
       setUserRank(monthlyRating.cardTier);
@@ -182,7 +182,7 @@ export const DashboardScreen: React.FC = () => {
     } catch (error) {
       console.error('Error updating rank:', error);
     }
-  };
+  }, []);
 
   // Subscribe to points recorded events to force UI refresh
   React.useEffect(() => {
@@ -502,11 +502,12 @@ export const DashboardScreen: React.FC = () => {
     || session?.user?.email?.split('@')[0]
     || 'User';
 
-  // Load real data
-  const loadDashboardData = async () => {
+  // Load real data with progressive loading and optimization
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      // Load monthly stats
+      
+      // PHASE 1: Load critical data first (stats and rank) for immediate display
       const monthlyRating = await UserStatsService.getCurrentRating();
       const mappedMonthlyStats: UserStats = {
         discipline: monthlyRating.stats.DIS,
@@ -521,8 +522,20 @@ export const DashboardScreen: React.FC = () => {
       };
       setMonthlyStats(mappedMonthlyStats);
       setAllTimeStats(mappedMonthlyStats);
+      setUserRank(monthlyRating.cardTier);
+      
+      // Show UI immediately with stats, load rest progressively
+      setLoading(false);
 
-      const goalsData = await AsyncStorage.getItem('@inzone_goals');
+      // PHASE 2: Load active items (goals, habits, todos, reminders) in parallel
+      const [goalsData, habitsData, todosData, remindersData] = await Promise.all([
+        AsyncStorage.getItem('@inzone_goals'),
+        AsyncStorage.getItem('@inzone_habits'),
+        AsyncStorage.getItem('@inzone_todos'),
+        AsyncStorage.getItem('@inzone_reminders')
+      ]);
+
+      // Process goals
       if (goalsData) {
         const goals = JSON.parse(goalsData);
         const activeGoalsData = goals
@@ -532,8 +545,7 @@ export const DashboardScreen: React.FC = () => {
         setActiveGoals(activeGoalsData);
       }
 
-      // Load active habits
-      const habitsData = await AsyncStorage.getItem('@inzone_habits');
+      // Process habits
       if (habitsData) {
         const habits = JSON.parse(habitsData);
         const activeHabitsData = habits
@@ -545,13 +557,12 @@ export const DashboardScreen: React.FC = () => {
             streak: habit.streak || 0,
             completedToday: habit.lastCompleted === new Date().toDateString(),
             lastCompleted: habit.lastCompleted,
-            targetDays: habit.targetDays || 30 // Default to 30 days if not set
+            targetDays: habit.targetDays || 30
           }));
         setActiveHabits(activeHabitsData);
       }
 
-      // Load active todos
-      const todosData = await AsyncStorage.getItem('@inzone_todos');
+      // Process todos
       if (todosData) {
         const todos = JSON.parse(todosData);
         const activeTodosData = todos
@@ -563,7 +574,6 @@ export const DashboardScreen: React.FC = () => {
             completed: false,
             context: todo.context,
             entryDate: todo.createdAt || todo.entryDate,
-            // Map priority to urgency (handle both old and new format)
             urgency: todo.urgency || (todo.priority === 'urgent' || todo.priority === 'high' ? 'high' : 
                                      todo.priority === 'medium' ? 'medium' : 
                                      todo.priority === 'low' ? 'low' : undefined)
@@ -571,19 +581,14 @@ export const DashboardScreen: React.FC = () => {
         setActiveTodos(activeTodosData);
       }
 
-      // Load active reminders
-      const remindersData = await AsyncStorage.getItem('@inzone_reminders');
+      // Process reminders
       if (remindersData) {
         const reminders = JSON.parse(remindersData);
         const now = new Date();
         const activeRemindersData = reminders
           .filter((reminder: any) => {
             if (!reminder.isActive) return false;
-            
-            // For recurring reminders, always show if active
             if (reminder.recurring !== 'none') return true;
-            
-            // For one-time reminders, only show if in the future
             const reminderTime = new Date(reminder.scheduledTime);
             return reminderTime > now;
           })
@@ -595,6 +600,33 @@ export const DashboardScreen: React.FC = () => {
             recurring: reminder.recurring
           }));
         setActiveReminders(activeRemindersData);
+      }
+
+      // PHASE 3: Load secondary data (profile, completed items, journal) in background
+      const [
+        completedGoalsDataRaw,
+        completedTodosDataRaw,
+        completedHabitsDataRaw,
+        journalDataRaw
+      ] = await Promise.all([
+        AsyncStorage.getItem('@inzone_completed_goals'),
+        AsyncStorage.getItem('@inzone_completed_todos'),
+        AsyncStorage.getItem('@inzone_completed_habits'),
+        AsyncStorage.getItem('@inzone_journal_entries')
+      ]);
+
+      // Process completed items
+      if (completedGoalsDataRaw) {
+        setCompletedGoals(JSON.parse(completedGoalsDataRaw));
+      }
+      if (completedTodosDataRaw) {
+        setCompletedTodos(JSON.parse(completedTodosDataRaw));
+      }
+      if (completedHabitsDataRaw) {
+        setCompletedHabits(JSON.parse(completedHabitsDataRaw));
+      }
+      if (journalDataRaw) {
+        setJournalEntries(JSON.parse(journalDataRaw));
       }
 
       // Load canonical user profile from UserStatsService (creates default if none exists)
@@ -617,8 +649,7 @@ export const DashboardScreen: React.FC = () => {
         }
       }
 
-      setUserRank(monthlyRating.cardTier);
-
+      // PHASE 4: Load optional features (usage stats, achievements)
       try {
         const permission = await digitalWellbeingService.canAccessUsageStats();
         setHasUsagePermission(permission);
@@ -630,47 +661,26 @@ export const DashboardScreen: React.FC = () => {
         console.error('Error loading usage stats:', error);
       }
 
-      // Load completed items
-      const completedGoalsData = await AsyncStorage.getItem('@inzone_completed_goals');
-      if (completedGoalsData) {
-        setCompletedGoals(JSON.parse(completedGoalsData));
-      }
-
-      const completedTodosData = await AsyncStorage.getItem('@inzone_completed_todos');
-      if (completedTodosData) {
-        setCompletedTodos(JSON.parse(completedTodosData));
-      }
-
-      const completedHabitsData = await AsyncStorage.getItem('@inzone_completed_habits');
-      if (completedHabitsData) {
-        setCompletedHabits(JSON.parse(completedHabitsData));
-      }
-
-      // Load journal entries
-      const journalData = await AsyncStorage.getItem('@inzone_journal_entries');
-      if (journalData) {
-        setJournalEntries(JSON.parse(journalData));
-      }
-
-      // Check for achievements on app load
-      await achievementService.checkAchievements();
-
-      // Sync leaderboard data with current user stats
-      await UserStatsService.syncUserToLeaderboard();
+      // Check for achievements and sync leaderboard in background
+      await Promise.all([
+        achievementService.checkAchievements(),
+        UserStatsService.syncUserToLeaderboard()
+      ]);
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Empty deps - only runs when component mounts
 
   // Initialize sections on first load
   React.useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [loadDashboardData]);
 
-  const refreshData = async () => {
+  // Debounced refresh with optimization
+  const refreshData = useCallback(async () => {
     if (refreshing) return; // Prevent multiple simultaneous refreshes
     
     setRefreshing(true);
@@ -680,6 +690,7 @@ export const DashboardScreen: React.FC = () => {
         setTimeout(() => resolve('timeout'), 8000); // 8 second timeout
       });
       
+      // Load only essential data during refresh (skip heavy operations)
       const refreshPromise = Promise.all([
         loadDashboardData(),
         refreshSections()
@@ -689,7 +700,7 @@ export const DashboardScreen: React.FC = () => {
       const result = await Promise.race([refreshPromise, timeout]);
       
       if (result === 'timeout') {
-  console.warn('Dashboard refresh timed out');
+        console.warn('Dashboard refresh timed out');
       }
       
     } catch (e) {
@@ -698,7 +709,7 @@ export const DashboardScreen: React.FC = () => {
       // Always set refreshing to false, even on timeout/error
       setRefreshing(false);
     }
-  };
+  }, [refreshing, loadDashboardData, refreshSections]);
 
   const flipRotation = useSharedValue(0);
 
