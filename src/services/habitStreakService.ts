@@ -152,7 +152,9 @@ export class HabitStreakService {
   }
 
   /**
-   * Schedule midday reminder notifications for incomplete habits
+   * Schedule daily habit reminder notifications
+   * - 12 PM: Midday reminder for incomplete habits
+   * - 10 PM: Final warning before midnight deadline
    */
   static async scheduleMiddayReminders(): Promise<void> {
     try {
@@ -161,58 +163,66 @@ export class HabitStreakService {
 
       const habits: Habit[] = JSON.parse(habitsData);
       const activeHabits = habits.filter(h => h.isActive);
-      const today = new Date().toDateString();
 
-      // Find habits that haven't been completed today
-      const incompleteHabits = activeHabits.filter(habit => 
-        habit.lastCompleted !== today
-      );
-
-      if (incompleteHabits.length === 0) {
-        console.log('All habits completed for today - no midday reminders needed');
+      if (activeHabits.length === 0) {
+        console.log('No active habits - skipping reminder scheduling');
         return;
       }
 
       // Cancel any existing scheduled notifications for habits
       const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
       const habitNotifications = scheduledNotifications.filter(n => 
-        n.content.title === 'Habit Reminder'
+        n.content.title === 'Habit Reminder' || n.content.title === 'Habit Deadline Warning'
       );
       for (const notification of habitNotifications) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
 
-      // Schedule a notification for 12:00 PM (midday) if it hasn't passed yet
       const now = new Date();
       const midday = new Date();
       midday.setHours(12, 0, 0, 0);
+      const evening = new Date();
+      evening.setHours(22, 0, 0, 0); // 10 PM
 
-      // Only schedule if midday hasn't passed yet today
-      if (midday.getTime() > now.getTime()) {
-        const habitTitles = incompleteHabits.map(h => h.title).join(', ');
-        const message = incompleteHabits.length === 1 && incompleteHabits[0]
-          ? `Don't forget to complete your "${incompleteHabits[0].title}" habit today!`
-          : `Don't forget to complete your habits today: ${habitTitles}`;
-
+      // Schedule 12 PM midday reminder (repeating daily)
+      if (midday.getTime() > now.getTime() || true) { // Always schedule for recurring
         await Notifications.scheduleNotificationAsync({
           content: {
             title: 'Habit Reminder',
-            body: message,
+            body: 'Time to work on your daily habits! Keep your streak going.',
             sound: 'default',
-            priority: Notifications.AndroidNotificationPriority.HIGH,
+            priority: Notifications.AndroidNotificationPriority.DEFAULT,
           },
           trigger: {
             hour: 12,
             minute: 0,
+            repeats: true,
           } as Notifications.CalendarTriggerInput,
         });
-
-        console.log(`Scheduled midday reminder for ${incompleteHabits.length} incomplete habits`);
-      } else {
-        console.log('Midday has already passed - no reminder scheduled');
+        console.log('Scheduled daily 12 PM habit reminder');
       }
+
+      // Schedule 10 PM evening warning (repeating daily)
+      if (evening.getTime() > now.getTime() || true) { // Always schedule for recurring
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Habit Deadline Warning',
+            body: '⚠️ Only 2 hours left! Complete your habits before midnight to maintain your streak.',
+            sound: 'default',
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+          },
+          trigger: {
+            hour: 22,
+            minute: 0,
+            repeats: true,
+          } as Notifications.CalendarTriggerInput,
+        });
+        console.log('Scheduled daily 10 PM habit warning');
+      }
+
+      console.log(`Scheduled daily habit reminders for ${activeHabits.length} active habits`);
     } catch (error) {
-      console.error('Error scheduling midday reminders:', error);
+      console.error('Error scheduling habit reminders:', error);
     }
   }
 

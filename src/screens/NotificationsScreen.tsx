@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
   notificationItem: {
     borderBottomColor: theme.colors.border,
     borderBottomWidth: 1,
+    marginHorizontal: 20,
     paddingVertical: theme.spacing.lg,
   },
   unreadNotification: {

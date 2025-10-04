@@ -295,6 +295,11 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onNavigate
   useEffect(() => {
     loadLeaderboards();
   }, [selectedMonth]);
+  
+  // Auto-load on mount
+  useEffect(() => {
+    loadLeaderboards();
+  }, []);
 
   const loadLeaderboards = async () => {
     try {

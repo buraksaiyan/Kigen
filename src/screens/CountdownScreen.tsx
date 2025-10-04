@@ -16,6 +16,7 @@ import BackgroundTimerService from '../services/BackgroundTimerService';
 import TimerSoundService from '../services/TimerSoundService';
 import { useSettings } from '../hooks/useSettings';
 import useOrientation from '../hooks/useOrientation';
+import { FOCUS_QUOTES, getQuotesByCategory, FocusQuote } from '../data/focusQuotes';
 
 const { width } = Dimensions.get('window');
 
@@ -53,290 +54,16 @@ interface CountdownScreenProps {
   loopCount?: number;
 }
 
-// Mode-specific quote databases
-const FOCUS_QUOTES = {
-  flow: [
-    {
-      text: "Flow state is being completely involved in an activity for its own sake. The ego falls away.",
-      author: "Mihaly Csikszentmihalyi"
-    },
-    {
-      text: "In the zone, there is no time, no thought, no self - only pure action.",
-      author: "Ancient Zen Saying"
-    },
-    {
-      text: "The deepest experience of the creator arises out of a state of intensified attention.",
-      author: "Dag Hammarskjöld"
-    },
-    {
-      text: "Concentration is the secret of strength in politics, in war, in trade, in short in all management.",
-      author: "Ralph Waldo Emerson"
-    },
-    {
-      text: "The ability to concentrate and to use your time well is everything if you want to succeed.",
-      author: "Lee Iacocca"
-    },
-    {
-      text: "Focus is a matter of deciding what things you're not going to do.",
-      author: "John Carmack"
-    },
-    {
-      text: "The successful warrior is the average man with laser-like focus.",
-      author: "Bruce Lee"
-    },
-    {
-      text: "Where focus goes, energy flows and results show.",
-      author: "Tony Robbins"
-    },
-    {
-      text: "It is during our darkest moments that we must focus to see the light.",
-      author: "Aristotle"
-    },
-    {
-      text: "The art of being wise is knowing what to overlook.",
-      author: "William James"
-    },
-    {
-      text: "Concentrate all your thoughts upon the work at hand. The sun's rays do not burn until brought to a focus.",
-      author: "Alexander Graham Bell"
-    },
-    {
-      text: "One reason so few of us achieve what we truly want is that we never direct our focus; we never concentrate our power.",
-      author: "Tony Robbins"
-    },
-    {
-      text: "The immersion in the flow of pure activity is in itself beautiful and uplifting.",
-      author: "Mihaly Csikszentmihalyi"
-    },
-    {
-      text: "When we are in flow, the ego disappears and we become the activity.",
-      author: "Mihaly Csikszentmihalyi"
-    },
-    {
-      text: "Deep work is the ability to focus without distraction on a cognitively demanding task.",
-      author: "Cal Newport"
-    }
-  ],
-  meditation: [
-    {
-      text: "Focus on the present moment. It is the only time over which we have dominion.",
-      author: "Thích Nhất Hạnh"
-    },
-    {
-      text: "Meditation is not about stopping thoughts, but recognizing that we are more than our thoughts.",
-      author: "Arianna Huffington"
-    },
-    {
-      text: "Peace comes from within. Do not seek it without.",
-      author: "Buddha"
-    },
-    {
-      text: "Wherever you are, be there totally.",
-      author: "Eckhart Tolle"
-    },
-    {
-      text: "The present moment is the only time over which we have dominion.",
-      author: "Thích Nhất Hạnh"
-    },
-    {
-      text: "Meditation is the tongue of the soul and the language of our spirit.",
-      author: "Jeremy Taylor"
-    },
-    {
-      text: "The goal of meditation is not to control your thoughts, it's to stop letting them control you.",
-      author: "Anonymous"
-    },
-    {
-      text: "Quiet the mind, and the soul will speak.",
-      author: "Ma Jaya Sati Bhagavati"
-    },
-    {
-      text: "In the midst of movement and chaos, keep stillness inside of you.",
-      author: "Deepak Chopra"
-    },
-    {
-      text: "Meditation is a way for nourishing and blossoming the divinity within you.",
-      author: "Amit Ray"
-    },
-    {
-      text: "Your calm mind is the ultimate weapon against your challenges.",
-      author: "Bryant McGill"
-    },
-    {
-      text: "The mind is everything. What you think you become.",
-      author: "Buddha"
-    },
-    {
-      text: "Meditation brings wisdom; lack of meditation leaves ignorance.",
-      author: "Buddha"
-    },
-    {
-      text: "The quieter you become, the more able you are to hear.",
-      author: "Rumi"
-    },
-    {
-      text: "Meditation is not evasion; it is a serene encounter with reality.",
-      author: "Thích Nhất Hạnh"
-    },
-    {
-      text: "Through meditation, the higher self is experienced.",
-      author: "Bhagavad Gita"
-    },
-    {
-      text: "Be still and know that I am God.",
-      author: "Psalm 46:10"
-    },
-    {
-      text: "The soul becomes dyed with the color of its thoughts.",
-      author: "Marcus Aurelius"
-    }
-  ],
-  body: [
-    {
-      text: "The body achieves what the mind believes.",
-      author: "Napoleon Hill"
-    },
-    {
-      text: "Strength does not come from physical capacity. It comes from an indomitable will.",
-      author: "Mahatma Gandhi"
-    },
-    {
-      text: "The groundwork for all happiness is good health.",
-      author: "Leigh Hunt"
-    },
-    {
-      text: "Take care of your body. It's the only place you have to live.",
-      author: "Jim Rohn"
-    },
-    {
-      text: "Physical fitness is not only one of the most important keys to a healthy body, it is the basis of dynamic and creative intellectual activity.",
-      author: "John F. Kennedy"
-    },
-    {
-      text: "A healthy outside starts from the inside.",
-      author: "Robert Urich"
-    },
-    {
-      text: "Your body can stand almost anything. It's your mind that you have to convince.",
-      author: "Anonymous"
-    },
-    {
-      text: "Health is not about the weight you lose, but about the life you gain.",
-      author: "Dr. Josh Axe"
-    },
-    {
-      text: "The first wealth is health.",
-      author: "Ralph Waldo Emerson"
-    },
-    {
-      text: "Movement is a medicine for creating change in a person's physical, emotional, and mental states.",
-      author: "Carol Welch"
-    },
-    {
-      text: "The pain you feel today will be the strength you feel tomorrow.",
-      author: "Anonymous"
-    },
-    {
-      text: "Exercise is king. Nutrition is queen. Put them together and you've got a kingdom.",
-      author: "Jack LaLanne"
-    },
-    {
-      text: "The human body is the best picture of the human soul.",
-      author: "Ludwig Wittgenstein"
-    },
-    {
-      text: "A strong body makes the mind strong.",
-      author: "Thomas Jefferson"
-    },
-    {
-      text: "Health is a relationship between you and your body.",
-      author: "Terri Guillemets"
-    },
-    {
-      text: "Wellness is not a 'medical fix' but a way of living.",
-      author: "Greg Anderson"
-    },
-    {
-      text: "To keep the body in good health is a duty... otherwise we shall not be able to keep our mind strong and clear.",
-      author: "Buddha"
-    }
-  ],
-  /*
-  notech: [
-    {
-      text: "Almost everything will work again if you unplug it for a few minutes, including you.",
-      author: "Anne Lamott"
-    },
-    {
-      text: "The real question is not whether machines think but whether men do.",
-      author: "B.F. Skinner"
-    },
-    {
-      text: "Sometimes you need to disconnect to stay connected. Sometimes you need to go offline to get your life online.",
-      author: "Anonymous"
-    },
-    {
-      text: "Technology is a useful servant but a dangerous master.",
-      author: "Christian Lous Lange"
-    },
-    {
-      text: "The art of living is more like wrestling than dancing.",
-      author: "Marcus Aurelius"
-    },
-    {
-      text: "In a world of noise, find your silence.",
-      author: "Anonymous"
-    },
-    {
-      text: "Digital minimalism is a philosophy of technology use in which you focus your online time on a small number of carefully selected activities.",
-      author: "Cal Newport"
-    },
-    {
-      text: "The most precious gift we can offer others is our presence.",
-      author: "Thích Nhất Hạnh"
-    },
-    {
-      text: "Silence is not empty. It is full of answers.",
-      author: "Anonymous"
-    },
-    {
-      text: "We have become slaves to our own devices.",
-      author: "Sherry Turkle"
-    },
-    {
-      text: "Connection is why we're here; it is what gives purpose and meaning to our lives.",
-      author: "Brené Brown"
-    },
-    {
-      text: "The cave you fear to enter holds the treasure you seek.",
-      author: "Joseph Campbell"
-    },
-    {
-      text: "Simplicity is the ultimate sophistication.",
-      author: "Leonardo da Vinci"
-    },
-    {
-      text: "Be where you are, not where you think you should be.",
-      author: "Anonymous"
-    },
-    {
-      text: "Nature does not hurry, yet everything is accomplished.",
-      author: "Lao Tzu"
-    },
-    {
-      text: "The quieter you become, the more you can hear.",
-      author: "Ram Dass"
-    },
-    {
-      text: "Solitude is where I place my chaos to rest and awaken my inner peace.",
-      author: "Nikki Rowe"
-    },
-    {
-      text: "In the depth of silence is the voice of God.",
-      author: "Sathya Sai Baba"
-    }
-  ]
-  */
+// Helper function to map mode ID to quote category
+const getModeCategory = (modeId: string): FocusQuote['category'] => {
+  const modeMap: Record<string, FocusQuote['category']> = {
+    'flow': 'flow',
+    'pomodoro': 'pomodoro',
+    'clock': 'clock',
+    'body': 'body',
+    'meditation': 'meditation',
+  };
+  return modeMap[modeId] || 'general';
 };
 
 export const CountdownScreen: React.FC<CountdownScreenProps> = ({
@@ -358,11 +85,15 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
   const [isRunning, setIsRunning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [startTime] = useState(Date.now());
-  const [selectedQuote] = useState(() => {
-    // Select random quote based on mode
-    const quotes = FOCUS_QUOTES[mode.id as keyof typeof FOCUS_QUOTES] || FOCUS_QUOTES.meditation;
-    return quotes[Math.floor(Math.random() * quotes.length)];
-  });
+  
+  // Quote cycling state
+  const [availableQuotes] = useState(() => getQuotesByCategory(getModeCategory(mode.id)));
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  const selectedQuote = availableQuotes[currentQuoteIndex];
+  
+  const cycleQuote = () => {
+    setCurrentQuoteIndex((prev) => (prev + 1) % availableQuotes.length);
+  };
 
   // Break-related state
   const [isInBreak, setIsInBreak] = useState(false);
@@ -745,8 +476,8 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
 
           {/* Break Timer Display */}
           <View style={styles.circularTimerContainer}>
-            <View style={styles.progressCircle}>
-              <Svg width={svgSize} height={svgSize} style={[styles.progressSvg, { marginLeft: -svgSize / 2, marginTop: -svgSize / 2 }]}>
+            <View style={styles.breakTimerContainer}>
+              <Svg width={svgSize} height={svgSize}>
                 {/* Background circle - gray */}
                 <Circle
                   cx={svgSize / 2}
@@ -772,7 +503,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
               </Svg>
               
               {/* Break Time Display */}
-              <View style={styles.timeDisplayContainer}>
+              <View style={styles.breakTimerTextContainer}>
                 <View style={styles.primaryTimeContainer}>
                   <Text style={[styles.primaryTimeText, { color: theme.colors.text.primary }]}>
                     {breakTime.m1}{breakTime.m2}:{breakTime.s1}{breakTime.s2}
@@ -975,13 +706,18 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({
           </TouchableOpacity>
         </View>
 
-        {/* Zen Quote */}
-        <View style={styles.quoteContainer}>
+        {/* Zen Quote - Tappable to cycle */}
+        <TouchableOpacity 
+          style={styles.quoteContainer} 
+          onPress={cycleQuote}
+          activeOpacity={0.7}
+        >
           <Text style={styles.quoteText}>
             &quot;{selectedQuote?.text || 'Focus on the present moment.'}&quot;
           </Text>
-          <Text style={styles.quoteAuthor}>— {selectedQuote?.author || 'Anonymous'}</Text>
-        </View>
+          <Text style={styles.quoteAuthor}>— {selectedQuote?.author || 'Unknown'}</Text>
+          <Text style={styles.quoteHint}>Tap for next quote</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </View>
   );
@@ -1008,6 +744,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingVertical: theme.spacing.xl,
+  },
+  breakTimerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  breakTimerTextContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: '50%',
+    transform: [{ translateY: -40 }],
   },
   clockContainer: {
     alignItems: 'center',
@@ -1204,6 +954,14 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
     fontStyle: 'italic',
     marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+  },
+  quoteHint: {
+    ...theme.typography.caption,
+    color: theme.colors.text.tertiary,
+    fontSize: 11,
+    marginTop: theme.spacing.xs,
+    opacity: 0.6,
     textAlign: 'center',
   },
   safeArea: {

@@ -25,6 +25,7 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNotifications } from '../../contexts/NotificationsContext';
 import { useNavigation } from '@react-navigation/native';
 import { theme as defaultTheme } from '../../config/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -128,6 +129,7 @@ interface JournalEntry {
 export const DashboardScreen: React.FC = () => {
   const { session } = useAuth();
   const { theme } = useTheme();
+  const { notifications } = useNotifications();
   const { 
     getSortedSections,
     refreshSections,
@@ -864,7 +866,10 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
-              {/* bottom hint removed - moved to top */}
+              {/* Tap to flip hint - inside card so it flips with it */}
+              <View style={[styles.topTapHintContainer, { position: 'absolute', bottom: 10, left: 0, right: 0 }]}>
+                <Text style={styles.topTapHintText}>Tap to flip</Text>
+              </View>
             </ImageBackground>
           </Animated.View>
 
@@ -947,7 +952,10 @@ export const DashboardScreen: React.FC = () => {
                   {/* period label moved into ratingSection */}
                 </>
               )}
-              {/* bottom hint removed - moved to top */}
+              {/* Tap to flip hint - inside card so it flips with it */}
+              <View style={[styles.topTapHintContainer, { position: 'absolute', bottom: 10, left: 0, right: 0 }]}>
+                <Text style={styles.topTapHintText}>Tap to flip</Text>
+              </View>
             </ImageBackground>
           </Animated.View>
         </View>
@@ -1562,6 +1570,14 @@ export const DashboardScreen: React.FC = () => {
         <TouchableOpacity style={styles.topBarLeftButton} onPress={() => navigation.navigate('Notifications' as never)}>
           {/* Use the same vector icon as BottomBar for visual parity. Size 24 inside 48 container matches BottomBar */}
           <Icon name="notifications" size={24} color={theme.colors.text.primary} />
+          {/* Unread notification badge */}
+          {notifications.filter(n => !n.read).length > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationBadgeText}>
+                {notifications.filter(n => !n.read).length}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
         {__DEV__ && (
           <>
@@ -1593,10 +1609,6 @@ export const DashboardScreen: React.FC = () => {
           />
         }
       >
-        <View style={styles.topTapHintContainer}>
-          <Text style={styles.topTapHintText}>Tap to flip</Text>
-        </View>
-        
         {/* Render sections in custom order - each section is independent and vertically stacked */}
         {enabledSections.map((section) => {
           const sectionType = section.id;
@@ -1657,6 +1669,23 @@ const createStyles = (theme: typeof defaultTheme) => StyleSheet.create({
     position: 'absolute',
     width: 48,
     zIndex: 1,
+  },
+  notificationBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.danger,
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    minWidth: 20,
+    paddingHorizontal: 4,
+    position: 'absolute',
+    right: 2,
+    top: 2,
+  },
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
   topBarDebugButton: {
     alignItems: 'center',

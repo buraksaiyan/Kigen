@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sidebar: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.background,
     borderRightColor: theme.colors.border,
     borderRightWidth: 0.5, // Reduced for sleeker look
     bottom: 0,
